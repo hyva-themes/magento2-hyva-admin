@@ -7,6 +7,8 @@
                 type="Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinition"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\RowInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Row"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\CellInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Cell"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface"
+                type="Hyva\Admin\ViewModel\HyvaGrid\TemporaryDummyNavigation"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>

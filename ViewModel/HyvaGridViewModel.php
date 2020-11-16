@@ -24,6 +24,8 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private HyvaGrid\RowInterfaceFactory $rowFactory;
 
+    private HyvaGrid\NavigationInterfaceFactory $navigationFactory;
+
     private string $gridName;
 
     public function __construct(
@@ -31,13 +33,15 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGridDefinitionInterfaceFactory $gridDefinitionFactory,
         HyvaGridSourceFactory $gridSourceFactory,
         HyvaGrid\RowInterfaceFactory $rowFactory,
-        HyvaGrid\CellInterfaceFactory $cellFactory
+        HyvaGrid\CellInterfaceFactory $cellFactory,
+        HyvaGrid\NavigationInterfaceFactory $navigationFactory
     ) {
         $this->gridName              = $gridName;
         $this->gridSourceFactory     = $gridSourceFactory;
         $this->gridDefinitionFactory = $gridDefinitionFactory;
         $this->rowFactory            = $rowFactory;
         $this->cellFactory           = $cellFactory;
+        $this->navigationFactory     = $navigationFactory;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -119,6 +123,6 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getNavigation(): HyvaGrid\NavigationInterface
     {
-
+        return $this->navigationFactory->create(['gridSource' => $this->getGridSourceModel()]);
     }
 }

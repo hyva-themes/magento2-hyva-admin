@@ -9,6 +9,8 @@ use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
+use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
+use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
@@ -66,6 +68,14 @@ class HyvaGridViewModelTest extends TestCase
         return $this->createMock(CellInterfaceFactory::class);
     }
 
+    /**
+     * @return MockObject|NavigationInterfaceFactory
+     */
+    private function createStubNavigationFactory(): MockObject
+    {
+        return $this->createMock(NavigationInterfaceFactory::class);
+    }
+
     private function setColumnDefinition(HyvaGridSourceFactory $stubGridSourceFactory, array $columnDefinitions): void
     {
         /** @var MockObject $stubGridSource */
@@ -105,13 +115,15 @@ class HyvaGridViewModelTest extends TestCase
         $stubGridDefinitionFactory = $this->createStubGridDefinitionFactory();
         $stubGridRowFactory        = $this->createStubRowFactory();
         $stubGridCellFactory       = $this->createStubCellFactory();
+        $stubNavigationFactory     = $this->createStubNavigationFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
             $stubGridDefinitionFactory,
             $stubGridSourceFactory,
             $stubGridRowFactory,
-            $stubGridCellFactory
+            $stubGridCellFactory,
+            $stubNavigationFactory
         );
 
         $this->assertInstanceOf(HyvaGridInterface::class, $sut);
@@ -128,15 +140,18 @@ class HyvaGridViewModelTest extends TestCase
         $stubGridSourceFactory     = $this->createStubGridSourceFactory();
         $stubGridDefinitionFactory = $this->createStubGridDefinitionFactory();
         $this->setColumnDefinition($stubGridSourceFactory, $columnDefinitions);
-        $stubGridRowFactory  = $this->createStubRowFactory();
-        $stubGridCellFactory = $this->createStubCellFactory();
+        $stubGridRowFactory    = $this->createStubRowFactory();
+        $stubGridCellFactory   = $this->createStubCellFactory();
+        $stubNavigationFactory = $this->createStubNavigationFactory();
 
         $sut = new HyvaGridViewModel(
             'test-grid-name',
             $stubGridDefinitionFactory,
             $stubGridSourceFactory,
             $stubGridRowFactory,
-            $stubGridCellFactory);
+            $stubGridCellFactory,
+            $stubNavigationFactory
+        );
 
         $this->assertSame(3, $sut->getColumnCount());
     }
@@ -150,15 +165,17 @@ class HyvaGridViewModelTest extends TestCase
         $stubGridSourceFactory     = $this->createStubGridSourceFactory();
         $stubGridDefinitionFactory = $this->createStubGridDefinitionFactory();
         $this->setColumnDefinition($stubGridSourceFactory, $columnDefinitions);
-        $stubGridRowFactory  = $this->createStubRowFactory();
-        $stubGridCellFactory = $this->createStubCellFactory();
+        $stubGridRowFactory    = $this->createStubRowFactory();
+        $stubGridCellFactory   = $this->createStubCellFactory();
+        $stubNavigationFactory = $this->createStubNavigationFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
             $stubGridDefinitionFactory,
             $stubGridSourceFactory,
             $stubGridRowFactory,
-            $stubGridCellFactory
+            $stubGridCellFactory,
+            $stubNavigationFactory
         );
 
         $this->assertSame(['foo' => $columnFoo, 'bar' => $columnBar], $sut->getColumnDefinitions());
@@ -175,15 +192,17 @@ class HyvaGridViewModelTest extends TestCase
         $stubGridDefinitionFactory = $this->createStubGridDefinitionFactory();
         $this->setColumnDefinition($stubGridSourceFactory, [$columnFoo, $columnBar, $columnBaz, $columnQux]);
         $this->setExcludedColumnKeys($stubGridDefinitionFactory, ['bar', 'baz']);
-        $stubGridRowFactory  = $this->createStubRowFactory();
-        $stubGridCellFactory = $this->createStubCellFactory();
+        $stubGridRowFactory    = $this->createStubRowFactory();
+        $stubGridCellFactory   = $this->createStubCellFactory();
+        $stubNavigationFactory = $this->createStubNavigationFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
             $stubGridDefinitionFactory,
             $stubGridSourceFactory,
             $stubGridRowFactory,
-            $stubGridCellFactory
+            $stubGridCellFactory,
+            $stubNavigationFactory
         );
 
         $this->assertSame(['foo' => $columnFoo, 'qux' => $columnQux], $sut->getColumnDefinitions());
@@ -194,7 +213,7 @@ class HyvaGridViewModelTest extends TestCase
         $columnBaz = $this->createStubColumn('baz');
         $columnQux = $this->createStubColumn('qux');
 
-        $stubGridSourceFactory     = $this->createStubGridSourceFactory();
+        $stubGridSourceFactory = $this->createStubGridSourceFactory();
         /** @var MockObject $stubGridSource */
         $stubGridSource = $stubGridSourceFactory->createFor($this->createMock(HyvaGridDefinitionInterface::class));
         $stubGridSource->method('getRecords')->willReturn([
@@ -205,7 +224,7 @@ class HyvaGridViewModelTest extends TestCase
 
         $stubGridDefinitionFactory = $this->createStubGridDefinitionFactory();
         $this->setColumnDefinition($stubGridSourceFactory, [$columnBaz, $columnQux]);
-        $stubGridRowFactory  = $this->createStubRowFactory();
+        $stubGridRowFactory = $this->createStubRowFactory();
         $stubGridRowFactory->method('create')->willReturnCallback(function ($cells) {
             return $this->createMock(RowInterface::class);
         });
@@ -213,13 +232,15 @@ class HyvaGridViewModelTest extends TestCase
         $stubGridCellFactory->method('create')->willReturnCallback(function ($value) {
             return $this->createMock(CellInterface::class);
         });
+        $stubNavigationFactory = $this->createStubNavigationFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
             $stubGridDefinitionFactory,
             $stubGridSourceFactory,
             $stubGridRowFactory,
-            $stubGridCellFactory
+            $stubGridCellFactory,
+            $stubNavigationFactory
         );
 
         $rows = $sut->getRows();
@@ -230,6 +251,22 @@ class HyvaGridViewModelTest extends TestCase
 
     public function testReturnsNavigation(): void
     {
-        $this->markTestIncomplete('something about the source and total items and such');
+        $stubGridSourceFactory     = $this->createStubGridSourceFactory();
+        $stubGridDefinitionFactory = $this->createStubGridDefinitionFactory();
+        $stubGridRowFactory        = $this->createStubRowFactory();
+        $stubGridCellFactory       = $this->createStubCellFactory();
+        $stubNavigationFactory     = $this->createStubNavigationFactory();
+        $stubNavigationFactory->method('create')->willReturn($this->createMock(NavigationInterface::class));
+
+        $sut = new HyvaGridViewModel(
+            'dummy-grid-name',
+            $stubGridDefinitionFactory,
+            $stubGridSourceFactory,
+            $stubGridRowFactory,
+            $stubGridCellFactory,
+            $stubNavigationFactory
+        );
+
+        $this->assertInstanceOf(NavigationInterface::class, $sut->getNavigation());
     }
 }
