@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Hyva\Admin\ViewModel\HyvaGridInterface" type="Hyva\Admin\ViewModel\HyvaGridViewModel"/>
+    <preference for="Hyva\Admin\Model\HyvaGridSourceInterface" type="Hyva\Admin\Model\GridSource"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface"
+                type="Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinition"/>
+    <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
+        <arguments>
+            <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>
+        </arguments>
+    </type>
+</config>
+

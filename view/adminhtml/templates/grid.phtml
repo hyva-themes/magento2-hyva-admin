@@ -1,0 +1,36 @@
+<?php declare(strict_types=1);
+
+/** @var \Hyva\Admin\Block\Adminhtml\HyvaGrid $block */
+/** @var \Magento\Framework\Escaper $escaper */
+
+$grid = $block->getGrid();
+$navigation = $grid->getNavigation();
+
+?>
+<div>
+    <?= __('Current Page: %1', $navigation->getCurrentPageNumber()) ?>
+    <?= __('Total Pages: %1', $navigation->getPageCount()) ?>
+    <?= __('Rows Per Page: %1', $navigation->getNumberOfRowsPerPage()) ?>
+    <?php if ($navigation->hasPreviousPage()): ?><a href="<?= $navigation->getPreviousPageUrl() ?>">Previous Page</a>
+    <?php else: ?>Previous Page<?php endif; ?>
+    <?php if ($navigation->hasNextPage()): ?><a href="<?= $navigation->getNextPageUrl() ?>">Next Page</a>
+    <?php else: ?>Next Page<?php endif; ?>
+</div>
+<table>
+    <thead>
+    <tr>
+        <?php foreach ($grid->getColumnDefinitions() as $column): ?>
+        <th><?= $escaper->escapeHtml($column->getLabel()) ?></th>
+        <?php endforeach; ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($grid->getRows() as $row): ?>
+    <tr>
+        <?php foreach ($row->getCells() as $cell): ?>
+        <td><?= $cell->getHtml() ?></td>
+        <?php endforeach; ?>
+    </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
