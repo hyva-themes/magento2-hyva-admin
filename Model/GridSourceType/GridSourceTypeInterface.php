@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 
 interface GridSourceTypeInterface
@@ -20,11 +21,12 @@ interface GridSourceTypeInterface
 
     public function getColumnDefinition(string $key): ColumnDefinitionInterface;
 
-    public function fetchData();
+    // todo: receive paging and filtering data
+    public function fetchData(): RawGridSourceContainer;
 
     /**
-     * @param mixed $rawGridData
+     * @param RawGridSourceContainer $rawGridData
      * @return mixed[]
      */
-    public function extractRecords($rawGridData): array;
+    public function extractRecords(RawGridSourceContainer $rawGridData): array;
 }

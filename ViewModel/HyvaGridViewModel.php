@@ -85,8 +85,7 @@ class HyvaGridViewModel implements HyvaGridInterface
     private function getGridSourceModel(): HyvaGridSourceInterface
     {
         if (!isset($this->memoizedGridSource)) {
-            $gridSourceConfiguration  = $this->getGridDefinition()->getSourceConfig();
-            $this->memoizedGridSource = $this->gridSourceFactory->createFor($gridSourceConfiguration);
+            $this->memoizedGridSource = $this->gridSourceFactory->createFor($this->getGridDefinition());
         }
         return $this->memoizedGridSource;
     }

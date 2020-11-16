@@ -8,14 +8,16 @@ class SourceTypeLocator
         'repository' => RepositoryGridSourceType::class,
         'collection' => CollectionGridSourceType::class,
         'query'      => QueryGridSourceType::class,
+        'array'      => ArrayProviderGridSourceType::class,
     ];
 
-    public function getFor(array $gridSourceConfiguration): string
+    public function getFor(string $gridName, array $gridSourceConfiguration): string
     {
         $sourceType = $this->getType($gridSourceConfiguration);
         $class      = $this->typeToGridSourceClassMap[$sourceType] ?? '';
         if (!$class) {
-            throw new \OutOfBoundsException(sprintf('Unknown HyvaGrid source type: "%s"', $sourceType));
+            $msg = sprintf('Unknown HyvaGrid source type on grid "%s": "%s"', $gridName, $sourceType);
+            throw new \OutOfBoundsException($msg);
         }
         return $class;
     }
@@ -33,6 +35,9 @@ class SourceTypeLocator
         }
         if (isset($gridSourceConfiguration['query'])) {
             return 'query';
+        }
+        if (isset($gridSourceConfiguration['array'])) {
+            return 'array';
         }
 
         return '';

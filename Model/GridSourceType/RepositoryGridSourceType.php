@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 
 class RepositoryGridSourceType implements GridSourceTypeInterface
@@ -21,12 +22,12 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     }
 
-    public function fetchData()
+    public function fetchData(): RawGridSourceContainer
     {
 
     }
 
-    public function extractRecords($rawGridData): array
+    public function extractRecords(RawGridSourceContainer $rawGridData): array
     {
 
     }

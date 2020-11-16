@@ -1,38 +1,47 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Functional\ViewModel;
+namespace Hyva\Admin\Test\Functional;
 
 use Hyva\Admin\Model\HyvaGridDefinitionInterface;
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
-use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 
 class TestingGridDefinition implements HyvaGridDefinitionInterface
 {
     private array $gridDefinition;
 
-    public static function makeFactory(array $testingGridDefinition): HyvaGridDefinitionInterfaceFactory
+    private string $gridName;
+
+    public static function makeFactory(string $name, array $testingGridDefinition): HyvaGridDefinitionInterfaceFactory
     {
-        return new class($testingGridDefinition) extends HyvaGridDefinitionInterfaceFactory
+        return new class($name, $testingGridDefinition) extends HyvaGridDefinitionInterfaceFactory
         {
             private array $gridDefinition;
 
-            /** @noinspection PhpMissingParentConstructorInspection */
-            public function __construct(array $gridDefinition)
+            private string $gridName;
+
+            public function __construct(string $gridName, array $gridDefinition)
             {
                 $this->gridDefinition = $gridDefinition;
+                $this->gridName = $gridName;
             }
 
             public function create(array $data = [])
             {
-                return new TestingGridDefinition($this->gridDefinition);
+                return new TestingGridDefinition($this->gridName, $this->gridDefinition);
             }
 
         };
     }
 
-    public function __construct(array $gridDefinition)
+    public function __construct(string $gridName, array $gridDefinition)
     {
         $this->gridDefinition = $gridDefinition;
+        $this->gridName = $gridName;
+    }
+
+    public function getName(): string
+    {
+        return $this->gridName;
     }
 
     public function getColumnDefinitions(): array

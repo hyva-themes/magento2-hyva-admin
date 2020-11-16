@@ -6,6 +6,8 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 
 interface HyvaGridDefinitionInterface
 {
+    public function getName(): string;
+
     /**
      * @return ColumnDefinitionInterface[]
      */

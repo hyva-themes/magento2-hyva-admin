@@ -16,7 +16,7 @@ class GridSource implements HyvaGridSourceInterface
 
     private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
 
-    private $rawGridData;
+    private RawGridSourceContainer $rawGridData;
 
     public function __construct(
         GridSourceType\GridSourceTypeInterface $gridSourceType,
@@ -74,8 +74,8 @@ class GridSource implements HyvaGridSourceInterface
             ? $this->columnDefinitionFactory->create(merge($columnA->toArray(), $columnB->toArray()))
             : $columnA;
     }
-    // todo: receive paging and filtering info here and pass it to getRawGridData
 
+    // todo: receive paging and filtering info here and pass it to getRawGridData
     public function getRecords(): array
     {
         return $this->gridSourceType->extractRecords($this->getRawGridData());
@@ -86,12 +86,9 @@ class GridSource implements HyvaGridSourceInterface
         return $this->gridSourceType->extractValue($record, $key);
     }
 
-    /**
-     * todo: receive paging and filtering data and pass it to fetchData
-     * @return mixed
-     */
-    private function getRawGridData()
+    private function getRawGridData(): RawGridSourceContainer
     {
+        // todo: receive paging and filtering data and pass it to fetchData
         if (!isset($this->rawGridData)) {
             $this->rawGridData = $this->gridSourceType->fetchData();
         }

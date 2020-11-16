@@ -3,6 +3,8 @@
 namespace Hyva\Admin\Test\Functional\ViewModel;
 
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
+use Hyva\Admin\Test\Functional\TestingGridDataProvider;
+use Hyva\Admin\Test\Functional\TestingGridDefinition;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridViewModel;
 use Magento\TestFramework\ObjectManager;
@@ -13,9 +15,9 @@ use PHPUnit\Framework\TestCase;
  */
 class HyvaGridViewModelTest extends TestCase
 {
-    private function makeFactoryForGridDefinition(array $testingGridDefinition): HyvaGridDefinitionInterfaceFactory
+    private function makeFactoryForGridDefinition(array $gridDefinition): HyvaGridDefinitionInterfaceFactory
     {
-        return TestingGridDefinition::makeFactory($testingGridDefinition);
+        return TestingGridDefinition::makeFactory('test-grid', $gridDefinition);
     }
 
     public function testIsKnownToObjectManager(): void
@@ -27,13 +29,19 @@ class HyvaGridViewModelTest extends TestCase
     public function testReturnsColumnDefinitions(): void
     {
         $testGridDefinition = [
-            'source' => ['@type' => 'repository']];
+            'source' => [
+                'array' => TestingGridDataProvider::withArray([
+                    ['foo' => 'This is a big foo', 'bar' => 'this is a tiny bar', 'baz' => 123],
+                    ['foo' => 'Another foo', 'bar' => 'Another bar', 'baz' => 2222],
+                ]),
+            ],
+        ];
 
         $grid    = ObjectManager::getInstance()->create(HyvaGridViewModel::class, [
             'gridName'              => 'test-name',
             'gridDefinitionFactory' => $this->makeFactoryForGridDefinition($testGridDefinition),
         ]);
         $columns = $grid->getColumnDefinitions();
-        $this->markTestIncomplete('work in progress');
+        $this->assertCount(3, $columns);
     }
 }

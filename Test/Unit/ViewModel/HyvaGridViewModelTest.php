@@ -69,7 +69,7 @@ class HyvaGridViewModelTest extends TestCase
     private function setColumnDefinition(HyvaGridSourceFactory $stubGridSourceFactory, array $columnDefinitions): void
     {
         /** @var MockObject $stubGridSource */
-        $stubGridSource = $stubGridSourceFactory->createFor([]);
+        $stubGridSource = $stubGridSourceFactory->createFor($this->createMock(HyvaGridDefinitionInterface::class));
         $stubGridSource->method('extractColumnDefinitions')->willReturn($columnDefinitions);
     }
 
@@ -196,7 +196,7 @@ class HyvaGridViewModelTest extends TestCase
 
         $stubGridSourceFactory     = $this->createStubGridSourceFactory();
         /** @var MockObject $stubGridSource */
-        $stubGridSource = $stubGridSourceFactory->createFor([]);
+        $stubGridSource = $stubGridSourceFactory->createFor($this->createMock(HyvaGridDefinitionInterface::class));
         $stubGridSource->method('getRecords')->willReturn([
             ['baz' => 111, 'qux' => 111],
             ['baz' => 222, 'qux' => 222],
