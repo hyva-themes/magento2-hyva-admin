@@ -5,6 +5,8 @@
     <preference for="Hyva\Admin\Model\HyvaGridSourceInterface" type="Hyva\Admin\Model\GridSource"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinition"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\RowInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Row"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\CellInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Cell"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>
