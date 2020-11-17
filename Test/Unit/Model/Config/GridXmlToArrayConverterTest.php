@@ -46,6 +46,18 @@ class GridXmlToArrayConverterTest extends TestCase
                 $this->getColumnsXml(),
                 $this->getColumnsExpected(),
             ],
+            'empty-columns'          => [
+                $this->getEmptyColumnsXml(),
+                $this->getEmptyColumnsExpected(),
+            ],
+            'exclude'                => [
+                $this->getOnlyColumnsExcludeXml(),
+                $this->getOnlyColumnsExcludeExpected(),
+            ],
+            'include'                => [
+                $this->getOnlyColumnsIncludeXml(),
+                $this->getOnlyColumnsIncludeExpected(),
+            ],
             'navigation'             => [
                 $this->getNavigationXml(),
                 $this->getNavigationExpected(),
@@ -175,7 +187,6 @@ EOXML;
         </exclude>
     </columns>
 EOXML;
-
     }
 
     private function getColumnsExpected(): array
@@ -188,16 +199,69 @@ EOXML;
         return [
             'columns' => [
                 'include' => [
-                    ['name' => 'id'],
-                    ['name' => 'note', 'type' => 'text'],
-                    ['name' => 'name', 'renderer' => 'My\NameRendererBlock'],
-                    ['name' => 'speed', 'label' => 'km/h'],
-                    ['name' => 'color', 'source' => 'My\SourceModel'],
-                    ['name' => 'background_color', 'options' => $options],
+                    ['key' => 'id'],
+                    ['key' => 'note', 'type' => 'text'],
+                    ['key' => 'name', 'renderer' => 'My\NameRendererBlock'],
+                    ['key' => 'speed', 'label' => 'km/h'],
+                    ['key' => 'color', 'source' => 'My\SourceModel'],
+                    ['key' => 'background_color', 'options' => $options],
                 ],
                 'exclude' => ['reference_id', 'internal_stuff'],
             ],
         ];
+    }
+
+    private function getOnlyColumnsExcludeXml(): string
+    {
+        return <<<EOXML
+        <columns>
+            <exclude>
+                <column name="weight"/>
+            </exclude>
+        </columns>
+EOXML;
+    }
+
+    private function getOnlyColumnsExcludeExpected(): array
+    {
+        return [
+            'columns' => [
+                'exclude' => ['weight'],
+            ],
+        ];
+    }
+
+    private function getOnlyColumnsIncludeXml(): string
+    {
+        return <<<EOXML
+        <columns>
+            <include>
+                <column name="weight"/>
+            </include>
+        </columns>
+EOXML;
+    }
+
+    private function getOnlyColumnsIncludeExpected(): array
+    {
+        return [
+            'columns' => [
+                'include' => [['key' => 'weight']],
+            ],
+        ];
+    }
+
+    private function getEmptyColumnsXml(): string
+    {
+        return <<<EOXML
+        <columns>
+        </columns>
+EOXML;
+    }
+
+    private function getEmptyColumnsExpected(): array
+    {
+        return [];
     }
 
     private function getNavigationXml(): string

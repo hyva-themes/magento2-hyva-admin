@@ -44,7 +44,7 @@ class HyvaGridDefinition implements HyvaGridDefinitionInterface
     public function getIncludedColumns(): array
     {
         return map(function (array $columnConfig): ColumnDefinitionInterface {
-
+            return $this->columnDefinitionFactory->create($columnConfig);
         }, $this->getGridConfiguration()['columns']['include'] ?? []);
     }
 

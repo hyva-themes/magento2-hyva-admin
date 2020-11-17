@@ -207,15 +207,20 @@ class GridXmlToArrayConverter
     private function getColumnsIncludeConfig(\DOMElement $columnsElement): array
     {
         $includesElement = $this->getChildByName($columnsElement, 'include');
-        $columns         = map([$this, 'buildIncludeColumnConfig'],
-            $this->getChildrenByName($includesElement, 'column'));
-        return ['include' => $columns];
+        return $includesElement
+            ? [
+                'include' => map(
+                    [$this, 'buildIncludeColumnConfig'],
+                    $this->getChildrenByName($includesElement, 'column')
+                ),
+            ]
+            : [];
     }
 
     private function buildIncludeColumnConfig(\DOMElement $columnElement): array
     {
         return filter(merge(
-            $this->getAttributeConfig($columnElement, 'name'),
+            ['key' => $this->getAttributeConfig($columnElement, 'name')['name'] ?? null], // rename idx "name" to "key"
             $this->getAttributeConfig($columnElement, 'type'),
             $this->getAttributeConfig($columnElement, 'renderer'),
             $this->getAttributeConfig($columnElement, 'label'),
