@@ -14,6 +14,10 @@ class SourceTypeLocator
     public function getFor(string $gridName, array $gridSourceConfiguration): string
     {
         $sourceType = $this->getType($gridSourceConfiguration);
+        if (! $sourceType) {
+            $msg = sprintf('No source type configuration found for grid "%s"', $gridName);
+            throw new \RuntimeException($msg);
+        }
         $class      = $this->typeToGridSourceClassMap[$sourceType] ?? '';
         if (!$class) {
             $msg = sprintf('Unknown HyvaGrid source type on grid "%s": "%s"', $gridName, $sourceType);

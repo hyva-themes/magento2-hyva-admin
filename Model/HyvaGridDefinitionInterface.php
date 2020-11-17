@@ -19,4 +19,6 @@ interface HyvaGridDefinitionInterface
     public function getExcludedColumnKeys(): array;
 
     public function getSourceConfig(): array;
+
+    public function getEntityDefinitionConfig(): array;
 }

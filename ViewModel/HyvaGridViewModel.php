@@ -9,6 +9,7 @@ use Hyva\Admin\Model\HyvaGridSourceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid;
 
+use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_map as map;
@@ -26,7 +27,16 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private HyvaGrid\NavigationInterfaceFactory $navigationFactory;
 
+    private HyvaGridDefinitionInterface $memoizedGridDefinition;
+
+    private HyvaGridSourceInterface $memoizedGridSource;
+
     private string $gridName;
+
+    /**
+     * @var HyvaGrid\EntityDefinitionInterfaceFactory
+     */
+    private HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory;
 
     public function __construct(
         string $gridName,
@@ -34,19 +44,24 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGridSourceFactory $gridSourceFactory,
         HyvaGrid\RowInterfaceFactory $rowFactory,
         HyvaGrid\CellInterfaceFactory $cellFactory,
-        HyvaGrid\NavigationInterfaceFactory $navigationFactory
+        HyvaGrid\NavigationInterfaceFactory $navigationFactory,
+        HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory
     ) {
-        $this->gridName              = $gridName;
-        $this->gridSourceFactory     = $gridSourceFactory;
-        $this->gridDefinitionFactory = $gridDefinitionFactory;
-        $this->rowFactory            = $rowFactory;
-        $this->cellFactory           = $cellFactory;
-        $this->navigationFactory     = $navigationFactory;
+        $this->gridName                = $gridName;
+        $this->gridSourceFactory       = $gridSourceFactory;
+        $this->gridDefinitionFactory   = $gridDefinitionFactory;
+        $this->rowFactory              = $rowFactory;
+        $this->cellFactory             = $cellFactory;
+        $this->navigationFactory       = $navigationFactory;
+        $this->entityDefinitionFactory = $entityDefinitionFactory;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
     {
-        return $this->gridDefinitionFactory->create(['gridName' => $this->gridName]);
+        if (!isset($this->memoizedGridDefinition)) {
+            $this->memoizedGridDefinition = $this->gridDefinitionFactory->create(['gridName' => $this->gridName]);
+        }
+        return $this->memoizedGridDefinition;
     }
 
     /**
@@ -124,5 +139,13 @@ class HyvaGridViewModel implements HyvaGridInterface
     public function getNavigation(): HyvaGrid\NavigationInterface
     {
         return $this->navigationFactory->create(['gridSource' => $this->getGridSourceModel()]);
+    }
+
+    public function getEntityDefinition(): EntityDefinitionInterface
+    {
+        return $this->entityDefinitionFactory->create([
+            'gridName'         => $this->getGridDefinition()->getName(),
+            'entityDefinition' => $this->getGridDefinition()->getEntityDefinitionConfig(),
+        ]);
     }
 }

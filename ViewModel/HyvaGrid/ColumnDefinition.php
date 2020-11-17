@@ -10,24 +10,39 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     private ?string $type;
 
-    public function __construct(string $key, ?string $label = null, ?string $type = null)
-    {
-        $this->key   = $key;
-        $this->label = $label;
-        $this->type  = $type;
+    private ?string $renderer;
+
+    private ?string $source;
+
+    private ?array $options;
+
+    public function __construct(
+        string $key,
+        ?string $label = null,
+        ?string $type = null,
+        ?string $renderer = null,
+        ?string $source = null,
+        ?array $options = null
+    ) {
+        $this->key      = $key;
+        $this->label    = $label;
+        $this->type     = $type;
+        $this->renderer = $renderer;
+        $this->source   = $source;
+        $this->options  = $options;
     }
 
-    public function camelCaseToWords(string $camel): string
+    private function camelCaseToWords(string $camel): string
     {
         return preg_replace('/([A-Z]+)/', ' $1', $camel);
     }
 
-    public function snakeCaseToWords(string $snake): string
+    private function snakeCaseToWords(string $snake): string
     {
         return str_replace('_', ' ', $snake);
     }
 
-    public function collapseWhitespace(string $in): string
+    private function collapseWhitespace(string $in): string
     {
         return preg_replace('/ {2,}/', ' ', $in);
     }
@@ -46,15 +61,23 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     public function getType(): string
     {
-        return $this->type ?? 'string';
+        return $this->type ?? ($this->source || $this->options ? 'select' : 'string');
     }
 
     public function toArray(): array
     {
         return [
-            'key'   => $this->getKey(),
-            'label' => $this->getLabel(),
-            'type'  => $this->getType(),
+            'key'      => $this->getKey(),
+            'label'    => $this->getLabel(),
+            'type'     => $this->getType(),
+            'renderer' => $this->getRenderer(),
+            'source'   => $this->source,
+            'options'  => $this->options,
         ];
+    }
+
+    public function getRenderer(): ?string
+    {
+        return $this->renderer;
     }
 }

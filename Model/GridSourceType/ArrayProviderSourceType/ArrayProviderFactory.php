@@ -3,13 +3,13 @@
 namespace Hyva\Admin\Model\GridSourceType\ArrayProviderSourceType;
 
 use Hyva\Admin\Api\HyvaGridArrayProviderInterface;
-use Magento\Framework\App\ObjectManager;
+use Magento\Framework\ObjectManagerInterface;
 
 class ArrayProviderFactory
 {
-    private ObjectManager $objectManager;
+    private ObjectManagerInterface $objectManager;
 
-    public function __construct(ObjectManager $objectManager)
+    public function __construct(ObjectManagerInterface $objectManager)
     {
         $this->objectManager = $objectManager;
     }

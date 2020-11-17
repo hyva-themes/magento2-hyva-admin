@@ -22,6 +22,12 @@ class HyvaGridSourceFactory
     public function createFor(HyvaGridDefinitionInterface $gridDefinition): HyvaGridSourceInterface
     {
         $gridSourceConfiguration = $gridDefinition->getSourceConfig();
+
+        if (empty($gridSourceConfiguration)) {
+            $message = sprintf('No grid source configuration found for grid "%s"', $gridDefinition->getName());
+            throw new \RuntimeException($message);
+        }
+
         $constructorArguments    = [
             'gridName'            => $gridDefinition->getName(),
             'sourceConfiguration' => $gridSourceConfiguration,

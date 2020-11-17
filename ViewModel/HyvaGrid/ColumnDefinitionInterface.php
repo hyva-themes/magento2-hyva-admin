@@ -8,7 +8,9 @@ interface ColumnDefinitionInterface
 
     public function getKey(): string;
 
-    public function getType(): string;
+    public function getType(): ?string;
+
+    public function getRenderer(): ?string;
 
     public function toArray(): array;
 }

@@ -3,6 +3,10 @@
 namespace Hyva\Admin\Model;
 
 use Hyva\Admin\Model\Config\GridConfigReader;
+use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
+use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
+
+use function array_map as map;
 
 class HyvaGridDefinition implements HyvaGridDefinitionInterface
 {
@@ -12,10 +16,16 @@ class HyvaGridDefinition implements HyvaGridDefinitionInterface
 
     private ?array $memoizedGridConfig = null;
 
-    public function __construct(string $gridName, GridConfigReader $gridConfigReader)
-    {
-        $this->gridName         = $gridName;
+    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+
+    public function __construct(
+        string $gridName,
+        GridConfigReader $gridConfigReader,
+        ColumnDefinitionInterfaceFactory $columnDefinitionFactory
+    ) {
+        $this->gridName = $gridName;
         $this->gridConfigReader = $gridConfigReader;
+        $this->columnDefinitionFactory = $columnDefinitionFactory;
     }
 
     public function getName(): string
@@ -25,7 +35,7 @@ class HyvaGridDefinition implements HyvaGridDefinitionInterface
 
     private function getGridConfiguration(): array
     {
-        if (! isset($this->memoizedGridConfig)) {
+        if (!isset($this->memoizedGridConfig)) {
             $this->memoizedGridConfig = $this->gridConfigReader->getGridConfiguration($this->gridName);
         }
         return $this->memoizedGridConfig;
@@ -33,16 +43,23 @@ class HyvaGridDefinition implements HyvaGridDefinitionInterface
 
     public function getIncludedColumns(): array
     {
+        return map(function (array $columnConfig): ColumnDefinitionInterface {
 
+        }, $this->getGridConfiguration()['columns']['include'] ?? []);
     }
 
     public function getExcludedColumnKeys(): array
     {
-
+        return $this->getGridConfiguration()['columns']['exclude'] ?? [];
     }
 
     public function getSourceConfig(): array
     {
+        return $this->getGridConfiguration()['source'] ?? [];
+    }
 
+    public function getEntityDefinitionConfig(): array
+    {
+        return $this->getGridConfiguration()['entity'] ?? [];
     }
 }

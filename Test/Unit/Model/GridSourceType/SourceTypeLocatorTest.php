@@ -17,6 +17,12 @@ class SourceTypeLocatorTest extends TestCase
         $this->expectExceptionMessage('Unknown HyvaGrid source type on grid "test-grid": "foo"');
         (new SourceTypeLocator())->getFor('test-grid', ['@type' => 'foo']);
     }
+    public function testThrowsExceptionIfNoSourceIsConfigured(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('No source type configuration found for grid "test-grid"');
+        (new SourceTypeLocator())->getFor('test-grid', []);
+    }
 
     /**
      * @dataProvider sourceTypeProvider

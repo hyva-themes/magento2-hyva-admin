@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
+use Magento\Framework\View\LayoutInterface;
+
 class Cell implements CellInterface
 {
     /**
@@ -11,14 +13,20 @@ class Cell implements CellInterface
 
     private ColumnDefinitionInterface $columnDefinition;
 
-    public function __construct($value, ColumnDefinitionInterface $columnDefinition)
+    private LayoutInterface $layout;
+
+    public function __construct($value, ColumnDefinitionInterface $columnDefinition, LayoutInterface $layout)
     {
-        $this->value = $value;
+        $this->value            = $value;
         $this->columnDefinition = $columnDefinition;
+        $this->layout           = $layout;
     }
 
     public function getHtml(): string
     {
-        return (string) $this->value;
+        $renderer = $this->columnDefinition->getRenderer();
+        return $renderer
+            ? $this->layout->createBlock($renderer)->setData('value', $this->value)->toHtml()
+            : (string) $this->value;
     }
 }

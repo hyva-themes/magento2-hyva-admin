@@ -63,4 +63,9 @@ class TestingGridDefinition implements HyvaGridDefinitionInterface
     {
         return $this->gridDefinition['source'] ?? [];
     }
+
+    public function getEntityDefinitionConfig(): array
+    {
+        return $this->gridDefinition['entityConfig'] ?? [];
+    }
 }

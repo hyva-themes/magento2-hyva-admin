@@ -3,6 +3,7 @@
 namespace Hyva\Admin\ViewModel;
 
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
+use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 
@@ -21,4 +22,6 @@ interface HyvaGridInterface
     public function getNavigation(): NavigationInterface;
 
     public function getColumnCount(): int;
+
+    public function getEntityDefinition(): EntityDefinitionInterface;
 }

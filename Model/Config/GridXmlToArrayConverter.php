@@ -17,7 +17,7 @@ class GridXmlToArrayConverter
             'source'     => $this->convertSourceConfig($root),
             'columns'    => $this->convertColumnsConfig($root),
             'navigation' => $this->convertNavigationConfig($root),
-            //'entity'     => $this->convertEntityConfig($root),
+            'entity'     => $this->convertEntityConfig($root),
         ]);
     }
 
@@ -297,6 +297,20 @@ class GridXmlToArrayConverter
          * </entityConfig>
          */
         $entityConfigElement = $this->getChildByName($root, 'entityConfig');
-        return [];
+        return $entityConfigElement
+            ? filter(['label' => $this->convertEntityLabelConfig($entityConfigElement)])
+            : [];
+
+    }
+
+    private function convertEntityLabelConfig(\DOMElement $entityConfigElement): array
+    {
+        $labelElement = $this->getChildByName($entityConfigElement, 'label');
+        return $labelElement
+            ? filter(merge(
+                $this->getElementConfig($labelElement, 'singular'),
+                $this->getElementConfig($labelElement, 'plural'),
+            ))
+            : [];
     }
 }

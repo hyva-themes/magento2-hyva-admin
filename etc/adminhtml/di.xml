@@ -11,6 +11,9 @@
                 type="Hyva\Admin\ViewModel\HyvaGrid\TemporaryDummyNavigation"/>
     <preference for="Hyva\Admin\Model\Config\HyvaGridConfigReaderInterface"
                 type="Hyva\Admin\Model\Config\GridConfigReader"/>
+    <preference for="Hyva\Admin\Model\HyvaGridDefinitionInterface" type="Hyva\Admin\Model\HyvaGridDefinition"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface"
+                type="Hyva\Admin\ViewModel\HyvaGrid\EntityDefinition"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>

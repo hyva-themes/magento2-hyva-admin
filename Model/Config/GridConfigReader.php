@@ -43,8 +43,15 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
     private function readGridConfig(string $gridName): array
     {
         $files        = $this->definitionConfigFiles->getGridDefinitionFiles($gridName);
+        return $files
+            ? $this->mergeGridConfigs($files)
+            : [];
+    }
+
+    private function mergeGridConfigs(array $files): array
+    {
         $first        = array_pop($files);
-        $mergedConfig = reduce($files, [$this, 'mergeFile'], $this->createDom($first));
+        $mergedConfig = reduce($files, [$this, 'mergeFile'], $this->createDom(file_get_contents($first)));
 
         return $this->gridXmlToArrayConverter->convert($mergedConfig->getDom());
     }

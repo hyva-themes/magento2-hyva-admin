@@ -46,9 +46,13 @@ class GridXmlToArrayConverterTest extends TestCase
                 $this->getColumnsXml(),
                 $this->getColumnsExpected(),
             ],
-            'navigation'                => [
+            'navigation'             => [
                 $this->getNavigationXml(),
                 $this->getNavigationExpected(),
+            ],
+            'entity'                 => [
+                $this->getEntityConfigXml(),
+                $this->getEntityConfigExpected(),
             ],
         ];
     }
@@ -211,5 +215,22 @@ EOXML;
     private function getNavigationExpected(): array
     {
         return ['navigation' => ['pager' => ['defaultPerPage' => '10', 'pageSizes' => '10,20,50,100']]];
+    }
+
+    private function getEntityConfigXml(): string
+    {
+        return <<<EOXML
+    <entityConfig>
+        <label>
+            <singular>Fossa</singular>
+            <plural>Fossas</plural>
+        </label>
+    </entityConfig>
+EOXML;
+    }
+
+    private function getEntityConfigExpected(): array
+    {
+        return ['entity' => ['label' => ['singular' => 'Fossa', 'plural' => 'Fossas']]];
     }
 }

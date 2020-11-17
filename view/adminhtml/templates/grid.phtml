@@ -6,7 +6,11 @@
 $grid = $block->getGrid();
 $navigation = $grid->getNavigation();
 
-?>
+if (! $grid->getRows()) { ?>
+<div>
+    <?= __('No %1 found.', $grid->getEntityDefinition()->getLabelPlural()) ?>
+</div>
+<?php return; } ?>
 <div>
     <?= __('Current Page: %1', $navigation->getCurrentPageNumber()) ?>
     <?= __('Total Pages: %1', $navigation->getPageCount()) ?>
