@@ -87,7 +87,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
     {
         if (!isset($this->memoizedGridData)) {
             $provider               = $this->arrayProviderFactory->create($this->arrayProviderClass);
-            $this->memoizedGridData = RawGridSourceContainer::forData($provider->getArray());
+            $this->memoizedGridData = RawGridSourceContainer::forData($provider->getHyvaGridData());
         }
 
         return $this->memoizedGridData;

@@ -11,5 +11,5 @@ interface HyvaGridArrayProviderInterface
     /**
      * @return array[]
      */
-    public function getArray(): array;
+    public function getHyvaGridData(): array;
 }

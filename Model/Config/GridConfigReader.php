@@ -6,7 +6,7 @@ use Magento\Framework\Config\Dom as XmlDom;
 use Magento\Framework\Config\ValidationStateInterface;
 use function array_reduce as reduce;
 
-class GridConfigReader
+class GridConfigReader implements HyvaGridConfigReaderInterface
 {
     private GridDefinitionConfigFiles $definitionConfigFiles;
 

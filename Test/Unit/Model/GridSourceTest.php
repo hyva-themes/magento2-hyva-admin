@@ -9,6 +9,8 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use PHPUnit\Framework\TestCase;
 
+use function array_map as map;
+
 class GridSourceTest extends TestCase
 {
     private function assertContainsColumn(ColumnDefinitionInterface $actual, array $columns, string $msg = ''): void
@@ -94,10 +96,26 @@ class GridSourceTest extends TestCase
             new ColumnDefinition('bar', null, 'int'), // configured type
         ];
 
-        $sut = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
+        $sut              = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
         $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns);
         $this->assertContainsColumn(new ColumnDefinition('foo', 'Foo Label', 'string'), $extractedColumns);
         $this->assertContainsColumn(new ColumnDefinition('bar', 'Bar', 'int'), $extractedColumns);
+    }
+
+    public function testExtractsAllColumnKeysFromSourceIfNoneAreConfigured(): void
+    {
+        $sourceColumnKeys            = ['foo', 'bar', 'baz'];
+        $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
+        $gridSourceType              = $this->createStubGridSourceType($sourceColumnKeys);
+
+        $configuredIncludeColumns = [];
+
+        $sut              = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
+        $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns);
+        $extractedKeys    = map(function (ColumnDefinitionInterface $columnDefinition): string {
+            return $columnDefinition->getKey();
+        }, $extractedColumns);
+        $this->assertSame($sourceColumnKeys, $extractedKeys);
     }
 
 }

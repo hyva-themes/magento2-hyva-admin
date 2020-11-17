@@ -9,6 +9,8 @@
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\CellInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Cell"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\TemporaryDummyNavigation"/>
+    <preference for="Hyva\Admin\Model\Config\HyvaGridConfigReaderInterface"
+                type="Hyva\Admin\Model\Config\GridConfigReader"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>
