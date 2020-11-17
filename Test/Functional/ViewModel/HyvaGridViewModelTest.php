@@ -30,7 +30,7 @@ class HyvaGridViewModelTest extends TestCase
     {
         $testGridDefinition = [
             'source' => [
-                'array' => TestingGridDataProvider::withArray([
+                'arrayProvider' => TestingGridDataProvider::withArray([
                     ['foo' => 'This is a big foo', 'bar' => 'this is a tiny bar', 'baz' => 123],
                     ['foo' => 'Another foo', 'bar' => 'Another bar', 'baz' => 2222],
                 ]),

@@ -27,7 +27,7 @@ class SourceTypeLocator
         if (isset($gridSourceConfiguration['@type'])) {
             return $gridSourceConfiguration['@type'];
         }
-        if (isset($gridSourceConfiguration['repository'])) {
+        if (isset($gridSourceConfiguration['repositoryListMethod'])) {
             return 'repository';
         }
         if (isset($gridSourceConfiguration['collection'])) {
@@ -36,7 +36,7 @@ class SourceTypeLocator
         if (isset($gridSourceConfiguration['query'])) {
             return 'query';
         }
-        if (isset($gridSourceConfiguration['array'])) {
+        if (isset($gridSourceConfiguration['arrayProvider'])) {
             return 'array';
         }
 

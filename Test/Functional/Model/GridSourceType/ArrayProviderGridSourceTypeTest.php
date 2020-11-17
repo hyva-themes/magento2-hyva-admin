@@ -15,7 +15,7 @@ class ArrayProviderGridSourceTypeTest extends TestCase
     private function createArrayProviderGridSourceTypeWithArray(array $testGridData): ArrayProviderGridSourceType
     {
         $name                = 'test-grid';
-        $sourceConfiguration = ['array' => TestingGridDataProvider::withArray($testGridData)];
+        $sourceConfiguration = ['arrayProvider' => TestingGridDataProvider::withArray($testGridData)];
 
         $constructorArguments = ['gridName' => $name, 'sourceConfiguration' => $sourceConfiguration];
         return ObjectManager::getInstance()->create(ArrayProviderGridSourceType::class, $constructorArguments);

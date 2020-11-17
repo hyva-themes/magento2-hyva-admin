@@ -35,13 +35,13 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $this->gridName                = $gridName;
         $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
         $this->arrayProviderFactory    = $arrayProviderFactory;
-        $this->arrayProviderClass      = $sourceConfiguration['array'];
+        $this->arrayProviderClass      = $sourceConfiguration['arrayProvider'] ?? '';
         $this->columnDefinitionFactory = $columnDefinitionFactory;
     }
 
     private function validateArrayProviderConfiguration(string $gridName, array $sourceConfiguration): void
     {
-        $providerClass = $sourceConfiguration['array'] ?? '';
+        $providerClass = $sourceConfiguration['arrayProvider'] ?? '';
 
         if (!$providerClass) {
             $msg1 = sprintf('No array provider class specified to array provider for grid "%s"', $gridName);

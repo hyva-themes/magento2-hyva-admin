@@ -29,11 +29,11 @@ class SourceTypeLocatorTest extends TestCase
     public function sourceTypeProvider(): array
     {
         return [
-            'repo'                  => [['repository' => 'FooRepositoryInterface'], RepositoryGridSourceType::class],
+            'repo'                  => [['repositoryListMethod' => 'FooRepositoryInterface'], RepositoryGridSourceType::class],
             'collection'            => [['collection' => 'BarCollection'], CollectionGridSourceType::class],
             'query'                 => [['query' => []], QueryGridSourceType::class],
             'array'                 => [
-                ['array' => 'HyvaGridArrayProviderInterface'],
+                ['arrayProvider' => 'HyvaGridArrayProviderInterface'],
                 ArrayProviderGridSourceType::class,
             ],
             'type-takes-precedence' => [
