@@ -33,7 +33,9 @@ class ScalarListDataType implements DataTypeGuesserInterface, DataTypeValueToStr
         $itemsToShow = $overLimit ? slice($value, 0, self::LIMIT) : $value;
         $indicator   = $overLimit ? ',...' : '';
 
-        return '["' . implode('", "', $itemsToShow) . '"' . $indicator . ']';
+        return empty($itemsToShow)
+            ? '[ ]'
+            : '[ ' . implode(", ", $itemsToShow) . $indicator . ' ]';
     }
 
     private function isListOfScalars($value): bool

@@ -63,9 +63,12 @@ class Cell implements CellInterface
         try {
             return $str ?? (string) $value;// last ditch effort to convert the value to a string
         } catch (\Throwable $exception) {
-            $key = $this->columnDefinition->getKey();
-            $msg = sprintf('Unable to cast a value of column "%s" with type "%s" to a string', $key, $type);
-            throw new \RuntimeException($msg);
+            throw new \RuntimeException(sprintf(
+                'Unable to cast a value of column "%s" with type "%s" (%s) to a string',
+                $this->columnDefinition->getKey(),
+                $type,
+                is_object($value) ? get_class($value) : (is_array($value) ? 'array' : 'unknown')
+            ));
         }
     }
 

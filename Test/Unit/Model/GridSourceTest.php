@@ -7,6 +7,7 @@ use Hyva\Admin\Model\GridSourceType\GridSourceTypeInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinition;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
+use Magento\Framework\ObjectManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 use function array_map as map;
@@ -25,12 +26,18 @@ class GridSourceTest extends TestCase
 
     public function createColumnDefinitionByKey(string $key): ColumnDefinitionInterface
     {
-        return new ColumnDefinition($key);
+        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
+        return new ColumnDefinition($dummyObjectManager, $key);
     }
 
     public function createColumnDefinitionFromArray(array $params): ColumnDefinitionInterface
     {
-        return new ColumnDefinition($params['key'], $params['label'] ?? null, $params['type'] ?? null);
+        return new ColumnDefinition(
+            $this->createMock(ObjectManagerInterface::class),
+            $params['key'],
+            $params['label'] ?? null,
+            $params['type'] ?? null
+        );
     }
 
     private function createStubColumnDefinitionFactory()
@@ -53,30 +60,32 @@ class GridSourceTest extends TestCase
 
     public function testExtractsOnlyIncludedColumnsIfSpecified(): void
     {
+        $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar', 'baz']);
         $configuredIncludeColumns    = [
-            new ColumnDefinition('foo'),
-            new ColumnDefinition('bar'),
+            new ColumnDefinition($dummyObjectManager, 'foo'),
+            new ColumnDefinition($dummyObjectManager, 'bar'),
         ];
 
         $sut              = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
         $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns);
 
-        $this->assertContainsColumn(new ColumnDefinition('foo'), $extractedColumns);
-        $this->assertContainsColumn(new ColumnDefinition('bar'), $extractedColumns);
+        $this->assertContainsColumn(new ColumnDefinition($dummyObjectManager, 'foo'), $extractedColumns);
+        $this->assertContainsColumn(new ColumnDefinition($dummyObjectManager, 'bar'), $extractedColumns);
         $this->assertNotContainsColumnWithKey('baz', $extractedColumns);
     }
 
     public function testThrowsExceptionForUnavailableColumnKeys(): void
     {
+        $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar', 'baz']);
 
         $configuredIncludeColumns = [
-            new ColumnDefinition('foo'),
-            new ColumnDefinition('bar'),
-            new ColumnDefinition('does_not_exist'),
+            new ColumnDefinition($dummyObjectManager, 'foo'),
+            new ColumnDefinition($dummyObjectManager, 'bar'),
+            new ColumnDefinition($dummyObjectManager, 'does_not_exist'),
         ];
 
         $sut = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
@@ -88,18 +97,21 @@ class GridSourceTest extends TestCase
 
     public function testMergesInIncludedColumnSpecifications(): void
     {
+        $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar']);
 
         $configuredIncludeColumns = [
-            new ColumnDefinition('foo', 'Foo Label'), // configured label
-            new ColumnDefinition('bar', null, 'int'), // configured type
+            new ColumnDefinition($dummyObjectManager, 'foo', 'Foo Label'), // configured label
+            new ColumnDefinition($dummyObjectManager, 'bar', null, 'int'), // configured type
         ];
 
-        $sut              = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
-        $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns);
-        $this->assertContainsColumn(new ColumnDefinition('foo', 'Foo Label', 'string'), $extractedColumns);
-        $this->assertContainsColumn(new ColumnDefinition('bar', 'Bar', 'int'), $extractedColumns);
+        $sut                       = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
+        $extractedColumns          = $sut->extractColumnDefinitions($configuredIncludeColumns);
+        $expectedColumnDefinition1 = new ColumnDefinition($dummyObjectManager, 'foo', 'Foo Label', 'unknown');
+        $expectedColumnDefinition2 = new ColumnDefinition($dummyObjectManager, 'bar', 'Bar', 'int');
+        $this->assertContainsColumn($expectedColumnDefinition1, $extractedColumns);
+        $this->assertContainsColumn($expectedColumnDefinition2, $extractedColumns);
     }
 
     public function testExtractsAllColumnKeysFromSourceIfNoneAreConfigured(): void

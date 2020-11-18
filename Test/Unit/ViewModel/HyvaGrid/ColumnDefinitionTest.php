@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Test\Unit\ViewModel\HyvaGrid;
 
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinition;
+use Magento\Framework\ObjectManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 use function array_values as values;
@@ -14,7 +15,8 @@ class ColumnDefinitionTest extends TestCase
      */
     public function testDerivesDefaultLabelFromColumnKey($key, $expectedLabel): void
     {
-        $this->assertSame($expectedLabel, (new ColumnDefinition($key))->getLabel());
+        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $this->assertSame($expectedLabel, (new ColumnDefinition($dummyObjectManager, $key))->getLabel());
     }
 
     public function columnKeyLabelProvider(): array
@@ -32,19 +34,20 @@ class ColumnDefinitionTest extends TestCase
 
     public function testToArrayAndReinstantiate(): void
     {
-        $original = [
-            'key' => 'the_key',
-            'label' => 'The label',
-            'type' => 'string',
+        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $original           = [
+            'key'      => 'the_key',
+            'label'    => 'The label',
+            'type'     => 'string',
             'renderer' => 'My\Renderer\Block',
-            'source' => 'My\Source\Model',
-            'options' => [
+            'source'   => 'My\Source\Model',
+            'options'  => [
                 ['value' => 'aaa', 'label' => 'Aaa'],
                 ['value' => 'bbb', 'label' => 'Bbb'],
-            ]
+            ],
         ];
-        $column1 = new ColumnDefinition(...values($original));
-        $column2 = new ColumnDefinition(...values($column1->toArray()));
+        $column1            = new ColumnDefinition($dummyObjectManager, ...values($original));
+        $column2            = new ColumnDefinition($dummyObjectManager, ...values($column1->toArray()));
 
         $this->assertSame($original, $column1->toArray());
         $this->assertSame($column1->toArray(), $column2->toArray());

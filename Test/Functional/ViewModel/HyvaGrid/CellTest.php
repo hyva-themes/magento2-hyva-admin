@@ -55,7 +55,7 @@ class CellTest extends TestCase
         $cell  = $this->createCellWithValue($thisValueCanNotBeCastToString);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Unable to cast a value of column "test" with type "unknown" to a string');
+        $this->expectExceptionMessage('Unable to cast a value of column "test" with type "unknown"');
 
         $cell->getHtml();
     }
