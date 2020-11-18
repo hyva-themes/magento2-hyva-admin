@@ -17,9 +17,32 @@
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\ActionInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Action"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\MassActionInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\MassAction"/>
+    <preference for="Hyva\Admin\Api\DataTypeGuesserInterface"
+                type="Hyva\Admin\Model\DataType\CompositeDataTypeGuesser"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>
+        </arguments>
+    </type>
+    <type name="Hyva\Admin\Model\DataType\CompositeDataTypeGuesser">
+        <arguments>
+            <argument name="dataTypeGuessers" xsi:type="array">
+                <item name="scalar" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="scalar_list" xsi:type="object">Hyva\Admin\Model\DataType\ScalarListDataType</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Hyva\Admin\Model\DataType\DataTypeToStringConverter">
+        <arguments>
+            <argument name="valueToStringConverterClasses" xsi:type="array">
+                <item name="string" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="int" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="bool" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="float" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="null" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="scalar_null" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="scalar_list" xsi:type="object">Hyva\Admin\Model\DataType\ScalarListDataType</item>
+            </argument>
         </arguments>
     </type>
 </config>

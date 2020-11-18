@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use Hyva\Admin\Api\DataTypeGuesserInterface;
 use Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
@@ -17,18 +18,24 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     private RawGridSourceContainer $memoizedGridData;
 
+    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+
     private string $arrayProviderClass;
 
     private string $gridName;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var DataTypeGuesserInterface
+     */
+    private DataTypeGuesserInterface $dataTypeGuesser;
 
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         ArrayProviderSourceType\ArrayProviderFactory $arrayProviderFactory,
-        ColumnDefinitionInterfaceFactory $columnDefinitionFactory
+        ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
+        DataTypeGuesserInterface $dataTypeGuesser
     ) {
         $this->validateArrayProviderConfiguration($gridName, $sourceConfiguration);
 
@@ -37,6 +44,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $this->arrayProviderFactory    = $arrayProviderFactory;
         $this->arrayProviderClass      = $sourceConfiguration['arrayProvider'] ?? '';
         $this->columnDefinitionFactory = $columnDefinitionFactory;
+        $this->dataTypeGuesser         = $dataTypeGuesser;
     }
 
     private function validateArrayProviderConfiguration(string $gridName, array $sourceConfiguration): void
@@ -68,7 +76,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $firstRecord = $this->getFirstRow()[$key] ?? null;
         return $this->columnDefinitionFactory->create([
             'key'  => $key,
-            'type' => $this->determineType($firstRecord),
+            'type' => $this->dataTypeGuesser->typeOf($firstRecord) ?? 'unknown',
         ]);
     }
 
@@ -101,35 +109,5 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
     private function getFirstRow(): array
     {
         return values($this->gridSourceDataAccessor->unbox($this->fetchData()))[0] ?? [];
-    }
-
-    /**
-     * @param mixed $record
-     * @return string
-     */
-    private function determineType($record): string
-    {
-        if (is_string($record)) {
-            return 'string';
-        }
-        if (is_int($record)) {
-            return 'int';
-        }
-        if (is_bool($record)) {
-            return 'bool';
-        }
-        if (is_float($record)) {
-            return 'float';
-        }
-        if (is_null($record)) {
-            return 'null';
-        }
-        if (is_object($record)) {
-            return sprintf('object<%s>', get_class($record));
-        }
-        if (is_array($record)) {
-            return 'array';
-        }
-        return 'unknown';
     }
 }

@@ -13,6 +13,8 @@ interface CellInterface
      */
     public function getRawValue();
 
+    public function getTextValue(): ?string;
+
     // probably needs methods to return:
     // - a boolean method if the value could be successfully serialized to a string
     // - maybe css classes...

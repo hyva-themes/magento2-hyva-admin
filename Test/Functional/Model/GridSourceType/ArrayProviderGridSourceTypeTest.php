@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Test\Functional\Model\GridSourceType;
 
+use Hyva\Admin\Model\DataType\ScalarAndNullDataType;
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Test\Functional\TestingGridDataProvider;
 use Magento\TestFramework\ObjectManager;
@@ -48,32 +49,18 @@ class ArrayProviderGridSourceTypeTest extends TestCase
         $sut->extractValue([], 'bar');
     }
 
-    /**
-     * @dataProvider columnDataProvider
-     */
-    public function testExtractsBasicColumnDefinition($value, $expectedType): void
+    public function testExtractsBasicColumnDefinition(): void
     {
+        $value = 123;
+
         $key = 'x';
         $sut = $this->createArrayProviderGridSourceTypeWithArray([[$key => $value]]);
 
         $columnDefinition = $sut->getColumnDefinition($key);
 
         $this->assertSame($key, $columnDefinition->getKey());
-        $this->assertSame($expectedType, $columnDefinition->getType());
+        $this->assertSame(ScalarAndNullDataType::TYPE_SCALAR_NULL, $columnDefinition->getType());
 
-    }
-
-    public function columnDataProvider(): array
-    {
-        return [
-            'int'    => [1, 'int'],
-            'string' => ['a string', 'string'],
-            'float'  => [pi(), 'float'],
-            'null'   => [null, 'null'],
-            'object' => [new \stdClass, 'object<stdClass>'],
-            'array'  => [[1, 2, 3], 'array'],
-            'bool'   => [true, 'bool'],
-        ];
     }
 
     public function testHandlesNumericColumnKeysGracefully(): void
@@ -81,8 +68,8 @@ class ArrayProviderGridSourceTypeTest extends TestCase
         $rowWithNumericKeys = ['aaa', 'bbb'];
         $sut                = $this->createArrayProviderGridSourceTypeWithArray([$rowWithNumericKeys]);
         $this->assertSame([0, 1], $sut->getColumnKeys());
-        $this->assertSame('string', $sut->getColumnDefinition('0')->getType());
-        $this->assertSame('string', $sut->getColumnDefinition('1')->getType());
+        $this->assertSame(ScalarAndNullDataType::TYPE_SCALAR_NULL, $sut->getColumnDefinition('0')->getType());
+        $this->assertSame(ScalarAndNullDataType::TYPE_SCALAR_NULL, $sut->getColumnDefinition('1')->getType());
     }
 
     public function testReturnsAndExtractsGridData(): void

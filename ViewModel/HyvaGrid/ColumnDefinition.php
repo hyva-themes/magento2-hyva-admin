@@ -2,8 +2,13 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
+use Magento\Eav\Model\Entity\Attribute\Source\SourceInterface;
+use Magento\Framework\ObjectManagerInterface;
+
 class ColumnDefinition implements ColumnDefinitionInterface
 {
+    private ObjectManagerInterface $objectManager;
+
     private string $key;
 
     private ?string $label;
@@ -17,6 +22,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
     private ?array $options;
 
     public function __construct(
+        ObjectManagerInterface $objectManager,
         string $key,
         ?string $label = null,
         ?string $type = null,
@@ -24,12 +30,13 @@ class ColumnDefinition implements ColumnDefinitionInterface
         ?string $source = null,
         ?array $options = null
     ) {
-        $this->key      = $key;
-        $this->label    = $label;
-        $this->type     = $type;
-        $this->renderer = $renderer;
-        $this->source   = $source;
-        $this->options  = $options;
+        $this->key           = $key;
+        $this->label         = $label;
+        $this->type          = $type;
+        $this->renderer      = $renderer;
+        $this->source        = $source;
+        $this->options       = $options;
+        $this->objectManager = $objectManager;
     }
 
     private function camelCaseToWords(string $camel): string
@@ -61,7 +68,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     public function getType(): string
     {
-        return $this->type ?? ($this->source || $this->options ? 'select' : 'string');
+        return $this->type ?? 'unknown';
     }
 
     public function toArray(): array
@@ -79,5 +86,20 @@ class ColumnDefinition implements ColumnDefinitionInterface
     public function getRenderer(): ?string
     {
         return $this->renderer;
+    }
+
+    public function getOptionArray(): array
+    {
+        return $this->options ?? ($this->hasSourceModel() ? $this->createSourceModel()->toOptionArray() : []);
+    }
+
+    private function createSourceModel(): ?SourceInterface
+    {
+        return $this->hasSourceModel() ? $this->objectManager->get($this->source) : null;
+    }
+
+    private function hasSourceModel(): bool
+    {
+        return isset($this->source) && $this->source;
     }
 }

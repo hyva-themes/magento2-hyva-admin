@@ -13,4 +13,6 @@ interface ColumnDefinitionInterface
     public function getRenderer(): ?string;
 
     public function toArray(): array;
+
+    public function getOptionArray(): array;
 }
