@@ -2,26 +2,28 @@
 
 namespace Hyva\Admin\ViewModel;
 
-use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
-use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
-use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
-use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
-
 interface HyvaGridInterface
 {
     /**
-     * @return ColumnDefinitionInterface[]
+     * @return HyvaGrid\ColumnDefinitionInterface[]
      */
     public function getColumnDefinitions(): array;
 
     /**
-     * @return RowInterface[]
+     * @return HyvaGrid\RowInterface[]
      */
     public function getRows(): array;
 
-    public function getNavigation(): NavigationInterface;
+    public function getNavigation(): HyvaGrid\NavigationInterface;
 
     public function getColumnCount(): int;
 
-    public function getEntityDefinition(): EntityDefinitionInterface;
+    public function getEntityDefinition(): HyvaGrid\EntityDefinitionInterface;
+
+    /**
+     * @return HyvaGrid\ActionInterface[]
+     */
+    public function getActions(): array;
+
+    public function getRowActionId(): ?string;
 }

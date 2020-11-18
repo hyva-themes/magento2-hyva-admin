@@ -62,4 +62,14 @@ class HyvaGridDefinition implements HyvaGridDefinitionInterface
     {
         return $this->getGridConfiguration()['entity'] ?? [];
     }
+
+    public function getActionsConfig(): array
+    {
+        return $this->getGridConfiguration()['actions'] ?? [];
+    }
+
+    public function getRowAction(): ?string
+    {
+        return $this->getGridConfiguration()['columns']['@rowAction'] ?? null;
+    }
 }

@@ -21,4 +21,8 @@ interface HyvaGridDefinitionInterface
     public function getSourceConfig(): array;
 
     public function getEntityDefinitionConfig(): array;
+
+    public function getActionsConfig(): array;
+
+    public function getRowAction(): ?string;
 }

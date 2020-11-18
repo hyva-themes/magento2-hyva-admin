@@ -18,4 +18,9 @@ class Row implements RowInterface
     {
         return $this->cells;
     }
+
+    public function getCell(string $key): ?CellInterface
+    {
+        return $this->getCells()[$key] ?? null;
+    }
 }

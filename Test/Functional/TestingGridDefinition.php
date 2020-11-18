@@ -68,4 +68,14 @@ class TestingGridDefinition implements HyvaGridDefinitionInterface
     {
         return $this->gridDefinition['entityConfig'] ?? [];
     }
+
+    public function getActionsConfig(): array
+    {
+        return $this->gridDefinition['actions'] ?? [];
+    }
+
+    public function getRowAction(): ?string
+    {
+        return $this->gridDefinition['columns']['@rowAction'] ?? null;
+    }
 }

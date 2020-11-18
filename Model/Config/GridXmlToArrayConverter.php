@@ -18,6 +18,7 @@ class GridXmlToArrayConverter
             'columns'    => $this->convertColumnsConfig($root),
             'navigation' => $this->convertNavigationConfig($root),
             'entity'     => $this->convertEntityConfig($root),
+            'actions'    => $this->convertActionsConfig($root),
         ]);
     }
 
@@ -179,7 +180,7 @@ class GridXmlToArrayConverter
     private function buildColumnsConfig(\DOMElement $columnsElement): array
     {
         /*
-         * <columns>
+         * <columns rowAction="edit">
          *     <include>
          *         <column name="id"/>
          *         <column name="note" type="text"/>
@@ -198,10 +199,11 @@ class GridXmlToArrayConverter
          *     </exclude>
          * </columns>
          */
-        return merge(
+        return filter(merge(
+            ['@rowAction' => $columnsElement->getAttribute('rowAction')],
             $this->getColumnsIncludeConfig($columnsElement),
             $this->getColumnsExcludeConfig($columnsElement),
-        );
+        ));
     }
 
     private function getColumnsIncludeConfig(\DOMElement $columnsElement): array
@@ -317,5 +319,35 @@ class GridXmlToArrayConverter
                 $this->getElementConfig($labelElement, 'plural'),
             ))
             : [];
+    }
+
+    private function convertActionsConfig(\DOMElement $root): array
+    {
+        /*
+         * <actions idColumn="name">
+         *     <action id="edit" label="Edit" url="*\/*\/edit" idParam="id"/>
+         *     <action id="delete" label="Delete" url="*\/*\/delete"/>
+         *     <action label="Validate" url="admin/dashboard"/>
+         * </actions>
+         */
+        if ($actionsElement = $this->getChildByName($root, 'actions')) {
+            $actions = filter(map([$this, 'convertActionConfig'], $this->getChildrenByName($actionsElement, 'action')));
+            return [
+                '@idColumn' => $actionsElement->getAttribute('idColumn'),
+                'actions'   => $actions,
+            ];
+        } else {
+            return [];
+        }
+    }
+
+    private function convertActionConfig(\DOMElement $actionElement): array
+    {
+        return filter(merge(
+            $this->getAttributeConfig($actionElement, 'id'),
+            $this->getAttributeConfig($actionElement, 'label'),
+            $this->getAttributeConfig($actionElement, 'url'),
+            $this->getAttributeConfig($actionElement, 'idParam'),
+        ));
     }
 }

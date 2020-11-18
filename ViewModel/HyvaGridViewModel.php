@@ -13,6 +13,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_map as map;
+use function array_merge as merge;
 use function array_values as values;
 
 class HyvaGridViewModel implements HyvaGridInterface
@@ -31,12 +32,11 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private HyvaGridSourceInterface $memoizedGridSource;
 
-    private string $gridName;
-
-    /**
-     * @var HyvaGrid\EntityDefinitionInterfaceFactory
-     */
     private HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory;
+
+    private HyvaGrid\ActionInterfaceFactory $actionFactory;
+
+    private string $gridName;
 
     public function __construct(
         string $gridName,
@@ -45,7 +45,8 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGrid\RowInterfaceFactory $rowFactory,
         HyvaGrid\CellInterfaceFactory $cellFactory,
         HyvaGrid\NavigationInterfaceFactory $navigationFactory,
-        HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory
+        HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory,
+        HyvaGrid\ActionInterfaceFactory $actionFactory
     ) {
         $this->gridName                = $gridName;
         $this->gridSourceFactory       = $gridSourceFactory;
@@ -54,6 +55,7 @@ class HyvaGridViewModel implements HyvaGridInterface
         $this->cellFactory             = $cellFactory;
         $this->navigationFactory       = $navigationFactory;
         $this->entityDefinitionFactory = $entityDefinitionFactory;
+        $this->actionFactory           = $actionFactory;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -147,5 +149,26 @@ class HyvaGridViewModel implements HyvaGridInterface
             'gridName'         => $this->getGridDefinition()->getName(),
             'entityDefinition' => $this->getGridDefinition()->getEntityDefinitionConfig(),
         ]);
+    }
+
+    public function getActions(): array
+    {
+        $actionsConfig = $this->getGridDefinition()->getActionsConfig();
+
+        $actions       = map(function (array $actionConfig) use ($actionsConfig): HyvaGrid\ActionInterface {
+            $constructorParams = merge($actionConfig, ['idColumn' => $actionsConfig['@idColumn'] ?? null]);
+            return $this->actionFactory->create($constructorParams);
+        }, $actionsConfig['actions']);
+
+        $actionIds = map(function (HyvaGrid\ActionInterface $action): string {
+            return $action->getId();
+        }, $actions);
+
+        return zip($actionIds, $actions);
+    }
+
+    public function getRowActionId(): ?string
+    {
+        return $this->getGridDefinition()->getRowAction() ?? null;
     }
 }

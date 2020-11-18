@@ -29,4 +29,14 @@ class Cell implements CellInterface
             ? $this->layout->createBlock($renderer)->setData('value', $this->value)->toHtml()
             : (string) $this->value;
     }
+
+    public function getColumnDefinition(): ColumnDefinitionInterface
+    {
+        return $this->columnDefinition;
+    }
+
+    public function getRawValue()
+    {
+        return $this->value;
+    }
 }

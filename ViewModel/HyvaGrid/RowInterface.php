@@ -8,4 +8,6 @@ interface RowInterface
      * @return CellInterface[]
      */
     public function getCells(): array;
+
+    public function getCell(string $key): ?CellInterface;
 }

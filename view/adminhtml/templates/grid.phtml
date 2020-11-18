@@ -26,14 +26,28 @@ if (! $grid->getRows()) { ?>
         <?php foreach ($grid->getColumnDefinitions() as $column): ?>
         <th><?= $escaper->escapeHtml($column->getLabel()) ?></th>
         <?php endforeach; ?>
+        <?php if ($actions = $grid->getActions()): ?>
+        <th><?= __('Actions') ?></th>
+        <?php endif; ?>
     </tr>
     </thead>
     <tbody>
     <?php foreach ($grid->getRows() as $row): ?>
-    <tr>
+    <?php $rowAction = $actions[$grid->getRowActionId()] ?? false; ?>
+    <?php $rowActionUrl = $rowAction ? $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row)) : ''?>
+    <tr <?php if ($rowAction) { ?> onclick="window.location.href='<?= $escaper->escapeJs($rowActionUrl) ?>'" <?php } ?>>
         <?php foreach ($row->getCells() as $cell): ?>
         <td><?= $cell->getHtml() ?></td>
         <?php endforeach; ?>
+        <?php if ($actions): ?>
+            <td>
+                <?php foreach ($actions as $action): ?>
+                    <a href="<?= $block->getUrl($action->getUrl(), $action->getParams($row)) ?>">
+                        <?= $escaper->escapeHtml($action->getLabel()) ?>
+                    </a>
+                <?php endforeach; ?>
+            </td>
+        <?php endif; ?>
     </tr>
     <?php endforeach; ?>
     </tbody>

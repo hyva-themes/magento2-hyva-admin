@@ -6,6 +6,7 @@ use Hyva\Admin\Model\HyvaGridDefinitionInterface;
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
 use Hyva\Admin\Model\HyvaGridSourceFactory;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
+use Hyva\Admin\ViewModel\HyvaGrid\ActionInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
@@ -86,6 +87,14 @@ class HyvaGridViewModelTest extends TestCase
         return $this->createMock(EntityDefinitionInterfaceFactory::class);
     }
 
+    /**
+     * @return MockObject|ActionInterfaceFactory
+     */
+    private function createStubActionFactory(): MockObject
+    {
+        return $this->createMock(ActionInterfaceFactory::class);
+    }
+
     private function setColumnDefinition(HyvaGridSourceFactory $stubGridSourceFactory, array $columnDefinitions): void
     {
         /** @var MockObject $stubGridSource */
@@ -127,6 +136,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyGridCellFactory         = $this->createStubCellFactory();
         $dummyNavigationFactory       = $this->createStubNavigationFactory();
         $dummyEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
+        $dummyActionFactory           = $this->createStubActionFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -135,7 +145,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyGridRowFactory,
             $dummyGridCellFactory,
             $dummyNavigationFactory,
-            $dummyEntityDefinitionFactory
+            $dummyEntityDefinitionFactory,
+            $dummyActionFactory
         );
 
         $this->assertInstanceOf(HyvaGridInterface::class, $sut);
@@ -156,6 +167,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyGridCellFactory         = $this->createStubCellFactory();
         $dummyNavigationFactory       = $this->createStubNavigationFactory();
         $dummyEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
+        $dummyActionFactory           = $this->createStubActionFactory();
 
         $sut = new HyvaGridViewModel(
             'test-grid-name',
@@ -164,7 +176,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyGridRowFactory,
             $dummyGridCellFactory,
             $dummyNavigationFactory,
-            $dummyEntityDefinitionFactory
+            $dummyEntityDefinitionFactory,
+            $dummyActionFactory
         );
 
         $this->assertSame(3, $sut->getColumnCount());
@@ -183,6 +196,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyGridCellFactory         = $this->createStubCellFactory();
         $dummyNavigationFactory       = $this->createStubNavigationFactory();
         $dummyEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
+        $dummyActionFactory           = $this->createStubActionFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -191,7 +205,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyGridRowFactory,
             $dummyGridCellFactory,
             $dummyNavigationFactory,
-            $dummyEntityDefinitionFactory
+            $dummyEntityDefinitionFactory,
+            $dummyActionFactory
         );
 
         $this->assertSame(['foo' => $columnFoo, 'bar' => $columnBar], $sut->getColumnDefinitions());
@@ -212,6 +227,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyGridCellFactory         = $this->createStubCellFactory();
         $dummyNavigationFactory       = $this->createStubNavigationFactory();
         $dummyEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
+        $dummyActionFactory           = $this->createStubActionFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -220,7 +236,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyGridRowFactory,
             $dummyGridCellFactory,
             $dummyNavigationFactory,
-            $dummyEntityDefinitionFactory
+            $dummyEntityDefinitionFactory,
+            $dummyActionFactory
         );
 
         $this->assertSame(['foo' => $columnFoo, 'qux' => $columnQux], $sut->getColumnDefinitions());
@@ -252,6 +269,7 @@ class HyvaGridViewModelTest extends TestCase
         });
         $dummyNavigationFactory       = $this->createStubNavigationFactory();
         $dummyEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
+        $dummyActionFactory           = $this->createStubActionFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -260,7 +278,8 @@ class HyvaGridViewModelTest extends TestCase
             $stubGridRowFactory,
             $stubGridCellFactory,
             $dummyNavigationFactory,
-            $dummyEntityDefinitionFactory
+            $dummyEntityDefinitionFactory,
+            $dummyActionFactory
         );
 
         $rows = $sut->getRows();
@@ -278,6 +297,7 @@ class HyvaGridViewModelTest extends TestCase
         $stubNavigationFactory      = $this->createStubNavigationFactory();
         $stubNavigationFactory->method('create')->willReturn($this->createMock(NavigationInterface::class));
         $dummyEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
+        $dummyActionFactory           = $this->createStubActionFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -286,7 +306,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyGridRowFactory,
             $dummyGridCellFactory,
             $stubNavigationFactory,
-            $dummyEntityDefinitionFactory
+            $dummyEntityDefinitionFactory,
+            $dummyActionFactory
         );
 
         $this->assertInstanceOf(NavigationInterface::class, $sut->getNavigation());
@@ -294,13 +315,14 @@ class HyvaGridViewModelTest extends TestCase
 
     public function testReturnsEntityDefinition(): void
     {
-        $dummyGridSourceFactory     = $this->createStubGridSourceFactory();
-        $dummyGridDefinitionFactory = $this->createStubGridDefinitionFactory();
-        $dummyGridRowFactory        = $this->createStubRowFactory();
-        $dummyGridCellFactory       = $this->createStubCellFactory();
+        $dummyGridSourceFactory      = $this->createStubGridSourceFactory();
+        $dummyGridDefinitionFactory  = $this->createStubGridDefinitionFactory();
+        $dummyGridRowFactory         = $this->createStubRowFactory();
+        $dummyGridCellFactory        = $this->createStubCellFactory();
         $dummyNavigationFactory      = $this->createStubNavigationFactory();
         $stubEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
         $stubEntityDefinitionFactory->method('create')->willReturn($this->createMock(EntityDefinitionInterface::class));
+        $dummyActionFactory           = $this->createStubActionFactory();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -309,7 +331,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyGridRowFactory,
             $dummyGridCellFactory,
             $dummyNavigationFactory,
-            $stubEntityDefinitionFactory
+            $stubEntityDefinitionFactory,
+            $dummyActionFactory
         );
 
         $this->assertInstanceOf(EntityDefinitionInterface::class, $sut->getEntityDefinition());

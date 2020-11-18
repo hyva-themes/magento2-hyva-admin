@@ -66,6 +66,14 @@ class GridXmlToArrayConverterTest extends TestCase
                 $this->getEntityConfigXml(),
                 $this->getEntityConfigExpected(),
             ],
+            'actions'                => [
+                $this->getActionsXml(),
+                $this->getActionsExpected(),
+            ],
+            'empty-actions'                => [
+                $this->getEmptyActionsXml(),
+                $this->getEmptyActionsExpected(),
+            ],
         ];
     }
 
@@ -168,7 +176,7 @@ EOXML;
     private function getColumnsXml(): string
     {
         return <<<EOXML
-    <columns>
+    <columns rowAction="edit">
         <include>
             <column name="id"/>
             <column name="note" type="text"/>
@@ -198,6 +206,7 @@ EOXML;
         ];
         return [
             'columns' => [
+                '@rowAction' => 'edit',
                 'include' => [
                     ['key' => 'id'],
                     ['key' => 'note', 'type' => 'text'],
@@ -296,5 +305,39 @@ EOXML;
     private function getEntityConfigExpected(): array
     {
         return ['entity' => ['label' => ['singular' => 'Fossa', 'plural' => 'Fossas']]];
+    }
+
+    private function getActionsXml(): string
+    {
+        return <<<EOXML
+    <actions idColumn="name">
+        <action id="edit" label="Edit" url="*/*/edit" idParam="id"/>
+        <action id="delete" label="Delete" url="*/*/delete"/>
+        <action label="Validate" url="admin/dashboard"/>
+    </actions>
+EOXML;
+    }
+
+    private function getActionsExpected(): array
+    {
+        $actions = [
+            ['id' => 'edit', 'label' => 'Edit', 'url' => '*/*/edit', 'idParam' => 'id'],
+            ['id' => 'delete', 'label' => 'Delete', 'url' => '*/*/delete'],
+            ['label' => 'Validate', 'url' => 'admin/dashboard'],
+        ];
+        return ['actions' => ['@idColumn' => 'name', 'actions' => $actions]];
+    }
+
+    private function getEmptyActionsXml(): string
+    {
+        return <<<EOXML
+    <actions idColumn="name">
+    </actions>
+EOXML;
+    }
+
+    private function getEmptyActionsExpected(): array
+    {
+        return ['actions' => ['@idColumn' => 'name', 'actions' => []]];
     }
 }
