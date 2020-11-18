@@ -18,11 +18,25 @@ interface HyvaGridDefinitionInterface
      */
     public function getExcludedColumnKeys(): array;
 
+    /**
+     * @return mixed[]
+     */
     public function getSourceConfig(): array;
 
+    /**
+     * @return mixed[]
+     */
     public function getEntityDefinitionConfig(): array;
 
+    /**
+     * @return mixed
+     */
     public function getActionsConfig(): array;
 
     public function getRowAction(): ?string;
+
+    /**
+     * @return mixed[]
+     */
+    public function getMassActionConfig(): array;
 }

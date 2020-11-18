@@ -15,6 +15,8 @@
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\EntityDefinition"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\ActionInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Action"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\MassActionInterface"
+                type="Hyva\Admin\ViewModel\HyvaGrid\MassAction"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>

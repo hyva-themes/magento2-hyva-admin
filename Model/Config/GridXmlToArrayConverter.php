@@ -14,11 +14,12 @@ class GridXmlToArrayConverter
         $root = $this->getRootElement($dom);
 
         return filter([
-            'source'     => $this->convertSourceConfig($root),
-            'columns'    => $this->convertColumnsConfig($root),
-            'navigation' => $this->convertNavigationConfig($root),
-            'entity'     => $this->convertEntityConfig($root),
-            'actions'    => $this->convertActionsConfig($root),
+            'source'      => $this->convertSourceConfig($root),
+            'columns'     => $this->convertColumnsConfig($root),
+            'navigation'  => $this->convertNavigationConfig($root),
+            'entity'      => $this->convertEntityConfig($root),
+            'actions'     => $this->convertActionsConfig($root),
+            'massActions' => $this->convertMassActionsConfig($root),
         ]);
     }
 
@@ -348,6 +349,38 @@ class GridXmlToArrayConverter
             $this->getAttributeConfig($actionElement, 'label'),
             $this->getAttributeConfig($actionElement, 'url'),
             $this->getAttributeConfig($actionElement, 'idParam'),
+        ));
+    }
+
+    private function convertMassActionsConfig(\DOMElement $root)
+    {
+        /*
+         * <massActions idColumn="name" idsParam="ids">
+         *     <action label="Update" url="*\/massActions/update"/>
+         *     <action label="Delete All" url="*\/massActions/delete" requireConfirmation="true"/>
+         * </massActions>
+         */
+        if ($massActionsElement = $this->getChildByName($root, 'massActions')) {
+            $massActionElements = $this->getChildrenByName($massActionsElement, 'action');
+            $actions            = filter(map([$this, 'convertMassActionConfig'], $massActionElements));
+            return filter([
+                '@idColumn' => $massActionsElement->getAttribute('idColumn'),
+                '@idsParam' => $massActionsElement->getAttribute('idsParam'),
+                'actions'   => $actions,
+            ]);
+        } else {
+            return [];
+        }
+    }
+
+    private function convertMassActionConfig(\DOMElement $actionElement): array
+    {
+        return filter(merge(
+            $this->getAttributeConfig($actionElement, 'label'),
+            $this->getAttributeConfig($actionElement, 'url'),
+            map(function (string $v): bool {
+                return $v === 'true';
+            }, $this->getAttributeConfig($actionElement, 'requireConfirmation')),
         ));
     }
 }

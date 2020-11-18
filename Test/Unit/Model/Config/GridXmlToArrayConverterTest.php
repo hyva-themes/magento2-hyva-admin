@@ -74,6 +74,10 @@ class GridXmlToArrayConverterTest extends TestCase
                 $this->getEmptyActionsXml(),
                 $this->getEmptyActionsExpected(),
             ],
+            'mass-actions'                => [
+                $this->getMassActionXml(),
+                $this->getMassActionExpected(),
+            ],
         ];
     }
 
@@ -339,5 +343,26 @@ EOXML;
     private function getEmptyActionsExpected(): array
     {
         return ['actions' => ['@idColumn' => 'name', 'actions' => []]];
+    }
+
+    private function getMassActionXml(): string
+    {
+        return <<<EOXML
+    <massActions idColumn="id" idsParam="ids">
+        <action label="Update" url="*/massActions/update"/>
+        <action label="Delete All" url="*/massActions/delete" requireConfirmation="true"/>
+        <action label="Reindex" url="*/massActions/reindex" />
+    </massActions>
+EOXML;
+    }
+
+    private function getMassActionExpected(): array
+    {
+        $actions = [
+            ['label' => 'Update', 'url' => '*/massActions/update'],
+            ['label' => 'Delete All', 'url' => '*/massActions/delete', 'requireConfirmation' => true],
+            ['label' => 'Reindex', 'url' => '*/massActions/reindex'],
+        ];
+        return ['massActions' => ['@idColumn' => 'id', '@idsParam' => 'ids', 'actions' => $actions]];
     }
 }

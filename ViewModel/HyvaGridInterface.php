@@ -4,6 +4,8 @@ namespace Hyva\Admin\ViewModel;
 
 interface HyvaGridInterface
 {
+    public function getGridName(): string;
+
     /**
      * @return HyvaGrid\ColumnDefinitionInterface[]
      */
@@ -26,4 +28,13 @@ interface HyvaGridInterface
     public function getActions(): array;
 
     public function getRowActionId(): ?string;
+
+    /**
+     * @return HyvaGrid\MassActionInterface[]
+     */
+    public function getMassActions(): array;
+
+    public function getMassActionIdColumn(): ?string;
+
+    public function getMassActionIdsParam(): ?string;
 }

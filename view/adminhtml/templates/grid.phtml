@@ -3,14 +3,15 @@
 /** @var \Hyva\Admin\Block\Adminhtml\HyvaGrid $block */
 /** @var \Magento\Framework\Escaper $escaper */
 
-$grid = $block->getGrid();
+$grid       = $block->getGrid();
 $navigation = $grid->getNavigation();
 
-if (! $grid->getRows()) { ?>
-<div>
-    <?= __('No %1 found.', $grid->getEntityDefinition()->getLabelPlural()) ?>
-</div>
-<?php return; } ?>
+if (!$grid->getRows()) { ?>
+    <div>
+        <?= __('No %1 found.', $grid->getEntityDefinition()->getLabelPlural()) ?>
+    </div>
+    <?php return;
+} ?>
 <div>
     <?= __('Current Page: %1', $navigation->getCurrentPageNumber()) ?>
     <?= __('Total Pages: %1', $navigation->getPageCount()) ?>
@@ -20,35 +21,84 @@ if (! $grid->getRows()) { ?>
     <?php if ($navigation->hasNextPage()): ?><a href="<?= $navigation->getNextPageUrl() ?>">Next Page</a>
     <?php else: ?>Next Page<?php endif; ?>
 </div>
-<table>
-    <thead>
-    <tr>
-        <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-        <th><?= $escaper->escapeHtml($column->getLabel()) ?></th>
+<?php if ($massActions = $grid->getMassActions()): ?>
+<?php $formId = 'hyva-grid-' . $grid->getGridName() ?>
+<form id="<?= $formId ?>" method="post">
+    <script>
+        function doMassAction(option) {
+            const url = option.value;
+            const f = document.getElementById('<?= $formId ?>');
+            const checked = f.querySelectorAll('input[name="<?= $grid->getMassActionIdsParam() ?>[]"]:checked')
+            const select = f.querySelectorAll('select[name="massAction"]')[0];
+            if (! url) {
+                return;
+            }
+            if (checked.length === 0) {
+                alert('Please select the records to apply the mass action to.');
+                select.selectedIndex = 0;
+                return;
+            }
+            if (option.dataset.requireConfirm === 'true' && ! confirm('Are you sure?')) {
+                select.selectedIndex = 0;
+                return;
+            }
+            f.action = url;
+            f.submit();
+        }
+    </script>
+    <select onchange="doMassAction(this.selectedOptions[0])" name="massAction">
+        <option value=""> </option>
+        <?php foreach ($massActions as $massAction): ?>
+            <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
+            <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>" value="<?= $massActionUrl ?>"><?= $massAction->getLabel() ?></option>
         <?php endforeach; ?>
-        <?php if ($actions = $grid->getActions()): ?>
-        <th><?= __('Actions') ?></th>
-        <?php endif; ?>
-    </tr>
-    </thead>
-    <tbody>
-    <?php foreach ($grid->getRows() as $row): ?>
-    <?php $rowAction = $actions[$grid->getRowActionId()] ?? false; ?>
-    <?php $rowActionUrl = $rowAction ? $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row)) : ''?>
-    <tr <?php if ($rowAction) { ?> onclick="window.location.href='<?= $escaper->escapeJs($rowActionUrl) ?>'" <?php } ?>>
-        <?php foreach ($row->getCells() as $cell): ?>
-        <td><?= $cell->getHtml() ?></td>
-        <?php endforeach; ?>
-        <?php if ($actions): ?>
-            <td>
-                <?php foreach ($actions as $action): ?>
-                    <a href="<?= $block->getUrl($action->getUrl(), $action->getParams($row)) ?>">
-                        <?= $escaper->escapeHtml($action->getLabel()) ?>
-                    </a>
+    </select>
+    <?php endif; ?>
+    <table>
+        <thead>
+        <tr>
+            <?php if ($massActions): ?>
+                <th></th> <!-- todo: add a checkbox or something to select all massaction checkboxes -->
+            <?php endif; ?>
+            <?php foreach ($grid->getColumnDefinitions() as $column): ?>
+                <th><?= $escaper->escapeHtml($column->getLabel()) ?></th>
+            <?php endforeach; ?>
+            <?php if ($actions = $grid->getActions()): ?>
+                <th><?= __('Actions') ?></th>
+            <?php endif; ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($grid->getRows() as $row): ?>
+            <?php if ($rowAction = $actions[$grid->getRowActionId()] ?? false) {
+                $rowActionUrl       = $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row));
+                $rowActionAttribute = sprintf("onclick=\"window.location.href='%s'\"",
+                    $escaper->escapeJs($rowActionUrl));
+            } else {
+                $rowActionAttribute = '';
+            } ?>
+            <tr>
+                <?php if ($massActions): ?>
+                    <td>
+                        <input type="checkbox"
+                               value="<?= $row->getCell($grid->getMassActionIdColumn())->getRawValue() ?>"
+                               name="<?= $grid->getMassActionIdsParam() ?>[]"/>
+                    </td>
+                <?php endif; ?>
+                <?php foreach ($row->getCells() as $cell): ?>
+                    <td <?= $rowActionAttribute ?>><?= $cell->getHtml() ?></td>
                 <?php endforeach; ?>
-            </td>
-        <?php endif; ?>
-    </tr>
-    <?php endforeach; ?>
-    </tbody>
-</table>
+                <?php if ($actions): ?>
+                    <td>
+                        <?php foreach ($actions as $action): ?>
+                            <a href="<?= $block->getUrl($action->getUrl(), $action->getParams($row)) ?>">
+                                <?= $escaper->escapeHtml($action->getLabel()) ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </td>
+                <?php endif; ?>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php if ($massActions) { ?></form><?php } ?>

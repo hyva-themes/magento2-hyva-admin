@@ -36,6 +36,8 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private HyvaGrid\ActionInterfaceFactory $actionFactory;
 
+    private HyvaGrid\MassActionInterfaceFactory $massActionFactory;
+
     private string $gridName;
 
     public function __construct(
@@ -46,7 +48,8 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGrid\CellInterfaceFactory $cellFactory,
         HyvaGrid\NavigationInterfaceFactory $navigationFactory,
         HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory,
-        HyvaGrid\ActionInterfaceFactory $actionFactory
+        HyvaGrid\ActionInterfaceFactory $actionFactory,
+        HyvaGrid\MassActionInterfaceFactory $massActionFactory
     ) {
         $this->gridName                = $gridName;
         $this->gridSourceFactory       = $gridSourceFactory;
@@ -56,6 +59,7 @@ class HyvaGridViewModel implements HyvaGridInterface
         $this->navigationFactory       = $navigationFactory;
         $this->entityDefinitionFactory = $entityDefinitionFactory;
         $this->actionFactory           = $actionFactory;
+        $this->massActionFactory = $massActionFactory;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -170,5 +174,29 @@ class HyvaGridViewModel implements HyvaGridInterface
     public function getRowActionId(): ?string
     {
         return $this->getGridDefinition()->getRowAction() ?? null;
+    }
+
+    public function getMassActions(): array
+    {
+        $massActionsConfig = $this->getGridDefinition()->getMassActionConfig();
+
+        return map(function (array $massActionConfig): HyvaGrid\MassActionInterface {
+            return $this->massActionFactory->create($massActionConfig);
+        }, $massActionsConfig['actions'] ?? []);
+    }
+
+    public function getGridName(): string
+    {
+        return $this->gridName;
+    }
+
+    public function getMassActionIdColumn(): ?string
+    {
+        return $this->getGridDefinition()->getMassActionConfig()['@idColumn'] ?? null;
+    }
+
+    public function getMassActionIdsParam(): ?string
+    {
+        return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? null;
     }
 }
