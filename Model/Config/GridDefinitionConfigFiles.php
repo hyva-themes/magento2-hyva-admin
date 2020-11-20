@@ -4,7 +4,6 @@ namespace Hyva\Admin\Model\Config;
 
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Component\ComponentRegistrarInterface;
-use Magento\Framework\Config\FileResolverInterface;
 use Magento\Framework\Module\ModuleListInterface;
 
 use function array_filter as filter;

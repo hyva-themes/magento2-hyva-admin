@@ -12,7 +12,6 @@ use Hyva\Admin\ViewModel\HyvaGrid\CellInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterfaceFactory;
-use Hyva\Admin\ViewModel\HyvaGrid\MassActionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\MassActionInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterfaceFactory;

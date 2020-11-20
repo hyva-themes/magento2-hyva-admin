@@ -4,6 +4,7 @@ namespace Hyva\Admin\Model\Config;
 
 use Magento\Framework\Config\Dom as XmlDom;
 use Magento\Framework\Config\ValidationStateInterface;
+
 use function array_reduce as reduce;
 
 class GridConfigReader implements HyvaGridConfigReaderInterface
@@ -42,7 +43,7 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
 
     private function readGridConfig(string $gridName): array
     {
-        $files        = $this->definitionConfigFiles->getGridDefinitionFiles($gridName);
+        $files = $this->definitionConfigFiles->getGridDefinitionFiles($gridName);
         return $files
             ? $this->mergeGridConfigs($files)
             : [];
