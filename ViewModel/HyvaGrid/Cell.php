@@ -80,7 +80,7 @@ class Cell implements CellInterface
         if ($template = $this->columnDefinition->getTemplate()) {
             $renderer = $this->createTemplateBlock($template);
         } elseif ($rendererBlockName = $this->columnDefinition->getRendererBlockName()) {
-            $renderer = $this->layout->getBlock($rendererBlockName);
+            $renderer = $this->getBlockFromLayout($rendererBlockName);
         }
         return $renderer ?? null;
     }
@@ -91,6 +91,17 @@ class Cell implements CellInterface
         $renderer = $this->layout->createBlock(Template::class);
         $renderer->setTemplate($template);
 
+        return $renderer;
+    }
+
+    private function getBlockFromLayout(string $blockName): ?AbstractBlock
+    {
+        $renderer = $this->layout->getBlock($blockName);
+        if (!$renderer instanceof AbstractBlock) {
+            $key = $this->getColumnDefinition()->getKey();
+            $msg = sprintf('The renderer block "%s" for column "%s" can\'t be found.', $blockName, $key);
+            throw new \LogicException($msg);
+        }
         return $renderer;
     }
 }

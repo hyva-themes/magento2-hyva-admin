@@ -80,6 +80,6 @@ class HyvaGridDefinition implements HyvaGridDefinitionInterface
 
     public function keepColumnsFromSource(): bool
     {
-        return 'true' === ($this->getGridConfiguration()['columns']['@keepColumnsFromSource'] ?? 'false');
+        return 'true' === ($this->getGridConfiguration()['columns']['@keepAllSourceCols'] ?? 'false');
     }
 }
