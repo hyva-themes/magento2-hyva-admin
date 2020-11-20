@@ -22,4 +22,9 @@ class ScalarAndNullDataType implements DataTypeGuesserInterface, DataTypeValueTo
             ? (string) $value
             : null;
     }
+
+    public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
+    {
+        return $this->toString($value);
+    }
 }

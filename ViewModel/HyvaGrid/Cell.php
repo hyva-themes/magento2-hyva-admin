@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
-use Hyva\Admin\Model\DataType\DataTypeToStringConverter;
+use Hyva\Admin\Model\DataType\DataTypeToStringConverterLocator;
 use Magento\Framework\View\LayoutInterface;
 
 class Cell implements CellInterface
@@ -14,20 +14,20 @@ class Cell implements CellInterface
 
     private ColumnDefinitionInterface $columnDefinition;
 
-    private DataTypeToStringConverter $dataTypeToStringConverter;
+    private DataTypeToStringConverterLocator $dataTypeToStringConverterLocator;
 
     private LayoutInterface $layout;
 
     public function __construct(
         $value,
         ColumnDefinitionInterface $columnDefinition,
-        DataTypeToStringConverter $dataTypeToStringConverter,
+        DataTypeToStringConverterLocator $dataTypeToStringConverter,
         LayoutInterface $layout
     ) {
-        $this->value                     = $value;
-        $this->columnDefinition          = $columnDefinition;
-        $this->dataTypeToStringConverter = $dataTypeToStringConverter;
-        $this->layout                    = $layout;
+        $this->value                            = $value;
+        $this->columnDefinition                 = $columnDefinition;
+        $this->dataTypeToStringConverterLocator = $dataTypeToStringConverter;
+        $this->layout                           = $layout;
     }
 
     public function getHtml(): string
@@ -58,18 +58,9 @@ class Cell implements CellInterface
 
     private function toString($value): string
     {
-        $type = $this->columnDefinition->getType();
-        $str  = $this->dataTypeToStringConverter->toString($type, $value);
-        try {
-            return $str ?? (string) $value;// last ditch effort to convert the value to a string
-        } catch (\Throwable $exception) {
-            throw new \RuntimeException(sprintf(
-                'Unable to cast a value of column "%s" with type "%s" (%s) to a string',
-                $this->columnDefinition->getKey(),
-                $type,
-                is_object($value) ? get_class($value) : (is_array($value) ? 'array' : 'unknown')
-            ));
-        }
+        $converter      = $this->dataTypeToStringConverterLocator->forType($this->columnDefinition->getType());
+        $string = $converter->toStringRecursive($value, 1 /* recursion depth */);
+        return $string ?? '#type';
     }
 
     private function getOptionText(array $options): ?string

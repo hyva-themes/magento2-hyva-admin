@@ -47,16 +47,4 @@ class CellTest extends TestCase
 
         $this->assertSame("$value", $cell->getHtml());
     }
-
-    public function testThrowsExceptionIfUnknownTypeIsNotStringable(): void
-    {
-        $thisValueCanNotBeCastToString = new class() {
-        };
-        $cell  = $this->createCellWithValue($thisValueCanNotBeCastToString);
-
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Unable to cast a value of column "test" with type "unknown"');
-
-        $cell->getHtml();
-    }
 }

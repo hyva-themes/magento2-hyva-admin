@@ -24,9 +24,6 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     private string $gridName;
 
-    /**
-     * @var DataTypeGuesserInterface
-     */
     private DataTypeGuesserInterface $dataTypeGuesser;
 
     public function __construct(
@@ -76,7 +73,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $firstRecord = $this->getFirstRow()[$key] ?? null;
         return $this->columnDefinitionFactory->create([
             'key'  => $key,
-            'type' => $this->dataTypeGuesser->typeOf($firstRecord) ?? 'unknown',
+            'type' => $this->dataTypeGuesser->typeOf($firstRecord) ?? '',
         ]);
     }
 

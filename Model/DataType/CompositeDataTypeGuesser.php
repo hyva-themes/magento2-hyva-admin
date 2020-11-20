@@ -2,27 +2,26 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
+use Hyva\Admin\Api\DataTypeGuesserInterface as TypeGuesser;
 
-class CompositeDataTypeGuesser implements DataTypeGuesserInterface
+use function array_reduce as reduce;
+
+class CompositeDataTypeGuesser implements TypeGuesser
 {
-    /**
-     * @var DataTypeGuesserInterface[]
-     */
     private array $dataTypeGuessers;
 
-    public function __construct(array $dataTypeGuessers)
+    private DataTypeGuesserFactory $dataTypeGuesserFactory;
+
+    public function __construct(array $dataTypeGuessers, DataTypeGuesserFactory $dataTypeGuesserFactory)
     {
         $this->dataTypeGuessers = $dataTypeGuessers;
+        $this->dataTypeGuesserFactory = $dataTypeGuesserFactory;
     }
 
     public function typeOf($value): ?string
     {
-        foreach ($this->dataTypeGuessers as $dataTypeGuesser) {
-            if ($type = $dataTypeGuesser->typeOf($value)) {
-                return $type;
-            }
-        }
-        return null;
+        return reduce($this->dataTypeGuessers, function (?string $type, string $class) use ($value): ?string {
+            return $type ?? $this->dataTypeGuesserFactory->get($class)->typeOf($value);
+        }, null);
     }
 }

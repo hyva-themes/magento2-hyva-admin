@@ -27,21 +27,25 @@
     <type name="Hyva\Admin\Model\DataType\CompositeDataTypeGuesser">
         <arguments>
             <argument name="dataTypeGuessers" xsi:type="array">
-                <item name="scalar" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="scalar_list" xsi:type="object">Hyva\Admin\Model\DataType\ScalarListDataType</item>
+                <item name="scalar_null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="array" xsi:type="string">Hyva\Admin\Model\DataType\ArrayDataType</item>
+                <item name="magento_product" xsi:type="string">Hyva\Admin\Model\DataType\ProductDataType</item>
+                <item name="unknown" xsi:type="string">Hyva\Admin\Model\DataType\UnknownDataType</item>
             </argument>
         </arguments>
     </type>
-    <type name="Hyva\Admin\Model\DataType\DataTypeToStringConverter">
+    <type name="Hyva\Admin\Model\DataType\DataTypeToStringConverterLocator">
         <arguments>
             <argument name="valueToStringConverterClasses" xsi:type="array">
-                <item name="string" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="int" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="bool" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="float" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="null" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="scalar_null" xsi:type="object">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="scalar_list" xsi:type="object">Hyva\Admin\Model\DataType\ScalarListDataType</item>
+                <item name="string" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="int" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="bool" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="float" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="scalar_null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="array" xsi:type="string">Hyva\Admin\Model\DataType\ArrayDataType</item>
+                <item name="magento_product" xsi:type="string">Hyva\Admin\Model\DataType\ProductDataType</item>
+                <item name="unknown" xsi:type="string">Hyva\Admin\Model\DataType\UnknownDataType</item>
             </argument>
         </arguments>
     </type>

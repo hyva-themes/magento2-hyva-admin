@@ -6,10 +6,10 @@ use Hyva\Admin\Model\HyvaGridDefinitionInterface;
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Hyva\Admin\Model\HyvaGridSourceFactory;
-use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid;
-
+use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
+
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_map as map;
@@ -31,6 +31,8 @@ class HyvaGridViewModel implements HyvaGridInterface
     private HyvaGridDefinitionInterface $memoizedGridDefinition;
 
     private HyvaGridSourceInterface $memoizedGridSource;
+
+    private array $memoizedColumnDefinitions;
 
     private HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory;
 
@@ -59,7 +61,7 @@ class HyvaGridViewModel implements HyvaGridInterface
         $this->navigationFactory       = $navigationFactory;
         $this->entityDefinitionFactory = $entityDefinitionFactory;
         $this->actionFactory           = $actionFactory;
-        $this->massActionFactory = $massActionFactory;
+        $this->massActionFactory       = $massActionFactory;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -75,12 +77,19 @@ class HyvaGridViewModel implements HyvaGridInterface
      */
     public function getColumnDefinitions(): array
     {
+        if (! isset($this->memoizedColumnDefinitions)) {
+            $this->memoizedColumnDefinitions = $this->buildColumnDefinitions();
+        }
+        return $this->memoizedColumnDefinitions;
+    }
+
+    private function buildColumnDefinitions(): array
+    {
         $columnConfig     = $this->getGridDefinition()->getIncludedColumns();
         $available        = $this->getGridSourceModel()->extractColumnDefinitions($columnConfig);
         $keysToColumnsMap = zip($this->getColumnKeys($available), values($available));
 
         return $this->removeColumns($keysToColumnsMap, $this->getGridDefinition()->getExcludedColumnKeys());
-
     }
 
     /**
@@ -159,8 +168,10 @@ class HyvaGridViewModel implements HyvaGridInterface
     {
         $actionsConfig = $this->getGridDefinition()->getActionsConfig();
 
-        $actions       = map(function (array $actionConfig) use ($actionsConfig): HyvaGrid\ActionInterface {
-            $constructorParams = merge($actionConfig, ['idColumn' => $actionsConfig['@idColumn'] ?? null]);
+        $actions = map(function (array $actionConfig) use ($actionsConfig): HyvaGrid\ActionInterface {
+            $idColumn = $actionsConfig['@idColumn'] ?? null;
+            $this->validateActionIdColumnExists($idColumn, 'Action');
+            $constructorParams = merge($actionConfig, ['idColumn' => $idColumn]);
             return $this->actionFactory->create($constructorParams);
         }, $actionsConfig['actions']);
 
@@ -169,6 +180,13 @@ class HyvaGridViewModel implements HyvaGridInterface
         }, $actions);
 
         return zip($actionIds, $actions);
+    }
+
+    private function validateActionIdColumnExists(string $idColumn, string $actionType): void
+    {
+        if (!isset($this->getColumnDefinitions()[$idColumn])) {
+            throw new \OutOfBoundsException(sprintf('%s ID column "%s" not found.', $actionType, $idColumn));
+        }
     }
 
     public function getRowActionId(): ?string
@@ -192,7 +210,9 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getMassActionIdColumn(): ?string
     {
-        return $this->getGridDefinition()->getMassActionConfig()['@idColumn'] ?? null;
+        $idColumn = $this->getGridDefinition()->getMassActionConfig()['@idColumn'] ?? null;
+        $this->validateActionIdColumnExists($idColumn, 'MasActionAction');
+        return $idColumn;
     }
 
     public function getMassActionIdsParam(): ?string
