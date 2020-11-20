@@ -1,0 +1,12 @@
+<?php declare(strict_types=1);
+
+// This template exists for testing purposes.
+// Removing it will break tests.
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\CellInterface $cell */
+$cell = $block->getData('cell');
+
+?>
+<div>Test: <?= sprintf('%s::%.2f', $cell->getRawValue()['currency'], $cell->getRawValue()['amount']) ?></div>

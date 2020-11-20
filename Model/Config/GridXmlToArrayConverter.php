@@ -182,7 +182,7 @@ class GridXmlToArrayConverter
     {
         /*
          * <columns rowAction="edit">
-         *     <include>
+         *     <include keepColumnsFromSource="true">
          *         <column name="id"/>
          *         <column name="note" type="text"/>
          *         <column name="name" renderer="My\NameRendererBlock"/>
@@ -212,6 +212,7 @@ class GridXmlToArrayConverter
         $includesElement = $this->getChildByName($columnsElement, 'include');
         return $includesElement
             ? [
+                '@keepAllSourceCols' => $includesElement->getAttribute('keepAllSourceColumns') ?? null,
                 'include' => map(
                     [$this, 'buildIncludeColumnConfig'],
                     $this->getChildrenByName($includesElement, 'column')
@@ -225,9 +226,10 @@ class GridXmlToArrayConverter
         return filter(merge(
             ['key' => $this->getAttributeConfig($columnElement, 'name')['name'] ?? null], // rename idx "name" to "key"
             $this->getAttributeConfig($columnElement, 'type'),
-            $this->getAttributeConfig($columnElement, 'renderer'),
+            $this->getAttributeConfig($columnElement, 'rendererBlockName'),
             $this->getAttributeConfig($columnElement, 'label'),
             $this->getAttributeConfig($columnElement, 'source'),
+            $this->getAttributeConfig($columnElement, 'template'),
             $this->getOptionsConfig($columnElement),
         ));
     }
@@ -333,10 +335,7 @@ class GridXmlToArrayConverter
          */
         if ($actionsElement = $this->getChildByName($root, 'actions')) {
             $actions = filter(map([$this, 'convertActionConfig'], $this->getChildrenByName($actionsElement, 'action')));
-            return [
-                '@idColumn' => $actionsElement->getAttribute('idColumn'),
-                'actions'   => $actions,
-            ];
+            return merge(filter(['@idColumn' => $actionsElement->getAttribute('idColumn')]), ['actions' => $actions]);
         } else {
             return [];
         }

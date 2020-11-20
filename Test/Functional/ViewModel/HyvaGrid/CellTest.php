@@ -9,15 +9,16 @@ use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
 use function array_filter as filter;
+use function array_merge as merge;
 
 /**
  * @magentoAppArea adminhtml
  */
 class CellTest extends TestCase
 {
-    private function createColumnDefinition(?string $type = null): ColumnDefinitionInterface
+    private function createColumnDefinition(?string $type = null, array $args = []): ColumnDefinitionInterface
     {
-        $arguments = filter(['key' => 'test', 'type' => $type]);
+        $arguments = filter(merge($args, ['key' => 'test', 'type' => $type]));
         return ObjectManager::getInstance()->create(ColumnDefinitionInterface::class, $arguments);
     }
 
@@ -46,5 +47,17 @@ class CellTest extends TestCase
         $cell  = $this->createCellWithValue($value);
 
         $this->assertSame("$value", $cell->getHtml());
+    }
+
+    public function testRendersTemplate(): void
+    {
+        $value            = ['currency' => 'EUR', 'amount' => 10.10];
+        $template         = 'Hyva_Admin::testing/currency-cell-test.phtml';
+        $columnDefinition = $this->createColumnDefinition('array', ['template' => $template]);
+        $arguments        = ['value' => $value, 'columnDefinition' => $columnDefinition];
+
+        /** @var Cell $cell */
+        $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
+        $this->assertSame('<div>Test: EUR::10.10</div>', trim($cell->getHtml(), PHP_EOL));
     }
 }

@@ -15,28 +15,32 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     private ?string $type;
 
-    private ?string $renderer;
+    private ?string $template;
 
     private ?string $source;
 
     private ?array $options;
+
+    private ?string $rendererBlockName;
 
     public function __construct(
         ObjectManagerInterface $objectManager,
         string $key,
         ?string $label = null,
         ?string $type = null,
-        ?string $renderer = null,
+        ?string $template = null,
+        ?string $rendererBlockName = null,
         ?string $source = null,
         ?array $options = null
     ) {
-        $this->key           = $key;
-        $this->label         = $label;
-        $this->type          = $type;
-        $this->renderer      = $renderer;
-        $this->source        = $source;
-        $this->options       = $options;
-        $this->objectManager = $objectManager;
+        $this->key               = $key;
+        $this->label             = $label;
+        $this->type              = $type;
+        $this->template          = $template;
+        $this->rendererBlockName = $rendererBlockName;
+        $this->source            = $source;
+        $this->options           = $options;
+        $this->objectManager     = $objectManager;
     }
 
     private function camelCaseToWords(string $camel): string
@@ -74,18 +78,24 @@ class ColumnDefinition implements ColumnDefinitionInterface
     public function toArray(): array
     {
         return [
-            'key'      => $this->getKey(),
-            'label'    => $this->getLabel(),
-            'type'     => $this->getType(),
-            'renderer' => $this->getRenderer(),
-            'source'   => $this->source,
-            'options'  => $this->options,
+            'key'               => $this->getKey(),
+            'label'             => $this->getLabel(),
+            'type'              => $this->getType(),
+            'template'          => $this->getTemplate(),
+            'rendererBlockName' => $this->getRendererBlockName(),
+            'source'            => $this->source,
+            'options'           => $this->options,
         ];
     }
 
-    public function getRenderer(): ?string
+    public function getTemplate(): ?string
     {
-        return $this->renderer;
+        return $this->template;
+    }
+
+    public function getRendererBlockName(): ?string
+    {
+        return $this->rendererBlockName;
     }
 
     public function getOptionArray(): array

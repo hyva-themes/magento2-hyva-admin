@@ -3,6 +3,8 @@
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 use Hyva\Admin\Model\DataType\DataTypeToStringConverterLocator;
+use Magento\Framework\View\Element\AbstractBlock;
+use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 
 class Cell implements CellInterface
@@ -32,9 +34,9 @@ class Cell implements CellInterface
 
     public function getHtml(): string
     {
-        $renderer = $this->columnDefinition->getRenderer();
+        $renderer = $this->getRenderer();
         return $renderer
-            ? $this->layout->createBlock($renderer)->setData('cell', $this)->toHtml()
+            ? $renderer->setData('cell', $this)->toHtml()
             : $this->getTextValue();
     }
 
@@ -58,8 +60,8 @@ class Cell implements CellInterface
 
     private function toString($value): string
     {
-        $converter      = $this->dataTypeToStringConverterLocator->forType($this->columnDefinition->getType());
-        $string = $converter->toStringRecursive($value, 1 /* recursion depth */);
+        $converter = $this->dataTypeToStringConverterLocator->forType($this->columnDefinition->getType());
+        $string    = $converter->toStringRecursive($value, 1 /* recursion depth */);
         return $string ?? '#type';
     }
 
@@ -71,5 +73,24 @@ class Cell implements CellInterface
             }
         }
         return null;
+    }
+
+    private function getRenderer(): ?AbstractBlock
+    {
+        if ($template = $this->columnDefinition->getTemplate()) {
+            $renderer = $this->createTemplateBlock($template);
+        } elseif ($rendererBlockName = $this->columnDefinition->getRendererBlockName()) {
+            $renderer = $this->layout->getBlock($rendererBlockName);
+        }
+        return $renderer ?? null;
+    }
+
+    private function createTemplateBlock(string $template): AbstractBlock
+    {
+        /** @var Template $renderer */
+        $renderer = $this->layout->createBlock(Template::class);
+        $renderer->setTemplate($template);
+
+        return $renderer;
     }
 }

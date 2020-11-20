@@ -77,7 +77,7 @@ class HyvaGridViewModel implements HyvaGridInterface
      */
     public function getColumnDefinitions(): array
     {
-        if (! isset($this->memoizedColumnDefinitions)) {
+        if (!isset($this->memoizedColumnDefinitions)) {
             $this->memoizedColumnDefinitions = $this->buildColumnDefinitions();
         }
         return $this->memoizedColumnDefinitions;
@@ -85,9 +85,10 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private function buildColumnDefinitions(): array
     {
-        $columnConfig     = $this->getGridDefinition()->getIncludedColumns();
-        $available        = $this->getGridSourceModel()->extractColumnDefinitions($columnConfig);
-        $keysToColumnsMap = zip($this->getColumnKeys($available), values($available));
+        $columnConfig      = $this->getGridDefinition()->getIncludedColumns();
+        $keepAllSourceCols = $this->getGridDefinition()->keepColumnsFromSource();
+        $available         = $this->getGridSourceModel()->extractColumnDefinitions($columnConfig, $keepAllSourceCols);
+        $keysToColumnsMap  = zip($this->getColumnKeys($available), values($available));
 
         return $this->removeColumns($keysToColumnsMap, $this->getGridDefinition()->getExcludedColumnKeys());
     }
@@ -182,9 +183,9 @@ class HyvaGridViewModel implements HyvaGridInterface
         return zip($actionIds, $actions);
     }
 
-    private function validateActionIdColumnExists(string $idColumn, string $actionType): void
+    private function validateActionIdColumnExists(?string $idColumn, string $actionType): void
     {
-        if (!isset($this->getColumnDefinitions()[$idColumn])) {
+        if (isset($idColumn) && !isset($this->getColumnDefinitions()[$idColumn])) {
             throw new \OutOfBoundsException(sprintf('%s ID column "%s" not found.', $actionType, $idColumn));
         }
     }

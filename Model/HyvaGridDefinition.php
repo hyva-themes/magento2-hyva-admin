@@ -77,4 +77,9 @@ class HyvaGridDefinition implements HyvaGridDefinitionInterface
     {
         return $this->getGridConfiguration()['massActions'] ?? [];
     }
+
+    public function keepColumnsFromSource(): bool
+    {
+        return 'true' === ($this->getGridConfiguration()['columns']['@keepColumnsFromSource'] ?? 'false');
+    }
 }

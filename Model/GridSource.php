@@ -28,9 +28,10 @@ class GridSource implements HyvaGridSourceInterface
 
     /**
      * @param ColumnDefinitionInterface[] $includeConfig
+     * @param bool $keepAllSourceCols
      * @return ColumnDefinitionInterface[]
      */
-    public function extractColumnDefinitions(array $includeConfig): array
+    public function extractColumnDefinitions(array $includeConfig, bool $keepAllSourceCols = false): array
     {
         $configuredKeys                = $this->extractKeys(...values($includeConfig));
         $mapKeyToDefinitions           = zip($configuredKeys, values($includeConfig));
@@ -38,7 +39,7 @@ class GridSource implements HyvaGridSourceInterface
 
         $this->validateConfiguredKeys($configuredKeys, $availableColumnKeysFromSource);
 
-        $columnKeys = empty($mapKeyToDefinitions)
+        $columnKeys = empty($mapKeyToDefinitions) || $keepAllSourceCols
             ? $availableColumnKeysFromSource
             : $configuredKeys;
 

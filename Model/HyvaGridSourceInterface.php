@@ -10,7 +10,7 @@ interface HyvaGridSourceInterface
      * @param ColumnDefinitionInterface[] $includeConfig
      * @return ColumnDefinitionInterface[]
      */
-    public function extractColumnDefinitions(array $includeConfig): array;
+    public function extractColumnDefinitions(array $includeConfig, bool $keepAllSourceCols): array;
 
     public function getRecords(): array;
 

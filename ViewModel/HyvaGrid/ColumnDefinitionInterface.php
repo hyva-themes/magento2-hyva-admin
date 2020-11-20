@@ -10,7 +10,7 @@ interface ColumnDefinitionInterface
 
     public function getType(): ?string;
 
-    public function getRenderer(): ?string;
+    public function getTemplate(): ?string;
 
     public function toArray(): array;
 

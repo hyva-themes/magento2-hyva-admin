@@ -22,61 +22,65 @@ class GridXmlToArrayConverterTest extends TestCase
     public function conversionXmlProvider(): array
     {
         return [
-            'array-source-with-type' => [
+            'array-source-with-type'   => [
                 $this->getSourceWithTypeArrayXml(),
                 $this->getSourceWithTypeArrayExpected(),
             ],
-            'array-source-no-type'   => [
+            'array-source-no-type'     => [
                 $this->getSourceNoTypeArrayProviderXml(),
                 $this->getSourceNoTypeArrayProviderExpected(),
             ],
-            'repository-source'      => [
+            'repository-source'        => [
                 $this->getRepositorySourceXml(),
                 $this->getRepositorySourceExpected(),
             ],
-            'collection-source'      => [
+            'collection-source'        => [
                 $this->getCollectionSourceXml(),
                 $this->getCollectionSourceExpected(),
             ],
-            'query-source'           => [
+            'query-source'             => [
                 $this->getQuerySourceXml(),
                 $this->getQuerySourceExpected(),
             ],
-            'columns'                => [
+            'columns'                  => [
                 $this->getColumnsXml(),
                 $this->getColumnsExpected(),
             ],
-            'empty-columns'          => [
+            'empty-columns'            => [
                 $this->getEmptyColumnsXml(),
                 $this->getEmptyColumnsExpected(),
             ],
-            'exclude'                => [
+            'exclude'                  => [
                 $this->getOnlyColumnsExcludeXml(),
                 $this->getOnlyColumnsExcludeExpected(),
             ],
-            'include'                => [
+            'include'                  => [
                 $this->getOnlyColumnsIncludeXml(),
                 $this->getOnlyColumnsIncludeExpected(),
             ],
-            'navigation'             => [
+            'navigation'               => [
                 $this->getNavigationXml(),
                 $this->getNavigationExpected(),
             ],
-            'entity'                 => [
+            'entity'                   => [
                 $this->getEntityConfigXml(),
                 $this->getEntityConfigExpected(),
             ],
-            'actions'                => [
+            'actions'                  => [
                 $this->getActionsXml(),
                 $this->getActionsExpected(),
             ],
-            'empty-actions'                => [
+            'empty-actions'            => [
                 $this->getEmptyActionsXml(),
                 $this->getEmptyActionsExpected(),
             ],
-            'mass-actions'                => [
+            'mass-actions'             => [
                 $this->getMassActionXml(),
                 $this->getMassActionExpected(),
+            ],
+            'keep-columns-from-source' => [
+                $this->getIncludeWithKeepColumnsFromSourceXml(),
+                $this->getIncludeWithKeepColumnsFromSourceExpected(),
             ],
         ];
     }
@@ -183,8 +187,8 @@ EOXML;
     <columns rowAction="edit">
         <include>
             <column name="id"/>
-            <column name="note" type="text"/>
-            <column name="name" renderer="My\NameRendererBlock"/>
+            <column name="note" type="text" template="Module_Name::file.phtml"/>
+            <column name="name" rendererBlockName="name-renderer-block"/>
             <column name="speed" label="km/h"/>
             <column name="color" source="My\SourceModel"/>
             <column name="background_color">
@@ -211,15 +215,15 @@ EOXML;
         return [
             'columns' => [
                 '@rowAction' => 'edit',
-                'include' => [
+                'include'    => [
                     ['key' => 'id'],
-                    ['key' => 'note', 'type' => 'text'],
-                    ['key' => 'name', 'renderer' => 'My\NameRendererBlock'],
+                    ['key' => 'note', 'type' => 'text', 'template' => 'Module_Name::file.phtml'],
+                    ['key' => 'name', 'rendererBlockName' => 'name-renderer-block'],
                     ['key' => 'speed', 'label' => 'km/h'],
                     ['key' => 'color', 'source' => 'My\SourceModel'],
                     ['key' => 'background_color', 'options' => $options],
                 ],
-                'exclude' => ['reference_id', 'internal_stuff'],
+                'exclude'    => ['reference_id', 'internal_stuff'],
             ],
         ];
     }
@@ -260,6 +264,27 @@ EOXML;
         return [
             'columns' => [
                 'include' => [['key' => 'weight']],
+            ],
+        ];
+    }
+
+    private function getIncludeWithKeepColumnsFromSourceXml(): string
+    {
+        return <<<EOXML
+        <columns>
+            <include keepAllSourceColumns="true">
+                <column name="weight"/>
+            </include>
+        </columns>
+EOXML;
+    }
+
+    private function getIncludeWithKeepColumnsFromSourceExpected()
+    {
+        return [
+            'columns' => [
+                '@keepAllSourceCols' => "true",
+                'include'            => [['key' => 'weight']],
             ],
         ];
     }

@@ -83,4 +83,9 @@ class TestingGridDefinition implements HyvaGridDefinitionInterface
     {
         return $this->gridDefinition['massActions'] ?? [];
     }
+
+    public function keepColumnsFromSource(): bool
+    {
+        return 'true' === ($this->gridDefinition['columns']['@keepColumnsFromSource'] ?? 'false');
+    }
 }

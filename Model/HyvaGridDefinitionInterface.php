@@ -39,4 +39,6 @@ interface HyvaGridDefinitionInterface
      * @return mixed[]
      */
     public function getMassActionConfig(): array;
+
+    public function keepColumnsFromSource(): bool;
 }
