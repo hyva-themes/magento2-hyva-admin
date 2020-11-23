@@ -12,13 +12,6 @@ interface GridSourceTypeInterface
      */
     public function getColumnKeys(): array;
 
-    /**
-     * @param mixed $record
-     * @param string $key
-     * @return mixed
-     */
-    public function extractValue($record, string $key);
-
     public function getColumnDefinition(string $key): ColumnDefinitionInterface;
 
     // todo: receive paging and filtering data
@@ -29,4 +22,11 @@ interface GridSourceTypeInterface
      * @return mixed[]
      */
     public function extractRecords(RawGridSourceContainer $rawGridData): array;
+
+    /**
+     * @param mixed $record
+     * @param string $key
+     * @return mixed
+     */
+    public function extractValue($record, string $key);
 }
