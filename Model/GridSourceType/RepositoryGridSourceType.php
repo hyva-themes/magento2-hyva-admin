@@ -178,6 +178,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     public function fetchData(): RawGridSourceContainer
     {
         $repositoryGetList = $this->repositorySourceFactory->create($this->getSourceRepoConfig());
+        $this->searchCriteriaBuilder->setPageSize(1); // temporary until navigation data is supplied
         $result            = $repositoryGetList($this->searchCriteriaBuilder->create());
 
         return RawGridSourceContainer::forData($result);
@@ -219,8 +220,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private function extractCustomAttributeValue($record, string $key)
     {
-        $recordType = $this->getRecordType();
-        return $this->customAttributesExtractor->getValue($recordType, $record, $key);
+        return $this->customAttributesExtractor->getValue($record, $key);
     }
 
     private function getCustomAttributeOptions(string $key): ?array

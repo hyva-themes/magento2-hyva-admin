@@ -9,6 +9,8 @@ use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
+use function array_values as values;
+
 /**
  * @magentoAppArea adminhtml
  */
@@ -37,7 +39,6 @@ class RepositoryGridSourceTypeTest extends TestCase
         $this->assertContains('configurable_product_links', $keys);
 
         // custom attribute based keys (a.k.a. EAV attributes)
-        $this->assertContains('weight', $keys);
         $this->assertContains('activity', $keys);
         $this->assertContains('gender', $keys);
     }
@@ -105,10 +106,64 @@ class RepositoryGridSourceTypeTest extends TestCase
 
         /** @var RepositoryGridSourceType $sut */
         $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
-        $data = $sut->fetchData();
-        $records = $sut->extractRecords($data);
+        $records = $sut->extractRecords($sut->fetchData());
         $this->assertIsArray($records);
         $this->assertNotEmpty($records);
         $this->assertContainsOnly(CustomerInterface::class, $records);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Customer/_files/customer.php
+     */
+    public function testExtractsGetterBasedValues(): void
+    {
+        $repoGetListMethod  = CustomerRepositoryInterface::class . '::getList';
+        $args = [
+            'gridName'            => 'test',
+            'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
+        ];
+
+        /** @var RepositoryGridSourceType $sut */
+        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $records = $sut->extractRecords($sut->fetchData());
+        $email = $sut->extractValue($records[0], 'email');
+        $this->assertSame('customer@example.com', $email);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Customer/_files/customer.php
+     */
+    public function testExtractsExtensionAttributeBasedValues(): void
+    {
+        $repoGetListMethod  = CustomerRepositoryInterface::class . '::getList';
+        $args = [
+            'gridName'            => 'test',
+            'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
+        ];
+
+        /** @var RepositoryGridSourceType $sut */
+        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $records = $sut->extractRecords($sut->fetchData());
+        $isSubscribed = $sut->extractValue($records[0], 'is_subscribed');
+        $this->assertSame(false, $isSubscribed);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     */
+    public function testExtractsCustomAttributeBasedValues(): void
+    {
+        $repoGetListMethod  = ProductRepositoryInterface::class . '::getList';
+        $args = [
+            'gridName'            => 'test',
+            'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
+        ];
+
+        /** @var RepositoryGridSourceType $sut */
+        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $records = values($sut->extractRecords($sut->fetchData()));
+
+        $metaTitle = $sut->extractValue($records[0], 'meta_title');
+        $this->assertSame('meta title', $metaTitle);
     }
 }

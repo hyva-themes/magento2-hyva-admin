@@ -142,9 +142,9 @@ class CustomAttributesExtractor
         return $attribute->getDefaultFrontendLabel();
     }
 
-    public function getValue(string $recordType, $record, string $key)
+    public function getValue($record, string $key)
     {
-        if ($record instanceof CustomAttributesDataInterface) {
+        if ($record instanceof CustomAttributesDataInterface && $record->getCustomAttribute($key)) {
             return $record->getCustomAttribute($key)->getValue();
         } elseif (method_exists($record, 'getData')) {
             return $record->getData($key);
