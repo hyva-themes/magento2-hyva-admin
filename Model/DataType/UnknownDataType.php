@@ -4,6 +4,7 @@ namespace Hyva\Admin\Model\DataType;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
 use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Exception\UnableToCastToStringException;
 
 class UnknownDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
 {
@@ -24,7 +25,7 @@ class UnknownDataType implements DataTypeGuesserInterface, DataTypeValueToString
         try {
             return (string) $value;// last ditch effort to convert the value to a string
         } catch (\Throwable $exception) {
-            throw new \RuntimeException(sprintf(
+            throw new UnableToCastToStringException(sprintf(
                 'Unable to cast a value of unknown type "%s" (%s) to a string',
                 gettype($value),
                 is_object($value) ? get_class($value) : (is_array($value) ? 'array' : 'unknown')

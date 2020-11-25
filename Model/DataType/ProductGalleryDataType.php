@@ -8,7 +8,7 @@ use Magento\Catalog\Model\Product\Image\UrlBuilder as ImageUrlBuilder;
 
 use function array_map as map;
 
-class GalleryDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class ProductGalleryDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
 {
     const TYPE_MAGENTO_PRODUCT_GALLERY = 'magento_product_gallery';
 

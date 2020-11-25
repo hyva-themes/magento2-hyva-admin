@@ -2,7 +2,9 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
+use Hyva\Admin\Exception\UnableToCastToStringException;
 use Hyva\Admin\Model\DataType\DataTypeToStringConverterLocator;
+use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
@@ -20,25 +22,38 @@ class Cell implements CellInterface
 
     private LayoutInterface $layout;
 
+    /**
+     * @var Escaper
+     */
+    private Escaper $escaper;
+
     public function __construct(
         $value,
         ColumnDefinitionInterface $columnDefinition,
         DataTypeToStringConverterLocator $dataTypeToStringConverter,
-        LayoutInterface $layout
+        LayoutInterface $layout,
+        Escaper $escaper
     ) {
         $this->value                            = $value;
         $this->columnDefinition                 = $columnDefinition;
         $this->dataTypeToStringConverterLocator = $dataTypeToStringConverter;
         $this->layout                           = $layout;
+        $this->escaper                          = $escaper;
     }
 
     public function getHtml(): string
     {
         $renderer = $this->getRenderer();
-        $html     = $renderer
+        return $renderer
             ? $renderer->setData('cell', $this)->toHtml()
-            : $this->getTextValue();
-        return $html;
+            : $this->getEscapedTextValue();
+    }
+
+    private function getEscapedTextValue(): string
+    {
+        return $this->getColumnDefinition()->getRenderAsUnsecureHtml()
+            ? $this->getTextValue()
+            : $this->escaper->escapeHtml($this->getTextValue());
     }
 
     public function getColumnDefinition(): ColumnDefinitionInterface
@@ -57,20 +72,29 @@ class Cell implements CellInterface
             return '';
         }
         $options   = $this->columnDefinition->getOptionArray();
-        $textValue = $options && !is_array($this->getRawValue())
+        return $options && !is_array($this->getRawValue())
             ? $this->getOptionText($options, $this->getRawValue()) ?? ((string) $this->getRawValue())
             : $this->toString($this->getRawValue());
-        return $textValue;
     }
 
     private function toString($value): string
     {
+        try {
+            return $this->tryToCastToString($value);
+        } catch (UnableToCastToStringException $exception) {
+            $msg = sprintf('Column "%s": %s', $this->getColumnDefinition()->getKey(), $exception->getMessage());
+            throw new \RuntimeException($msg, 0, $exception);
+        }
+    }
+
+    private function tryToCastToString($value): string
+    {
         $columnType = $this->columnDefinition->getType();
         $converter  = $this->dataTypeToStringConverterLocator->forTypeCode($columnType);
-        $string     = $converter
-            ? $converter->toStringRecursive($value, 1 /* recursion depth */) ?? $this->missmatch($columnType, $value)
+        return $converter
+            ? $converter->toStringRecursive($value, 1 /* recursion depth */) ?? $this->missmatch($columnType,
+                $value)
             : '#unknownType(' . $columnType . ')';
-        return $string;
     }
 
     private function missmatch(?string $columnType, $value): string

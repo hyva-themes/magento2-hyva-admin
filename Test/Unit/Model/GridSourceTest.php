@@ -108,8 +108,8 @@ class GridSourceTest extends TestCase
 
         $sut                       = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
         $extractedColumns          = $sut->extractColumnDefinitions($configuredIncludeColumns);
-        $expectedColumnDefinition1 = new ColumnDefinition($dummyObjectManager, 'foo', 'Foo Label', 'unknown');
-        $expectedColumnDefinition2 = new ColumnDefinition($dummyObjectManager, 'bar', 'Bar', 'int');
+        $expectedColumnDefinition1 = new ColumnDefinition($dummyObjectManager, 'foo', 'Foo Label');
+        $expectedColumnDefinition2 = new ColumnDefinition($dummyObjectManager, 'bar', null, 'int');
         $this->assertContainsColumn($expectedColumnDefinition1, $extractedColumns);
         $this->assertContainsColumn($expectedColumnDefinition2, $extractedColumns);
     }

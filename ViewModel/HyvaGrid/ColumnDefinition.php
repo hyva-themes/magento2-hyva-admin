@@ -23,24 +23,28 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     private ?string $rendererBlockName;
 
+    private ?string $renderAsUnsecureHtml;
+
     public function __construct(
         ObjectManagerInterface $objectManager,
         string $key,
         ?string $label = null,
         ?string $type = null,
+        ?string $renderAsUnsecureHtml = null,
         ?string $template = null,
         ?string $rendererBlockName = null,
         ?string $source = null,
         ?array $options = null
     ) {
-        $this->key               = $key;
-        $this->label             = $label;
-        $this->type              = $type;
-        $this->template          = $template;
-        $this->rendererBlockName = $rendererBlockName;
-        $this->source            = $source;
-        $this->options           = $options;
-        $this->objectManager     = $objectManager;
+        $this->key                  = $key;
+        $this->label                = $label;
+        $this->type                 = $type;
+        $this->renderAsUnsecureHtml = $renderAsUnsecureHtml;
+        $this->template             = $template;
+        $this->rendererBlockName    = $rendererBlockName;
+        $this->source               = $source;
+        $this->options              = $options;
+        $this->objectManager        = $objectManager;
     }
 
     private function camelCaseToWords(string $camel): string
@@ -78,13 +82,14 @@ class ColumnDefinition implements ColumnDefinitionInterface
     public function toArray(): array
     {
         return [
-            'key'               => $this->getKey(),
-            'label'             => $this->getLabel(),
-            'type'              => $this->getType(),
-            'template'          => $this->getTemplate(),
-            'rendererBlockName' => $this->getRendererBlockName(),
-            'source'            => $this->source,
-            'options'           => $this->options,
+            'key'                  => $this->getKey(),
+            'label'                => $this->label,
+            'type'                 => $this->type,
+            'renderAsUnsecureHtml' => $this->renderAsUnsecureHtml,
+            'template'             => $this->template,
+            'rendererBlockName'    => $this->rendererBlockName,
+            'source'               => $this->source,
+            'options'              => $this->options,
         ];
     }
 
@@ -111,5 +116,10 @@ class ColumnDefinition implements ColumnDefinitionInterface
     private function hasSourceModel(): bool
     {
         return isset($this->source) && $this->source;
+    }
+
+    public function getRenderAsUnsecureHtml(): bool
+    {
+        return isset($this->renderAsUnsecureHtml) && $this->renderAsUnsecureHtml === 'true';
     }
 }

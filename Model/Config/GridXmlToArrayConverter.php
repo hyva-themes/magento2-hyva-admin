@@ -187,6 +187,7 @@ class GridXmlToArrayConverter
          *         <column name="note" type="text"/>
          *         <column name="name" renderer="My\NameRendererBlock"/>
          *         <column name="speed" label="km/h"/>
+         *         <column name="logo" renderAsUnsecureHtml="true"/>
          *         <column name="color" source="My\SourceModel"/>
          *         <column name="background_color">
          *             <option value="1" label="red"/>
@@ -228,6 +229,7 @@ class GridXmlToArrayConverter
             $this->getAttributeConfig($columnElement, 'type'),
             $this->getAttributeConfig($columnElement, 'rendererBlockName'),
             $this->getAttributeConfig($columnElement, 'label'),
+            $this->getAttributeConfig($columnElement, 'renderAsUnsecureHtml'),
             $this->getAttributeConfig($columnElement, 'source'),
             $this->getAttributeConfig($columnElement, 'template'),
             $this->getOptionsConfig($columnElement),

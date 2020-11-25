@@ -6,6 +6,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use PHPUnit\Framework\Constraint\Constraint;
 
 use function array_filter as filter;
+use function array_values as values;
 
 class ConstraintContainsColumn extends Constraint
 {
@@ -43,9 +44,9 @@ class ConstraintContainsColumn extends Constraint
 
     private function findActualColumnByKey(string $key): ?ColumnDefinitionInterface
     {
-        return filter($this->actualColumns, function (ColumnDefinitionInterface $columnDefinition) use ($key): bool {
+        return values(filter($this->actualColumns, function (ColumnDefinitionInterface $columnDefinition) use ($key): bool {
                 return $columnDefinition->getKey() === $key;
-            })[0] ?? null;
+            }))[0] ?? null;
     }
 
     public function toString(): string

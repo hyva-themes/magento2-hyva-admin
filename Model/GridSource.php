@@ -6,6 +6,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 
 use function array_combine as zip;
+use function array_filter as filter;
 use function array_map as map;
 use function array_merge as merge;
 use function array_values as values;
@@ -45,7 +46,8 @@ class GridSource implements HyvaGridSourceInterface
 
         return map(function (string $key) use ($mapKeyToDefinitions): ColumnDefinitionInterface {
             $extractedDefinition = $this->gridSourceType->getColumnDefinition($key);
-            return $this->mergeColumnDefinitions($extractedDefinition, $mapKeyToDefinitions[$key] ?? null);
+            $mergedDefinition    = $this->mergeColumnDefinitions($extractedDefinition, $mapKeyToDefinitions[$key] ?? null);
+            return $mergedDefinition;
         }, $columnKeys);
     }
 
@@ -72,7 +74,7 @@ class GridSource implements HyvaGridSourceInterface
         ?ColumnDefinitionInterface $columnB
     ): ColumnDefinitionInterface {
         return $columnB
-            ? $this->columnDefinitionFactory->create(merge($columnA->toArray(), $columnB->toArray()))
+            ? $this->columnDefinitionFactory->create(merge($columnA->toArray(), filter($columnB->toArray())))
             : $columnA;
     }
 

@@ -190,6 +190,7 @@ EOXML;
             <column name="note" type="text" template="Module_Name::file.phtml"/>
             <column name="name" rendererBlockName="name-renderer-block"/>
             <column name="speed" label="km/h"/>
+            <column name="logo" renderAsUnsecureHtml="true"/>
             <column name="color" source="My\SourceModel"/>
             <column name="background_color">
                 <option value="1" label="red"/>
@@ -220,6 +221,7 @@ EOXML;
                     ['key' => 'note', 'type' => 'text', 'template' => 'Module_Name::file.phtml'],
                     ['key' => 'name', 'rendererBlockName' => 'name-renderer-block'],
                     ['key' => 'speed', 'label' => 'km/h'],
+                    ['key' => 'logo', 'renderAsUnsecureHtml' => 'true'],
                     ['key' => 'color', 'source' => 'My\SourceModel'],
                     ['key' => 'background_color', 'options' => $options],
                 ],

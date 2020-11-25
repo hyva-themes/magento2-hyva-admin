@@ -10,6 +10,8 @@ interface ColumnDefinitionInterface
 
     public function getType(): ?string;
 
+    public function getRenderAsUnsecureHtml(): bool;
+
     public function getTemplate(): ?string;
 
     public function toArray(): array;

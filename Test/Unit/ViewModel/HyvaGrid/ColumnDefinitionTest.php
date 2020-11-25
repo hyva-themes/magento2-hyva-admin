@@ -36,13 +36,14 @@ class ColumnDefinitionTest extends TestCase
     {
         $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
         $original           = [
-            'key'               => 'the_key',
-            'label'             => 'The label',
-            'type'              => 'string',
-            'template'          => 'My_Module::template.phtml',
-            'rendererBlockName' => 'some-block-from-layoutxml',
-            'source'            => 'My\Source\Model',
-            'options'           => [
+            'key'                  => 'the_key',
+            'label'                => 'The label',
+            'type'                 => 'string',
+            'renderAsUnsecureHtml' => 'false',
+            'template'             => 'My_Module::template.phtml',
+            'rendererBlockName'    => 'some-block-from-layoutxml',
+            'source'               => 'My\Source\Model',
+            'options'              => [
                 ['value' => 'aaa', 'label' => 'Aaa'],
                 ['value' => 'bbb', 'label' => 'Bbb'],
             ],

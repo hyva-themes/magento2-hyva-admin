@@ -129,7 +129,6 @@ class CustomAttributesExtractor
     {
         $entityTypeCode = $this->getEntityTypeCodeForType($type);
         $attribute      = $this->eavConfig->getAttribute($entityTypeCode, $code);
-
         return $this->isArrayAttribute($attribute) || !$attribute->getBackend()->isScalar()
             ? 'array'
             : ($attribute->getFrontendInput() === 'gallery' ? 'gallery' : $attribute->getBackendType());

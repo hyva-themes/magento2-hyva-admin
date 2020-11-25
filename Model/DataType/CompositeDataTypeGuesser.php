@@ -30,6 +30,5 @@ class CompositeDataTypeGuesser implements TypeGuesser
         return reduce($this->dataTypeGuessers, function (?string $typeCode, string $class) use ($type): ?string {
             return $typeCode ?? $this->dataTypeGuesserPool->get($class)->typeToTypeCode($type);
         }, null);
-
     }
 }
