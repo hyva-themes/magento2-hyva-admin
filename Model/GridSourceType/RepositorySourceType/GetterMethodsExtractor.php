@@ -83,8 +83,11 @@ class GetterMethodsExtractor
     public function getFieldType(string $type, string $key): string
     {
         $method = $this->getMethodNameFromKey($type, $key);
+        $returnType = $this->getMethodReturnType($type, $method) ?? 'unknown';
 
-        return $this->getMethodReturnType($type, $method) ?? 'unknown';
+        return substr($returnType, -2) === '[]'
+            ? 'array'
+            : $returnType;
     }
 
     public function getValue($object, string $key)

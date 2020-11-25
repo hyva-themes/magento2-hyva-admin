@@ -10,18 +10,26 @@ class CompositeDataTypeGuesser implements TypeGuesser
 {
     private array $dataTypeGuessers;
 
-    private DataTypeGuesserFactory $dataTypeGuesserFactory;
+    private DataTypeGuesserPool $dataTypeGuesserPool;
 
-    public function __construct(array $dataTypeGuessers, DataTypeGuesserFactory $dataTypeGuesserFactory)
+    public function __construct(array $dataTypeGuessers, DataTypeGuesserPool $dataTypeGuesserPool)
     {
-        $this->dataTypeGuessers = $dataTypeGuessers;
-        $this->dataTypeGuesserFactory = $dataTypeGuesserFactory;
+        $this->dataTypeGuessers    = $dataTypeGuessers;
+        $this->dataTypeGuesserPool = $dataTypeGuesserPool;
     }
 
-    public function typeOf($value): ?string
+    public function valueToTypeCode($value): ?string
     {
         return reduce($this->dataTypeGuessers, function (?string $type, string $class) use ($value): ?string {
-            return $type ?? $this->dataTypeGuesserFactory->get($class)->typeOf($value);
+            return $type ?? $this->dataTypeGuesserPool->get($class)->valueToTypeCode($value);
         }, null);
+    }
+
+    public function typeToTypeCode(string $type): ?string
+    {
+        return reduce($this->dataTypeGuessers, function (?string $typeCode, string $class) use ($type): ?string {
+            return $typeCode ?? $this->dataTypeGuesserPool->get($class)->typeToTypeCode($type);
+        }, null);
+
     }
 }

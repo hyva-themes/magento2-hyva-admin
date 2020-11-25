@@ -13,13 +13,13 @@ class UnknownDataTypeTest extends TestCase
     public function testMatchesEveryType(): void
     {
         $sut = new UnknownDataType();
-        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->typeOf(1));
-        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->typeOf(null));
-        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->typeOf('a string'));
-        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->typeOf(tmpfile()));
-        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->typeOf([]));
-        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->typeOf(2.5));
-        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->typeOf(new \stdClass()));
+        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->valueToTypeCode(1));
+        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->valueToTypeCode(null));
+        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->valueToTypeCode('a string'));
+        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->valueToTypeCode(tmpfile()));
+        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->valueToTypeCode([]));
+        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->valueToTypeCode(2.5));
+        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $sut->valueToTypeCode(new \stdClass()));
     }
 
     public function testThrowsExceptionIfValueCanNotBeCastToString(): void

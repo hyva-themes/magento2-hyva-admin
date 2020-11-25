@@ -55,7 +55,7 @@ class RepositoryGridSourceTypeTest extends TestCase
         $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
 
         $columnDefinition = $sut->getColumnDefinition('name');
-        $this->assertSame('string', $columnDefinition->getType());
+        $this->assertSame('scalar_null', $columnDefinition->getType());
         $this->assertSame('Product Name', $columnDefinition->getLabel()); // from EAV table even though system attribute
         $this->assertSame([], $columnDefinition->getOptionArray());
     }
@@ -88,7 +88,7 @@ class RepositoryGridSourceTypeTest extends TestCase
         $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
 
         $columnDefinition = $sut->getColumnDefinition('activity');
-        $this->assertSame('string', $columnDefinition->getType());
+        $this->assertSame('array', $columnDefinition->getType());
         $this->assertSame('Activity', $columnDefinition->getLabel());
         $this->assertNotEmpty($columnDefinition->getOptionArray());
     }

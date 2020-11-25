@@ -8,6 +8,8 @@ use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
 use Magento\Framework\Api\CustomAttributesDataInterface;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Data\Form\Element\Multiselect;
+use Magento\Framework\Data\Form\Element\Select;
 use Magento\Framework\ObjectManager\ConfigInterface as DiConfigInterface;
 use Magento\Framework\ObjectManagerInterface;
 
@@ -119,22 +121,43 @@ class CustomAttributesExtractor
     {
         $class            = $this->diConfig->getPreference($type);
         $entityModelClass = $this->removeProxySuffix($this->removeInterceptorSuffix($class));
+
         return $this->getEntityTypeCodeByEntityModelClass($entityModelClass);
     }
 
-    public function getAttributeBackendType($type, $code): string
+    public function getAttributeBackendType($type, $code): ?string
     {
         $entityTypeCode = $this->getEntityTypeCodeForType($type);
         $attribute      = $this->eavConfig->getAttribute($entityTypeCode, $code);
 
-        $backendType = $attribute->getBackendType();
-
-        return $backendType === 'varchar' || $backendType === 'text'
-            ? 'string'
-            : $backendType;
+        return $this->isArrayAttribute($attribute) || !$attribute->getBackend()->isScalar()
+            ? 'array'
+            : ($attribute->getFrontendInput() === 'gallery' ? 'gallery' : $attribute->getBackendType());
     }
 
-    public function getAttributeLabel(string $type, string $code): string
+    private function isArrayAttribute(AbstractAttribute $attribute)
+    {
+        return $this->isAttributeWithSourceModel($attribute) ||  $this->isAttributeWithOptionsInputRenderer($attribute);
+    }
+
+    private function isAttributeWithOptionsInputRenderer(AbstractAttribute $attribute): bool
+    {
+        if (!($frontendInputRenderer = $attribute->getFrontendInputRenderer())) {
+            return false;
+        }
+        return
+            is_subclass_of($frontendInputRenderer, Multiselect::class) ||
+            is_subclass_of($frontendInputRenderer, Select::class);
+    }
+
+    private function isAttributeWithSourceModel(AbstractAttribute $attribute): bool
+    {
+        return
+            $attribute->getSourceModel() ||
+            in_array($attribute->getFrontendInput(), ['multiselect', 'select'], true);
+    }
+
+    public function getAttributeLabel(string $type, string $code): ?string
     {
         $entityTypeCode = $this->getEntityTypeCodeForType($type);
         $attribute      = $this->eavConfig->getAttribute($entityTypeCode, $code);
@@ -158,7 +181,8 @@ class CustomAttributesExtractor
         $entityTypeCode = $this->getEntityTypeCodeForType($type);
         $attribute      = $this->eavConfig->getAttribute($entityTypeCode, $code);
 
-        $sourceModel = $attribute->getSource();
+        $sourceModel = $this->isArrayAttribute($attribute) ? $attribute->getSource() : null;
+
         return $sourceModel
             ? $sourceModel->getAllOptions()
             : [];

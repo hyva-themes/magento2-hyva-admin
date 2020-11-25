@@ -10,11 +10,29 @@ class ProductDataType implements DataTypeGuesserInterface, DataTypeValueToString
 {
     const MAGENTO_PRODUCT = 'magento_product';
 
-    public function typeOf($value): ?string
+    public function valueToTypeCode($value): ?string
     {
-        return is_object($value) && $value instanceof ProductInterface
+        return $this->isProductInstance($value)
             ? self::MAGENTO_PRODUCT
             : null;
+    }
+
+    public function typeToTypeCode(string $type): ?string
+    {
+        return $this->isProductClassName($type)
+            ? self::MAGENTO_PRODUCT
+            : null;
+
+    }
+
+    private function isProductInstance($value): bool
+    {
+        return is_object($value) && $value instanceof ProductInterface;
+    }
+
+    private function isProductClassName($value): bool
+    {
+        return is_string($value) && is_subclass_of($value, ProductInterface::class);
     }
 
     /**
@@ -23,7 +41,7 @@ class ProductDataType implements DataTypeGuesserInterface, DataTypeValueToString
      */
     public function toString($value): ?string
     {
-        return $this->typeOf($value)
+        return $this->valueToTypeCode($value)
             ? $this->getDisplayName($value)
             : null;
     }
@@ -35,7 +53,7 @@ class ProductDataType implements DataTypeGuesserInterface, DataTypeValueToString
 
     public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
-        return $this->typeOf($value)
+        return $this->valueToTypeCode($value)
             ? sprintf('%s [SKU %s]', $this->getDisplayName($value), $value->getSku() ?? '?')
             : null;
     }

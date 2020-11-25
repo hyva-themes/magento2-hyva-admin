@@ -24,10 +24,10 @@ class DataTypeToStringConverterLocator
         $this->dataTypeValueToStringConverterFactory = $dataTypeValueToStringConverterFactory;
     }
 
-    public function forType(string $type): ?DataTypeValueToStringConverterInterface
+    public function forTypeCode(string $typeCode): ?DataTypeValueToStringConverterInterface
     {
-        return isset($this->valueToStringConverters[$type])
-            ? $this->dataTypeValueToStringConverterFactory->get($this->valueToStringConverters[$type])
+        return isset($this->valueToStringConverters[$typeCode])
+            ? $this->dataTypeValueToStringConverterFactory->get($this->valueToStringConverters[$typeCode])
             : null;
     }
 }

@@ -4,5 +4,7 @@ namespace Hyva\Admin\Api;
 
 interface DataTypeGuesserInterface
 {
-    public function typeOf($value): ?string;
+    public function valueToTypeCode($value): ?string;
+
+    public function typeToTypeCode(string $type): ?string;
 }

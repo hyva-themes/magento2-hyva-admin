@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use Hyva\Admin\Api\DataTypeGuesserInterface;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\CustomAttributesExtractor;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\ExtensionAttributeTypeExtractor;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\GetterMethodsExtractor;
@@ -51,10 +52,12 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
 
-    /**
-     * @var SearchCriteriaBuilder
-     */
     private SearchCriteriaBuilder $searchCriteriaBuilder;
+
+    /**
+     * @var DataTypeGuesserInterface
+     */
+    private DataTypeGuesserInterface $dataTypeGuesser;
 
     public function __construct(
         string $gridName,
@@ -65,7 +68,8 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         ExtensionAttributeTypeExtractor $extensionAttributeTypeExtractor,
         CustomAttributesExtractor $customAttributesExtractor,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        DataTypeGuesserInterface $dataTypeGuesser
     ) {
         $this->gridName                        = $gridName;
         $this->sourceConfiguration             = $sourceConfiguration;
@@ -76,6 +80,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         $this->customAttributesExtractor       = $customAttributesExtractor;
         $this->columnDefinitionFactory         = $columnDefinitionFactory;
         $this->searchCriteriaBuilder           = $searchCriteriaBuilder;
+        $this->dataTypeGuesser                 = $dataTypeGuesser;
     }
 
     private function getGetMethodKeys(): array
@@ -132,7 +137,11 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
             ? $this->getCustomAttributeOptions($key)
             : null;
 
-        $constructorArguments = filter(['key' => $key, 'type' => $columnType, 'label' => $label, 'options' => $options]);
+        $constructorArguments = filter(['key'     => $key,
+                                        'type'    => $columnType,
+                                        'label'   => $label,
+                                        'options' => $options,
+        ]);
         return $this->columnDefinitionFactory->create($constructorArguments);
     }
 
@@ -152,7 +161,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         } else {
             $columnType = 'unknown';
         }
-        return $columnType;
+        return $this->dataTypeGuesser->typeToTypeCode($columnType);
     }
 
     private function getExtensionAttributeTypeByColumnKey(string $key, string $type): string
@@ -165,12 +174,12 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         return $this->getterMethodsExtractor->getFieldType($type, $key);
     }
 
-    private function getCustomAttributeTypeByColumnKey(string $key, string $type): string
+    private function getCustomAttributeTypeByColumnKey(string $key, string $type): ?string
     {
         return $this->customAttributesExtractor->getAttributeBackendType($type, $key);
     }
 
-    private function getCustomAttributeLabelByColumnKey(string $key, string $type): string
+    private function getCustomAttributeLabelByColumnKey(string $key, string $type): ?string
     {
         return $this->customAttributesExtractor->getAttributeLabel($type, $key);
     }
@@ -178,8 +187,8 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     public function fetchData(): RawGridSourceContainer
     {
         $repositoryGetList = $this->repositorySourceFactory->create($this->getSourceRepoConfig());
-        $this->searchCriteriaBuilder->setPageSize(1); // temporary until navigation data is supplied
-        $result            = $repositoryGetList($this->searchCriteriaBuilder->create());
+        $this->searchCriteriaBuilder->setPageSize(10); // temporary until navigation data is supplied
+        $result = $repositoryGetList($this->searchCriteriaBuilder->create());
 
         return RawGridSourceContainer::forData($result);
     }
@@ -226,7 +235,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     private function getCustomAttributeOptions(string $key): ?array
     {
         $recordType = $this->getRecordType();
-        $options = $this->customAttributesExtractor->getAttributeOptions($recordType, $key);
+        $options    = $this->customAttributesExtractor->getAttributeOptions($recordType, $key);
         return filter($options, function (array $option) {
             return $option['value'] !== '';
         });

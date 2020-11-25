@@ -14,8 +14,8 @@ class ProductDataTypeTest extends TestCase
         $product = ObjectManager::getInstance()->create(ProductInterface::class);
         $sut = new ProductDataType();
 
-        $this->assertSame('magento_product', $sut->typeOf($product));
-        $this->assertNull($sut->typeOf(new \stdClass()));
+        $this->assertSame('magento_product', $sut->valueToTypeCode($product));
+        $this->assertNull($sut->valueToTypeCode(new \stdClass()));
     }
 
     public function testReturnsNullIfTypeDoesNotMatch(): void

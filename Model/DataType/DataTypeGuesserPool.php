@@ -5,7 +5,7 @@ namespace Hyva\Admin\Model\DataType;
 use Hyva\Admin\Api\DataTypeGuesserInterface;
 use Magento\Framework\ObjectManagerInterface;
 
-class DataTypeGuesserFactory
+class DataTypeGuesserPool
 {
     private ObjectManagerInterface $objectManager;
 

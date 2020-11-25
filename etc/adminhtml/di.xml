@@ -27,9 +27,17 @@
     <type name="Hyva\Admin\Model\DataType\CompositeDataTypeGuesser">
         <arguments>
             <argument name="dataTypeGuessers" xsi:type="array">
+                <item name="text" xsi:type="string">Hyva\Admin\Model\DataType\TextDataType</item>
                 <item name="scalar_null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
                 <item name="array" xsi:type="string">Hyva\Admin\Model\DataType\ArrayDataType</item>
+                <item name="datetime" xsi:type="string">Hyva\Admin\Model\DataType\DateTimeDataTypeConverter</item>
                 <item name="magento_product" xsi:type="string">Hyva\Admin\Model\DataType\ProductDataType</item>
+                <item name="magento_category_link" xsi:type="string">Hyva\Admin\Model\DataType\CategoryLinkDataType</item>
+                <item name="magento_stock_item" xsi:type="string">Hyva\Admin\Model\DataType\StockItemDataType</item>
+                <item name="magento_product_link" xsi:type="string">Hyva\Admin\Model\DataType\ProductLinkDataType</item>
+                <item name="magento_product_gallery" xsi:type="string">Hyva\Admin\Model\DataType\GalleryDataType</item>
+                <item name="magento_product_gallery_entry" xsi:type="string">Hyva\Admin\Model\DataType\ProductGalleryEntryDataType</item>
+                <item name="magento_customer_address" xsi:type="string">Hyva\Admin\Model\DataType\CustomerAddressDataType</item>
                 <item name="unknown" xsi:type="string">Hyva\Admin\Model\DataType\UnknownDataType</item>
             </argument>
         </arguments>
@@ -37,14 +45,17 @@
     <type name="Hyva\Admin\Model\DataType\DataTypeToStringConverterLocator">
         <arguments>
             <argument name="valueToStringConverterClasses" xsi:type="array">
-                <item name="string" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="int" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="bool" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="float" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
-                <item name="null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
+                <item name="text" xsi:type="string">Hyva\Admin\Model\DataType\TextDataType</item>
                 <item name="scalar_null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
                 <item name="array" xsi:type="string">Hyva\Admin\Model\DataType\ArrayDataType</item>
+                <item name="datetime" xsi:type="string">Hyva\Admin\Model\DataType\DateTimeDataTypeConverter</item>
                 <item name="magento_product" xsi:type="string">Hyva\Admin\Model\DataType\ProductDataType</item>
+                <item name="magento_category_link" xsi:type="string">Hyva\Admin\Model\DataType\CategoryLinkDataType</item>
+                <item name="magento_stock_item" xsi:type="string">Hyva\Admin\Model\DataType\StockItemDataType</item>
+                <item name="magento_product_link" xsi:type="string">Hyva\Admin\Model\DataType\ProductLinkDataType</item>
+                <item name="magento_product_gallery" xsi:type="string">Hyva\Admin\Model\DataType\GalleryDataType</item>
+                <item name="magento_product_gallery_entry" xsi:type="string">Hyva\Admin\Model\DataType\ProductGalleryEntryDataType</item>
+                <item name="magento_customer_address" xsi:type="string">Hyva\Admin\Model\DataType\CustomerAddressDataType</item>
                 <item name="unknown" xsi:type="string">Hyva\Admin\Model\DataType\UnknownDataType</item>
             </argument>
         </arguments>

@@ -35,9 +35,10 @@ class Cell implements CellInterface
     public function getHtml(): string
     {
         $renderer = $this->getRenderer();
-        return $renderer
+        $html     = $renderer
             ? $renderer->setData('cell', $this)->toHtml()
             : $this->getTextValue();
+        return $html;
     }
 
     public function getColumnDefinition(): ColumnDefinitionInterface
@@ -52,24 +53,36 @@ class Cell implements CellInterface
 
     public function getTextValue(): ?string
     {
-        $options = $this->columnDefinition->getOptionArray();
-        return $options
-            ? $this->getOptionText($this->getRawValue())
+        if (is_null($this->getRawValue())) {
+            return '';
+        }
+        $options   = $this->columnDefinition->getOptionArray();
+        $textValue = $options && !is_array($this->getRawValue())
+            ? $this->getOptionText($options, $this->getRawValue()) ?? ((string) $this->getRawValue())
             : $this->toString($this->getRawValue());
+        return $textValue;
     }
 
     private function toString($value): string
     {
-        $converter = $this->dataTypeToStringConverterLocator->forType($this->columnDefinition->getType());
-        $string    = $converter->toStringRecursive($value, 1 /* recursion depth */);
-        return $string ?? '#type';
+        $columnType = $this->columnDefinition->getType();
+        $converter  = $this->dataTypeToStringConverterLocator->forTypeCode($columnType);
+        $string     = $converter
+            ? $converter->toStringRecursive($value, 1 /* recursion depth */) ?? $this->missmatch($columnType, $value)
+            : '#unknownType(' . $columnType . ')';
+        return $string;
     }
 
-    private function getOptionText(array $options): ?string
+    private function missmatch(?string $columnType, $value): string
+    {
+        return sprintf('Column Type "%s" and value of type "%s" do not match', $columnType, gettype($value));
+    }
+
+    private function getOptionText(array $options, $value): ?string
     {
         foreach ($options as $option) {
-            if ($option['value'] === $this->getRawValue()) {
-                return $option['label'];
+            if ($option['value'] === $value) {
+                return (string) $option['label'];
             }
         }
         return null;

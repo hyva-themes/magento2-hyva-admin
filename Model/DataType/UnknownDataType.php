@@ -9,7 +9,12 @@ class UnknownDataType implements DataTypeGuesserInterface, DataTypeValueToString
 {
     const TYPE_UNKNOWN = 'unknown';
 
-    public function typeOf($value): ?string
+    public function valueToTypeCode($value): ?string
+    {
+        return self::TYPE_UNKNOWN;
+    }
+
+    public function typeToTypeCode(string $type): ?string
     {
         return self::TYPE_UNKNOWN;
     }

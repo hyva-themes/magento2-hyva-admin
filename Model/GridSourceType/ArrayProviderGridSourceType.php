@@ -74,7 +74,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $firstRecord = $this->getFirstRow()[$key] ?? null;
         return $this->columnDefinitionFactory->create([
             'key'  => $key,
-            'type' => $this->dataTypeGuesser->typeOf($firstRecord) ?? '',
+            'type' => $this->dataTypeGuesser->valueToTypeCode($firstRecord) ?? '',
         ]);
     }
 

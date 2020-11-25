@@ -20,18 +20,18 @@ class ArrayDataTypeTest extends TestCase
     {
         $sut = $this->createArrayDataType();
 
-        $this->assertNull($sut->typeOf(1));
-        $this->assertNull($sut->typeOf('a string'));
-        $this->assertNull($sut->typeOf(1.12321));
-        $this->assertNull($sut->typeOf(null));
-        $this->assertNull($sut->typeOf(new \stdClass()));
-        $this->assertNull($sut->typeOf(tmpfile()));
+        $this->assertNull($sut->valueToTypeCode(1));
+        $this->assertNull($sut->valueToTypeCode('a string'));
+        $this->assertNull($sut->valueToTypeCode(1.12321));
+        $this->assertNull($sut->valueToTypeCode(null));
+        $this->assertNull($sut->valueToTypeCode(new \stdClass()));
+        $this->assertNull($sut->valueToTypeCode(tmpfile()));
     }
 
     public function testMatchesArray(): void
     {
-        $this->assertSame(ArrayDataType::TYPE_ARRAY, $this->createArrayDataType()->typeOf([]));
-        $this->assertSame(ArrayDataType::TYPE_ARRAY, $this->createArrayDataType()->typeOf([1, 2, 3]));
+        $this->assertSame(ArrayDataType::TYPE_ARRAY, $this->createArrayDataType()->valueToTypeCode([]));
+        $this->assertSame(ArrayDataType::TYPE_ARRAY, $this->createArrayDataType()->valueToTypeCode([1, 2, 3]));
     }
 
     public function testReturnsNullIfTypeDoesNotMatch(): void

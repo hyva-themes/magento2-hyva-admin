@@ -26,21 +26,26 @@ class ArrayDataType implements DataTypeGuesserInterface, DataTypeValueToStringCo
         $this->dataTypeGuesser          = $dataTypeGuesser;
     }
 
-    public function typeOf($value): ?string
+    public function valueToTypeCode($value): ?string
     {
         return is_array($value) ? self::TYPE_ARRAY : null;
     }
 
+    public function typeToTypeCode(string $type): ?string
+    {
+        return $type === self::TYPE_ARRAY ? $type : null;
+    }
+
     public function toString($value): ?string
     {
-        return $this->typeOf($value)
+        return $this->valueToTypeCode($value)
             ? (empty($value) ? '[ ]' : sprintf('[...(%d)...]', count($value)))
             : null;
     }
 
     public function toStringRecursive($value, $maxRecursionDepth = 1): ?string
     {
-        return $this->typeOf($value) && $this->mayRecurse($maxRecursionDepth)
+        return $this->valueToTypeCode($value) && $this->mayRecurse($maxRecursionDepth)
             ? $this->implode($value, $maxRecursionDepth)
             : $this->toString($value);
     }
@@ -63,7 +68,7 @@ class ArrayDataType implements DataTypeGuesserInterface, DataTypeValueToStringCo
         $itemsToShow = $overLimit ? slice($value, 0, self::LIMIT) : $value;
 
         $strings = map(function ($value) use ($maxRecursionDepth): string {
-            $converter = $this->toStringConverterLocator->forType($this->dataTypeGuesser->typeOf($value));
+            $converter = $this->toStringConverterLocator->forTypeCode($this->dataTypeGuesser->valueToTypeCode($value));
             return $converter->toStringRecursive($value, $maxRecursionDepth - 1);
         }, $itemsToShow);
 
