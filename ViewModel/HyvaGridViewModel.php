@@ -130,8 +130,8 @@ class HyvaGridViewModel implements HyvaGridInterface
      */
     public function getRows(): array
     {
-        // todo: this is where paging related information would have to be passed to the source model
-        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords());
+        $searchCriteria = $this->getNavigation()->getSearchCriteria();
+        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
     }
 
     private function buildRow($record): HyvaGrid\RowInterface
@@ -154,7 +154,10 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getNavigation(): HyvaGrid\NavigationInterface
     {
-        return $this->navigationFactory->create(['gridSource' => $this->getGridSourceModel()]);
+        return $this->navigationFactory->create([
+            'gridSource'   => $this->getGridSourceModel(),
+            'navigationConfig' => $this->getGridDefinition()->getNavigationConfig(),
+        ]);
     }
 
     public function getEntityDefinition(): EntityDefinitionInterface

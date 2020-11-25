@@ -53,6 +53,20 @@ class ColumnDefinitionTest extends TestCase
 
         $this->assertSame($original, $column1->toArray());
         $this->assertSame($column1->toArray(), $column2->toArray());
+    }
 
+    public function testRendersSecureHtmlByDefault(): void
+    {
+        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $this->assertFalse((new ColumnDefinition($dummyObjectManager, 'test'))->getRenderAsUnsecureHtml());
+        $this->assertFalse((new ColumnDefinition($dummyObjectManager, 'test', null, null, null))->getRenderAsUnsecureHtml());
+        $this->assertFalse((new ColumnDefinition($dummyObjectManager, 'test', null, null, 'false'))->getRenderAsUnsecureHtml());
+        $this->assertFalse((new ColumnDefinition($dummyObjectManager, 'test', null, null, 'foo'))->getRenderAsUnsecureHtml());
+    }
+
+    public function testRendersSecureHtmlByDefaultIfSpecified(): void
+    {
+        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $this->assertTrue((new ColumnDefinition($dummyObjectManager, 'test', null, null, 'true'))->getRenderAsUnsecureHtml());
     }
 }

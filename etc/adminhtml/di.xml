@@ -8,7 +8,7 @@
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\RowInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Row"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\CellInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Cell"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface"
-                type="Hyva\Admin\ViewModel\HyvaGrid\TemporaryDummyNavigation"/>
+                type="Hyva\Admin\ViewModel\HyvaGrid\Navigation"/>
     <preference for="Hyva\Admin\Model\Config\HyvaGridConfigReaderInterface"
                 type="Hyva\Admin\Model\Config\GridConfigReader"/>
     <preference for="Hyva\Admin\Model\HyvaGridDefinitionInterface" type="Hyva\Admin\Model\HyvaGridDefinition"/>

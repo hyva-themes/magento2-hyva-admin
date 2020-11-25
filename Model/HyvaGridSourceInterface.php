@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Model;
 
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
 
 interface HyvaGridSourceInterface
 {
@@ -12,7 +13,9 @@ interface HyvaGridSourceInterface
      */
     public function extractColumnDefinitions(array $includeConfig, bool $keepAllSourceCols): array;
 
-    public function getRecords(): array;
+    public function getRecords(SearchCriteriaInterface $searchCriteria): array;
 
     public function extractValue($record, string $key);
+
+    public function getTotalCount(SearchCriteriaInterface $searchCriteria): int;
 }

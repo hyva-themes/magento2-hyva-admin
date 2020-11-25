@@ -5,6 +5,7 @@ namespace Hyva\Admin\Test\Functional\Model\GridSourceType;
 use Hyva\Admin\Model\DataType\ScalarAndNullDataType;
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Test\Functional\TestingGridDataProvider;
+use Magento\Framework\Api\SearchCriteria;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -80,7 +81,7 @@ class ArrayProviderGridSourceTypeTest extends TestCase
         ];
 
         $sut = $this->createArrayProviderGridSourceTypeWithArray($testGridData);
-        $rawDataContainer = $sut->fetchData();
+        $rawDataContainer = $sut->fetchData(new SearchCriteria());
         $actualData = $sut->extractRecords($rawDataContainer);
 
         $this->assertSame($testGridData, $actualData);

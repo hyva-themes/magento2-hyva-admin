@@ -6,10 +6,8 @@ It does not use any UI components.
 
 ## next steps (a.k. todo)
 
-* support for cell with non-scalar types
-* repository source type
+- support for specifying the column order
 * caching the merge result in the grid config reader
-* navigation related types
 * schema for grid xml
 * collection source type
 * query source type

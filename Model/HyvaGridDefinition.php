@@ -82,4 +82,9 @@ class HyvaGridDefinition implements HyvaGridDefinitionInterface
     {
         return 'true' === ($this->getGridConfiguration()['columns']['@keepAllSourceCols'] ?? 'false');
     }
+
+    public function getNavigationConfig(): array
+    {
+        return $this->getGridConfiguration()['navigation'] ?? [];
+    }
 }

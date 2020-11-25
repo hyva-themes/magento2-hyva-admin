@@ -12,6 +12,7 @@ use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchResults;
 
 use function array_filter as filter;
@@ -137,10 +138,11 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
             ? $this->getCustomAttributeOptions($key)
             : null;
 
-        $constructorArguments = filter(['key'     => $key,
-                                        'type'    => $columnType,
-                                        'label'   => $label,
-                                        'options' => $options,
+        $constructorArguments = filter([
+            'key'     => $key,
+            'type'    => $columnType,
+            'label'   => $label,
+            'options' => $options,
         ]);
         return $this->columnDefinitionFactory->create($constructorArguments);
     }
@@ -184,21 +186,17 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         return $this->customAttributesExtractor->getAttributeLabel($type, $key);
     }
 
-    public function fetchData(): RawGridSourceContainer
+    public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
         $repositoryGetList = $this->repositorySourceFactory->create($this->getSourceRepoConfig());
-        $this->searchCriteriaBuilder->setPageSize(10); // temporary until navigation data is supplied
-        $result = $repositoryGetList($this->searchCriteriaBuilder->create());
+        $result            = $repositoryGetList($searchCriteria);
 
         return RawGridSourceContainer::forData($result);
     }
 
     public function extractRecords(RawGridSourceContainer $rawGridData): array
     {
-        /** @var SearchResults $result */
-        $result = $this->gridSourceDataAccessor->unbox($rawGridData);
-
-        return $result->getItems();
+        return $this->unboxRawGridSourceContainer($rawGridData)->getItems();
     }
 
     public function extractValue($record, string $key)
@@ -241,4 +239,13 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         });
     }
 
+    private function unboxRawGridSourceContainer(RawGridSourceContainer $rawGridData): SearchResults
+    {
+        return $this->gridSourceDataAccessor->unbox($rawGridData);
+    }
+
+    public function extractTotalRowCount(RawGridSourceContainer $rawGridData): int
+    {
+        return $this->unboxRawGridSourceContainer($rawGridData)->getTotalCount();
+    }
 }

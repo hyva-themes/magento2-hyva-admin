@@ -67,14 +67,14 @@ class CellTest extends TestCase
     public function testRendersUsingExistingBlock(): void
     {
         /** @var LayoutInterface $layout */
-        $layout = ObjectManager::getInstance()->get(LayoutInterface::class);
-        $blockContext = ObjectManager::getInstance()->get(BlockContext::class);
+        $layout        = ObjectManager::getInstance()->get(LayoutInterface::class);
+        $blockContext  = ObjectManager::getInstance()->get(BlockContext::class);
         $rendererBlock = new class($blockContext) extends AbstractBlock {
             protected function _toHtml()
             {
                 /** @var CellInterface $cell */
                 $cell = $this->getData('cell');
-                return '!!' . $cell->getTextValue() . '!!';
+                return '<!!' . $cell->getTextValue() . '!!>';
             }
         };
 
@@ -88,6 +88,93 @@ class CellTest extends TestCase
 
         /** @var Cell $cell */
         $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
-        $this->assertSame('!![EUR, 10.1]!!', $cell->getHtml());
+        $this->assertSame('<!![EUR, 10.1]!!>', $cell->getHtml());
     }
+
+    public function testEscapesValueByDefault(): void
+    {
+        $value            = '<foo>';
+        $columnDefinition = $this->createColumnDefinition('scalar_null');
+        $arguments        = ['value' => $value, 'columnDefinition' => $columnDefinition];
+
+        /** @var Cell $cell */
+        $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
+        $this->assertSame('&lt;foo&gt;', $cell->getHtml());
+        $this->assertSame($value, $cell->getTextValue());
+        $this->assertSame($value, $cell->getRawValue());
+    }
+
+    public function testDoesNotEscapeValueIfSpecified()
+    {
+        $value            = '<foo>';
+        $columnDefinition = $this->createColumnDefinition('scalar_null', ['renderAsUnsecureHtml' => 'true']);
+        $arguments        = ['value' => $value, 'columnDefinition' => $columnDefinition];
+
+        /** @var Cell $cell */
+        $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
+        $this->assertSame($value, $cell->getHtml());
+        $this->assertSame($value, $cell->getTextValue());
+        $this->assertSame($value, $cell->getRawValue());
+    }
+
+    public function testReturnsOptionLabel(): void
+    {
+        $value            = 12;
+        $label            = 'eleven';
+        $options          = [
+            ['value' => 11, 'label' => 'eleven'],
+            ['value' => 12, 'label' => $label],
+        ];
+        $columnDefinition = $this->createColumnDefinition('scalar_null', ['options' => $options]);
+        $arguments        = ['value' => $value, 'columnDefinition' => $columnDefinition];
+
+        /** @var Cell $cell */
+        $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
+        $this->assertSame($label, $cell->getHtml());
+        $this->assertSame($label, $cell->getTextValue());
+        $this->assertSame($value, $cell->getRawValue());
+    }
+
+    public function returnsRawValueIfOptionNotFound(): void
+    {
+        $value            = 12;
+        $options          = [
+            ['value' => 11, 'label' => 'eleven'],
+        ];
+        $columnDefinition = $this->createColumnDefinition('scalar_null', ['options' => $options]);
+        $arguments        = ['value' => $value, 'columnDefinition' => $columnDefinition];
+
+        /** @var Cell $cell */
+        $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
+        $this->assertSame((string) $value, $cell->getHtml());
+        $this->assertSame((string) $value, $cell->getTextValue());
+        $this->assertSame($value, $cell->getRawValue());
+    }
+
+    public function testRendersMessageIfValueDoesNotMatchColumnType(): void
+    {
+        $value            = ['an array'];
+        $columnDefinition = $this->createColumnDefinition('scalar_null');
+        $arguments        = ['value' => $value, 'columnDefinition' => $columnDefinition];
+
+        /** @var Cell $cell */
+        $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
+
+        $expected = 'Column Type "scalar_null" and value of type "array" do not match';
+        $this->assertSame($expected, $cell->getTextValue());
+    }
+
+    public function testRendersNullValuesAsEmptyString(): void
+    {
+        $value            = null;
+        $columnDefinition = $this->createColumnDefinition('scalar_null');
+        $arguments        = ['value' => $value, 'columnDefinition' => $columnDefinition];
+
+        /** @var Cell $cell */
+        $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
+        $this->assertSame('', $cell->getHtml());
+        $this->assertSame('', $cell->getTextValue());
+        $this->assertNull($cell->getRawValue());
+    }
+
 }

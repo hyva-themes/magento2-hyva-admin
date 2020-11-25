@@ -8,6 +8,8 @@ use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use function array_keys as keys;
 use function array_values as values;
 
@@ -27,13 +29,16 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     private DataTypeGuesserInterface $dataTypeGuesser;
 
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
+
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         ArrayProviderSourceType\ArrayProviderFactory $arrayProviderFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
-        DataTypeGuesserInterface $dataTypeGuesser
+        DataTypeGuesserInterface $dataTypeGuesser,
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
         $this->validateArrayProviderConfiguration($gridName, $sourceConfiguration);
 
@@ -43,6 +48,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $this->arrayProviderClass      = $sourceConfiguration['arrayProvider'] ?? '';
         $this->columnDefinitionFactory = $columnDefinitionFactory;
         $this->dataTypeGuesser         = $dataTypeGuesser;
+        $this->searchCriteriaBuilder   = $searchCriteriaBuilder;
     }
 
     private function validateArrayProviderConfiguration(string $gridName, array $sourceConfiguration): void
@@ -89,13 +95,14 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
      *
      * @return RawGridSourceContainer
      */
-    public function fetchData(): RawGridSourceContainer
+    public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
         if (!isset($this->memoizedGridData)) {
             $provider               = $this->arrayProviderFactory->create($this->arrayProviderClass);
             $this->memoizedGridData = RawGridSourceContainer::forData($provider->getHyvaGridData());
         }
 
+        // todo: apply search criteria to array returned by array provider after it is memoized
         return $this->memoizedGridData;
     }
 
@@ -106,6 +113,12 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     private function getFirstRow(): array
     {
-        return values($this->gridSourceDataAccessor->unbox($this->fetchData()))[0] ?? [];
+        $searchCriteria = $this->searchCriteriaBuilder->setPageSize(1)->setCurrentPage(1)->create();
+        return values($this->gridSourceDataAccessor->unbox($this->fetchData($searchCriteria)))[0] ?? [];
+    }
+
+    public function extractTotalRowCount(RawGridSourceContainer $rawGridData): int
+    {
+        return count($this->extractRecords($rawGridData));
     }
 }

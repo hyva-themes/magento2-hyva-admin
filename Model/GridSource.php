@@ -5,6 +5,7 @@ namespace Hyva\Admin\Model;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 
+use Magento\Framework\Api\SearchCriteriaInterface;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_map as map;
@@ -78,10 +79,9 @@ class GridSource implements HyvaGridSourceInterface
             : $columnA;
     }
 
-    // todo: receive paging and filtering info here and pass it to getRawGridData
-    public function getRecords(): array
+    public function getRecords(SearchCriteriaInterface $searchCriteria): array
     {
-        return $this->gridSourceType->extractRecords($this->getRawGridData());
+        return $this->gridSourceType->extractRecords($this->getRawGridData($searchCriteria));
     }
 
     public function extractValue($record, string $key)
@@ -89,12 +89,16 @@ class GridSource implements HyvaGridSourceInterface
         return $this->gridSourceType->extractValue($record, $key);
     }
 
-    private function getRawGridData(): RawGridSourceContainer
+    private function getRawGridData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
-        // todo: receive paging and filtering data and pass it to fetchData
         if (!isset($this->rawGridData)) {
-            $this->rawGridData = $this->gridSourceType->fetchData();
+            $this->rawGridData = $this->gridSourceType->fetchData($searchCriteria);
         }
         return $this->rawGridData;
+    }
+
+    public function getTotalCount(SearchCriteriaInterface $searchCriteria): int
+    {
+        return $this->gridSourceType->extractTotalRowCount($this->getRawGridData($searchCriteria));
     }
 }

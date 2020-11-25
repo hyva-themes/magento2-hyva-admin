@@ -88,4 +88,9 @@ class TestingGridDefinition implements HyvaGridDefinitionInterface
     {
         return 'true' === ($this->gridDefinition['columns']['@keepColumnsFromSource'] ?? 'false');
     }
+
+    public function getNavigationConfig(): array
+    {
+        return $this->gridDefinition['navigation'] ?? [];
+    }
 }

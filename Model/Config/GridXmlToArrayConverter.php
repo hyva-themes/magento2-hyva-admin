@@ -273,7 +273,7 @@ class GridXmlToArrayConverter
         /*
          * <navigation>
          *     <pager>
-         *         <defaultPerPage>10</defaultPerPage>
+         *         <defaultPageSize>10</defaultPageSize>
          *         <pageSizes>10,20,50,100</pageSizes>
          *     </pager>
          * </navigation>
@@ -289,7 +289,7 @@ class GridXmlToArrayConverter
         $pagerElement = $this->getChildByName($navigationElement, 'pager');
         return $pagerElement
             ? filter(merge(
-                $this->getElementConfig($pagerElement, 'defaultPerPage'),
+                $this->getElementConfig($pagerElement, 'defaultPageSize'),
                 $this->getElementConfig($pagerElement, 'pageSizes')
             ))
             : [];

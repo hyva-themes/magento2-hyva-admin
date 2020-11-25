@@ -22,9 +22,6 @@ class Cell implements CellInterface
 
     private LayoutInterface $layout;
 
-    /**
-     * @var Escaper
-     */
     private Escaper $escaper;
 
     public function __construct(
@@ -92,8 +89,7 @@ class Cell implements CellInterface
         $columnType = $this->columnDefinition->getType();
         $converter  = $this->dataTypeToStringConverterLocator->forTypeCode($columnType);
         return $converter
-            ? $converter->toStringRecursive($value, 1 /* recursion depth */) ?? $this->missmatch($columnType,
-                $value)
+            ? $converter->toStringRecursive($value, 1 /* recursion depth */) ?? $this->missmatch($columnType, $value)
             : '#unknownType(' . $columnType . ')';
     }
 

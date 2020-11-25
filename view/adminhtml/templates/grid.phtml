@@ -15,7 +15,21 @@ if (!$grid->getRows()) { ?>
 <div>
     <?= __('Current Page: %1', $navigation->getCurrentPageNumber()) ?>
     <?= __('Total Pages: %1', $navigation->getPageCount()) ?>
-    <?= __('Rows Per Page: %1', $navigation->getNumberOfRowsPerPage()) ?>
+    <label for="pageSize"><?= __('Rows Per Page:') ?></label>
+    <script>
+        function goToOptionUrl(option) {
+            const url = option.value;
+            if (url) {
+                window.location.href=url;
+            }
+        }
+    </script>
+    <select id="pageSize" onchange="goToOptionUrl(this.selectedOptions[0])">
+        <?php foreach ($navigation->getPageSizes() as $pageSize): ?>
+        <?php $currentPageSize = $navigation->getPageSize() === $pageSize ?>
+        <option value="<?= $navigation->getUrlForPageSize($pageSize) ?>" <?= $currentPageSize ? 'selected' : '' ?>><?= $pageSize ?></option>
+        <?php endforeach; ?>
+    </select>
     <?php if ($navigation->hasPreviousPage()): ?><a href="<?= $navigation->getPreviousPageUrl() ?>">Previous Page</a>
     <?php else: ?>Previous Page<?php endif; ?>
     <?php if ($navigation->hasNextPage()): ?><a href="<?= $navigation->getNextPageUrl() ?>">Next Page</a>

@@ -309,7 +309,7 @@ EOXML;
         return <<<EOXML
     <navigation>
         <pager>
-            <defaultPerPage>10</defaultPerPage>
+            <defaultPageSize>10</defaultPageSize>
             <pageSizes>10,20,50,100</pageSizes>
         </pager>
     </navigation>
@@ -318,7 +318,7 @@ EOXML;
 
     private function getNavigationExpected(): array
     {
-        return ['navigation' => ['pager' => ['defaultPerPage' => '10', 'pageSizes' => '10,20,50,100']]];
+        return ['navigation' => ['pager' => ['defaultPageSize' => '10', 'pageSizes' => '10,20,50,100']]];
     }
 
     private function getEntityConfigXml(): string

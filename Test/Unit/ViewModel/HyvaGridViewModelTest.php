@@ -77,7 +77,11 @@ class HyvaGridViewModelTest extends TestCase
      */
     private function createStubNavigationFactory(): MockObject
     {
-        return $this->createMock(NavigationInterfaceFactory::class);
+        $dummyNavigation = $this->createMock(NavigationInterface::class);
+        $stubFactory     = $this->createMock(NavigationInterfaceFactory::class);
+        $stubFactory->method('create')->willReturn($dummyNavigation);
+
+        return $stubFactory;
     }
 
     /**
@@ -284,7 +288,7 @@ class HyvaGridViewModelTest extends TestCase
         $stubGridCellFactory->method('create')->willReturnCallback(function ($value) {
             return $this->createMock(CellInterface::class);
         });
-        $dummyNavigationFactory       = $this->createStubNavigationFactory();
+        $stubNavigationFactory        = $this->createStubNavigationFactory();
         $dummyEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
@@ -295,7 +299,7 @@ class HyvaGridViewModelTest extends TestCase
             $stubGridSourceFactory,
             $stubGridRowFactory,
             $stubGridCellFactory,
-            $dummyNavigationFactory,
+            $stubNavigationFactory,
             $dummyEntityDefinitionFactory,
             $dummyActionFactory,
             $dummyMassActionFactory

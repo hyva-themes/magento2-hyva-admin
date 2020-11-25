@@ -4,6 +4,7 @@ namespace Hyva\Admin\Model\GridSourceType;
 
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
 
 interface GridSourceTypeInterface
 {
@@ -14,8 +15,7 @@ interface GridSourceTypeInterface
 
     public function getColumnDefinition(string $key): ColumnDefinitionInterface;
 
-    // todo: receive paging and filtering data
-    public function fetchData(): RawGridSourceContainer;
+    public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer;
 
     /**
      * @param RawGridSourceContainer $rawGridData
@@ -29,4 +29,6 @@ interface GridSourceTypeInterface
      * @return mixed
      */
     public function extractValue($record, string $key);
+
+    public function extractTotalRowCount(RawGridSourceContainer $rawGridData): int;
 }
