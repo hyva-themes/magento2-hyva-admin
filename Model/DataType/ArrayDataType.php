@@ -3,23 +3,23 @@
 namespace Hyva\Admin\Model\DataType;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
 
+use Hyva\Admin\Api\DataTypeInterface;
 use function array_map as map;
 use function array_merge as merge;
 use function array_slice as slice;
 
-class ArrayDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class ArrayDataType implements DataTypeInterface
 {
     const TYPE_ARRAY = 'array';
     const LIMIT = 10;
 
-    private DataTypeToStringConverterLocator $toStringConverterLocator;
+    private DataTypeToStringConverterLocatorInterface $toStringConverterLocator;
 
     private DataTypeGuesserInterface $dataTypeGuesser;
 
     public function __construct(
-        DataTypeToStringConverterLocator $toStringConverterLocator,
+        DataTypeToStringConverterLocatorInterface $toStringConverterLocator,
         DataTypeGuesserInterface $dataTypeGuesser
     ) {
         $this->toStringConverterLocator = $toStringConverterLocator;

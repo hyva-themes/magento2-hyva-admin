@@ -2,10 +2,9 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Api\DataTypeInterface;
 
-class ScalarAndNullDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class ScalarAndNullDataType implements DataTypeInterface
 {
     const TYPE_SCALAR_NULL = 'scalar_null';
 

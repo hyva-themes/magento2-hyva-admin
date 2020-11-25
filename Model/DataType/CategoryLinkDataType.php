@@ -2,11 +2,10 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Api\DataTypeInterface;
 use Magento\Catalog\Api\Data\CategoryLinkInterface;
 
-class CategoryLinkDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class CategoryLinkDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_CATEGORY_LINK = 'magento_category_link';
 

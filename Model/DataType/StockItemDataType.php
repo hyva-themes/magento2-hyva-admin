@@ -2,22 +2,21 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Api\DataTypeInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\Framework\Reflection\DataObjectProcessor;
 
-class StockItemDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class StockItemDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_STOCK_ITEM = 'magento_stock_item';
 
     private DataObjectProcessor $dataObjectProcessor;
 
-    private DataTypeToStringConverterLocator $toStringConverterLocator;
+    private DataTypeToStringConverterLocatorInterface $toStringConverterLocator;
 
     public function __construct(
         DataObjectProcessor $dataObjectProcessor,
-        DataTypeToStringConverterLocator $toStringConverterLocator
+        DataTypeToStringConverterLocatorInterface $toStringConverterLocator
     ) {
         $this->dataObjectProcessor = $dataObjectProcessor;
         $this->toStringConverterLocator = $toStringConverterLocator;

@@ -3,7 +3,7 @@
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 use Hyva\Admin\Exception\UnableToCastToStringException;
-use Hyva\Admin\Model\DataType\DataTypeToStringConverterLocator;
+use Hyva\Admin\Model\DataType\DataTypeToStringConverterLocatorInterface;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
@@ -18,7 +18,7 @@ class Cell implements CellInterface
 
     private ColumnDefinitionInterface $columnDefinition;
 
-    private DataTypeToStringConverterLocator $dataTypeToStringConverterLocator;
+    private DataTypeToStringConverterLocatorInterface $dataTypeToStringConverterLocator;
 
     private LayoutInterface $layout;
 
@@ -30,7 +30,7 @@ class Cell implements CellInterface
     public function __construct(
         $value,
         ColumnDefinitionInterface $columnDefinition,
-        DataTypeToStringConverterLocator $dataTypeToStringConverter,
+        DataTypeToStringConverterLocatorInterface $dataTypeToStringConverter,
         LayoutInterface $layout,
         Escaper $escaper
     ) {

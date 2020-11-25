@@ -2,12 +2,11 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Api\DataTypeInterface;
 use Magento\Catalog\Api\Data\ProductAttributeMediaGalleryEntryInterface;
 use Magento\Catalog\Model\Product\Image\UrlBuilder as ImageUrlBuilder;
 
-class ProductGalleryEntryDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class ProductGalleryEntryDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_PRODUCT_GALLERY_ENTRY = 'magento_product_gallery_entry';
 

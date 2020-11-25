@@ -2,22 +2,21 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Api\DataTypeInterface;
 use Magento\Catalog\Api\Data\ProductLinkInterface;
 use Magento\Framework\Reflection\DataObjectProcessor;
 
-class ProductLinkDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class ProductLinkDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_PRODUCT_LINK = 'magento_product_link';
 
     private DataObjectProcessor $dataObjectProcessor;
 
-    private DataTypeToStringConverterLocator $toStringConverterLocator;
+    private DataTypeToStringConverterLocatorInterface $toStringConverterLocator;
 
     public function __construct(
         DataObjectProcessor $dataObjectProcessor,
-        DataTypeToStringConverterLocator $toStringConverterLocator
+        DataTypeToStringConverterLocatorInterface $toStringConverterLocator
     ) {
         $this->dataObjectProcessor = $dataObjectProcessor;
         $this->toStringConverterLocator = $toStringConverterLocator;

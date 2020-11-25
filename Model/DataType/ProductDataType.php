@@ -2,11 +2,10 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Api\DataTypeInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 
-class ProductDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class ProductDataType implements DataTypeInterface
 {
     const MAGENTO_PRODUCT = 'magento_product';
 

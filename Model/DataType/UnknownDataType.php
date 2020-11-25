@@ -2,11 +2,10 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Api\DataTypeInterface;
 use Hyva\Admin\Exception\UnableToCastToStringException;
 
-class UnknownDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class UnknownDataType implements DataTypeInterface
 {
     const TYPE_UNKNOWN = 'unknown';
 

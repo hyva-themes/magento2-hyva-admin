@@ -2,13 +2,12 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Api\DataTypeInterface;
 use Magento\Customer\Api\Data\AddressInterface;
 
 use function array_filter as filter;
 
-class CustomerAddressDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class CustomerAddressDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_CUSTOMER_ADDRESS = 'magento_customer_address';
 

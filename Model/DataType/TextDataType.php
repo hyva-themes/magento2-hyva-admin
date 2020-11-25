@@ -2,10 +2,9 @@
 
 namespace Hyva\Admin\Model\DataType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
+use Hyva\Admin\Api\DataTypeInterface;
 
-class TextDataType implements DataTypeGuesserInterface, DataTypeValueToStringConverterInterface
+class TextDataType implements DataTypeInterface
 {
     const TYPE_TEXT = 'text';
     const LONG_TEXT_MIN_LENGTH = 200;
