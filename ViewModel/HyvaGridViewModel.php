@@ -86,6 +86,7 @@ class HyvaGridViewModel implements HyvaGridInterface
     private function buildColumnDefinitions(): array
     {
         $columnConfig      = $this->getGridDefinition()->getIncludedColumns();
+        // todo: add sortIndex to included columns where not defined
         $keepAllSourceCols = $this->getGridDefinition()->keepColumnsFromSource();
         $available         = $this->getGridSourceModel()->extractColumnDefinitions($columnConfig, $keepAllSourceCols);
         $keysToColumnsMap  = zip($this->getColumnKeys($available), values($available));

@@ -47,8 +47,8 @@ class GridSource implements HyvaGridSourceInterface
 
         return map(function (string $key) use ($mapKeyToDefinitions): ColumnDefinitionInterface {
             $extractedDefinition = $this->gridSourceType->getColumnDefinition($key);
-            $mergedDefinition    = $this->mergeColumnDefinitions($extractedDefinition, $mapKeyToDefinitions[$key] ?? null);
-            return $mergedDefinition;
+            // todo: add sortIndex to extracted definition
+            return $this->mergeColumnDefinitions($extractedDefinition, $mapKeyToDefinitions[$key] ?? null);
         }, $columnKeys);
     }
 

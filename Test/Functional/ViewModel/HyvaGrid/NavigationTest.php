@@ -78,7 +78,6 @@ class NavigationTest extends TestCase
 
     public function testReturnsMaxPageNumberIfRequestIsLarger(): void
     {
-        $this->markTestSkipped('Currently unable to limit current page number because it is set on search criteria...');
         $stubRequest = $this->createMock(RequestInterface::class);
         $stubRequest->method('getParam')->willReturnMap([['p', null, 3]]);
 
@@ -112,7 +111,6 @@ class NavigationTest extends TestCase
 
     public function testHasNoPreviousPageIfCurrentPageIsOne(): void
     {
-        $this->markTestSkipped('Currently unable to limit current page number because it is set on search criteria...');
         $stubRequest = $this->createMock(RequestInterface::class);
         $stubRequest->method('getParam')->willReturnMap([['p', null, 2]]);
 
@@ -175,7 +173,6 @@ class NavigationTest extends TestCase
 
     public function testReturnsPreviousPageUrlIfRequestedPageIsBeyondMaxPage(): void
     {
-        $this->markTestSkipped('Currently unable to limit current page number because it is set on search criteria...');
         $stubRequest = $this->createMock(RequestInterface::class);
         $stubRequest->method('getParam')->willReturnMap([['p', null, 4]]);
 

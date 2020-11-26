@@ -8,8 +8,10 @@ It does not use any UI components.
 
 - support for specifying the column order
 * caching the merge result in the grid config reader
+- define id attributes for XML merging
 * schema for grid xml
 * collection source type
+* filtering
 * query source type
 * support inline grid editing (probably)
 * form page support

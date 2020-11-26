@@ -70,10 +70,8 @@ class Navigation implements NavigationInterface
 
     public function getCurrentPageNumber(): int
     {
-        $requestedPageNumber = (int) ($this->request->getParam('p') ?? 1);
-        // Unable to limit the current page nunber to available pages
-        // because it is needed to query the number of records.
-        return max($requestedPageNumber, 1);
+        $requestedPageNumber = $this->getRequestedPageNumber();
+        return min(max($requestedPageNumber, 1), $this->getPageCount());
     }
 
     public function hasPreviousPage(): bool
@@ -113,7 +111,12 @@ class Navigation implements NavigationInterface
     public function getSearchCriteria(): SearchCriteriaInterface
     {
         $this->searchCriteriaBuilder->setPageSize($this->getPageSize());
-        $this->searchCriteriaBuilder->setCurrentPage($this->getCurrentPageNumber());
+        // The requested page number has to be used here instead of the current page number,
+        // because the current page number requires the search criteria to load the records from the source,
+        // which creates a circular dependency. This means the grid source has to deal with the case
+        // when the page number on the search criteria is larger than the available pages.
+        // However, all page links returned by this class will never go beyond the last page.
+        $this->searchCriteriaBuilder->setCurrentPage($this->getRequestedPageNumber());
 
         return $this->searchCriteriaBuilder->create();
     }
@@ -146,5 +149,10 @@ class Navigation implements NavigationInterface
             : $this->getDefaultPageSize();
 
         return $this->urlBuilder->getUrl('*/*/*', ['p' => 1, 'pageSize' => $targetPageSize]);
+    }
+
+    private function getRequestedPageNumber(): int
+    {
+        return (int) ($this->request->getParam('p') ?? 1);
     }
 }
