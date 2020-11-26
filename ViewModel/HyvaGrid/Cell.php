@@ -63,7 +63,7 @@ class Cell implements CellInterface
         return $this->value;
     }
 
-    public function getTextValue(): ?string
+    public function getTextValue(): string
     {
         if (is_null($this->getRawValue())) {
             return '';
@@ -105,7 +105,7 @@ class Cell implements CellInterface
                 return (string) $option['label'];
             }
         }
-        return null;
+        return (string) $value;
     }
 
     private function getRenderer(): ?AbstractBlock

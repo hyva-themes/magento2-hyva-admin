@@ -6,6 +6,7 @@ It does not use any UI components.
 
 ## next steps (a.k. todo)
 
+* set record on renderers (in addition to the cell)
 * ordering
 * filtering
 * collection source type
