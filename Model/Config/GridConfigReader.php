@@ -5,6 +5,8 @@ namespace Hyva\Admin\Model\Config;
 use Magento\Framework\Config\Dom as XmlDom;
 use Magento\Framework\Config\ValidationStateInterface;
 
+use Magento\Framework\Module\Dir;
+use Magento\Framework\Module\Dir\Reader as ModuleDirReader;
 use function array_reduce as reduce;
 
 class GridConfigReader implements HyvaGridConfigReaderInterface
@@ -21,15 +23,22 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
 
     private ?string $mergedSchema;
 
+    /**
+     * @var ModuleDirReader
+     */
+    private ModuleDirReader $moduleDirReader;
+
     public function __construct(
         GridDefinitionConfigFiles $definitionConfigFiles,
         GridXmlToArrayConverter $gridXmlToArrayConverter,
-        ValidationStateInterface $appValidationState
+        ValidationStateInterface $appValidationState,
+        ModuleDirReader $moduleDirReader
     ) {
         $this->definitionConfigFiles   = $definitionConfigFiles;
         $this->gridXmlToArrayConverter = $gridXmlToArrayConverter;
         $this->appValidationState      = $appValidationState;
-        $this->perFileSchema           = null;
+        $this->moduleDirReader         = $moduleDirReader;
+        $this->perFileSchema           = 'hyva-grid.xsd';
         $this->mergedSchema            = null;
     }
 
@@ -73,7 +82,7 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
             $this->appValidationState,
             $this->idAttributes,
             null, // the schema for the merged files is never used for individual files
-            $this->perFileSchema
+            $this->getPerFileSchema()
         );
     }
 
@@ -86,4 +95,10 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
             }
         }
     }
+
+    public function getPerFileSchema(): string
+    {
+        return $this->moduleDirReader->getModuleDir(Dir::MODULE_ETC_DIR, 'Hyva_Admin') . '/' . $this->perFileSchema;
+    }
+
 }

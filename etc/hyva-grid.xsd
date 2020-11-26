@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="grid">
+        <xs:complexType >
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="source" type="source"/>
+                <xs:element name="massActions" type="massAction" minOccurs="0"/>
+                <xs:element name="actions" type="actions" minOccurs="0"/>
+                <xs:element name="columns" type="columns" minOccurs="0"/>
+                <xs:element name="navigation" type="navigation" minOccurs="0"/>
+                <xs:element name="entityConfig" type="entityConfig" minOccurs="0"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="phpTypeAndMethod">
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="\\?[A-Z][a-zA-Z0-9]*(\\[A-Z][A-Za-z0-9]*)*::[a-z][A-Za-z]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="phpType">
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="\\?[A-Z][a-zA-Z0-9]*(\\[A-Z][A-Za-z0-9]*)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="source">
+        <xs:choice>
+            <xs:element name="repositoryListMethod" type="phpTypeAndMethod"/>
+            <xs:element name="arrayProvider" type="phpType"/>
+            <!--<xs:element name="collection" type="phpType" />-->
+        </xs:choice>
+        <xs:attribute name="type">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="array"/>
+                    <xs:enumeration value="repository"/>
+                    <!--<xs:enumeration value="collection" />-->
+                    <!--<xs:enumeration value="query" />-->
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="massAction">
+        <xs:sequence>
+            <xs:element name="action" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="baseActionType">
+                            <xs:attribute name="requireConfirmation" type="boolean"/>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="idColumn" type="xs:normalizedString"/>
+        <xs:attribute name="idsParam" type="xs:normalizedString"/>
+    </xs:complexType>
+
+    <xs:complexType name="actions">
+        <xs:sequence>
+            <xs:element name="action" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="baseActionType">
+                            <xs:attribute name="idParam">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:pattern value="[a-zA-Z]+"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:attribute>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="idColumn" type="xs:normalizedString"/>
+    </xs:complexType>
+
+    <xs:complexType name="columns">
+        <xs:sequence>
+            <xs:element name="include" type="includeColumns" minOccurs="0"/>
+            <xs:element name="exclude" type="excludeColumns" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="rowAction" type="xs:normalizedString"/>
+    </xs:complexType>
+
+    <xs:complexType name="includeColumns">
+        <xs:annotation>
+            <xs:documentation>
+                By default all columns from the source are included in the grid.
+                Setting include-columns will exclude all others by default.
+                To change this behavior, the keepAllSourceColumns attribute can be set to true.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="column" minOccurs="0" maxOccurs="unbounded" type="includeColumn"/>
+        </xs:sequence>
+        <xs:attribute name="keepAllSourceColumns" type="boolean">
+            <xs:annotation>
+                <xs:documentation>
+                    If set to true, all columns available on the grid source will be included in the grid, even if
+                    some include columns are defined.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="includeColumn">
+        <xs:sequence>
+            <xs:element name="option" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="value" use="required" type="xs:string"/>
+                    <xs:attribute name="label" use="required" type="xs:string"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:normalizedString" use="required"/>
+        <xs:attribute name="type" type="xs:normalizedString"/>
+        <xs:attribute name="template" type="templateType"/>
+        <xs:attribute name="rendererBlockName" type="xs:normalizedString"/>
+        <xs:attribute name="label" type="xs:string"/>
+        <xs:attribute name="sortOrder" type="xs:integer"/>
+        <xs:attribute name="renderAsUnsecureHtml" type="boolean"/>
+        <xs:attribute name="source" type="phpType"/>
+    </xs:complexType>
+
+    <xs:complexType name="baseActionType">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="label" type="xs:string" use="required"/>
+        <xs:attribute name="url" use="required" type="routeType"/>
+    </xs:complexType>
+
+    <xs:simpleType name="routeType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(\*|[a-zA-Z0-9]+)/((\*|[a-zA-Z0-9/]+)/)?(\*|[a-zA-Z0-9/]+)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="templateType">
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*::[a-zA-Z/.-]+\.phtml"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="boolean">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="excludeColumns">
+        <xs:sequence>
+            <xs:element name="column" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="name" use="required" type="xs:normalizedString"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="entityConfig">
+        <xs:sequence>
+            <xs:element name="label" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="singular" type="xs:string" minOccurs="0"/>
+                        <xs:element name="plural" type="xs:string" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="navigation">
+        <xs:sequence>
+            <xs:element name="pager" type="pagerType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="pagerType">
+        <xs:sequence>
+            <xs:element name="defaultPageSize">
+                <xs:simpleType>
+                    <xs:restriction base="xs:integer">
+                        <xs:minInclusive value="1"/>
+                        <xs:maxInclusive value="10000"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="pageSizes">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="( *[0-9]+,?)+"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
