@@ -3,18 +3,18 @@
 namespace Hyva\Admin\Model\DataType;
 
 use Hyva\Admin\Api\DataTypeInterface;
+use Hyva\Admin\Model\ProductMedia;
 use Magento\Catalog\Api\Data\ProductAttributeMediaGalleryEntryInterface;
-use Magento\Catalog\Model\Product\Image\UrlBuilder as ImageUrlBuilder;
 
 class ProductGalleryEntryDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_PRODUCT_GALLERY_ENTRY = 'magento_product_gallery_entry';
 
-    private ImageUrlBuilder $imageUrlBuilder;
+    private ProductMedia $productMedia;
 
-    public function __construct(ImageUrlBuilder $imageUrlBuilder)
+    public function __construct(ProductMedia $productMedia)
     {
-        $this->imageUrlBuilder = $imageUrlBuilder;
+        $this->productMedia = $productMedia;
     }
 
     public function valueToTypeCode($value): ?string
@@ -49,7 +49,7 @@ class ProductGalleryEntryDataType implements DataTypeInterface
     public function toString($value): ?string
     {
         return $this->valueToTypeCode($value)
-            ? $this->formatGalleryEntry($value)
+            ? $this->productMedia->getImageHtmlElement($value->getFile(), $value->getLabel())
             : null;
     }
 
@@ -58,14 +58,5 @@ class ProductGalleryEntryDataType implements DataTypeInterface
         return $this->valueToTypeCode($value)
             ? $this->toString($value)
             : null;
-    }
-
-    private function formatGalleryEntry(ProductAttributeMediaGalleryEntryInterface $value): string
-    {
-        return sprintf(
-            '<img src="%s" alt="%s"/>',
-            $this->imageUrlBuilder->getUrl($value->getFile(), 'thumbnail'),
-            $value->getLabel()
-        );
     }
 }

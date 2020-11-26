@@ -14,8 +14,12 @@ class DataTypeGuesserFactory
         $this->objectManager = $objectManager;
     }
 
-    public function get(string $class): DataTypeGuesserInterface
+    public function get(string $class): ?DataTypeGuesserInterface
     {
-        return $this->objectManager->get($class);
+        $instance = $this->objectManager->get($class);
+
+        return $instance instanceof DataTypeGuesserInterface
+            ? $instance
+            : null;
     }
 }

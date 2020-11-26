@@ -39,6 +39,7 @@
                 <item name="magento_product_link" xsi:type="string">Hyva\Admin\Model\DataType\ProductLinkDataType</item>
                 <item name="magento_product_gallery" xsi:type="string">Hyva\Admin\Model\DataType\ProductGalleryDataType</item>
                 <item name="magento_product_gallery_entry" xsi:type="string">Hyva\Admin\Model\DataType\ProductGalleryEntryDataType</item>
+                <item name="magento_product_image" xsi:type="string">Hyva\Admin\Model\DataType\ProductImageDataType</item>
                 <item name="magento_customer_address" xsi:type="string">Hyva\Admin\Model\DataType\CustomerAddressDataType</item>
                 <item name="unknown" xsi:type="string">Hyva\Admin\Model\DataType\UnknownDataType</item>
             </argument>

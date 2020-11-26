@@ -28,15 +28,31 @@ class DataTypeFacade implements TypeGuesser, DataTypeToStringConverterLocatorInt
     public function valueToTypeCode($value): ?string
     {
         return reduce($this->dataTypeClassMap, function (?string $type, string $class) use ($value): ?string {
-            return $type ?? $this->dataTypeGuesserFactory->get($class)->valueToTypeCode($value);
+            return $type ?? $this->classAndValueToTypeCode($class, $value);
         }, null);
+    }
+
+    private function classAndValueToTypeCode(string $class, $value): ?string
+    {
+        $dataTypeGuesser = $this->dataTypeGuesserFactory->get($class);
+        return $dataTypeGuesser
+            ? $dataTypeGuesser->valueToTypeCode($value)
+            : null;
     }
 
     public function typeToTypeCode(string $type): ?string
     {
         return reduce($this->dataTypeClassMap, function (?string $typeCode, string $class) use ($type): ?string {
-            return $typeCode ?? $this->dataTypeGuesserFactory->get($class)->typeToTypeCode($type);
+            return $typeCode ?? $this->classAndTypeToTypeCode($class, $type);
         }, null);
+    }
+
+    private function classAndTypeToTypeCode(string $class, string $type): ?string
+    {
+        $dataTypeGuesser = $this->dataTypeGuesserFactory->get($class);
+        return $dataTypeGuesser
+            ? $dataTypeGuesser->typeToTypeCode($type)
+            : null;
     }
 
     public function forTypeCode(string $typeCode): ?DataTypeValueToStringConverterInterface
