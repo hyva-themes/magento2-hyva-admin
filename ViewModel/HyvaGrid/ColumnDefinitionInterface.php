@@ -17,4 +17,6 @@ interface ColumnDefinitionInterface
     public function toArray(): array;
 
     public function getOptionArray(): array;
+
+    public function getSortOrder(): int;
 }

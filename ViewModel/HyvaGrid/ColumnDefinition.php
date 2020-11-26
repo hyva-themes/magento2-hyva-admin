@@ -25,11 +25,14 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     private ?string $renderAsUnsecureHtml;
 
+    private ?string $sortOrder;
+
     public function __construct(
         ObjectManagerInterface $objectManager,
         string $key,
         ?string $label = null,
         ?string $type = null,
+        ?string $sortOrder = null,
         ?string $renderAsUnsecureHtml = null,
         ?string $template = null,
         ?string $rendererBlockName = null,
@@ -39,6 +42,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
         $this->key                  = $key;
         $this->label                = $label;
         $this->type                 = $type;
+        $this->sortOrder            = $sortOrder;
         $this->renderAsUnsecureHtml = $renderAsUnsecureHtml;
         $this->template             = $template;
         $this->rendererBlockName    = $rendererBlockName;
@@ -85,6 +89,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
             'key'                  => $this->getKey(),
             'label'                => $this->label,
             'type'                 => $this->type,
+            'sortOrder'            => $this->sortOrder,
             'renderAsUnsecureHtml' => $this->renderAsUnsecureHtml,
             'template'             => $this->template,
             'rendererBlockName'    => $this->rendererBlockName,
@@ -121,5 +126,10 @@ class ColumnDefinition implements ColumnDefinitionInterface
     public function getRenderAsUnsecureHtml(): bool
     {
         return isset($this->renderAsUnsecureHtml) && $this->renderAsUnsecureHtml === 'true';
+    }
+
+    public function getSortOrder(): int
+    {
+        return (int) ($this->sortOrder ?? 0);
     }
 }

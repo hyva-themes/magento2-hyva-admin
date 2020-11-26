@@ -186,7 +186,7 @@ EOXML;
         return <<<EOXML
     <columns rowAction="edit">
         <include>
-            <column name="id"/>
+            <column name="id" sortOrder="1"/>
             <column name="note" type="text" template="Module_Name::file.phtml"/>
             <column name="name" rendererBlockName="name-renderer-block"/>
             <column name="speed" label="km/h"/>
@@ -217,7 +217,7 @@ EOXML;
             'columns' => [
                 '@rowAction' => 'edit',
                 'include'    => [
-                    ['key' => 'id'],
+                    ['key' => 'id', 'sortOrder' => '1'],
                     ['key' => 'note', 'type' => 'text', 'template' => 'Module_Name::file.phtml'],
                     ['key' => 'name', 'rendererBlockName' => 'name-renderer-block'],
                     ['key' => 'speed', 'label' => 'km/h'],

@@ -8,10 +8,10 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 interface HyvaGridSourceInterface
 {
     /**
-     * @param ColumnDefinitionInterface[] $includeConfig
+     * @param ColumnDefinitionInterface[] $includedColumns
      * @return ColumnDefinitionInterface[]
      */
-    public function extractColumnDefinitions(array $includeConfig, bool $keepAllSourceCols): array;
+    public function extractColumnDefinitions(array $includedColumns, bool $keepAllSourceCols): array;
 
     public function getRecords(SearchCriteriaInterface $searchCriteria): array;
 

@@ -183,7 +183,7 @@ class GridXmlToArrayConverter
         /*
          * <columns rowAction="edit">
          *     <include keepColumnsFromSource="true">
-         *         <column name="id"/>
+         *         <column name="id" sortOrder="10"/>
          *         <column name="note" type="text"/>
          *         <column name="name" renderer="My\NameRendererBlock"/>
          *         <column name="speed" label="km/h"/>
@@ -227,6 +227,7 @@ class GridXmlToArrayConverter
         return filter(merge(
             ['key' => $this->getAttributeConfig($columnElement, 'name')['name'] ?? null], // rename idx "name" to "key"
             $this->getAttributeConfig($columnElement, 'type'),
+            $this->getAttributeConfig($columnElement, 'sortOrder'),
             $this->getAttributeConfig($columnElement, 'rendererBlockName'),
             $this->getAttributeConfig($columnElement, 'label'),
             $this->getAttributeConfig($columnElement, 'renderAsUnsecureHtml'),
