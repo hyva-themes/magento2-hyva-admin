@@ -376,9 +376,9 @@ EOXML;
     {
         return <<<EOXML
     <massActions idColumn="id" idsParam="ids">
-        <action label="Update" url="*/massActions/update"/>
-        <action label="Delete All" url="*/massActions/delete" requireConfirmation="true"/>
-        <action label="Reindex" url="*/massActions/reindex" />
+        <action id="update" label="Update" url="*/massActions/update"/>
+        <action id="delete" label="Delete All" url="*/massActions/delete" requireConfirmation="true"/>
+        <action id="reindex" label="Reindex" url="*/massActions/reindex" />
     </massActions>
 EOXML;
     }

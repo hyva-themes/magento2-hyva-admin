@@ -17,7 +17,13 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
 
     private ValidationStateInterface $appValidationState;
 
-    private array $idAttributes = [];
+    private array $idAttributes = [
+        '/grid/massActions/action' => 'id',
+        '/grid/actions/action' => 'id',
+        '/grid/columns/include/column' => 'name',
+        '/grid/columns/include/column/option' => 'value',
+        '/grid/columns/exclude/column' => 'name',
+    ];
 
     private ?string $perFileSchema;
 
