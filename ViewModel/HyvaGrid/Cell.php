@@ -106,11 +106,12 @@ class Cell implements CellInterface
 
     private function getOptionText($value): ?string
     {
-        if (! ($options = $this->columnDefinition->getOptionArray())) {
+        if (!($options = $this->columnDefinition->getOptionArray())) {
             return null;
         }
         $valueToLabel = reduce($options, function (array $map, array $option): array {
-            $map[$option['value']] = (string) $option['label'];
+            $key       = is_scalar($option['value']) ? $option['value'] : '';
+            $map[$key] = (string) $option['label'];
             return $map;
         }, []);
 
