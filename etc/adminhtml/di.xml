@@ -42,6 +42,7 @@
                 <item name="magento_product_image" xsi:type="string">Hyva\Admin\Model\DataType\ProductImageDataType</item>
                 <item name="magento_customer_address" xsi:type="string">Hyva\Admin\Model\DataType\CustomerAddressDataType</item>
                 <item name="magento_product_custom_option" xsi:type="string">Hyva\Admin\Model\DataType\ProductCustomOptionDataType</item>
+                <item name="object" xsi:type="string">Hyva\Admin\Model\DataType\GenericObjectDataType</item>
                 <item name="unknown" xsi:type="string">Hyva\Admin\Model\DataType\UnknownDataType</item>
             </argument>
         </arguments>
