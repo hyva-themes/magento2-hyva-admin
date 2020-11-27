@@ -25,12 +25,20 @@ class GenericObjectDataType implements DataTypeInterface
     public function toString($value): ?string
     {
         return $this->valueToTypeCode($value)
-            ? sprintf('object(%s)', get_class($value))
+            ? $this->objectToString($value)
             : null;
     }
 
     public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
         return $this->toString($value);
+    }
+
+
+    private function objectToString($value): string
+    {
+        return method_exists($value, '__toString')
+            ? (string) $value
+            : sprintf('object(%s)', get_class($value));
     }
 }

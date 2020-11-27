@@ -8,6 +8,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use function array_combine as zip;
 use function array_filter as filter;
+use function array_keys as keys;
 use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
@@ -57,7 +58,7 @@ class GridSource implements HyvaGridSourceInterface
         $extractedColumns = map(function (string $key) use ($mapKeyToDefinitions): ColumnDefinitionInterface {
             $extractedDefinition = $this->gridSourceType->getColumnDefinition($key);
             return $this->mergeColumnDefinitions($extractedDefinition, $mapKeyToDefinitions[$key] ?? null);
-        }, $columnKeys);
+        }, zip($columnKeys, $columnKeys));
 
         $extractedColumnsWithSortOrder = $this->addMissingSortOrder($extractedColumns);
         return $this->sortColumns($extractedColumnsWithSortOrder);
@@ -136,7 +137,7 @@ class GridSource implements HyvaGridSourceInterface
     {
         $currentMaxSortOrder = $this->getMaxSortOrder($columns);
         $nextSortOrders      = range($currentMaxSortOrder + 1, $currentMaxSortOrder + count($columns));
-        return map(
+        $columnsWithSortOrder       = map(
             function (ColumnDefinitionInterface $column, int $nextSortOrder): ColumnDefinitionInterface {
                 $sortOrder = $column->getSortOrder() ? $column->getSortOrder() : (string) $nextSortOrder;
                 return $this->columnDefinitionFactory->create(merge($column->toArray(), ['sortOrder' => $sortOrder]));
@@ -144,6 +145,7 @@ class GridSource implements HyvaGridSourceInterface
             $columns,
             slice($nextSortOrders, 0, count($columns))
         );
+        return zip(keys($columns), $columnsWithSortOrder);
     }
 
     /**
@@ -152,7 +154,7 @@ class GridSource implements HyvaGridSourceInterface
      */
     private function sortColumns(array $columns): array
     {
-        usort($columns, function (ColumnDefinitionInterface $a, ColumnDefinitionInterface $b) {
+        uasort($columns, function (ColumnDefinitionInterface $a, ColumnDefinitionInterface $b) {
             return $a->getSortOrder() <=> $b->getSortOrder();
         });
 

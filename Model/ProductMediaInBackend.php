@@ -7,7 +7,7 @@ use Magento\Framework\App\State as AppState;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\DesignInterface;
 
-class BackendProductMedia
+class ProductMediaInBackend
 {
     private AppState $appState;
 
@@ -29,14 +29,24 @@ class BackendProductMedia
         $this->escaper         = $escaper;
     }
 
+    public function getImageHtmlElement(
+        string $file,
+        string $altText,
+        string $productImageType = 'product_page_image_small'
+    ): string {
+        return sprintf(
+            '<img src="%s" alt="%s"/>',
+            $this->getImageUrl($file, $productImageType),
+            $this->escaper->escapeHtmlAttr($altText)
+        );
+    }
+
     public function getImageUrl(string $file, string $productImageType = 'product_page_image_small'): string
     {
         return $this->appState->emulateAreaCode('frontend', function () use ($file, $productImageType): string {
 
             $resetDesign = $this->setFrontendTheme('Magento/blank');
-
             $url = $this->imageUrlBuilder->getUrl($file, $productImageType);
-
             $resetDesign();
 
             return $url;
@@ -53,10 +63,5 @@ class BackendProductMedia
         return function () use ($currentDesignArea, $currentTheme) {
             $this->design->setDesignTheme($currentTheme, $currentDesignArea);
         };
-    }
-
-    public function getImageHtmlElement(string $file, string $altText): string
-    {
-        return sprintf('<img src="%s" alt="%s"/>', $this->getImageUrl($file), $this->escaper->escapeHtmlAttr($altText));
     }
 }

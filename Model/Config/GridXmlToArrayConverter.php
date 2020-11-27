@@ -214,7 +214,7 @@ class GridXmlToArrayConverter
         return $includesElement
             ? [
                 '@keepAllSourceCols' => $includesElement->getAttribute('keepAllSourceColumns') ?? null,
-                'include' => map(
+                'include'            => map(
                     [$this, 'buildIncludeColumnConfig'],
                     $this->getChildrenByName($includesElement, 'column')
                 ),
@@ -277,11 +277,18 @@ class GridXmlToArrayConverter
          *         <defaultPageSize>10</defaultPageSize>
          *         <pageSizes>10,20,50,100</pageSizes>
          *     </pager>
+         *     <sorting>
+         *         <defaultSortByColumn>id</defaultSortByColumn>
+         *         <defaultSortDirection>asc</defaultSortDirection>
+         *     </sorting>
          * </navigation>
          */
         $navigationElement = $this->getChildByName($root, 'navigation');
         return $navigationElement
-            ? filter(['pager' => $this->getPagerConfig($navigationElement)])
+            ? filter([
+                'pager'   => $this->getPagerConfig($navigationElement),
+                'sorting' => $this->getSortingConfig($navigationElement),
+            ])
             : [];
     }
 
@@ -292,6 +299,17 @@ class GridXmlToArrayConverter
             ? filter(merge(
                 $this->getElementConfig($pagerElement, 'defaultPageSize'),
                 $this->getElementConfig($pagerElement, 'pageSizes')
+            ))
+            : [];
+    }
+
+    private function getSortingConfig(\DOMElement $navigationElement): array
+    {
+        $sortingElement = $this->getChildByName($navigationElement, 'sorting');
+        return $sortingElement
+            ? filter(merge(
+                $this->getElementConfig($sortingElement, 'defaultSortByColumn'),
+                $this->getElementConfig($sortingElement, 'defaultSortDirection')
             ))
             : [];
     }
