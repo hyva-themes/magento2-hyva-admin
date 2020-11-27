@@ -5,114 +5,352 @@
 
 $grid       = $block->getGrid();
 $navigation = $grid->getNavigation();
+?>
 
-if (!$grid->getRows()) { ?>
-    <div>
-        <?= __('No %1 found.', $grid->getEntityDefinition()->getLabelPlural()) ?>
+<style>
+
+    .menu-wrapper .logo .logo-img { display: inline; }
+
+    [x-cloak] {
+        display: none;
+    }
+
+    [type="checkbox"] {
+        box-sizing: border-box;
+        padding: 0;
+    }
+
+    .form-checkbox {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+        display: inline-block;
+        vertical-align: middle;
+        background-origin: border-box;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        flex-shrink: 0;
+        color: currentColor;
+        background-color: #fff;
+        border-color: #e2e8f0;
+        border-width: 1px;
+        border-radius: 0.25rem;
+        height: 1.2em;
+        width: 1.2em;
+    }
+
+    .form-checkbox:checked {
+        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e");
+        border-color: transparent;
+        background-color: currentColor;
+        background-size: 100% 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a0aec0'%3e%3cpath d='M15.3 9.3a1 1 0 0 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 1.4-1.4l3.3 3.29 3.3-3.3z'/%3e%3c/svg%3e");
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+        background-repeat: no-repeat;
+        background-color: #fff;
+        border-color: #e2e8f0;
+        border-width: 1px;
+        border-radius: .25rem;
+        padding: .5rem 2.5rem .5rem .75rem;
+        background-position: right .5rem center;
+        background-size: 1.5em 1.5em;
+    }
+
+    img { max-width: none; display: inline-block; }
+</style>
+<div class="antialiased sans-serif" x-data="initDataTable()">
+
+    <div class="container mx-auto py-6 px-4">
+
+        <?php
+        if (!$grid->getRows()) { ?>
+            <div>
+                <?= __('No %1 found.', $grid->getEntityDefinition()->getLabelPlural()) ?>
+            </div>
+            <?php return;
+        } ?>
     </div>
-    <?php return;
-} ?>
-<div>
-    <?= __('Current Page: %1', $navigation->getCurrentPageNumber()) ?>
-    <?= __('Total Pages: %1', $navigation->getPageCount()) ?>
-    <label for="pageSize"><?= __('Rows Per Page:') ?></label>
-    <script>
-        function goToOptionUrl(option) {
-            const url = option.value;
-            if (url) {
-                window.location.href=url;
-            }
-        }
-    </script>
-    <select id="pageSize" onchange="goToOptionUrl(this.selectedOptions[0])">
-        <?php foreach ($navigation->getPageSizes() as $pageSize): ?>
-        <?php $currentPageSize = $navigation->getPageSize() === $pageSize ?>
-        <option value="<?= $navigation->getUrlForPageSize($pageSize) ?>" <?= $currentPageSize ? 'selected' : '' ?>><?= $pageSize ?></option>
-        <?php endforeach; ?>
-    </select>
-    <?php if ($navigation->hasPreviousPage()): ?><a href="<?= $navigation->getPreviousPageUrl() ?>">Previous Page</a>
-    <?php else: ?>Previous Page<?php endif; ?>
-    <?php if ($navigation->hasNextPage()): ?><a href="<?= $navigation->getNextPageUrl() ?>">Next Page</a>
-    <?php else: ?>Next Page<?php endif; ?>
-</div>
-<?php if ($massActions = $grid->getMassActions()): ?>
-<?php $formId = 'hyva-grid-' . $grid->getGridName() ?>
-<form id="<?= $formId ?>" method="post">
-    <script>
-        function doMassAction(option) {
-            const url = option.value;
-            const f = document.getElementById('<?= $formId ?>');
-            const checked = f.querySelectorAll('input[name="<?= $grid->getMassActionIdsParam() ?>[]"]:checked')
-            const select = f.querySelectorAll('select[name="massAction"]')[0];
-            if (! url) {
-                return;
-            }
-            if (checked.length === 0) {
-                alert('Please select the records to apply the mass action to.');
-                select.selectedIndex = 0;
-                return;
-            }
-            if (option.dataset.requireConfirm === 'true' && ! confirm('Are you sure?')) {
-                select.selectedIndex = 0;
-                return;
-            }
-            f.action = url;
-            f.submit();
-        }
-    </script>
-    <select onchange="doMassAction(this.selectedOptions[0])" name="massAction">
-        <option value=""> </option>
-        <?php foreach ($massActions as $massAction): ?>
-            <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
-            <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>" value="<?= $massActionUrl ?>"><?= $massAction->getLabel() ?></option>
-        <?php endforeach; ?>
-    </select>
-    <?php endif; ?>
-    <table>
-        <thead>
-        <tr>
-            <?php if ($massActions): ?>
-                <th></th> <!-- todo: add a checkbox or something to select all massaction checkboxes -->
-            <?php endif; ?>
-            <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-                <th><?= $escaper->escapeHtml($column->getLabel()) ?></th>
-            <?php endforeach; ?>
-            <?php if ($actions = $grid->getActions()): ?>
-                <th><?= __('Actions') ?></th>
-            <?php endif; ?>
-        </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($grid->getRows() as $row): ?>
-            <?php if ($rowAction = $actions[$grid->getRowActionId()] ?? false) {
-                $rowActionUrl       = $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row));
-                $rowActionAttribute = sprintf("onclick=\"window.location.href='%s'\"",
-                    $escaper->escapeJs($rowActionUrl));
-            } else {
-                $rowActionAttribute = '';
-            } ?>
-            <tr>
-                <?php if ($massActions): ?>
-                    <td>
-                        <input type="checkbox"
-                               value="<?= $row->getCell($grid->getMassActionIdColumn())->getRawValue() ?>"
-                               name="<?= $grid->getMassActionIdsParam() ?>[]"/>
-                    </td>
-                <?php endif; ?>
-                <?php foreach ($row->getCells() as $cell): ?>
-                    <td <?= $rowActionAttribute ?>><?= $cell->getHtml() ?></td>
-                <?php endforeach; ?>
-                <?php if ($actions): ?>
-                    <td>
-                        <?php foreach ($actions as $action): ?>
-                            <a href="<?= $block->getUrl($action->getUrl(), $action->getParams($row)) ?>">
-                                <?= $escaper->escapeHtml($action->getLabel()) ?>
+
+    <div class="max-w-full mx-auto py-6 px-0">
+        <div class="mb-4 flex justify-between items-center">
+            <div class="flex-1 pr-4">
+                <div class="relative md:w-3/4 flex flex-wrap gap-x-8">
+                    <div class="self-center">
+                        <span class="font-medium text-md"><?= __('Current Page:')?></span>
+                        <?= $navigation->getCurrentPageNumber() ?>
+                    </div>
+
+                    <div class="self-center">
+                        <span class="font-medium text-md"><?= __('Total Pages:')?></span>
+                        <?= $navigation->getPageCount() ?>
+                    </div>
+
+                    <div>
+                        <label for="pageSize"><?= __('Rows Per Page:') ?></label>
+                        <script>
+                            function goToOptionUrl(option) {
+                                const url = option.value;
+                                if (url) {
+                                    window.location.href=url;
+                                }
+                            }
+                        </script>
+                        <select id="pageSize" onchange="goToOptionUrl(this.selectedOptions[0])" class="form-select">
+                            <?php foreach ($navigation->getPageSizes() as $pageSize): ?>
+                            <?php $currentPageSize = $navigation->getPageSize() === $pageSize ?>
+                            <option value="<?= $navigation->getUrlForPageSize($pageSize) ?>" <?= $currentPageSize ? 'selected' : '' ?>><?= $pageSize ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="relative z-0 inline-flex shadow-sm rounded-md">
+                        <?php if ($navigation->hasPreviousPage()): ?>
+                            <a href="<?= $navigation->getPreviousPageUrl() ?>"
+                            class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                                Previous Page
                             </a>
-                        <?php endforeach; ?>
-                    </td>
+                        <?php else: ?>
+                            <span class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white font-medium text-gray-300 cursor-not-allowed">
+                                Previous Page
+                            </span>
+                        <?php endif; ?>
+                        <?php if ($navigation->hasNextPage()): ?>
+                            <a href="<?= $navigation->getNextPageUrl() ?>"
+                            class="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">Next Page</a>
+                        <?php else: ?>
+                            <span class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white font-medium text-gray-300 cursor-not-allowed">
+                                Next Page
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="flex">
+                    <div class="relative">
+                        <button @click.prevent="open = !open"
+                                class="rounded-lg inline-flex items-center bg-white hover:text-blue-500 focus:outline-none focus:shadow-outline text-gray-500 font-semibold py-2 px-2 md:px-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:hidden md:visible" viewBox="0 0 24 24"
+                                 stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
+                                <path
+                                    d="M5.5 5h13a1 1 0 0 1 0.5 1.5L14 12L14 19L10 16L10 12L5 6.5a1 1 0 0 1 0.5 -1.5" />
+                            </svg>
+                            <span class="hidden md:block md:visible">Display</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-1" width="24" height="24"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" @click.away="open = false"
+                             class="z-40 absolute top-0 right-0 bg-white rounded-lg shadow-lg mt-16 -mr-1 block p-4 overflow-y-auto" style="max-height: 75vh;">
+                            <template x-for="heading in headings">
+                                <label
+                                    class="flex justify-start items-center text-truncate hover:bg-gray-100 px-4 py-2">
+                                    <div class="text-teal-600 mr-3">
+                                        <input type="checkbox" class="form-checkbox focus:outline-none focus:shadow-outline" checked @click="toggleColumn(heading.key)">
+                                    </div>
+                                    <div class="select-none text-gray-700" x-text="heading.value"></div>
+                                </label>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <?php if ($massActions = $grid->getMassActions()): ?>
+            <?php $formId = 'hyva-grid-' . $grid->getGridName() ?>
+            <form id="<?= $formId ?>" method="post">
+                <script>
+                    function doMassAction(option) {
+                        const url = option.value;
+                        const f = document.getElementById('<?= $formId ?>');
+                        const checked = document.querySelectorAll('input[name="<?= $grid->getMassActionIdsParam() ?>[]"]:checked')
+                        const select = f.querySelectorAll('select[name="massAction"]')[0];
+                        if (! url) {
+                            return;
+                        }
+                        if (checked.length === 0) {
+                            alert('Please select the records to apply the mass action to.');
+                            select.selectedIndex = 0;
+                            return;
+                        }
+                        if (option.dataset.requireConfirm === 'true' && ! confirm('Are you sure?')) {
+                            select.selectedIndex = 0;
+                            return;
+                        }
+                        f.action = url;
+                        f.submit();
+                    }
+                </script>
+                <label for="massAction" class="mr-8"><?= __('Mass Actions:') ?></label>
+                <select onchange="doMassAction(this.selectedOptions[0])" name="massAction" class="form-select">
+                    <option disabled selected hidden><?= __('Select an action') ?></option>
+                    <?php foreach ($massActions as $massAction): ?>
+                        <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
+                        <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>" value="<?= $massActionUrl ?>"><?= $massAction->getLabel() ?></option>
+                    <?php endforeach; ?>
+                </select>
                 <?php endif; ?>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
-    <?php if ($massActions) { ?></form><?php } ?>
+            </form>
+        </div>
+    </div>
+
+    <div class="flex flex-col">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                <div class="overflow-hidden border-b border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                <tr class="text-left">
+
+                    <?php if ($massActions): ?>
+                        <th class="py-2 px-3 sticky top-0 border border-gray-200 bg-gray-100">
+                            <label
+                                class="text-teal-500 inline-flex justify-between items-center hover:bg-gray-200 px-2 py-2 rounded-lg cursor-pointer">
+                                <input type="checkbox"
+                                       class="form-checkbox focus:outline-none focus:shadow-outline"
+                                       @click="selectAllCheckbox($event);">
+                            </label>
+                        </th>
+                    <?php endif; ?>
+                    <?php foreach ($grid->getColumnDefinitions() as $column): ?>
+                        <th class="<?= $escaper->escapeHtml($column->getKey()) ?> bg-gray-100 sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xl table-cell align-middle"
+                            x-ref="<?= $escaper->escapeHtml($column->getKey()) ?>">
+                            <?= $escaper->escapeHtml($column->getLabel()) ?>
+                        </th>
+                    <?php endforeach; ?>
+                    <?php if ($actions = $grid->getActions()): ?>
+                        <th class="bg-gray-100 sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xl table-cell align-middle">
+                            <?= __('Actions') ?>
+                        </th>
+                    <?php endif; ?>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($grid->getRows() as $row): ?>
+                    <?php if ($rowAction = $actions[$grid->getRowActionId()] ?? false) {
+                        $rowActionUrl       = $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row));
+                        $rowActionAttribute = sprintf("onclick=\"window.location.href='%s'\"",
+                            $escaper->escapeJs($rowActionUrl));
+                    } else {
+                        $rowActionAttribute = '';
+                    } ?>
+                    <tr>
+                        <?php if ($massActions): ?>
+                            <td class="border border-gray-100 px-3">
+                                <label
+                                    class="text-teal-500 inline-flex justify-between items-center hover:bg-gray-200 px-2 py-2 rounded-lg cursor-pointer">
+                                <input form="<?= $formId ?>"
+                                       type="checkbox"
+                                       value="<?= $row->getCell($grid->getMassActionIdColumn())->getRawValue() ?>"
+                                       name="<?= $grid->getMassActionIdsParam() ?>[]"
+                                       class="form-checkbox rowCheckbox focus:outline-none focus:shadow-outline"
+                                       @click="selectRowCheckbox($event, user.userId)"
+                                />
+                            </td>
+                        <?php endif; ?>
+                        <?php foreach ($row->getCells() as $cell): ?>
+                            <td class=" <?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()); ?> border border-gray-100 px-3 table-cell align-middle whitespace-nowrap"
+                                <?= $rowActionAttribute ?>>
+                                <?= $cell->getHtml() ?>
+                            </td>
+                        <?php endforeach; ?>
+                        <?php if ($actions): ?>
+                            <td class="border border-gray-100 px-3 text-right <?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()); ?>">
+                                <?php foreach ($actions as $action): ?>
+                                    <a class=" text-blue-800 hover:text-blue-600 whitespace-no-wrap font-medium px-3" href="<?= $block->getUrl($action->getUrl(), $action->getParams($row)) ?>">
+                                        <?= $escaper->escapeHtml($action->getLabel()) ?>
+                                    </a>
+                                <?php endforeach; ?>
+                            </td>
+                        <?php endif; ?>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php if ($massActions) { ?></form><?php } ?>
+    </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        function initDataTable() {
+            return {
+                headings: [
+                    <?php foreach ($grid->getColumnDefinitions() as $column): ?>
+                    {
+                        'key': '<?= $escaper->escapeHtml($column->getKey()) ?>',
+                        'value': '<?= $escaper->escapeHtml($column->getLabel()) ?>'
+                    },
+                    <?php endforeach; ?>
+                ],
+
+                selectedRows: [],
+
+                open: false,
+
+                toggleColumn(key) {
+                    let columns = document.querySelectorAll('.' + key);
+
+                    if (this.$refs[key].classList.contains('hidden') && this.$refs[key].classList.contains(key)) {
+                        columns.forEach(column => {
+                            column.classList.remove('hidden');
+                        });
+                    } else {
+                        columns.forEach(column => {
+                            column.classList.add('hidden');
+                        });
+                    }
+                },
+
+                selectRowCheckbox($event, id) {
+                    let rows = this.selectedRows;
+
+                    if (rows.includes(id)) {
+                        let index = rows.indexOf(id);
+                        rows.splice(index, 1);
+                    } else {
+                        rows.push(id);
+                    }
+                },
+
+                selectAllCheckbox($event) {
+                    let columns = document.querySelectorAll('.rowCheckbox');
+
+                    this.selectedRows = [];
+
+                    if (!!$event.target.checked === true) {
+                        columns.forEach(column => {
+                            column.checked = true
+                            this.selectedRows.push(parseInt(column.name))
+                        });
+                    } else {
+                        columns.forEach(column => {
+                            column.checked = false
+                        });
+                        this.selectedRows = [];
+                    }
+                }
+            }
+        }
+    </script>
