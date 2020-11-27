@@ -239,7 +239,7 @@ $navigation = $grid->getNavigation();
                         </th>
                     <?php endforeach; ?>
                     <?php if ($actions = $grid->getActions()): ?>
-                        <th class="bg-gray-100 sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xl table-cell align-middle">
+                        <th class="actions bg-gray-100 sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xl table-cell align-middle">
                             <?= __('Actions') ?>
                         </th>
                     <?php endif; ?>
@@ -275,7 +275,7 @@ $navigation = $grid->getNavigation();
                             </td>
                         <?php endforeach; ?>
                         <?php if ($actions): ?>
-                            <td class="border border-gray-100 px-3 text-right <?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()); ?>">
+                            <td class="actions border border-gray-100 px-3 text-right">
                                 <?php foreach ($actions as $action): ?>
                                     <a class=" text-blue-800 hover:text-blue-600 whitespace-no-wrap font-medium px-3" href="<?= $block->getUrl($action->getUrl(), $action->getParams($row)) ?>">
                                         <?= $escaper->escapeHtml($action->getLabel()) ?>
