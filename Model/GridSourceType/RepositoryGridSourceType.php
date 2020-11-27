@@ -252,7 +252,13 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         });
     }
 
-    private function unboxRawGridSourceContainer(RawGridSourceContainer $rawGridData): SearchResults
+    /**
+     * Note: no return type specified on purpose, because sometimes the core code doesn't adhere to conventions.
+     *
+     * @param RawGridSourceContainer $rawGridData
+     * @return SearchResults
+     */
+    private function unboxRawGridSourceContainer(RawGridSourceContainer $rawGridData)
     {
         return $this->gridSourceDataAccessor->unbox($rawGridData);
     }
