@@ -20,6 +20,8 @@ class Cell implements CellInterface
 
     private DataTypeToStringConverterLocatorInterface $dataTypeToStringConverterLocator;
 
+    private ?RowInterface $row;
+
     private LayoutInterface $layout;
 
     private Escaper $escaper;
@@ -29,11 +31,13 @@ class Cell implements CellInterface
         ColumnDefinitionInterface $columnDefinition,
         DataTypeToStringConverterLocatorInterface $dataTypeToStringConverter,
         LayoutInterface $layout,
-        Escaper $escaper
+        Escaper $escaper,
+        RowInterface $row = null
     ) {
         $this->value                            = $value;
         $this->columnDefinition                 = $columnDefinition;
         $this->dataTypeToStringConverterLocator = $dataTypeToStringConverter;
+        $this->row                              = $row;
         $this->layout                           = $layout;
         $this->escaper                          = $escaper;
     }
@@ -68,7 +72,7 @@ class Cell implements CellInterface
         if (is_null($this->getRawValue())) {
             return '';
         }
-        $options   = $this->columnDefinition->getOptionArray();
+        $options = $this->columnDefinition->getOptionArray();
         return $options && !is_array($this->getRawValue())
             ? $this->getOptionText($options, $this->getRawValue()) ?? ((string) $this->getRawValue())
             : $this->toString($this->getRawValue());
@@ -136,5 +140,10 @@ class Cell implements CellInterface
             throw new \LogicException($msg);
         }
         return $renderer;
+    }
+
+    public function getRow(): ?RowInterface
+    {
+        return $this->row;
     }
 }

@@ -32,33 +32,25 @@ class GridSource implements HyvaGridSourceInterface
     }
 
     /**
-     * @param ColumnDefinitionInterface[] $includedColumns
-     * @param bool $keepAllSourceCols
+     * @param ColumnDefinitionInterface[] $configuredColumns
      * @return ColumnDefinitionInterface[]
      */
-    public function extractColumnDefinitions(array $includedColumns, bool $keepAllSourceCols = false): array
+    public function extractColumnDefinitions(array $configuredColumns): array
     {
         // Algorithm defining the sortOrder on grids:
         // 1. add sortOrder (larger than others) to all configured include columns without a specific sortOrder (pass 1)
         // 2. add sortOrder (larger than others) to all extracted columns that where not included (pass 2)
         // 3. sort columns (maybe in grid view model...?)
 
-        $includedColumnsWithSortOrder = $this->addMissingSortOrder($includedColumns);
+        $keysToConfiguredColumns = $this->addMissingSortOrder($configuredColumns);
+        $allColumnKeys = $this->gridSourceType->getColumnKeys();
 
-        $configuredKeys                = $this->extractKeys(...values($includedColumnsWithSortOrder));
-        $mapKeyToDefinitions           = zip($configuredKeys, values($includedColumnsWithSortOrder));
-        $availableColumnKeysFromSource = $this->gridSourceType->getColumnKeys();
+        $this->validateConfiguredKeys(keys($keysToConfiguredColumns), $allColumnKeys);
 
-        $this->validateConfiguredKeys($configuredKeys, $availableColumnKeysFromSource);
-
-        $columnKeys = empty($mapKeyToDefinitions) || $keepAllSourceCols
-            ? $availableColumnKeysFromSource
-            : $configuredKeys;
-
-        $extractedColumns = map(function (string $key) use ($mapKeyToDefinitions): ColumnDefinitionInterface {
+        $extractedColumns = map(function (string $key) use ($keysToConfiguredColumns): ColumnDefinitionInterface {
             $extractedDefinition = $this->gridSourceType->getColumnDefinition($key);
-            return $this->mergeColumnDefinitions($extractedDefinition, $mapKeyToDefinitions[$key] ?? null);
-        }, zip($columnKeys, $columnKeys));
+            return $this->mergeColumnDefinitions($extractedDefinition, $keysToConfiguredColumns[$key] ?? null);
+        }, zip($allColumnKeys, $allColumnKeys));
 
         $extractedColumnsWithSortOrder = $this->addMissingSortOrder($extractedColumns);
         return $this->sortColumns($extractedColumnsWithSortOrder);
@@ -135,9 +127,9 @@ class GridSource implements HyvaGridSourceInterface
      */
     private function addMissingSortOrder(array $columns): array
     {
-        $currentMaxSortOrder = $this->getMaxSortOrder($columns);
-        $nextSortOrders      = range($currentMaxSortOrder + 1, $currentMaxSortOrder + count($columns));
-        $columnsWithSortOrder       = map(
+        $currentMaxSortOrder  = $this->getMaxSortOrder($columns);
+        $nextSortOrders       = range($currentMaxSortOrder + 1, $currentMaxSortOrder + count($columns));
+        $columnsWithSortOrder = map(
             function (ColumnDefinitionInterface $column, int $nextSortOrder): ColumnDefinitionInterface {
                 $sortOrder = $column->getSortOrder() ? $column->getSortOrder() : (string) $nextSortOrder;
                 return $this->columnDefinitionFactory->create(merge($column->toArray(), ['sortOrder' => $sortOrder]));

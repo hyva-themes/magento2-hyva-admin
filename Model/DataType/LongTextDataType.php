@@ -10,7 +10,7 @@ class LongTextDataType implements DataTypeInterface
     const LONG_TEXT_MIN_LENGTH = 200;
     const MAX_LENGTH = 30;
 
-    const LONG_TEXT_TYPES = [
+    const TEXT_TYPES = [
         self::TYPE_LONG_TEXT,
         'string',
         'text',
@@ -25,7 +25,7 @@ class LongTextDataType implements DataTypeInterface
 
     public function typeToTypeCode(string $type): ?string
     {
-        return in_array($type, self::LONG_TEXT_TYPES, true) ? self::TYPE_LONG_TEXT : null;
+        return in_array($type, self::TEXT_TYPES, true) ? self::TYPE_LONG_TEXT : null;
     }
 
     public function toString($value): ?string

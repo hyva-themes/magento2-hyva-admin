@@ -6,6 +6,7 @@ use Hyva\Admin\Model\Config\GridConfigReader;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 
+use function array_combine as zip;
 use function array_map as map;
 
 class HyvaGridDefinition implements HyvaGridDefinitionInterface
@@ -43,9 +44,21 @@ class HyvaGridDefinition implements HyvaGridDefinitionInterface
 
     public function getIncludedColumns(): array
     {
-        return map(function (array $columnConfig): ColumnDefinitionInterface {
+        $columns = map(function (array $columnConfig): ColumnDefinitionInterface {
             return $this->columnDefinitionFactory->create($columnConfig);
         }, $this->getGridConfiguration()['columns']['include'] ?? []);
+        return zip($this->extractKeys(...$columns), $columns);
+    }
+
+    /**
+     * @param ColumnDefinitionInterface ...$columnDefinitions
+     * @return string[]
+     */
+    private function extractKeys(ColumnDefinitionInterface ...$columnDefinitions): array
+    {
+        return map(function (ColumnDefinitionInterface $columnDefinition): string {
+            return $columnDefinition->getKey();
+        }, $columnDefinitions);
     }
 
     public function getExcludedColumnKeys(): array

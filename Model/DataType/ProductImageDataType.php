@@ -21,18 +21,15 @@ class ProductImageDataType implements DataTypeValueToStringConverterInterface
 
     public function toString($value): ?string
     {
-        return $value ?
-            $this->buildImageTag($value) :
-            null;
+        return $value
+            ? $this->productMedia->getImageUrl($value)
+            : null;
     }
 
     public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
-        return $this->toString($value);
-    }
-
-    private function buildImageTag(string $file): string
-    {
-        return $this->productMedia->getImageHtmlElement($file, 'Product Image');
+        return $value
+            ? $this->productMedia->getImageHtmlElement($value, 'Product Image')
+            : null;
     }
 }

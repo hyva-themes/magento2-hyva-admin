@@ -15,7 +15,15 @@ interface CellInterface
 
     public function getTextValue(): string;
 
-    // probably needs methods to return:
-    // - a boolean method if the value could be successfully serialized to a string
-    // - maybe css classes...
+    /**
+     * Used by custom cell renderers to access the values of other cells in the same row.
+     *
+     * For example:
+     * $cell->getRow()->getCell('other_col')->getTextValue()
+     *
+     * Please note: it's not possible for a cell to access itself from the given row.
+     * $key = $cell->getColumnDefinition()->getKey();
+     * $cell->getRow()->getCell($key)->getTextValue(); // <-- call getTextValue on null error
+     */
+    public function getRow(): ?RowInterface;
 }

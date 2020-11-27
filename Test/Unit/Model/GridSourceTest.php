@@ -59,14 +59,14 @@ class GridSourceTest extends TestCase
         return $gridSourceType;
     }
 
-    public function testExtractsOnlyIncludedColumnsIfSpecified(): void
+    public function testAllColumnsEvenIfNotInIncludedColumns(): void
     {
         $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar', 'baz']);
         $configuredIncludeColumns    = [
-            new ColumnDefinition($dummyObjectManager, 'foo'),
-            new ColumnDefinition($dummyObjectManager, 'bar'),
+            'foo' => new ColumnDefinition($dummyObjectManager, 'foo'),
+            'bar' => new ColumnDefinition($dummyObjectManager, 'bar'),
         ];
 
         $sut              = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
@@ -74,7 +74,7 @@ class GridSourceTest extends TestCase
 
         $this->assertContainsColumn(new ColumnDefinition($dummyObjectManager, 'foo'), $extractedColumns);
         $this->assertContainsColumn(new ColumnDefinition($dummyObjectManager, 'bar'), $extractedColumns);
-        $this->assertNotContainsColumnWithKey('baz', $extractedColumns);
+        $this->assertContainsColumn(new ColumnDefinition($dummyObjectManager, 'baz'), $extractedColumns);
     }
 
     public function testThrowsExceptionForUnavailableColumnKeys(): void
@@ -103,8 +103,8 @@ class GridSourceTest extends TestCase
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar']);
 
         $configuredIncludeColumns = [
-            new ColumnDefinition($dummyObjectManager, 'foo', 'Foo Label'), // configured label
-            new ColumnDefinition($dummyObjectManager, 'bar', null, 'int'), // configured type
+            'foo' => new ColumnDefinition($dummyObjectManager, 'foo', 'Foo Label'), // configured label
+            'bar' => new ColumnDefinition($dummyObjectManager, 'bar', null, 'int'), // configured type
         ];
 
         $sut                       = new GridSource($gridSourceType, $stubColumnDefinitionFactory);

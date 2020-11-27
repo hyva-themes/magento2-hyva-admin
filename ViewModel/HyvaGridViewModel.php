@@ -11,7 +11,9 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 
 use function array_combine as zip;
+use function array_diff as diff;
 use function array_filter as filter;
+use function array_keys as keys;
 use function array_map as map;
 use function array_merge as merge;
 use function array_values as values;
@@ -32,8 +34,6 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private HyvaGridSourceInterface $memoizedGridSource;
 
-    private array $memoizedColumnDefinitions;
-
     private HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory;
 
     private HyvaGrid\ActionInterfaceFactory $actionFactory;
@@ -41,6 +41,8 @@ class HyvaGridViewModel implements HyvaGridInterface
     private HyvaGrid\MassActionInterfaceFactory $massActionFactory;
 
     private string $gridName;
+
+    private array $memoizedColumnDefinitions;
 
     public function __construct(
         string $gridName,
@@ -80,15 +82,15 @@ class HyvaGridViewModel implements HyvaGridInterface
         if (!isset($this->memoizedColumnDefinitions)) {
             $this->memoizedColumnDefinitions = $this->buildColumnDefinitions();
         }
-        return $this->memoizedColumnDefinitions;
+        $columnDefinitions = $this->memoizedColumnDefinitions;
+        return $this->removeColumns($columnDefinitions, $this->getColumnKeysToHide(keys($columnDefinitions)));
     }
 
     private function buildColumnDefinitions(): array
     {
-        $columnConfig      = $this->getGridDefinition()->getIncludedColumns();
-        $keepAllSourceCols = $this->getGridDefinition()->keepColumnsFromSource();
-        $available         = $this->getGridSourceModel()->extractColumnDefinitions($columnConfig, $keepAllSourceCols);
-        $keysToColumnsMap  = zip($this->getColumnKeys($available), values($available));
+        $configuredColumns = $this->getGridDefinition()->getIncludedColumns();
+        $availableColumns  = $this->getGridSourceModel()->extractColumnDefinitions($configuredColumns);
+        $keysToColumnsMap  = zip($this->getColumnKeys($availableColumns), values($availableColumns));
 
         return $this->removeColumns($keysToColumnsMap, $this->getGridDefinition()->getExcludedColumnKeys());
     }
@@ -101,7 +103,7 @@ class HyvaGridViewModel implements HyvaGridInterface
     private function removeColumns(array $columns, array $removeKeys): array
     {
         return filter($columns, function (ColumnDefinitionInterface $column) use ($removeKeys): bool {
-            return !in_array($column->getKey(), $removeKeys);
+            return !in_array($column->getKey(), $removeKeys, true);
         });
     }
 
@@ -136,11 +138,13 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private function buildRow($record): HyvaGrid\RowInterface
     {
-        return $this->rowFactory->create(['cells' => $this->buildCells($record)]);
+        $cells         = $this->buildCells($record);
+        $cellsWithRows = $this->addRowReferenceToCells($cells);
+        return $this->rowFactory->create(['cells' => $cellsWithRows]);
     }
 
     /**
-     * @param $record
+     * @param mixed $record
      * @return HyvaGrid\CellInterface[]
      */
     private function buildCells($record): array
@@ -150,6 +154,23 @@ class HyvaGridViewModel implements HyvaGridInterface
             $value = $this->getGridSourceModel()->extractValue($record, $columnDefinition->getKey());
             return $this->cellFactory->create(['value' => $value, 'columnDefinition' => $columnDefinition]);
         }, $this->getColumnDefinitions());
+    }
+
+    private function addRowReferenceToCells(array $cells): array
+    {
+        return map(function (HyvaGrid\CellInterface $cell) use ($cells): HyvaGrid\CellInterface {
+            return $this->createCellWithRowExcludingCell($cell, $cells);
+        }, $cells);
+    }
+
+    private function createCellWithRowExcludingCell(HyvaGrid\CellInterface $cell, array $cells): HyvaGrid\CellInterface
+    {
+        unset($cells[$cell->getColumnDefinition()->getKey()]);
+        return $this->cellFactory->create([
+            'value'            => $cell->getRawValue(),
+            'columnDefinition' => $cell->getColumnDefinition(),
+            'row'              => $this->rowFactory->create(['cells' => $cells]),
+        ]);
     }
 
     public function getNavigation(): HyvaGrid\NavigationInterface
@@ -223,5 +244,15 @@ class HyvaGridViewModel implements HyvaGridInterface
     public function getMassActionIdsParam(): ?string
     {
         return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? null;
+    }
+
+    private function getColumnKeysToHide(array $allColumnKeys): array
+    {
+        $configuredColumnKeys = keys($this->getGridDefinition()->getIncludedColumns());
+        $columnsToRemove      = $configuredColumnKeys && !$this->getGridDefinition()->keepColumnsFromSource()
+            ? diff($allColumnKeys, $configuredColumnKeys)
+            : [];
+
+        return merge($this->getGridDefinition()->getExcludedColumnKeys(), $columnsToRemove);
     }
 }
