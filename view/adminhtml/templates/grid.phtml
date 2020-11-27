@@ -264,7 +264,7 @@ $navigation = $grid->getNavigation();
                                        value="<?= $row->getCell($grid->getMassActionIdColumn())->getRawValue() ?>"
                                        name="<?= $grid->getMassActionIdsParam() ?>[]"
                                        class="form-checkbox rowCheckbox focus:outline-none focus:shadow-outline"
-                                       @click="selectRowCheckbox($event, user.userId)"
+                                       @click="selectRowCheckbox($event, '<?= $row->getCell($grid->getMassActionIdColumn())->getRawValue() ?>')"
                                 />
                             </td>
                         <?php endif; ?>
