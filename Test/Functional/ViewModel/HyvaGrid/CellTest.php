@@ -74,7 +74,8 @@ class CellTest extends TestCase
             {
                 /** @var CellInterface $cell */
                 $cell = $this->getData('cell');
-                return '<!!' . $cell->getTextValue() . '!!>';
+                $value = $cell->getRawValue();
+                return '<!![' . $value['currency'] . ', ' . $value['amount'] . ']!!>';
             }
         };
 

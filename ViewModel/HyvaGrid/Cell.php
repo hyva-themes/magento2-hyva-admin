@@ -47,14 +47,20 @@ class Cell implements CellInterface
         $renderer = $this->getRenderer();
         return $renderer
             ? $renderer->setData('cell', $this)->toHtml()
-            : $this->getEscapedTextValue();
+            : $this->renderAsHtml();
     }
 
-    private function getEscapedTextValue(): string
+    private function renderAsHtml(): string
     {
-        return $this->getColumnDefinition()->getRenderAsUnsecureHtml()
-            ? $this->getTextValue()
-            : $this->escaper->escapeHtml($this->getTextValue());
+        try {
+            return $this->getColumnDefinition()->getRenderAsUnsecureHtml()
+                ? $this->convertToString($this->getRawValue(), true)
+                : $this->escaper->escapeHtml($this->getTextValue());
+
+        } catch (UnableToCastToStringException $exception) {
+            $msg = sprintf('Column "%s": %s', $this->getColumnDefinition()->getKey(), $exception->getMessage());
+            throw new \RuntimeException($msg, 0, $exception);
+        }
     }
 
     public function getColumnDefinition(): ColumnDefinitionInterface
@@ -74,42 +80,42 @@ class Cell implements CellInterface
         }
         $options = $this->columnDefinition->getOptionArray();
         return $options && !is_array($this->getRawValue())
-            ? $this->getOptionText($options, $this->getRawValue()) ?? ((string) $this->getRawValue())
+            ? $this->getOptionText($options, $this->getRawValue())
             : $this->toString($this->getRawValue());
     }
 
     private function toString($value): string
     {
-        try {
-            return $this->tryToCastToString($value);
-        } catch (UnableToCastToStringException $exception) {
-            $msg = sprintf('Column "%s": %s', $this->getColumnDefinition()->getKey(), $exception->getMessage());
-            throw new \RuntimeException($msg, 0, $exception);
-        }
+        return $this->convertToString($value, false);
     }
 
-    private function tryToCastToString($value): string
+    private function convertToString($value, bool $useRecursion): string
     {
         $columnType = $this->columnDefinition->getType();
         $converter  = $this->dataTypeToStringConverterLocator->forTypeCode($columnType);
-        return $converter
-            ? $converter->toStringRecursive($value, 1 /* recursion depth */) ?? $this->missmatch($columnType, $value)
-            : '#unknownType(' . $columnType . ')';
+        if (!$converter) {
+            return '#unknownType(' . $columnType . ')';
+        }
+        $stringValue = $useRecursion
+            ? $converter->toStringRecursive($value, 1 /* recursion depth */)
+            : $converter->toString($value);
+
+        return $stringValue ?? $this->mismatch($columnType, $value);
     }
 
-    private function missmatch(?string $columnType, $value): string
+    private function mismatch(?string $columnType, $value): string
     {
         return sprintf('Column Type "%s" and value of type "%s" do not match', $columnType, gettype($value));
     }
 
-    private function getOptionText(array $options, $value): ?string
+    private function getOptionText(array $options, $value): string
     {
         foreach ($options as $option) {
             if ($option['value'] === $value) {
                 return (string) $option['label'];
             }
         }
-        return (string) $value;
+        return $this->toString($this->getRawValue());
     }
 
     private function getRenderer(): ?AbstractBlock
