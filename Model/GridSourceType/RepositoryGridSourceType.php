@@ -36,6 +36,12 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private CustomAttributesExtractor $customAttributesExtractor;
 
+    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
+
+    private DataTypeGuesserInterface $dataTypeGuesser;
+
     /**
      * @var string[]
      */
@@ -51,14 +57,10 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
      */
     private array $customAttributeKeys;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
-
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
-
     /**
-     * @var DataTypeGuesserInterface
+     * @var ColumnDefinitionInterface[]
      */
-    private DataTypeGuesserInterface $dataTypeGuesser;
+    private $memoizedColumnDefinitions = [];
 
     public function __construct(
         string $gridName,
@@ -127,6 +129,14 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     }
 
     public function getColumnDefinition(string $key): ColumnDefinitionInterface
+    {
+        if (! isset($this->memoizedColumnDefinitions[$key])) {
+            $this->memoizedColumnDefinitions[$key] = $this->buildColumnDefinition($key);
+        }
+        return $this->memoizedColumnDefinitions[$key];
+    }
+
+    private function buildColumnDefinition(string $key): ColumnDefinitionInterface
     {
         $recordType = $this->getRecordType();
         $columnType = $this->getColumnType($key, $recordType);
@@ -227,7 +237,10 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private function extractCustomAttributeValue($record, string $key)
     {
-        return $this->customAttributesExtractor->getValue($record, $key);
+        $value = $this->customAttributesExtractor->getValue($record, $key);
+        return $this->getColumnDefinition($key)->getType() === 'array' && is_string($value)
+            ? explode(',', $value)
+            : $value;
     }
 
     private function getCustomAttributeOptions(string $key): ?array

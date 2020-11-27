@@ -12,7 +12,7 @@ use function array_slice as slice;
 class ArrayDataType implements DataTypeInterface
 {
     const TYPE_ARRAY = 'array';
-    const LIMIT = 10;
+    const LIMIT = 5;
 
     private DataTypeToStringConverterLocatorInterface $toStringConverterLocator;
 
@@ -39,7 +39,7 @@ class ArrayDataType implements DataTypeInterface
     public function toString($value): ?string
     {
         return $this->valueToTypeCode($value)
-            ? (empty($value) ? '[ ]' : sprintf('[...(%d)...]', count($value)))
+            ? (empty($value) ? '[ ]' : $this->implode($value, 0))
             : null;
     }
 

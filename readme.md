@@ -6,7 +6,6 @@ It does not use any UI components.
 
 ## next steps (a.k. todo)
 
-* accessing other cells in custom renderers.
 * price data type
 * money data type
 * currency data type

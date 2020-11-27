@@ -9,6 +9,10 @@ use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 
+use function array_filter as filter;
+use function array_map as map;
+use function array_reduce as reduce;
+
 class Cell implements CellInterface
 {
     /**
@@ -75,18 +79,10 @@ class Cell implements CellInterface
 
     public function getTextValue(): string
     {
-        if (is_null($this->getRawValue())) {
+        if (is_null($value = $this->getRawValue())) {
             return '';
         }
-        $options = $this->columnDefinition->getOptionArray();
-        return $options && !is_array($this->getRawValue())
-            ? $this->getOptionText($options, $this->getRawValue())
-            : $this->toString($this->getRawValue());
-    }
-
-    private function toString($value): string
-    {
-        return $this->convertToString($value, false);
+        return $this->getOptionText($value) ?? $this->convertToString($value, false);
     }
 
     private function convertToString($value, bool $useRecursion): string
@@ -108,14 +104,22 @@ class Cell implements CellInterface
         return sprintf('Column Type "%s" and value of type "%s" do not match', $columnType, gettype($value));
     }
 
-    private function getOptionText(array $options, $value): string
+    private function getOptionText($value): ?string
     {
-        foreach ($options as $option) {
-            if ($option['value'] === $value) {
-                return (string) $option['label'];
-            }
+        if (! ($options = $this->columnDefinition->getOptionArray())) {
+            return null;
         }
-        return $this->toString($this->getRawValue());
+        $valueToLabel = reduce($options, function (array $map, array $option): array {
+            $map[$option['value']] = (string) $option['label'];
+            return $map;
+        }, []);
+
+        $labels = filter(map(function ($value) use ($valueToLabel): ?string {
+            return $valueToLabel[$value] ?? null;
+        }, is_array($value) ? $value : [$value]));
+        return $labels
+            ? implode(', ', $labels)
+            : null;
     }
 
     private function getRenderer(): ?AbstractBlock
