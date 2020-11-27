@@ -5,6 +5,7 @@
 
 $grid       = $block->getGrid();
 $navigation = $grid->getNavigation();
+$uniqueId = '_' . uniqid();
 ?>
 
 <style>
@@ -71,7 +72,7 @@ $navigation = $grid->getNavigation();
 
     img { max-width: none; display: inline-block; }
 </style>
-<div class="antialiased sans-serif" x-data="initDataTable()">
+<div class="antialiased sans-serif" x-data="initDataTable<?=$uniqueId?>()">
 
     <div class="container mx-auto py-6 px-4">
 
@@ -294,7 +295,7 @@ $navigation = $grid->getNavigation();
     </div>
 </div>
     <script>
-        function initDataTable() {
+        function initDataTable<?=$uniqueId?>() {
             return {
                 headings: [
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
