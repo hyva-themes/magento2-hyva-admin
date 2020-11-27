@@ -407,7 +407,7 @@ class NavigationTest extends TestCase
     {
         $stubRequest = $this->createMock(RequestInterface::class);
         $stubRequest->method('getParam')->willReturnMap([
-            ['p', null, 1],
+            ['p', null, 2],
             ['sortBy', null, 'foo'],
             ['sortDirection', null, 'desc'],
         ]);
@@ -418,6 +418,7 @@ class NavigationTest extends TestCase
 
         $expected = $this->getUrlBuilder()->getUrl('*/*/*', [
             '_current' => true,
+            'p' => 1,
             'sortBy' => 'id',
             'sortDirection' => 'desc'
         ]);

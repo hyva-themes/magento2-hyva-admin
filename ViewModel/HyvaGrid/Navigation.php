@@ -224,9 +224,10 @@ class Navigation implements NavigationInterface
     public function getSortByUrl(string $columnKey, string $direction): string
     {
         return $this->urlBuilder->getUrl('*/*/*', [
-            '_current' => true,
-            'sortBy' => $columnKey,
-            'sortDirection' => $direction
+            '_current'      => true,
+            'p'             => 1,
+            'sortBy'        => $columnKey,
+            'sortDirection' => $direction,
         ]);
     }
 }
