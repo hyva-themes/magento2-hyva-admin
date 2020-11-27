@@ -4,22 +4,28 @@ namespace Hyva\Admin\Model\DataType;
 
 use Hyva\Admin\Api\DataTypeInterface;
 
-class TextDataType implements DataTypeInterface
+class LongTextDataType implements DataTypeInterface
 {
-    const TYPE_TEXT = 'text';
+    const TYPE_LONG_TEXT = 'long_text';
     const LONG_TEXT_MIN_LENGTH = 200;
     const MAX_LENGTH = 30;
 
+    const LONG_TEXT_TYPES = [
+        self::TYPE_LONG_TEXT,
+        'string',
+        'text',
+    ];
+
     public function valueToTypeCode($value): ?string
     {
-        return is_string($value) && mb_strlen($value) >= self::LONG_TEXT_MIN_LENGTH
-            ? self::TYPE_TEXT
+        return is_string($value)
+            ? self::TYPE_LONG_TEXT
             : null;
     }
 
     public function typeToTypeCode(string $type): ?string
     {
-        return $type === self::TYPE_TEXT ? self::TYPE_TEXT : null;
+        return in_array($type, self::LONG_TEXT_TYPES, true) ? self::TYPE_LONG_TEXT : null;
     }
 
     public function toString($value): ?string

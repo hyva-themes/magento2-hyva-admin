@@ -30,7 +30,7 @@
         <arguments>
             <!-- note: order matters - generic DataTypes (e.g. object, unknown) come last -->
             <argument name="dataTypeClassMap" xsi:type="array">
-                <item name="text" xsi:type="string">Hyva\Admin\Model\DataType\TextDataType</item>
+                <item name="long_text" xsi:type="string">Hyva\Admin\Model\DataType\LongTextDataType</item>
                 <item name="scalar_null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
                 <item name="array" xsi:type="string">Hyva\Admin\Model\DataType\ArrayDataType</item>
                 <item name="datetime" xsi:type="string">Hyva\Admin\Model\DataType\DateTimeDataTypeConverter</item>

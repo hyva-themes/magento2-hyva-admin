@@ -9,7 +9,6 @@ class ScalarAndNullDataType implements DataTypeInterface
     const TYPE_SCALAR_NULL = 'scalar_null';
 
     const SCALAR_TYPES = [
-        'string',
         'int',
         'float',
         'decimal',

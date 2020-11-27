@@ -134,7 +134,7 @@ class CustomAttributesExtractor
             : ($attribute->getFrontendInput() === 'gallery' ? 'gallery' : $attribute->getBackendType());
     }
 
-    private function isArrayAttribute(AbstractAttribute $attribute)
+    private function isArrayAttribute(AbstractAttribute $attribute): bool
     {
         return $this->isAttributeWithSourceModel($attribute) ||  $this->isAttributeWithOptionsInputRenderer($attribute);
     }
