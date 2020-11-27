@@ -34,6 +34,7 @@
                 <item name="scalar_null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
                 <item name="array" xsi:type="string">Hyva\Admin\Model\DataType\ArrayDataType</item>
                 <item name="datetime" xsi:type="string">Hyva\Admin\Model\DataType\DateTimeDataTypeConverter</item>
+                <item name="price" xsi:type="string">Hyva\Admin\Model\DataType\PriceDataType</item>
                 <item name="magento_product" xsi:type="string">Hyva\Admin\Model\DataType\ProductDataType</item>
                 <item name="magento_category_link" xsi:type="string">Hyva\Admin\Model\DataType\CategoryLinkDataType</item>
                 <item name="magento_stock_item" xsi:type="string">Hyva\Admin\Model\DataType\StockItemDataType</item>
