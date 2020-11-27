@@ -405,16 +405,22 @@ class NavigationTest extends TestCase
 
     public function testReturnsSortByColumnUrl(): void
     {
-        $this->markTestIncomplete('wip');
-        
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 1]]);
+        $stubRequest->method('getParam')->willReturnMap([
+            ['p', null, 1],
+            ['sortBy', null, 'foo'],
+            ['sortDirection', null, 'desc'],
+        ]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
-        $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
+        $navigationConfig = [];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
-        $expected = $this->getUrlBuilder()->getUrl('*/*/*', ['_current' => true, 'p' => 1]);
-        $this->assertSame($expected, $sut->getPreviousPageUrl());
+        $expected = $this->getUrlBuilder()->getUrl('*/*/*', [
+            '_current' => true,
+            'sortBy' => 'id',
+            'sortDirection' => 'desc'
+        ]);
+        $this->assertSame($expected, $sut->getSortByUrl('id', 'desc'));
     }
 }

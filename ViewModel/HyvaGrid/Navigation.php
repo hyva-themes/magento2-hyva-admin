@@ -221,8 +221,12 @@ class Navigation implements NavigationInterface
             : null;
     }
 
-    public function getSortByColumnUrl(string $columnKey, string $direction): string
+    public function getSortByUrl(string $columnKey, string $direction): string
     {
-
+        return $this->urlBuilder->getUrl('*/*/*', [
+            '_current' => true,
+            'sortBy' => $columnKey,
+            'sortDirection' => $direction
+        ]);
     }
 }

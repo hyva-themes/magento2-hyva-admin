@@ -40,5 +40,5 @@ interface NavigationInterface
 
     public function getSortDirection(): ?string;
 
-    public function getSortByColumnUrl(string $columnKey, string $direction): string;
+    public function getSortByUrl(string $columnKey, string $direction): string;
 }
