@@ -61,15 +61,12 @@ class ProductLinkDataType implements DataTypeInterface
     public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
         return $this->valueToTypeCode($value)
-            ? $this->toStringConverterLocator->forTypeCode('array')->toStringRecursive(
-                $this->dataObjectProcessor->buildOutputDataArray($value, ProductLinkInterface::class),
-                1
-            )
+            ? $this->toString($value)
             : null;
     }
 
     private function formatProductLink(ProductLinkInterface $value): string
     {
-        return sprintf('%s %s', $value->getLinkType(), $value->getLinkedProductSku());
+        return sprintf('[%s: %s]', $value->getLinkType(), $value->getLinkedProductSku());
     }
 }
