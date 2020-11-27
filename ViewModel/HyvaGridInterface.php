@@ -12,6 +12,11 @@ interface HyvaGridInterface
     public function getColumnDefinitions(): array;
 
     /**
+     * @return HyvaGrid\ColumnDefinitionInterface[]
+     */
+    public function getAllColumnDefinitions(): array;
+
+    /**
      * @return HyvaGrid\RowInterface[]
      */
     public function getRows(): array;

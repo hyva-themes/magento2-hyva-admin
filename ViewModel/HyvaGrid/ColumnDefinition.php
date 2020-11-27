@@ -27,6 +27,8 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     private ?string $sortOrder;
 
+    private ?bool $isVisible;
+
     public function __construct(
         ObjectManagerInterface $objectManager,
         string $key,
@@ -37,8 +39,10 @@ class ColumnDefinition implements ColumnDefinitionInterface
         ?string $template = null,
         ?string $rendererBlockName = null,
         ?string $source = null,
-        ?array $options = null
+        ?array $options = null,
+        ?bool $isVisible = null
     ) {
+        $this->objectManager        = $objectManager;
         $this->key                  = $key;
         $this->label                = $label;
         $this->type                 = $type;
@@ -48,7 +52,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
         $this->rendererBlockName    = $rendererBlockName;
         $this->source               = $source;
         $this->options              = $options;
-        $this->objectManager        = $objectManager;
+        $this->isVisible            = $isVisible;
     }
 
     private function camelCaseToWords(string $camel): string
@@ -95,6 +99,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
             'rendererBlockName'    => $this->rendererBlockName,
             'source'               => $this->source,
             'options'              => $this->options,
+            'isVisible'            => $this->isVisible,
         ];
     }
 
@@ -131,5 +136,10 @@ class ColumnDefinition implements ColumnDefinitionInterface
     public function getSortOrder(): int
     {
         return (int) ($this->sortOrder ?? 0);
+    }
+
+    public function isVisible(): bool
+    {
+        return (bool) $this->isVisible;
     }
 }

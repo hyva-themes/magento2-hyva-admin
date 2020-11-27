@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
+use function array_filter as filter;
+
 class Row implements RowInterface
 {
     private array $cells;
@@ -16,11 +18,13 @@ class Row implements RowInterface
 
     public function getCells(): array
     {
-        return $this->cells;
+        return filter($this->cells, function (CellInterface $cell): bool {
+            return $cell->isVisible();
+        });
     }
 
     public function getCell(string $key): ?CellInterface
     {
-        return $this->getCells()[$key] ?? null;
+        return $this->cells[$key] ?? null;
     }
 }

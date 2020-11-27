@@ -40,7 +40,7 @@ interface HyvaGridDefinitionInterface
      */
     public function getMassActionConfig(): array;
 
-    public function keepColumnsFromSource(): bool;
+    public function isKeepSourceColumns(): bool;
 
     public function getNavigationConfig(): array;
 }

@@ -28,10 +28,11 @@ class HyvaGridViewModelTest extends TestCase
      * @param string $key
      * @return ColumnDefinitionInterface|MockObject
      */
-    private function createStubColumn(string $key): ColumnDefinitionInterface
+    private function createStubColumn(string $key, bool $isVisible = true): ColumnDefinitionInterface
     {
         $column = $this->createMock(ColumnDefinitionInterface::class);
         $column->method('getKey')->willReturn($key);
+        $column->method('isVisible')->willReturn($isVisible);
         return $column;
     }
 
@@ -108,8 +109,10 @@ class HyvaGridViewModelTest extends TestCase
         return $this->createMock(MassActionInterfaceFactory::class);
     }
 
-    private function setColumnDefinition(HyvaGridSourceFactory $stubGridSourceFactory, array $columnDefinitions): void
-    {
+    private function setColumnDefinitionOnFactory(
+        HyvaGridSourceFactory $stubGridSourceFactory,
+        array $columnDefinitions
+    ): void {
         /** @var MockObject $stubGridSource */
         $stubGridSource = $stubGridSourceFactory->createFor($this->createMock(HyvaGridDefinitionInterface::class));
         $stubGridSource->method('extractColumnDefinitions')->willReturn($columnDefinitions);
@@ -177,7 +180,7 @@ class HyvaGridViewModelTest extends TestCase
 
         $stubGridSourceFactory      = $this->createStubGridSourceFactory();
         $dummyGridDefinitionFactory = $this->createStubGridDefinitionFactory();
-        $this->setColumnDefinition($stubGridSourceFactory, $columnDefinitions);
+        $this->setColumnDefinitionOnFactory($stubGridSourceFactory, $columnDefinitions);
         $dummyGridRowFactory          = $this->createStubRowFactory();
         $dummyGridCellFactory         = $this->createStubCellFactory();
         $dummyNavigationFactory       = $this->createStubNavigationFactory();
@@ -208,7 +211,7 @@ class HyvaGridViewModelTest extends TestCase
 
         $stubGridSourceFactory      = $this->createStubGridSourceFactory();
         $dummyGridDefinitionFactory = $this->createStubGridDefinitionFactory();
-        $this->setColumnDefinition($stubGridSourceFactory, $columnDefinitions);
+        $this->setColumnDefinitionOnFactory($stubGridSourceFactory, $columnDefinitions);
         $dummyGridRowFactory          = $this->createStubRowFactory();
         $dummyGridCellFactory         = $this->createStubCellFactory();
         $dummyNavigationFactory       = $this->createStubNavigationFactory();
@@ -234,13 +237,13 @@ class HyvaGridViewModelTest extends TestCase
     public function testRemovesExcludedColumns(): void
     {
         $columnFoo = $this->createStubColumn('foo');
-        $columnBar = $this->createStubColumn('bar');
-        $columnBaz = $this->createStubColumn('baz');
+        $columnBar = $this->createStubColumn('bar', false);
+        $columnBaz = $this->createStubColumn('baz', false);
         $columnQux = $this->createStubColumn('qux');
 
         $stubGridSourceFactory     = $this->createStubGridSourceFactory();
         $stubGridDefinitionFactory = $this->createStubGridDefinitionFactory();
-        $this->setColumnDefinition($stubGridSourceFactory, [$columnFoo, $columnBar, $columnBaz, $columnQux]);
+        $this->setColumnDefinitionOnFactory($stubGridSourceFactory, [$columnFoo, $columnBar, $columnBaz, $columnQux]);
         $this->setExcludedColumnKeys($stubGridDefinitionFactory, ['bar', 'baz']);
         $dummyGridRowFactory          = $this->createStubRowFactory();
         $dummyGridCellFactory         = $this->createStubCellFactory();
@@ -279,7 +282,7 @@ class HyvaGridViewModelTest extends TestCase
         ]);
 
         $dummyGridDefinitionFactory = $this->createStubGridDefinitionFactory();
-        $this->setColumnDefinition($stubGridSourceFactory, [$columnBaz, $columnQux]);
+        $this->setColumnDefinitionOnFactory($stubGridSourceFactory, [$columnBaz, $columnQux]);
         $stubGridRowFactory = $this->createStubRowFactory();
         $stubGridRowFactory->method('create')->willReturnCallback(function ($cells) {
             return $this->createMock(RowInterface::class);

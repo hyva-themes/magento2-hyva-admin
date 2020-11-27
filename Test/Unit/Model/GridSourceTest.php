@@ -70,7 +70,7 @@ class GridSourceTest extends TestCase
         ];
 
         $sut              = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
-        $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns);
+        $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
 
         $this->assertContainsColumn(new ColumnDefinition($dummyObjectManager, 'foo'), $extractedColumns);
         $this->assertContainsColumn(new ColumnDefinition($dummyObjectManager, 'bar'), $extractedColumns);
@@ -93,7 +93,7 @@ class GridSourceTest extends TestCase
         $this->expectException(\OutOfBoundsException::class);
         $this->expectExceptionMessage('Column(s) not found on source: ');
 
-        $sut->extractColumnDefinitions($configuredIncludeColumns);
+        $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
     }
 
     public function testMergesInIncludedColumnSpecifications(): void
@@ -108,7 +108,7 @@ class GridSourceTest extends TestCase
         ];
 
         $sut                       = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
-        $extractedColumns          = $sut->extractColumnDefinitions($configuredIncludeColumns);
+        $extractedColumns          = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
         $expectedColumnDefinition1 = new ColumnDefinition($dummyObjectManager, 'foo', 'Foo Label');
         $expectedColumnDefinition2 = new ColumnDefinition($dummyObjectManager, 'bar', null, 'int');
         $this->assertContainsColumn($expectedColumnDefinition1, $extractedColumns);
@@ -124,7 +124,7 @@ class GridSourceTest extends TestCase
         $configuredIncludeColumns = [];
 
         $sut              = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
-        $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns);
+        $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
         $extractedKeys    = map(function (ColumnDefinitionInterface $columnDefinition): string {
             return $columnDefinition->getKey();
         }, $extractedColumns);

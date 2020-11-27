@@ -4,16 +4,16 @@ namespace Hyva\Admin\Model;
 
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
-
 use Magento\Framework\Api\SearchCriteriaInterface;
+
 use function array_combine as zip;
+use function array_diff as diff;
 use function array_filter as filter;
 use function array_keys as keys;
 use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_slice as slice;
-use function array_values as values;
 
 class GridSource implements HyvaGridSourceInterface
 {
@@ -31,25 +31,27 @@ class GridSource implements HyvaGridSourceInterface
         $this->columnDefinitionFactory = $columnDefinitionFactory;
     }
 
-    /**
-     * @param ColumnDefinitionInterface[] $configuredColumns
-     * @return ColumnDefinitionInterface[]
-     */
-    public function extractColumnDefinitions(array $configuredColumns): array
+    public function extractColumnDefinitions(array $configuredColumns, array $hiddenKeys, bool $keepAll): array
     {
         // Algorithm defining the sortOrder on grids:
         // 1. add sortOrder (larger than others) to all configured include columns without a specific sortOrder (pass 1)
         // 2. add sortOrder (larger than others) to all extracted columns that where not included (pass 2)
         // 3. sort columns (maybe in grid view model...?)
 
-        $keysToConfiguredColumns = $this->addMissingSortOrder($configuredColumns);
-        $allColumnKeys = $this->gridSourceType->getColumnKeys();
+        $configuredColumns = $this->addMissingSortOrder($configuredColumns);
+        $allColumnKeys     = $this->gridSourceType->getColumnKeys();
 
-        $this->validateConfiguredKeys(keys($keysToConfiguredColumns), $allColumnKeys);
+        $this->validateConfiguredKeys(keys($configuredColumns), $allColumnKeys);
 
-        $extractedColumns = map(function (string $key) use ($keysToConfiguredColumns): ColumnDefinitionInterface {
-            $extractedDefinition = $this->gridSourceType->getColumnDefinition($key);
-            return $this->mergeColumnDefinitions($extractedDefinition, $keysToConfiguredColumns[$key] ?? null);
+        $invisible = $keepAll || empty($configuredColumns)
+            ? $hiddenKeys
+            : diff($allColumnKeys, keys($configuredColumns));
+
+        $extractedColumns = map(function (string $key) use ($configuredColumns, $invisible): ColumnDefinitionInterface {
+            $extractedDefinition  = $this->gridSourceType->getColumnDefinition($key);
+            $configuredDefinition = $configuredColumns[$key] ?? null;
+            $isVisible            = !in_array($key, $invisible, true);
+            return $this->mergeColumnDefinitions($extractedDefinition, $configuredDefinition, $isVisible);
         }, zip($allColumnKeys, $allColumnKeys));
 
         $extractedColumnsWithSortOrder = $this->addMissingSortOrder($extractedColumns);
@@ -75,12 +77,14 @@ class GridSource implements HyvaGridSourceInterface
     }
 
     private function mergeColumnDefinitions(
-        ColumnDefinitionInterface $columnA,
-        ?ColumnDefinitionInterface $columnB
+        ColumnDefinitionInterface $extracted,
+        ?ColumnDefinitionInterface $configured,
+        bool $isVisible
     ): ColumnDefinitionInterface {
-        return $columnB
-            ? $this->columnDefinitionFactory->create(merge($columnA->toArray(), filter($columnB->toArray())))
-            : $columnA;
+        $configuredArray = $configured ? filter($configured->toArray()) : [];
+        $extractedArray   = $extracted->toArray();
+        $isVisibleArray   = ['isVisible' => $isVisible];
+        return $this->columnDefinitionFactory->create(merge($extractedArray, $configuredArray, $isVisibleArray));
     }
 
     public function getRecords(SearchCriteriaInterface $searchCriteria): array

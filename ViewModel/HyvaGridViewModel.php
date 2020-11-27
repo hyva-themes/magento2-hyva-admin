@@ -11,9 +11,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 
 use function array_combine as zip;
-use function array_diff as diff;
 use function array_filter as filter;
-use function array_keys as keys;
 use function array_map as map;
 use function array_merge as merge;
 use function array_values as values;
@@ -74,36 +72,33 @@ class HyvaGridViewModel implements HyvaGridInterface
         return $this->memoizedGridDefinition;
     }
 
-    /**
-     * @return ColumnDefinitionInterface[]
-     */
-    public function getColumnDefinitions(): array
+    public function getAllColumnDefinitions(): array
     {
         if (!isset($this->memoizedColumnDefinitions)) {
             $this->memoizedColumnDefinitions = $this->buildColumnDefinitions();
         }
-        $columnDefinitions = $this->memoizedColumnDefinitions;
-        return $this->removeColumns($columnDefinitions, $this->getColumnKeysToHide(keys($columnDefinitions)));
+        return $this->memoizedColumnDefinitions;
     }
 
     private function buildColumnDefinitions(): array
     {
-        $configuredColumns = $this->getGridDefinition()->getIncludedColumns();
-        $availableColumns  = $this->getGridSourceModel()->extractColumnDefinitions($configuredColumns);
-        $keysToColumnsMap  = zip($this->getColumnKeys($availableColumns), values($availableColumns));
+        $columns          = $this->getGridDefinition()->getIncludedColumns();
+        $showAll          = $this->getGridDefinition()->isKeepSourceColumns();
+        $keysToHide       = $this->getGridDefinition()->getExcludedColumnKeys();
+        $availableColumns = $this->getGridSourceModel()->extractColumnDefinitions($columns, $keysToHide, $showAll);
 
-        return $this->removeColumns($keysToColumnsMap, $this->getGridDefinition()->getExcludedColumnKeys());
+        return zip($this->getColumnKeys($availableColumns), values($availableColumns));
     }
 
-    /**
-     * @param ColumnDefinitionInterface[] $columns
-     * @param string[] $removeKeys
-     * @return ColumnDefinitionInterface[]
-     */
-    private function removeColumns(array $columns, array $removeKeys): array
+    public function getColumnDefinitions(): array
     {
-        return filter($columns, function (ColumnDefinitionInterface $column) use ($removeKeys): bool {
-            return !in_array($column->getKey(), $removeKeys, true);
+        return $this->removeHiddenColumns($this->getAllColumnDefinitions());
+    }
+
+    private function removeHiddenColumns(array $columns): array
+    {
+        return filter($columns, function (ColumnDefinitionInterface $columnDefinition): bool {
+            return $columnDefinition->isVisible();
         });
     }
 
@@ -153,7 +148,7 @@ class HyvaGridViewModel implements HyvaGridInterface
             // no lazy evaluation so the reference to $record can be freed
             $value = $this->getGridSourceModel()->extractValue($record, $columnDefinition->getKey());
             return $this->cellFactory->create(['value' => $value, 'columnDefinition' => $columnDefinition]);
-        }, $this->getColumnDefinitions());
+        }, $this->getAllColumnDefinitions());
     }
 
     private function addRowReferenceToCells(array $cells): array
@@ -210,7 +205,7 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private function validateActionIdColumnExists(?string $idColumn, string $actionType): void
     {
-        if (isset($idColumn) && !isset($this->getColumnDefinitions()[$idColumn])) {
+        if (isset($idColumn) && !isset($this->getAllColumnDefinitions()[$idColumn])) {
             throw new \OutOfBoundsException(sprintf('%s ID column "%s" not found.', $actionType, $idColumn));
         }
     }
@@ -244,15 +239,5 @@ class HyvaGridViewModel implements HyvaGridInterface
     public function getMassActionIdsParam(): ?string
     {
         return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? null;
-    }
-
-    private function getColumnKeysToHide(array $allColumnKeys): array
-    {
-        $configuredColumnKeys = keys($this->getGridDefinition()->getIncludedColumns());
-        $columnsToRemove      = $configuredColumnKeys && !$this->getGridDefinition()->keepColumnsFromSource()
-            ? diff($allColumnKeys, $configuredColumnKeys)
-            : [];
-
-        return merge($this->getGridDefinition()->getExcludedColumnKeys(), $columnsToRemove);
     }
 }

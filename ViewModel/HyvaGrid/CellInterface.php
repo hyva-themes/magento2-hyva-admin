@@ -15,6 +15,8 @@ interface CellInterface
 
     public function getTextValue(): string;
 
+    public function isVisible(): bool;
+
     /**
      * Used by custom cell renderers to access the values of other cells in the same row.
      *

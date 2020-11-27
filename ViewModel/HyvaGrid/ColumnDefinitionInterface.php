@@ -19,4 +19,6 @@ interface ColumnDefinitionInterface
     public function getOptionArray(): array;
 
     public function getSortOrder(): int;
+
+    public function isVisible(): bool;
 }

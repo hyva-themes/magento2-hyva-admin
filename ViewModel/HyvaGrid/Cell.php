@@ -146,4 +146,9 @@ class Cell implements CellInterface
     {
         return $this->row;
     }
+
+    public function isVisible(): bool
+    {
+        return $this->getColumnDefinition()->isVisible();
+    }
 }

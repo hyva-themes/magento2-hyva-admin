@@ -29,7 +29,7 @@ class RowTest extends TestCase
         $rowFactory              = ObjectManager::getInstance()->create(RowInterfaceFactory::class);
 
         /** @var ColumnDefinition $columnDefinition */
-        $columnDefinition = $columnDefinitionFactory->create(['key' => 'foo']);
+        $columnDefinition = $columnDefinitionFactory->create(['key' => 'foo', 'isVisible' => true]);
         $cells            = [$cellFactory->create(['value' => true, 'columnDefinition' => $columnDefinition])];
         /** @var RowInterface $row */
         $row = $rowFactory->create(['cells' => $cells]);

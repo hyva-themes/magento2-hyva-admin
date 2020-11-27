@@ -38,7 +38,7 @@ class NavigationTest extends TestCase
         return ObjectManager::getInstance()->create(NavigationInterface::class, filter([
             'gridSource'        => $hyvaGridSource,
             'navigationConfig'  => $navigationConfig,
-            'columnDefinitions' => $hyvaGridSource->extractColumnDefinitions([], false),
+            'columnDefinitions' => $hyvaGridSource->extractColumnDefinitions([], [], false),
             'request'           => $request,
         ], function ($v): bool {
             return isset($v);

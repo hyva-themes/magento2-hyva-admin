@@ -48,6 +48,7 @@ class ColumnDefinitionTest extends TestCase
                 ['value' => 'aaa', 'label' => 'Aaa'],
                 ['value' => 'bbb', 'label' => 'Bbb'],
             ],
+            'isVisible'            => true,
         ];
 
         $column1 = new ColumnDefinition($dummyObjectManager, ...values($original));

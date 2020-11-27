@@ -9,9 +9,11 @@ interface HyvaGridSourceInterface
 {
     /**
      * @param ColumnDefinitionInterface[] $configuredColumns
+     * @param string[] $hiddenKeys
+     * @param bool $keepAll
      * @return ColumnDefinitionInterface[]
      */
-    public function extractColumnDefinitions(array $configuredColumns): array;
+    public function extractColumnDefinitions(array $configuredColumns, array $hiddenKeys, bool $keepAll): array;
 
     public function getRecords(SearchCriteriaInterface $searchCriteria): array;
 
