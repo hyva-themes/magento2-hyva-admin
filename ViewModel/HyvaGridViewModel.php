@@ -155,8 +155,9 @@ class HyvaGridViewModel implements HyvaGridInterface
     public function getNavigation(): HyvaGrid\NavigationInterface
     {
         return $this->navigationFactory->create([
-            'gridSource'   => $this->getGridSourceModel(),
-            'navigationConfig' => $this->getGridDefinition()->getNavigationConfig(),
+            'gridSource'        => $this->getGridSourceModel(),
+            'columnDefinitions' => $this->getColumnDefinitions(),
+            'navigationConfig'  => $this->getGridDefinition()->getNavigationConfig(),
         ]);
     }
 

@@ -10,6 +10,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Framework\ObjectManagerInterface;
 use PHPUnit\Framework\TestCase;
 
+use function array_combine as zip;
 use function array_map as map;
 
 class GridSourceTest extends TestCase
@@ -127,7 +128,7 @@ class GridSourceTest extends TestCase
         $extractedKeys    = map(function (ColumnDefinitionInterface $columnDefinition): string {
             return $columnDefinition->getKey();
         }, $extractedColumns);
-        $this->assertSame($sourceColumnKeys, $extractedKeys);
+        $this->assertSame(zip($sourceColumnKeys, $sourceColumnKeys), $extractedKeys);
     }
 
 }

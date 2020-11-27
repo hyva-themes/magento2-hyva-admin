@@ -6,6 +6,8 @@ use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Magento\Backend\Model\UrlInterface as BackendUrlBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Api\SortOrder;
+use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\App\RequestInterface;
 
 use function array_filter as filter;
@@ -23,22 +25,36 @@ class Navigation implements NavigationInterface
 
     private RequestInterface $request;
 
+    private BackendUrlBuilder $urlBuilder;
+
     private array $navigationConfig;
 
-    private BackendUrlBuilder $urlBuilder;
+    /**
+     * @var ColumnDefinitionInterface[]
+     */
+    private array $columnDefinitions;
+
+    /**
+     * @var SortOrderBuilder
+     */
+    private SortOrderBuilder $sortOrderBuilder;
 
     public function __construct(
         HyvaGridSourceInterface $gridSource,
         array $navigationConfig,
+        array $columnDefinitions,
         SearchCriteriaBuilder $searchCriteriaBuilder,
+        SortOrderBuilder $sortOrderBuilder,
         RequestInterface $request,
         BackendUrlBuilder $urlBuilder
     ) {
         $this->gridSource            = $gridSource;
         $this->navigationConfig      = $navigationConfig;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->sortOrderBuilder      = $sortOrderBuilder;
         $this->request               = $request;
         $this->urlBuilder            = $urlBuilder;
+        $this->columnDefinitions     = $columnDefinitions;
     }
 
     public function getTotalRowsCount(): int
@@ -117,8 +133,18 @@ class Navigation implements NavigationInterface
         // when the page number on the search criteria is larger than the available pages.
         // However, all page links returned by this class will never go beyond the last page.
         $this->searchCriteriaBuilder->setCurrentPage($this->getRequestedPageNumber());
+        $this->searchCriteriaBuilder->addSortOrder($this->createSortOrder());
 
         return $this->searchCriteriaBuilder->create();
+    }
+
+    private function createSortOrder(): SortOrder
+    {
+        $this->sortOrderBuilder->setField($this->getRequestedSortByColumn() ?? $this->getDefaultSortDirection());
+        $this->getRequestedSortDirection() === self::DESC
+            ? $this->sortOrderBuilder->setDescendingDirection()
+            : $this->sortOrderBuilder->setAscendingDirection();
+        return $this->sortOrderBuilder->create();
     }
 
     public function getPageSizes(): array
@@ -154,5 +180,54 @@ class Navigation implements NavigationInterface
     private function getRequestedPageNumber(): int
     {
         return (int) ($this->request->getParam('p') ?? 1);
+    }
+
+    public function getSortByColumn(): ?string
+    {
+        return $this->getRequestedSortByColumn()
+            ?? $this->navigationConfig['sorting']['defaultSortByColumn']
+            ?? $this->getFirstColumnKey();
+    }
+
+    private function getFirstColumnKey(): ?string
+    {
+        $firstColumn = values($this->columnDefinitions)[0] ?? null;
+        return $firstColumn ? $firstColumn->getKey() : null;
+    }
+
+    private function getRequestedSortByColumn(): ?string
+    {
+        $sortBy = $this->request->getParam('sortBy');
+        return isset($this->columnDefinitions[$sortBy]) ? $sortBy : null;
+    }
+
+    public function getSortDirection(): ?string
+    {
+        return $this->getRequestedSortDirection()
+            ?? $this->navigationConfig['sorting']['defaultSortDirection']
+            ?? $this->getDefaultSortDirection();
+    }
+
+    private function getDefaultSortDirection(): string
+    {
+        return self::ASC;
+    }
+
+    private function getRequestedSortDirection(): ?string
+    {
+        $direction = $this->request->getParam('sortDirection');
+        return in_array($direction, [self::ASC, self::DESC], true)
+            ? $direction
+            : null;
+    }
+
+    public function getSortByUrl(string $columnKey, string $direction): string
+    {
+        return $this->urlBuilder->getUrl('*/*/*', [
+            '_current'      => true,
+            'p'             => 1,
+            'sortBy'        => $columnKey,
+            'sortDirection' => $direction,
+        ]);
     }
 }

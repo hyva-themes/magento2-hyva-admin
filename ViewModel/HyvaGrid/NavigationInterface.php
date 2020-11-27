@@ -6,6 +6,9 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 
 interface NavigationInterface
 {
+    const ASC = 'asc';
+    const DESC = 'desc';
+
     public function getTotalRowsCount(): int;
 
     public function getPageCount(): int;
@@ -32,4 +35,10 @@ interface NavigationInterface
      * @return int[]
      */
     public function getPageSizes(): array;
+
+    public function getSortByColumn(): ?string;
+
+    public function getSortDirection(): ?string;
+
+    public function getSortByUrl(string $columnKey, string $direction): string;
 }

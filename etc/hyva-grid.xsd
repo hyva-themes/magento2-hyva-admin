@@ -179,6 +179,7 @@
     <xs:complexType name="navigation">
         <xs:sequence>
             <xs:element name="pager" type="pagerType" minOccurs="0"/>
+            <xs:element name="sorting" type="sortingType" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -196,6 +197,20 @@
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
                         <xs:pattern value="( *[0-9]+,?)+"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="sortingType">
+        <xs:sequence>
+            <xs:element name="defaultSortByColumn" type="xs:normalizedString"/>
+            <xs:element name="defaultSortDirection">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="asc"/>
+                        <xs:enumeration value="desc"/>
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>

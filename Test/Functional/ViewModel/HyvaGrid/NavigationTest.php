@@ -34,10 +34,12 @@ class NavigationTest extends TestCase
         array $navigationConfig,
         RequestInterface $request = null
     ): Navigation {
+        $hyvaGridSource = $this->createArrayGridSource($gridData);
         return ObjectManager::getInstance()->create(NavigationInterface::class, filter([
-            'gridSource'       => $this->createArrayGridSource($gridData),
-            'navigationConfig' => $navigationConfig,
-            'request'          => $request,
+            'gridSource'        => $hyvaGridSource,
+            'navigationConfig'  => $navigationConfig,
+            'columnDefinitions' => $hyvaGridSource->extractColumnDefinitions([], false),
+            'request'           => $request,
         ], function ($v): bool {
             return isset($v);
         }));
@@ -283,7 +285,7 @@ class NavigationTest extends TestCase
     public function testSetsCurrentPageOnSearchCriteria(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $currentPage           = 2;
+        $currentPage = 2;
         $stubRequest->method('getParam')->willReturnMap([['p', null, $currentPage], ['pageSize', null, 1]]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
@@ -292,5 +294,134 @@ class NavigationTest extends TestCase
 
         $searchCriteria = $sut->getSearchCriteria();
         $this->assertSame($currentPage, $searchCriteria->getCurrentPage());
+    }
+
+    public function testSetsSortOrderSearchCriteria(): void
+    {
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $stubRequest->method('getParam')->willReturnMap([['sortBy', null, 'name'], ['sortDirection', null, 'asc']]);
+
+        $gridData         = [['id' => 'a', 'name' => 'a'], ['id' => 'b', 'name' => 'b'], ['id' => 'c', 'name' => 'c']];
+        $navigationConfig = [];
+        $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $searchCriteria = $sut->getSearchCriteria();
+        $this->assertSame('name', $searchCriteria->getSortOrders()[0]->getField());
+        $this->assertSame('ASC', $searchCriteria->getSortOrders()[0]->getDirection());
+    }
+
+    public function testReturnsFirstColumnAsDefaultSortByColumn(): void
+    {
+        $gridData         = [
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+        ];
+        $navigationConfig = [];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+
+        $this->assertSame('col_a', $sut->getSortByColumn());
+    }
+
+    public function testReturnsConfiguredDefaultSortByColumnIfPresent(): void
+    {
+        $gridData         = [
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+        ];
+        $navigationConfig = ['sorting' => ['defaultSortByColumn' => 'col_b']];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+
+        $this->assertSame('col_b', $sut->getSortByColumn());
+    }
+
+    public function testReturnsRequestedSortByColumnIfPresent(): void
+    {
+        $gridData         = [
+            ['col_a' => 'xx', 'col_b' => 'yy', 'col_c' => 'zz'],
+            ['col_a' => 'xx', 'col_b' => 'yy', 'col_c' => 'zz'],
+        ];
+        $navigationConfig = ['sorting' => ['defaultSortByColumn' => 'col_b']];
+
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $sortCol     = 'col_c';
+        $stubRequest->method('getParam')->willReturnMap([['sortBy', null, $sortCol]]);
+        $sut = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $this->assertSame('col_c', $sut->getSortByColumn());
+    }
+
+    public function testReturnsDefaultSortByForInvalidRequestedSortColumn(): void
+    {
+        $gridData         = [
+            ['col_a' => 'xx', 'col_b' => 'yy', 'col_c' => 'zz'],
+            ['col_a' => 'xx', 'col_b' => 'yy', 'col_c' => 'zz'],
+        ];
+        $navigationConfig = ['sorting' => ['defaultSortByColumn' => 'col_b']];
+
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $stubRequest->method('getParam')->willReturnMap([['sortBy', null, 'col_invalid']]);
+        $sut = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $this->assertSame('col_b', $sut->getSortByColumn());
+    }
+
+    public function testReturnsDefaultAscendingSortDirection(): void
+    {
+        $gridData         = [
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+        ];
+        $navigationConfig = [];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+
+        $this->assertSame('asc', $sut->getSortDirection());
+    }
+
+    public function testReturnsConfiguredDefaultSortDirection(): void
+    {
+        $gridData         = [
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+        ];
+        $navigationConfig = ['sorting' => ['defaultSortDirection' => 'desc']];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+
+        $this->assertSame('desc', $sut->getSortDirection());
+    }
+
+    public function testReturnsRequestedSortDirection(): void
+    {
+        $gridData         = [
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+        ];
+        $navigationConfig = ['sorting' => ['defaultSortDirection' => 'desc']];
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $stubRequest->method('getParam')->willReturnMap([['sortDirection', null, 'asc']]);
+        $sut = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $this->assertSame('asc', $sut->getSortDirection());
+    }
+
+    public function testReturnsSortByColumnUrl(): void
+    {
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $stubRequest->method('getParam')->willReturnMap([
+            ['p', null, 2],
+            ['sortBy', null, 'foo'],
+            ['sortDirection', null, 'desc'],
+        ]);
+
+        $gridData         = [['id' => 'a'], ['id' => 'b']];
+        $navigationConfig = [];
+        $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $expected = $this->getUrlBuilder()->getUrl('*/*/*', [
+            '_current' => true,
+            'p' => 1,
+            'sortBy' => 'id',
+            'sortDirection' => 'desc'
+        ]);
+        $this->assertSame($expected, $sut->getSortByUrl('id', 'desc'));
     }
 }

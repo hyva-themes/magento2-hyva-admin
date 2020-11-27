@@ -312,13 +312,20 @@ EOXML;
             <defaultPageSize>10</defaultPageSize>
             <pageSizes>10,20,50,100</pageSizes>
         </pager>
+        <sorting>
+            <defaultSortByColumn>id</defaultSortByColumn>
+            <defaultSortDirection>asc</defaultSortDirection>
+        </sorting>
     </navigation>
 EOXML;
     }
 
     private function getNavigationExpected(): array
     {
-        return ['navigation' => ['pager' => ['defaultPageSize' => '10', 'pageSizes' => '10,20,50,100']]];
+        return ['navigation' => [
+            'pager' => ['defaultPageSize' => '10', 'pageSizes' => '10,20,50,100'],
+            'sorting' => ['defaultSortByColumn' => 'id', 'defaultSortDirection' => 'asc'],
+        ]];
     }
 
     private function getEntityConfigXml(): string
