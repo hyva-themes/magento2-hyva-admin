@@ -17,7 +17,7 @@ class GenericObjectDataType implements DataTypeInterface
 
     public function typeToTypeCode(string $type): ?string
     {
-        return $type === self::TYPE_GENERIC_OBJECT
+        return $type === self::TYPE_GENERIC_OBJECT || class_exists($type) || interface_exists($type)
             ? self::TYPE_GENERIC_OBJECT
             : null;
     }
@@ -25,7 +25,7 @@ class GenericObjectDataType implements DataTypeInterface
     public function toString($value): ?string
     {
         return $this->valueToTypeCode($value)
-            ? sprintf('#(%s)', get_class($value))
+            ? sprintf('object(%s)', get_class($value))
             : null;
     }
 

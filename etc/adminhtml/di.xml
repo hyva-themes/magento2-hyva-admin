@@ -28,6 +28,7 @@
     </type>
     <type name="Hyva\Admin\Model\DataType\DataTypeFacade">
         <arguments>
+            <!-- note: order matters - generic DataTypes (e.g. object, unknown) come last -->
             <argument name="dataTypeClassMap" xsi:type="array">
                 <item name="text" xsi:type="string">Hyva\Admin\Model\DataType\TextDataType</item>
                 <item name="scalar_null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
@@ -42,6 +43,7 @@
                 <item name="magento_product_image" xsi:type="string">Hyva\Admin\Model\DataType\ProductImageDataType</item>
                 <item name="magento_customer_address" xsi:type="string">Hyva\Admin\Model\DataType\CustomerAddressDataType</item>
                 <item name="magento_product_custom_option" xsi:type="string">Hyva\Admin\Model\DataType\ProductCustomOptionDataType</item>
+                <item name="magento_tier_price" xsi:type="string">Hyva\Admin\Model\DataType\TierPriceDataType</item>
                 <item name="object" xsi:type="string">Hyva\Admin\Model\DataType\GenericObjectDataType</item>
                 <item name="unknown" xsi:type="string">Hyva\Admin\Model\DataType\UnknownDataType</item>
             </argument>
