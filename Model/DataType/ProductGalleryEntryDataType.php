@@ -3,16 +3,16 @@
 namespace Hyva\Admin\Model\DataType;
 
 use Hyva\Admin\Api\DataTypeInterface;
-use Hyva\Admin\Model\ProductMedia;
+use Hyva\Admin\Model\BackendProductMedia;
 use Magento\Catalog\Api\Data\ProductAttributeMediaGalleryEntryInterface;
 
 class ProductGalleryEntryDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_PRODUCT_GALLERY_ENTRY = 'magento_product_gallery_entry';
 
-    private ProductMedia $productMedia;
+    private BackendProductMedia $productMedia;
 
-    public function __construct(ProductMedia $productMedia)
+    public function __construct(BackendProductMedia $productMedia)
     {
         $this->productMedia = $productMedia;
     }

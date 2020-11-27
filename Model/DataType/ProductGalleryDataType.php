@@ -3,7 +3,7 @@
 namespace Hyva\Admin\Model\DataType;
 
 use Hyva\Admin\Api\DataTypeInterface;
-use Hyva\Admin\Model\ProductMedia;
+use Hyva\Admin\Model\BackendProductMedia;
 
 use function array_map as map;
 
@@ -11,9 +11,9 @@ class ProductGalleryDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_PRODUCT_GALLERY = 'magento_product_gallery';
 
-    private ProductMedia $productMedia;
+    private BackendProductMedia $productMedia;
 
-    public function __construct(ProductMedia $productMedia)
+    public function __construct(BackendProductMedia $productMedia)
     {
         $this->productMedia = $productMedia;
     }
