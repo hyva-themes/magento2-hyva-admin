@@ -39,13 +39,13 @@ class ArrayDataType implements DataTypeInterface
     public function toString($value): ?string
     {
         return $this->valueToTypeCode($value)
-            ? (empty($value) ? '[ ]' : $this->implode($value, 0))
+            ? (empty($value) ? '[ ]' : $this->implode($value, 1))
             : null;
     }
 
     public function toHtmlRecursive($value, $maxRecursionDepth = 1): ?string
     {
-        return $this->valueToTypeCode($value) && $this->mayRecurse($maxRecursionDepth)
+        return $this->valueToTypeCode($value)
             ? $this->implode($value, $maxRecursionDepth)
             : $this->toString($value);
     }
@@ -59,7 +59,9 @@ class ArrayDataType implements DataTypeInterface
     {
         return empty($value)
             ? '[ ]'
-            : '[' . implode(', ', $this->recur($value, $maxRecursionDepth)) . ']';
+            : '[' . ($this->mayRecurse($maxRecursionDepth)
+                ? implode(', ', $this->recur($value, $maxRecursionDepth))
+                : '...') . ']';
     }
 
     private function recur(array $value, int $maxRecursionDepth): array

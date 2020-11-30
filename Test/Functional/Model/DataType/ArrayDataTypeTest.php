@@ -43,8 +43,8 @@ class ArrayDataTypeTest extends TestCase
     public function testArrayToStringWithoutRecursion(): void
     {
         $this->assertSame('[ ]', $this->createArrayDataType()->toString([]));
-        $this->assertSame('[...(1)...]', $this->createArrayDataType()->toString(['a']));
-        $this->assertSame('[...(3)...]', $this->createArrayDataType()->toString([3, 2, 1]));
+        $this->assertSame('[a]', $this->createArrayDataType()->toString(['a']));
+        $this->assertSame('[3, 2, 1, [...]]', $this->createArrayDataType()->toString([3, 2, 1, [4, [5]]]));
     }
 
     public function testArrayToStringWithRecursion(): void
@@ -91,13 +91,15 @@ class ArrayDataTypeTest extends TestCase
 
     public function recursionDepthDataProvider(): array
     {
+        // recursion depth => expected
         return [
-            [0, '[...(2)...]'],
-            [1, '[[...(2)...], [...(1)...]]'],
-            [2, '[[[...(2)...], [ ]], [[...(3)...]]]'],
-            [3, '[[[1, [...(2)...]], [ ]], [[4, 5, [ ]]]]'],
+            [0, '[...]'],
+            [1, '[[...], [...]]'],
+            [2, '[[[...], [ ]], [[...]]]'],
+            [3, '[[[1, [...]], [ ]], [[4, 5, [ ]]]]'],
             [4, '[[[1, [2, 3]], [ ]], [[4, 5, [ ]]]]'],
             [5, '[[[1, [2, 3]], [ ]], [[4, 5, [ ]]]]'],
+            [ArrayDataType::UNLIMITED_RECURSION, '[[[1, [2, 3]], [ ]], [[4, 5, [ ]]]]'],
         ];
     }
 }
