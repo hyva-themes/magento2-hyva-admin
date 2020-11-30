@@ -2,14 +2,14 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:element name="grid">
         <xs:complexType >
-            <xs:choice minOccurs="1" maxOccurs="unbounded">
-                <xs:element name="source" type="source"/>
+            <xs:all>
+                <xs:element name="source" type="source" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="massActions" type="massAction" minOccurs="0"/>
                 <xs:element name="actions" type="actions" minOccurs="0"/>
                 <xs:element name="columns" type="columns" minOccurs="0"/>
                 <xs:element name="navigation" type="navigation" minOccurs="0"/>
                 <xs:element name="entityConfig" type="entityConfig" minOccurs="0"/>
-            </xs:choice>
+            </xs:all>
         </xs:complexType>
     </xs:element>
 
@@ -81,10 +81,10 @@
     </xs:complexType>
 
     <xs:complexType name="columns">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="include" type="includeColumns" minOccurs="0"/>
             <xs:element name="exclude" type="excludeColumns" minOccurs="0"/>
-        </xs:sequence>
+        </xs:all>
         <xs:attribute name="rowAction" type="xs:normalizedString"/>
     </xs:complexType>
 
@@ -167,46 +167,45 @@
         <xs:sequence>
             <xs:element name="label" minOccurs="0">
                 <xs:complexType>
-                    <xs:sequence>
+                    <xs:all>
                         <xs:element name="singular" type="xs:string" minOccurs="0"/>
                         <xs:element name="plural" type="xs:string" minOccurs="0"/>
-                    </xs:sequence>
+                    </xs:all>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="navigation">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="pager" type="pagerType" minOccurs="0"/>
             <xs:element name="sorting" type="sortingType" minOccurs="0"/>
-        </xs:sequence>
+        </xs:all>
     </xs:complexType>
 
     <xs:complexType name="pagerType">
-        <xs:sequence>
-            <xs:element name="defaultPageSize">
+        <xs:all>
+            <xs:element name="defaultPageSize" minOccurs="0">
                 <xs:simpleType>
                     <xs:restriction base="xs:integer">
                         <xs:minInclusive value="1"/>
-                        <xs:maxInclusive value="10000"/>
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
-            <xs:element name="pageSizes">
+            <xs:element name="pageSizes" minOccurs="0">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
                         <xs:pattern value="( *[0-9]+,?)+"/>
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
-        </xs:sequence>
+        </xs:all>
     </xs:complexType>
 
     <xs:complexType name="sortingType">
-        <xs:sequence>
-            <xs:element name="defaultSortByColumn" type="xs:normalizedString"/>
-            <xs:element name="defaultSortDirection">
+        <xs:all>
+            <xs:element name="defaultSortByColumn" type="xs:normalizedString" minOccurs="0"/>
+            <xs:element name="defaultSortDirection" minOccurs="0">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
                         <xs:enumeration value="asc"/>
@@ -214,6 +213,6 @@
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
-        </xs:sequence>
+        </xs:all>
     </xs:complexType>
 </xs:schema>
