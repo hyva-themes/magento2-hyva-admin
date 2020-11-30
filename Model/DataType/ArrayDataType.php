@@ -43,7 +43,7 @@ class ArrayDataType implements DataTypeInterface
             : null;
     }
 
-    public function toStringRecursive($value, $maxRecursionDepth = 1): ?string
+    public function toHtmlRecursive($value, $maxRecursionDepth = 1): ?string
     {
         return $this->valueToTypeCode($value) && $this->mayRecurse($maxRecursionDepth)
             ? $this->implode($value, $maxRecursionDepth)
@@ -69,7 +69,7 @@ class ArrayDataType implements DataTypeInterface
 
         $strings = map(function ($value) use ($maxRecursionDepth): string {
             $converter = $this->toStringConverterLocator->forTypeCode($this->dataTypeGuesser->valueToTypeCode($value));
-            return $converter->toStringRecursive($value, $maxRecursionDepth - 1);
+            return $converter->toHtmlRecursive($value, $maxRecursionDepth - 1);
         }, $itemsToShow);
 
         return merge($strings, ($overLimit ? ['...'] : []));

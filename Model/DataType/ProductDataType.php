@@ -50,7 +50,7 @@ class ProductDataType implements DataTypeInterface
         return (string) ($product->getName() ?? $product->getSku() ?? $product->getId() ?? '(not initialized)');
     }
 
-    public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
+    public function toHtmlRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
         return $this->valueToTypeCode($value)
             ? sprintf('%s [SKU %s]', $this->getDisplayName($value), $value->getSku() ?? '?')

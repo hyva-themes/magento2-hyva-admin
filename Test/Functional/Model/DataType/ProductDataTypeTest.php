@@ -21,7 +21,7 @@ class ProductDataTypeTest extends TestCase
     public function testReturnsNullIfTypeDoesNotMatch(): void
     {
         $this->assertNull((new ProductDataType())->toString([]));
-        $this->assertNull((new ProductDataType())->toStringRecursive([]));
+        $this->assertNull((new ProductDataType())->toHtmlRecursive([]));
     }
 
     public function testToString(): void
@@ -43,7 +43,7 @@ class ProductDataTypeTest extends TestCase
         $product->setSku('1234xyz');
         $product->setId(23);
 
-        $this->assertSame('Test [SKU 1234xyz]', (new ProductDataType())->toStringRecursive($product));
+        $this->assertSame('Test [SKU 1234xyz]', (new ProductDataType())->toHtmlRecursive($product));
     }
 
     public function testEmptyProduct(): void
@@ -52,6 +52,6 @@ class ProductDataTypeTest extends TestCase
         $product = ObjectManager::getInstance()->create(ProductInterface::class);
 
         $this->assertSame('(not initialized)', (new ProductDataType())->toString($product));
-        $this->assertSame('(not initialized) [SKU ?]', (new ProductDataType())->toStringRecursive($product));
+        $this->assertSame('(not initialized) [SKU ?]', (new ProductDataType())->toHtmlRecursive($product));
     }
 }

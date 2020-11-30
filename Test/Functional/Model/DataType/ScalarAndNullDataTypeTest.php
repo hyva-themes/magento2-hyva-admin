@@ -17,7 +17,7 @@ class ScalarAndNullDataTypeTest extends TestCase
     {
         $sut = new ScalarAndNullDataType();
         $this->assertNull($sut->toString($nonMatchingType));
-        $this->assertNull($sut->toStringRecursive($nonMatchingType));
+        $this->assertNull($sut->toHtmlRecursive($nonMatchingType));
     }
 
     public function notMatchingTypeProvider(): array
@@ -36,7 +36,7 @@ class ScalarAndNullDataTypeTest extends TestCase
     {
         $sut = new ScalarAndNullDataType();
         $this->assertSame((string) $matchingType, $sut->toString($matchingType));
-        $this->assertSame((string) $matchingType, $sut->toStringRecursive($matchingType));
+        $this->assertSame((string) $matchingType, $sut->toHtmlRecursive($matchingType));
     }
 
     public function matchingTypeProvider(): array

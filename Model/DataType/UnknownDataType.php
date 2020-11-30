@@ -32,7 +32,7 @@ class UnknownDataType implements DataTypeInterface
         }
     }
 
-    public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
+    public function toHtmlRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
         return $this->toString($value);
     }

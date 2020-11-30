@@ -52,7 +52,7 @@ class TierPriceDataType implements DataTypeInterface
      * @param int $maxRecursionDepth
      * @return string|null
      */
-    public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
+    public function toHtmlRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
         return $this->isProductTierPriceInstance($value)
             ? $this->implode([

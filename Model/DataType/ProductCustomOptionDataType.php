@@ -51,7 +51,7 @@ class ProductCustomOptionDataType implements DataTypeInterface
             : null;
     }
 
-    public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
+    public function toHtmlRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
         return $this->valueToTypeCode($value)
             ? $this->formatCustomOptionAsArray($value, $maxRecursionDepth)
@@ -67,7 +67,7 @@ class ProductCustomOptionDataType implements DataTypeInterface
         ];
         $converter = $this->dataTypeToStringConverterLocator->forTypeCode('array');
         return $converter
-            ? 'Custom Option: ' . $converter->toStringRecursive($parts, $maxRecursionDepth)
+            ? 'Custom Option: ' . $converter->toHtmlRecursive($parts, $maxRecursionDepth)
             : '';
     }
 

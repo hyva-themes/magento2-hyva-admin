@@ -29,7 +29,7 @@ class GenericObjectDataType implements DataTypeInterface
             : null;
     }
 
-    public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
+    public function toHtmlRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
         return $this->toString($value);
     }

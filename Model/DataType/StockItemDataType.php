@@ -58,10 +58,10 @@ class StockItemDataType implements DataTypeInterface
             : null;
     }
 
-    public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
+    public function toHtmlRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string
     {
         return $this->valueToTypeCode($value)
-            ? $this->toStringConverterLocator->forTypeCode('array')->toStringRecursive(
+            ? $this->toStringConverterLocator->forTypeCode('array')->toHtmlRecursive(
                 $this->dataObjectProcessor->buildOutputDataArray($value, StockItemInterface::class),
                 $maxRecursionDepth
             )

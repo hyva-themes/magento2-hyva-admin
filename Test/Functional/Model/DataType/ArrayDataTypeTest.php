@@ -37,7 +37,7 @@ class ArrayDataTypeTest extends TestCase
     public function testReturnsNullIfTypeDoesNotMatch(): void
     {
         $this->assertNull($this->createArrayDataType()->toString('foo'));
-        $this->assertNull($this->createArrayDataType()->toStringRecursive('foo'));
+        $this->assertNull($this->createArrayDataType()->toHtmlRecursive('foo'));
     }
 
     public function testArrayToStringWithoutRecursion(): void
@@ -50,10 +50,10 @@ class ArrayDataTypeTest extends TestCase
     public function testArrayToStringWithRecursion(): void
     {
         $sut = $this->createArrayDataType();
-        $this->assertSame('[ ]', $sut->toStringRecursive([]));
-        $this->assertSame('[1]', $sut->toStringRecursive([1]));
-        $this->assertSame('[1, a]', $sut->toStringRecursive([1, 'a']));
-        $this->assertSame('[[ ], a]', $sut->toStringRecursive([[], 'a']));
+        $this->assertSame('[ ]', $sut->toHtmlRecursive([]));
+        $this->assertSame('[1]', $sut->toHtmlRecursive([1]));
+        $this->assertSame('[1, a]', $sut->toHtmlRecursive([1, 'a']));
+        $this->assertSame('[[ ], a]', $sut->toHtmlRecursive([[], 'a']));
 
         $o = new class() {
             public function __toString(): string
@@ -61,11 +61,11 @@ class ArrayDataTypeTest extends TestCase
                 return 'foo';
             }
         };
-        $this->assertSame('[[ ], a, foo]', $sut->toStringRecursive([[], 'a', $o]));
+        $this->assertSame('[[ ], a, foo]', $sut->toHtmlRecursive([[], 'a', $o]));
 
         $noLimit = ArrayDataType::UNLIMITED_RECURSION;
-        $this->assertSame('[[[[ ]]]]', $sut->toStringRecursive([[[[]]]], $noLimit));
-        $this->assertSame('[[[[10, 9, 8]]]]', $sut->toStringRecursive([[[[10, 9, 8]]]], $noLimit));
+        $this->assertSame('[[[[ ]]]]', $sut->toHtmlRecursive([[[[]]]], $noLimit));
+        $this->assertSame('[[[[10, 9, 8]]]]', $sut->toHtmlRecursive([[[[10, 9, 8]]]], $noLimit));
     }
 
     /**
@@ -86,7 +86,7 @@ class ArrayDataTypeTest extends TestCase
                 [4, 5, []],
             ],
         ];
-        $this->assertSame($expected, $sut->toStringRecursive($value, $recursionDepth));
+        $this->assertSame($expected, $sut->toHtmlRecursive($value, $recursionDepth));
     }
 
     public function recursionDepthDataProvider(): array

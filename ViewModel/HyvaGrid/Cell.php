@@ -93,7 +93,7 @@ class Cell implements CellInterface
             return '#unknownType(' . $columnType . ')';
         }
         $stringValue = $useRecursion
-            ? $converter->toStringRecursive($value, 1 /* recursion depth */)
+            ? $converter->toHtmlRecursive($value, 1 /* recursion depth */)
             : $converter->toString($value);
 
         return $stringValue ?? $this->mismatch($columnType, $value);

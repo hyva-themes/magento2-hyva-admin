@@ -8,5 +8,5 @@ interface DataTypeValueToStringConverterInterface
 
     public function toString($value): ?string;
 
-    public function toStringRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string;
+    public function toHtmlRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string;
 }
