@@ -6,10 +6,12 @@ It does not use any UI components.
 
 ## next steps (a.k. todo)
 
+* qualify navigation URLs with the grid name for multiple grids on one page
+* sorting and paging with array source type
 * filtering
 * collection source type
-* caching the merge result in the grid config reader
 * ajax paging
+* caching the merge result in the grid config reader
 * query source type
-* support inline grid editing (probably)
+* inline grid editing
 * form page support
