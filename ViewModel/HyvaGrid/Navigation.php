@@ -11,7 +11,10 @@ use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\App\RequestInterface;
 
 use function array_filter as filter;
+use function array_keys as keys;
 use function array_map as map;
+use function array_merge as merge;
+use function array_reduce as reduce;
 use function array_values as values;
 
 class Navigation implements NavigationInterface
@@ -39,7 +42,10 @@ class Navigation implements NavigationInterface
      */
     private SortOrderBuilder $sortOrderBuilder;
 
+    private string $gridName;
+
     public function __construct(
+        string $gridName,
         HyvaGridSourceInterface $gridSource,
         array $navigationConfig,
         array $columnDefinitions,
@@ -55,6 +61,7 @@ class Navigation implements NavigationInterface
         $this->request               = $request;
         $this->urlBuilder            = $urlBuilder;
         $this->columnDefinitions     = $columnDefinitions;
+        $this->gridName              = $gridName;
     }
 
     public function getTotalRowsCount(): int
@@ -72,7 +79,7 @@ class Navigation implements NavigationInterface
 
     public function getPageSize(): int
     {
-        $requestedPageSize = (int) $this->request->getParam('pageSize');
+        $requestedPageSize = (int) $this->getQueryParam('pageSize');
         return $this->isValidPageSize($requestedPageSize)
             ? $requestedPageSize
             : $this->getDefaultPageSize();
@@ -87,6 +94,7 @@ class Navigation implements NavigationInterface
     public function getCurrentPageNumber(): int
     {
         $requestedPageNumber = $this->getRequestedPageNumber();
+
         return min(max($requestedPageNumber, 1), $this->getPageCount());
     }
 
@@ -121,7 +129,27 @@ class Navigation implements NavigationInterface
     public function getUrlForPage(int $pageNum): string
     {
         $p = min(max($pageNum, 1), $this->getPageCount());
-        return $this->urlBuilder->getUrl('*/*/*', ['_current' => true, 'p' => $p]);
+        return $this->buildUrl('*/*/*', ['_current' => true, '_query' => ['p' => $p]]);
+    }
+
+    private function buildUrl(string $route, array $params): string
+    {
+        $namespacedQuery = $this->qualifyQueryParamsWithGridNamespace($params['_query'] ?? []);
+        return $this->urlBuilder->getUrl($route, merge($params, ['_query' => $namespacedQuery]));
+    }
+
+    private function qualifyQueryParamsWithGridNamespace(array $query): array
+    {
+        return reduce(keys($query), function (array $acc, string $key) use ($query): array {
+            $qualifiedKey       = sprintf('%s[%s]', $this->getQueryNamespace(), $key);
+            $acc[$qualifiedKey] = $query[$key];
+            return $acc;
+        }, []);
+    }
+
+    private function getQueryParam(string $param)
+    {
+        return $this->request->getParam($this->getQueryNamespace())[$param] ?? null;
     }
 
     public function getSearchCriteria(): SearchCriteriaInterface
@@ -174,12 +202,12 @@ class Navigation implements NavigationInterface
             ? $requestedPageSize
             : $this->getDefaultPageSize();
 
-        return $this->urlBuilder->getUrl('*/*/*', ['p' => 1, 'pageSize' => $targetPageSize]);
+        return $this->buildUrl('*/*/*', ['_query' => ['p' => 1, 'pageSize' => $targetPageSize]]);
     }
 
     private function getRequestedPageNumber(): int
     {
-        return (int) ($this->request->getParam('p') ?? 1);
+        return (int) ($this->getQueryParam('p') ?? 1);
     }
 
     public function getSortByColumn(): ?string
@@ -200,7 +228,7 @@ class Navigation implements NavigationInterface
 
     private function getRequestedSortByColumn(): ?string
     {
-        $sortBy = $this->request->getParam('sortBy');
+        $sortBy = $this->getQueryParam('sortBy');
         return isset($this->columnDefinitions[$sortBy]) ? $sortBy : null;
     }
 
@@ -218,7 +246,7 @@ class Navigation implements NavigationInterface
 
     private function getRequestedSortDirection(): ?string
     {
-        $direction = $this->request->getParam('sortDirection');
+        $direction = $this->getQueryParam('sortDirection');
         return in_array($direction, [self::ASC, self::DESC], true)
             ? $direction
             : null;
@@ -226,11 +254,18 @@ class Navigation implements NavigationInterface
 
     public function getSortByUrl(string $columnKey, string $direction): string
     {
-        return $this->urlBuilder->getUrl('*/*/*', [
-            '_current'      => true,
-            'p'             => 1,
-            'sortBy'        => $columnKey,
-            'sortDirection' => $direction,
+        return $this->buildUrl('*/*/*', [
+            '_current' => true,
+            '_query' => [
+                'p'             => 1,
+                'sortBy'        => $columnKey,
+                'sortDirection' => $direction,
+            ],
         ]);
+    }
+
+    private function getQueryNamespace(): string
+    {
+        return $this->gridName;
     }
 }

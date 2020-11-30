@@ -6,7 +6,7 @@ use Hyva\Admin\Model\HyvaGridDefinitionInterface;
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
 use Hyva\Admin\Model\HyvaGridSourceFactory;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
-use Hyva\Admin\ViewModel\HyvaGrid\ActionInterfaceFactory;
+use Hyva\Admin\ViewModel\HyvaGrid\GridActionInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
@@ -94,11 +94,11 @@ class HyvaGridViewModelTest extends TestCase
     }
 
     /**
-     * @return MockObject|ActionInterfaceFactory
+     * @return MockObject|GridActionInterfaceFactory
      */
     private function createStubActionFactory(): MockObject
     {
-        return $this->createMock(ActionInterfaceFactory::class);
+        return $this->createMock(GridActionInterfaceFactory::class);
     }
 
     /**

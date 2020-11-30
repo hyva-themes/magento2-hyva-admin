@@ -28,7 +28,7 @@ interface HyvaGridInterface
     public function getEntityDefinition(): HyvaGrid\EntityDefinitionInterface;
 
     /**
-     * @return HyvaGrid\ActionInterface[]
+     * @return HyvaGrid\GridActionInterface[]
      */
     public function getActions(): array;
 

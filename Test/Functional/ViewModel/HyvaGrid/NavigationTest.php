@@ -10,6 +10,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
 use Magento\Backend\Model\UrlInterface as BackendUrlBuilder;
 use Magento\Framework\App\RequestInterface;
 use Magento\TestFramework\ObjectManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 use function array_filter as filter;
@@ -19,6 +20,8 @@ use function array_filter as filter;
  */
 class NavigationTest extends TestCase
 {
+    const TEST_GRID = 'test-grid';
+
     private function createArrayGridSource(array $gridData): HyvaGridSourceInterface
     {
         $gridSourceConfig = ['arrayProvider' => TestingGridDataProvider::withArray($gridData)];
@@ -36,6 +39,7 @@ class NavigationTest extends TestCase
     ): Navigation {
         $hyvaGridSource = $this->createArrayGridSource($gridData);
         return ObjectManager::getInstance()->create(NavigationInterface::class, filter([
+            'gridName'          => self::TEST_GRID,
             'gridSource'        => $hyvaGridSource,
             'navigationConfig'  => $navigationConfig,
             'columnDefinitions' => $hyvaGridSource->extractColumnDefinitions([], [], false),
@@ -66,10 +70,15 @@ class NavigationTest extends TestCase
         $this->assertSame(1, $sut->getCurrentPageNumber());
     }
 
+    private function stubParams(MockObject $stubRequest, array $params): void
+    {
+        $stubRequest->method('getParam')->willReturnMap([[self::TEST_GRID, null, $params]]);
+    }
+
     public function testReturnsRequestedPageNumber(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 3]]);
+        $this->stubParams($stubRequest, ['p' => 3]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
@@ -81,7 +90,7 @@ class NavigationTest extends TestCase
     public function testReturnsMaxPageNumberIfRequestIsLarger(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 3]]);
+        $this->stubParams($stubRequest, ['p' => 3]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
@@ -102,7 +111,7 @@ class NavigationTest extends TestCase
     public function testHasPreviousPageIfCurrentPageLargerOne(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 2]]);
+        $this->stubParams($stubRequest, ['p' => 2]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
@@ -114,7 +123,7 @@ class NavigationTest extends TestCase
     public function testHasNoPreviousPageIfCurrentPageIsOne(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 2]]);
+        $this->stubParams($stubRequest, ['p' => 2]);
 
         $gridData         = [['id' => 'a']];
         $navigationConfig = [];
@@ -126,7 +135,7 @@ class NavigationTest extends TestCase
     public function testHasNextPageIfNotOnLastPage(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 1]]);
+        $this->stubParams($stubRequest, ['p' => 1]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
@@ -138,7 +147,7 @@ class NavigationTest extends TestCase
     public function testHasNoNextPageOnLastPage(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 1]]);
+        $this->stubParams($stubRequest, ['p' => 1]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 2]];
@@ -150,65 +159,70 @@ class NavigationTest extends TestCase
     public function testReturnsCurrentUrlAsPreviousPageUrlOnFirstPage(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 1]]);
+        $this->stubParams($stubRequest, ['p' => 1]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
-        $expected = $this->getUrlBuilder()->getUrl('*/*/*', ['_current' => true, 'p' => 1]);
+        $expected = $this->getUrlBuilder()
+                         ->getUrl('*/*/*', ['_current' => true, '_query' => [self::TEST_GRID . '[p]' => 1]]);
         $this->assertSame($expected, $sut->getPreviousPageUrl());
     }
 
     public function testReturnsPreviousPageUrl(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 2]]);
+        $this->stubParams($stubRequest, ['p' => 2]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
-        $expected = $this->getUrlBuilder()->getUrl('*/*/*', ['_current' => true, 'p' => 1]);
+        $expected = $this->getUrlBuilder()
+                         ->getUrl('*/*/*', ['_current' => true, '_query' => [self::TEST_GRID . '[p]' => 1]]);
         $this->assertSame($expected, $sut->getPreviousPageUrl());
     }
 
     public function testReturnsPreviousPageUrlIfRequestedPageIsBeyondMaxPage(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 4]]);
+        $this->stubParams($stubRequest, ['p' => 4]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
-        $expected = $this->getUrlBuilder()->getUrl('*/*/*', ['_current' => true, 'p' => 2]);
+        $expected = $this->getUrlBuilder()
+                         ->getUrl('*/*/*', ['_current' => true, '_query' => [self::TEST_GRID . '[p]' => 2]]);
         $this->assertSame($expected, $sut->getPreviousPageUrl());
     }
 
     public function testReturnsCurrentUrlAsNextPageUrlOnLastPage(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 2]]);
+        $this->stubParams($stubRequest, ['p' => 2]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
-        $expected = $this->getUrlBuilder()->getUrl('*/*/*', ['_current' => true, 'p' => 2]);
+        $expected = $this->getUrlBuilder()
+                         ->getUrl('*/*/*', ['_current' => true, '_query' => [self::TEST_GRID . '[p]' => 2]]);
         $this->assertSame($expected, $sut->getNextPageUrl());
     }
 
     public function testReturnsNextPageUrl(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['p', null, 2]]);
+        $this->stubParams($stubRequest, ['p' => 2]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
-        $expected = $this->getUrlBuilder()->getUrl('*/*/*', ['_current' => true, 'p' => 3]);
+        $expected = $this->getUrlBuilder()
+                         ->getUrl('*/*/*', ['_current' => true, '_query' => [self::TEST_GRID . '[p]' => 3]]);
         $this->assertSame($expected, $sut->getNextPageUrl());
     }
 
@@ -239,7 +253,7 @@ class NavigationTest extends TestCase
     public function testReturnsRequestedPageSizeIfValid(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['pageSize', null, 50]]);
+        $this->stubParams($stubRequest, ['pageSize' => 50]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
         $navigationConfig = ['pager' => ['pageSizes' => '20, 50, 100']];
@@ -251,7 +265,7 @@ class NavigationTest extends TestCase
     public function testReturnsDefaultPageSizeRequestedPageSizeIsNotValid(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['pageSize', null, 30]]);
+        $this->stubParams($stubRequest, ['pageSize' => 30]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
         $navigationConfig = ['pager' => ['pageSizes' => '20, 50, 100', 'defaultPageSize' => 20]];
@@ -272,7 +286,7 @@ class NavigationTest extends TestCase
     {
         $stubRequest = $this->createMock(RequestInterface::class);
         $pageSize    = 20;
-        $stubRequest->method('getParam')->willReturnMap([['pageSize', null, $pageSize]]);
+        $this->stubParams($stubRequest, ['pageSize' => $pageSize]);;
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
         $navigationConfig = ['pager' => ['pageSizes' => '20, 50, 100']];
@@ -286,7 +300,7 @@ class NavigationTest extends TestCase
     {
         $stubRequest = $this->createMock(RequestInterface::class);
         $currentPage = 2;
-        $stubRequest->method('getParam')->willReturnMap([['p', null, $currentPage], ['pageSize', null, 1]]);
+        $this->stubParams($stubRequest, ['p' => $currentPage, 'pageSize' => 1]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
         $navigationConfig = ['pager' => ['pageSizes' => '1, 20, 50, 100']];
@@ -299,7 +313,7 @@ class NavigationTest extends TestCase
     public function testSetsSortOrderSearchCriteria(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['sortBy', null, 'name'], ['sortDirection', null, 'asc']]);
+        $this->stubParams($stubRequest, ['sortBy' => 'name', 'sortDirection' => 'asc']);
 
         $gridData         = [['id' => 'a', 'name' => 'a'], ['id' => 'b', 'name' => 'b'], ['id' => 'c', 'name' => 'c']];
         $navigationConfig = [];
@@ -344,7 +358,7 @@ class NavigationTest extends TestCase
 
         $stubRequest = $this->createMock(RequestInterface::class);
         $sortCol     = 'col_c';
-        $stubRequest->method('getParam')->willReturnMap([['sortBy', null, $sortCol]]);
+        $this->stubParams($stubRequest, ['sortBy' => $sortCol]);
         $sut = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
         $this->assertSame('col_c', $sut->getSortByColumn());
@@ -359,7 +373,7 @@ class NavigationTest extends TestCase
         $navigationConfig = ['sorting' => ['defaultSortByColumn' => 'col_b']];
 
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['sortBy', null, 'col_invalid']]);
+        $this->stubParams($stubRequest, ['sortBy' => 'col_invalid']);
         $sut = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
         $this->assertSame('col_b', $sut->getSortByColumn());
@@ -396,8 +410,8 @@ class NavigationTest extends TestCase
             ['col_a' => 'xx', 'col_b' => 'yy'],
         ];
         $navigationConfig = ['sorting' => ['defaultSortDirection' => 'desc']];
-        $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([['sortDirection', null, 'asc']]);
+        $stubRequest      = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['sortDirection' => 'asc']);
         $sut = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
         $this->assertSame('asc', $sut->getSortDirection());
@@ -406,22 +420,23 @@ class NavigationTest extends TestCase
     public function testReturnsSortByColumnUrl(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
-        $stubRequest->method('getParam')->willReturnMap([
-            ['p', null, 2],
-            ['sortBy', null, 'foo'],
-            ['sortDirection', null, 'desc'],
-        ]);
+        $this->stubParams($stubRequest, ['p' => 2, 'sortBy' => 'foo', 'sortDirection' => 'desc']);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
         $navigationConfig = [];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
-        $expected = $this->getUrlBuilder()->getUrl('*/*/*', [
-            '_current' => true,
-            'p' => 1,
-            'sortBy' => 'id',
-            'sortDirection' => 'desc'
-        ]);
+
+        $expected = $this->getUrlBuilder()
+                         ->getUrl('*/*/*', [
+                             '_current' => true,
+                             '_query' => [
+                                 self::TEST_GRID . '[p]' => 1,
+                                 self::TEST_GRID . '[sortBy]' => 'id',
+                                 self::TEST_GRID . '[sortDirection]' => 'desc',
+                             ]
+                         ]);
+
         $this->assertSame($expected, $sut->getSortByUrl('id', 'desc'));
     }
 }

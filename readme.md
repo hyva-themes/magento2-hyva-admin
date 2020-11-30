@@ -6,7 +6,6 @@ It does not use any UI components.
 
 ## next steps (a.k. todo)
 
-* qualify navigation URLs with the grid name for multiple grids on one page
 * sorting and paging with array source type
 * filtering
 * collection source type

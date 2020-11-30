@@ -14,7 +14,7 @@
     <preference for="Hyva\Admin\Model\HyvaGridDefinitionInterface" type="Hyva\Admin\Model\HyvaGridDefinition"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\EntityDefinition"/>
-    <preference for="Hyva\Admin\ViewModel\HyvaGrid\ActionInterface" type="Hyva\Admin\ViewModel\HyvaGrid\Action"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\GridActionInterface" type="Hyva\Admin\ViewModel\HyvaGrid\GridAction"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\MassActionInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\MassAction"/>
     <preference for="Hyva\Admin\Api\DataTypeGuesserInterface"

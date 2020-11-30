@@ -4,7 +4,7 @@ namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 use function array_values as values;
 
-class Action implements ActionInterface
+class GridAction implements GridActionInterface
 {
     private string $label;
 

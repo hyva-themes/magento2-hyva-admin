@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
-interface ActionInterface
+interface GridActionInterface
 {
     public function getId(): string;
 
