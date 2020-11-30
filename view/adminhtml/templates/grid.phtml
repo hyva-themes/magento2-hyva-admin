@@ -202,8 +202,8 @@ $uniqueId = '_' . uniqid();
                         f.submit();
                     }
                 </script>
-                <label for="massAction" class="mr-8"><?= __('Mass Actions:') ?></label>
-                <select onchange="doMassAction(this.selectedOptions[0])" name="massAction" class="form-select">
+                <label for="massAction<?= $uniqueId?>" class="mr-8"><?= __('Mass Actions:') ?></label>
+                <select onchange="doMassAction(this.selectedOptions[0])" id="massAction<?= $uniqueId ?>" name="massAction" class="form-select">
                     <option disabled selected hidden><?= __('Select an action') ?></option>
                     <?php foreach ($massActions as $massAction): ?>
                         <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
@@ -250,8 +250,10 @@ $uniqueId = '_' . uniqid();
                 <?php foreach ($grid->getRows() as $row): ?>
                     <?php if ($rowAction = $actions[$grid->getRowActionId()] ?? false) {
                         $rowActionUrl       = $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row));
-                        $rowActionAttribute = sprintf("onclick=\"window.location.href='%s'\"",
-                            $escaper->escapeJs($rowActionUrl));
+                        $rowActionAttribute = sprintf(
+                            "onclick=\"window.location.href='%s'\"",
+                            $escaper->escapeJs($rowActionUrl)
+                        );
                     } else {
                         $rowActionAttribute = '';
                     } ?>
