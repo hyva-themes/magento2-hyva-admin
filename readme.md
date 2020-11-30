@@ -6,7 +6,6 @@ It does not use any UI components.
 
 ## next steps (a.k. todo)
 
-* sorting and paging with array source type
 * filtering
 * collection source type
 * ajax paging
