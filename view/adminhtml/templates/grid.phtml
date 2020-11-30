@@ -235,7 +235,8 @@ $uniqueId = '_' . uniqid();
                     <?php endif; ?>
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
                         <th class="<?= $escaper->escapeHtml($column->getKey()) ?> bg-gray-100 sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xl table-cell align-middle"
-                            x-ref="<?= $escaper->escapeHtml($column->getKey()) ?>">
+                            x-ref="<?= $escaper->escapeHtml($column->getKey()) ?>"
+                            onclick="window.location.href='<?= $navigation->getSortByUrl($column->getKey(), 'asc') ?>'">
                             <?= $escaper->escapeHtml($column->getLabel()) ?>
                         </th>
                     <?php endforeach; ?>

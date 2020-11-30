@@ -7,10 +7,13 @@ use Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
-
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Api\SortOrder;
+
 use function array_keys as keys;
+use function array_reduce as reduce;
+use function array_slice as slice;
 use function array_values as values;
 
 class ArrayProviderGridSourceType implements GridSourceTypeInterface
@@ -19,17 +22,17 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     private ArrayProviderSourceType\ArrayProviderFactory $arrayProviderFactory;
 
-    private RawGridSourceContainer $memoizedGridData;
-
     private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+
+    private DataTypeGuesserInterface $dataTypeGuesser;
+
+    private array $memoizedGridData;
+
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
 
     private string $arrayProviderClass;
 
     private string $gridName;
-
-    private DataTypeGuesserInterface $dataTypeGuesser;
-
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
 
     public function __construct(
         string $gridName,
@@ -99,11 +102,12 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
     {
         if (!isset($this->memoizedGridData)) {
             $provider               = $this->arrayProviderFactory->create($this->arrayProviderClass);
-            $this->memoizedGridData = RawGridSourceContainer::forData($provider->getHyvaGridData());
+            $this->memoizedGridData = $provider->getHyvaGridData();
         }
 
-        // todo: apply search criteria to array returned by array provider after it is memoized
-        return $this->memoizedGridData;
+        $sorted = $this->applySortOrders($this->memoizedGridData, $searchCriteria->getSortOrders() ?? []);
+        $page   = $this->selectPage($sorted, $searchCriteria);
+        return RawGridSourceContainer::forData($page);
     }
 
     public function extractRecords(RawGridSourceContainer $rawGridData): array
@@ -119,6 +123,42 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     public function extractTotalRowCount(RawGridSourceContainer $rawGridData): int
     {
-        return count($this->extractRecords($rawGridData));
+        return count($this->memoizedGridData);
+    }
+
+    /**
+     * @param array $memoizedGridData
+     * @param SortOrder[] $getSortOrders
+     */
+    private function applySortOrders(array $gridData, array $sortOrders): array
+    {
+        return reduce($sortOrders, [$this, 'applySortOrder'], $gridData);
+    }
+
+    private function applySortOrder(array $gridData, SortOrder $sortOrder): array
+    {
+        if (!($column = $sortOrder->getField())) {
+            return $gridData;
+        }
+        $direction = $sortOrder->getDirection() === SortOrder::SORT_ASC ? 1 : -1;
+
+        usort($gridData, function ($a, $b) use ($column, $direction) {
+            return ($a[$column] <=> $b[$column]) * $direction;
+        });
+
+        return $gridData;
+    }
+
+    private function selectPage(array $gridData, SearchCriteriaInterface $searchCriteria)
+    {
+        $count = count($gridData);
+        $page  = $searchCriteria->getCurrentPage()
+            ? $searchCriteria->getCurrentPage() - 1
+            : 0;
+        $size  = $searchCriteria->getPageSize() ?? $count;
+        $start = $page * $size;
+        $slice = min($size, max($count - $start, 0));
+
+        return slice($gridData, $start, $slice);
     }
 }
