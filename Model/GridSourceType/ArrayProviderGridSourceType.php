@@ -143,7 +143,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $direction = $sortOrder->getDirection() === SortOrder::SORT_ASC ? 1 : -1;
 
         usort($gridData, function ($a, $b) use ($column, $direction) {
-            return ($a[$column] <=> $b[$column]) * $direction;
+            return (($a[$column] ?? 0) <=> ($b[$column] ?? 0)) * $direction;
         });
 
         return $gridData;

@@ -234,10 +234,13 @@ $uniqueId = '_' . uniqid();
                         </th>
                     <?php endif; ?>
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
+                    <?php $isSortedByColumn = $navigation->getSortByColumn() === $column->getKey() ?>
+                    <?php $newDirection = $isSortedByColumn && $navigation->isSortOrderAscending() ? 'desc' : 'asc' ?>
+                    <?php $sortIndicator = $isSortedByColumn ? ($navigation->isSortOrderAscending() ? '⬆️' : '⬇️') : '' ?>
                         <th class="<?= $escaper->escapeHtml($column->getKey()) ?> bg-gray-100 sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xl table-cell align-middle"
                             x-ref="<?= $escaper->escapeHtml($column->getKey()) ?>"
-                            onclick="window.location.href='<?= $navigation->getSortByUrl($column->getKey(), 'asc') ?>'">
-                            <?= $escaper->escapeHtml($column->getLabel()) ?>
+                            onclick="window.location.href='<?= $navigation->getSortByUrl($column->getKey(), $newDirection) ?>'">
+                            <?= $escaper->escapeHtml($column->getLabel()) ?> <?= $sortIndicator ?>
                         </th>
                     <?php endforeach; ?>
                     <?php if ($actions = $grid->getActions()): ?>

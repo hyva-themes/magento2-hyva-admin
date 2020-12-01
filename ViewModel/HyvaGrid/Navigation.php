@@ -239,6 +239,16 @@ class Navigation implements NavigationInterface
             ?? $this->getDefaultSortDirection();
     }
 
+    public function isSortOrderAscending(): bool
+    {
+        return $this->getSortDirection() === self::ASC;
+    }
+
+    public function isSortOrderDescending(): bool
+    {
+        return ! $this->isSortOrderAscending();
+    }
+
     private function getDefaultSortDirection(): string
     {
         return self::ASC;
@@ -254,6 +264,9 @@ class Navigation implements NavigationInterface
 
     public function getSortByUrl(string $columnKey, string $direction): string
     {
+        if (! in_array($direction, [self::ASC, self::DESC], true)) {
+            throw new \InvalidArgumentException('Grid Navigation sort order must be "asc" or "desc"');
+        }
         return $this->buildUrl('*/*/*', [
             '_current' => true,
             '_query' => [

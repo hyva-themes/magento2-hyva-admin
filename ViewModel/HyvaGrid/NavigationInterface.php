@@ -40,5 +40,9 @@ interface NavigationInterface
 
     public function getSortDirection(): ?string;
 
+    public function isSortOrderAscending(): bool;
+
+    public function isSortOrderDescending(): bool;
+
     public function getSortByUrl(string $columnKey, string $direction): string;
 }
