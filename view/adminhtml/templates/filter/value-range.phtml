@@ -1,0 +1,9 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
+
+?>
+<?= __('From:') ?> <input type="text" name="<?= $escaper->escapeHtmlAttr($filter->getInputName('from')) ?>"/><br/>
+<?= __('To:') ?> <input type="text" name="<?= $escaper->escapeHtmlAttr($filter->getInputName('to')) ?>"/>

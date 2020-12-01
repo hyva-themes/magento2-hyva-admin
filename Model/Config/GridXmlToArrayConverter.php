@@ -233,11 +233,11 @@ class GridXmlToArrayConverter
             $this->getAttributeConfig($columnElement, 'renderAsUnsecureHtml'),
             $this->getAttributeConfig($columnElement, 'source'),
             $this->getAttributeConfig($columnElement, 'template'),
-            $this->getOptionsConfig($columnElement),
+            $this->getColumnOptionsConfig($columnElement),
         ));
     }
 
-    private function getOptionsConfig(\DOMElement $columnElement): array
+    private function getColumnOptionsConfig(\DOMElement $columnElement): array
     {
         /*
          * <column name="background_color">
@@ -281,6 +281,19 @@ class GridXmlToArrayConverter
          *         <defaultSortByColumn>id</defaultSortByColumn>
          *         <defaultSortDirection>asc</defaultSortDirection>
          *     </sorting>
+         *     <filters>
+         *         <filter column="sku" input="text" enabled="true" template="Foo_Bar::filter.phtml"/>
+         *         <filter column="color" input="select">
+         *             <option label="reddish">
+         *                 <value>16</value>
+         *                 <value>17</value>
+         *                 <value>18</value>
+         *             </option>
+         *             <option label="blueish">
+         *                 <value>12</value>
+         *             </option>
+         *         </filter>
+         *     </filters>
          * </navigation>
          */
         $navigationElement = $this->getChildByName($root, 'navigation');
@@ -288,6 +301,7 @@ class GridXmlToArrayConverter
             ? filter([
                 'pager'   => $this->getPagerConfig($navigationElement),
                 'sorting' => $this->getSortingConfig($navigationElement),
+                'filters' => $this->getFiltersConfig($navigationElement),
             ])
             : [];
     }
@@ -402,5 +416,68 @@ class GridXmlToArrayConverter
                 return $v === 'true';
             }, $this->getAttributeConfig($actionElement, 'requireConfirmation')),
         ));
+    }
+
+    private function getFiltersConfig(\DOMElement $navigationElement): ?array
+    {
+        /*
+         * <filters>
+         *     <filter column="sku" input="text" enabled="true" template="Foo_Bar::filter.phtml"/>
+         *     <filter column="color" input="select">
+         *         <option label="reddish">
+         *             <value>16</value>
+         *             <value>17</value>
+         *             <value>18</value>
+         *         </option>
+         *         <option label="blueish">
+         *             <value>12</value>
+         *         </option>
+         *     </filter>
+         * </filters>
+         */
+        $filtersElement = $this->getChildByName($navigationElement, 'filters');
+        return $filtersElement
+            ? map([$this, 'getFilterConfig'], $this->getChildrenByName($filtersElement, 'filter'))
+            : null;
+    }
+
+    private function getFilterConfig(\DOMElement $filterElement): ?array
+    {
+        return merge(
+            ['key' => $this->getAttributeConfig($filterElement, 'column')['column'] ?? null],
+            $this->getAttributeConfig($filterElement, 'input'),
+            $this->getAttributeConfig($filterElement, 'enabled'),
+            $this->getAttributeConfig($filterElement, 'template'),
+            $this->getFilterOptionsConfig($filterElement)
+        );
+    }
+
+    private function getFilterOptionsConfig(\DOMElement $filterElement): array
+    {
+        /*
+         * <filter column="color" input="select">
+         *     <option label="reddish">
+         *         <value>16</value>
+         *         <value>17</value>
+         *         <value>18</value>
+         *     </option>
+         * </filter>
+         */
+        $options = filter(map(function (\DOMElement $optionElement): ?array {
+            $values = $this->getFilterOptionValuesConfig($optionElement);
+            return $values
+                ? ['label' => $optionElement->getAttribute('label'), 'values' => $values]
+                : null;
+        }, $this->getChildrenByName($filterElement, 'option')));
+        return $options
+            ? ['options' => $options]
+            : [];
+    }
+
+    private function getFilterOptionValuesConfig(\DOMElement $optionElement): array
+    {
+        return map(function (\DOMElement $valueElement): string {
+            return trim($valueElement->nodeValue);
+        }, $this->getChildrenByName($optionElement, 'value'));
     }
 }

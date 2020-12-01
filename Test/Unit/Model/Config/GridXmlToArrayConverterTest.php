@@ -82,6 +82,10 @@ class GridXmlToArrayConverterTest extends TestCase
                 $this->getIncludeWithKeepColumnsFromSourceXml(),
                 $this->getIncludeWithKeepColumnsFromSourceExpected(),
             ],
+            'filters'                  => [
+                $this->getFiltersXml(),
+                $this->getFiltersExpected(),
+            ],
         ];
     }
 
@@ -316,16 +320,24 @@ EOXML;
             <defaultSortByColumn>id</defaultSortByColumn>
             <defaultSortDirection>asc</defaultSortDirection>
         </sorting>
+        <filters>
+            <filter column="id"/>
+        </filters>
     </navigation>
 EOXML;
     }
 
     private function getNavigationExpected(): array
     {
-        return ['navigation' => [
-            'pager' => ['defaultPageSize' => '10', 'pageSizes' => '10,20,50,100'],
-            'sorting' => ['defaultSortByColumn' => 'id', 'defaultSortDirection' => 'asc'],
-        ]];
+        return [
+            'navigation' => [
+                'pager'   => ['defaultPageSize' => '10', 'pageSizes' => '10,20,50,100'],
+                'sorting' => ['defaultSortByColumn' => 'id', 'defaultSortDirection' => 'asc'],
+                'filters' => [
+                    ['key' => 'id'],
+                ],
+            ],
+        ];
     }
 
     private function getEntityConfigXml(): string
@@ -398,5 +410,55 @@ EOXML;
             ['label' => 'Reindex', 'url' => '*/massActions/reindex'],
         ];
         return ['massActions' => ['@idColumn' => 'id', '@idsParam' => 'ids', 'actions' => $actions]];
+    }
+
+    private function getFiltersXml(): string
+    {
+        return <<<EOXML
+    <navigation>
+        <filters>
+            <filter column="sku" input="text" enabled="true" template="Foo_Bar::filter.phtml"/>
+            <filter column="created_at" input="date-range"/>
+            <filter column="id" input="value-range"/>
+            <filter column="color" input="select">
+                <option label="reddish">
+                    <value>16</value>
+                    <value>17</value>
+                    <value>18</value>
+                </option>
+                <option label="blueish">
+                    <value>12</value>
+                </option>
+                <option label="rose">
+                    <value>100</value>
+                </option>
+                <option label="empty">
+                </option>
+            </filter>
+        </filters>
+    </navigation>
+EOXML;
+    }
+
+    private function getFiltersExpected(): array
+    {
+        return [
+            'navigation' => [
+                'filters' => [
+                    ['key' => 'sku', 'input' => 'text', 'enabled' => 'true', 'template' => 'Foo_Bar::filter.phtml'],
+                    ['key' => 'created_at', 'input' => 'date-range'],
+                    ['key' => 'id', 'input' => 'value-range'],
+                    [
+                        'key'     => 'color',
+                        'input'   => 'select',
+                        'options' => [
+                            ['label' => 'reddish', 'values' => ['16', '17', '18']],
+                            ['label' => 'blueish', 'values' => ['12']],
+                            ['label' => 'rose', 'values' => ['100']],
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 }

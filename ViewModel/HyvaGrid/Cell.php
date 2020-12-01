@@ -138,6 +138,7 @@ class Cell implements CellInterface
         /** @var Template $renderer */
         $renderer = $this->layout->createBlock(Template::class);
         $renderer->setTemplate($template);
+        $renderer->assign('cell', $this);
 
         return $renderer;
     }

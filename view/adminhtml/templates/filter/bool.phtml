@@ -1,0 +1,11 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
+
+?>
+<select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>">
+    <option value="1" <?= $filter->getValue() ? 'selected' : '' ?>><?= __('True') ?></option>
+    <option value="0" <?= !$filter->getValue() ? 'selected' : '' ?>><?= __('False') ?></option>
+</select>

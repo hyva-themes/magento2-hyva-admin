@@ -281,4 +281,11 @@ class Navigation implements NavigationInterface
     {
         return $this->gridName;
     }
+
+    public function getFilter(string $key): ?GridFilterInterface
+    {
+        return isset($this->columnDefinitions[$key])
+            ? new GridFilter($this->columnDefinitions[$key])
+            : null;
+    }
 }

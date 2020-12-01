@@ -180,6 +180,7 @@
         <xs:all>
             <xs:element name="pager" type="pagerType" minOccurs="0"/>
             <xs:element name="sorting" type="sortingType" minOccurs="0"/>
+            <xs:element name="filters" type="filtersType" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
 
@@ -215,4 +216,37 @@
             </xs:element>
         </xs:all>
     </xs:complexType>
+
+    <xs:complexType name="filtersType">
+        <xs:sequence>
+            <xs:element name="filter" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="option" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="value" minOccurs="1" maxOccurs="unbounded" type="xs:string"/>
+                                </xs:sequence>
+                                <xs:attribute name="label" use="required" type="xs:string"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="column" type="xs:normalizedString" use="required"/>
+                    <xs:attribute name="input" type="filterInputType"/>
+                    <xs:attribute name="enabled" type="boolean"/>
+                    <xs:attribute name="template" type="templateType"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="filterInputType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="text"/>
+            <xs:enumeration value="select"/>
+            <xs:enumeration value="bool"/>
+            <xs:enumeration value="date-range"/>
+            <xs:enumeration value="value-range"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

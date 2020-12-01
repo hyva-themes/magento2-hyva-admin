@@ -249,6 +249,16 @@ $uniqueId = '_' . uniqid();
                         </th>
                     <?php endif; ?>
                 </tr>
+                <?php if ($grid->hasFilters()): ?>
+                <tr>
+                    <?php foreach ($grid->getColumnDefinitions() as $column): ?>
+                    <th>
+                        <?php $filter = $navigation->getFilter($column->getKey()) ?>
+                        <?= $filter ? $filter->getHtml() : '' ?>
+                    </th>
+                    <?php endforeach; ?>
+                </tr>
+                <?php endif; ?>
                 </thead>
                 <tbody>
                 <?php foreach ($grid->getRows() as $row): ?>

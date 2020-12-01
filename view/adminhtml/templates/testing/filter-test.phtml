@@ -5,7 +5,7 @@
 
 /** @var \Magento\Framework\View\Element\Template $block */
 /** @var \Magento\Framework\Escaper $escaper */
-/** @var \Hyva\Admin\ViewModel\HyvaGrid\CellInterface $cell */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
 
 ?>
-<div>Test: <?= sprintf('%s::%.2f', $cell->getRawValue()['currency'], $cell->getRawValue()['amount']) ?></div>
+Filter for column <?= $filter->getColumnDefinition()->getKey() ?> with input type <?= $filter->getInputType() ?>.

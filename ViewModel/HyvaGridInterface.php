@@ -42,4 +42,6 @@ interface HyvaGridInterface
     public function getMassActionIdColumn(): ?string;
 
     public function getMassActionIdsParam(): ?string;
+
+    public function hasFilters(): bool;
 }

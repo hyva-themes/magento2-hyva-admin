@@ -1,0 +1,12 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
+
+?>
+<select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>">
+<?php foreach ($filter->getOptions() as $option): ?>
+<option value="<?= $escaper->escapeHtmlAttr($option['value']) ?>"><?= $escaper->escapeHtml($option['label']) ?></option>
+<?php endforeach; ?>
+</select>

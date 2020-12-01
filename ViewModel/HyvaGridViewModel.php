@@ -12,8 +12,10 @@ use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 
 use function array_combine as zip;
 use function array_filter as filter;
+use function array_keys as keys;
 use function array_map as map;
 use function array_merge as merge;
+use function array_reduce as reduce;
 use function array_values as values;
 
 class HyvaGridViewModel implements HyvaGridInterface
@@ -241,5 +243,12 @@ class HyvaGridViewModel implements HyvaGridInterface
     public function getMassActionIdsParam(): ?string
     {
         return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? null;
+    }
+
+    public function hasFilters(): bool
+    {
+        return reduce(keys($this->getColumnDefinitions()), function (bool $hasFilter, string $key) {
+            return $hasFilter || $this->getNavigation()->getFilter($key);
+        }, false);
     }
 }

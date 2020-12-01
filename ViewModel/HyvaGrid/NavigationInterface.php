@@ -45,4 +45,6 @@ interface NavigationInterface
     public function isSortOrderDescending(): bool;
 
     public function getSortByUrl(string $columnKey, string $direction): string;
+
+    public function getFilter(string $key): ?GridFilterInterface;
 }
