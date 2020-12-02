@@ -26,6 +26,6 @@ class FilterOption implements FilterOptionInterface
 
     public function getValueId(): string
     {
-        return md5($this->getLabel());
+        return md5(json_encode($this->getValues()));
     }
 }

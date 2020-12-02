@@ -4,14 +4,17 @@ namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 use Hyva\Admin\Model\DataType\BooleanDataType;
 use Hyva\Admin\Model\DataType\DateTimeDataTypeConverter;
+use Magento\Framework\Api\Filter;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 
+use function array_combine as zip;
 use function array_filter as filter;
 use function array_map as map;
+use function array_values as values;
 
 class GridFilter implements GridFilterInterface
 {
@@ -182,6 +185,11 @@ class GridFilter implements GridFilterInterface
         return $this->filterFormId;
     }
 
+    private function isValue($value): bool
+    {
+        return isset($value) && '' !== $value;
+    }
+
     public function apply(SearchCriteriaBuilder $searchCriteriaBuilder): void
     {
         if ($this->isDisabled()) {
@@ -190,33 +198,33 @@ class GridFilter implements GridFilterInterface
         $key = $this->getColumnDefinition()->getKey();
         switch ($this->getInputType()) {
             case 'text':
-                if (null !== ($value = $this->getValue())) {
+                if ($this->isValue($value = $this->getValue())) {
                     $searchCriteriaBuilder->addFilter($key, '%' . $value . '%', 'like');
                 }
                 return;
             case 'bool':
-                if (null !== ($value = $this->getValue())) {
+                if ($this->isValue($value = $this->getValue())) {
                     $searchCriteriaBuilder->addFilter($key, (int) $value, 'eq');
                 }
                 return;
             case 'select':
                 if ($selectedOption = $this->getSelectedOption()) {
-                    $searchCriteriaBuilder->addFilter($key, $selectedOption->getValues(), 'in');
+                    $searchCriteriaBuilder->addFilter($key, $selectedOption->getValues(), 'finset');
                 }
                 return;
             case 'date-range':
-                if (null !== ($from = $this->getValue('from'))) {
+                if ($this->isValue($from = $this->getValue('from'))) {
                     $searchCriteriaBuilder->addFilter($key, $from, 'from');
                 }
-                if (null !== ($to = $this->getValue('to'))) {
+                if ($this->isValue($to = $this->getValue('to'))) {
                     $searchCriteriaBuilder->addFilter($key, $to, 'to');
                 }
                 return;
             case 'value-range':
-                if (null !== ($from = $this->getValue('from'))) {
+                if ($this->isValue($from = $this->getValue('from'))) {
                     $searchCriteriaBuilder->addFilter($key, $from, 'gteq');
                 }
-                if (null !== ($to = $this->getValue('to'))) {
+                if ($this->isValue($to = $this->getValue('to'))) {
                     $searchCriteriaBuilder->addFilter($key, $to, 'lteq');
                 }
                 return;
@@ -226,8 +234,8 @@ class GridFilter implements GridFilterInterface
     private function getSelectedOption(): ?FilterOptionInterface
     {
         $value = $this->getValue();
-        return filter($this->getOptions(), function (FilterOptionInterface $option) use ($value): bool {
-                return $value === $option->getValueId();
-            })[0] ?? null;
+        return values(filter($this->getOptions(), function (FilterOptionInterface $option) use ($value): bool {
+            return $option->getValueId() === $value;
+        }))[0] ?? null;
     }
 }

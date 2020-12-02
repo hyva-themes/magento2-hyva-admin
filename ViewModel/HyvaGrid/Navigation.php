@@ -209,7 +209,7 @@ class Navigation implements NavigationInterface
             ? $requestedPageSize
             : $this->getDefaultPageSize();
 
-        return $this->buildUrl('*/*/*', ['_query' => ['p' => 1, 'pageSize' => $targetPageSize]]);
+        return $this->buildUrl('*/*/*', ['_current' => true, '_query' => ['p' => 1, 'pageSize' => $targetPageSize]]);
     }
 
     private function getRequestedPageNumber(): int

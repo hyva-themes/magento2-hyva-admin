@@ -74,17 +74,6 @@ $uniqueId = '_' . uniqid();
 </style>
 <div class="antialiased sans-serif" x-data="initDataTable<?=$uniqueId?>()">
 
-    <div class="container mx-auto py-6 px-4">
-
-        <?php
-        if (!$grid->getRows()) { ?>
-            <div>
-                <?= __('No %1 found.', $grid->getEntityDefinition()->getLabelPlural()) ?>
-            </div>
-            <?php return;
-        } ?>
-    </div>
-
     <div class="max-w-full mx-auto py-6 px-0">
         <div class="mb-4 flex justify-between items-center">
             <div class="flex-1 pr-4">
@@ -257,8 +246,9 @@ $uniqueId = '_' . uniqid();
                 </tr>
                 <?php if ($navigation->hasFilters()): ?>
                 <tr>
+                    <?php if ($massActions): ?><th class="py-2 px-3 sticky top-0 border border-gray-200"></th><?php endif; ?>
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-                    <th>
+                    <th class="sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 tracking-wider text-xl table-cell align-left">
                         <?php $filter = $navigation->getFilter($column->getKey()) ?>
                         <?= $filter ? $filter->getHtml() : '' ?>
                     </th>
@@ -376,3 +366,10 @@ $uniqueId = '_' . uniqid();
             }
         }
     </script>
+<div class="container mx-auto py-6 px-4">
+    <?php if (!$grid->getRows()) { ?>
+        <div>
+            <?= __('No %1 found.', $grid->getEntityDefinition()->getLabelPlural()) ?>
+        </div>
+    <?php } ?>
+</div>

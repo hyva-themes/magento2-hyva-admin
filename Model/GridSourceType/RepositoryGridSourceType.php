@@ -198,6 +198,15 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
+        // preprocess $searchCriteria to map ìd to entity_id when applicable
+        foreach ($searchCriteria->getFilterGroups() as $group) {
+            foreach ($group->getFilters() as $filter) {
+                if ($filter->getField() === 'id') {
+                    $filter->setField('entity_id');
+                }
+            }
+        }
+
         $repositoryGetList = $this->repositorySourceFactory->create($this->getSourceRepoConfig());
         $result            = $repositoryGetList($searchCriteria);
 
