@@ -6,16 +6,12 @@ It does not use any UI components.
 
 ## next steps (a.k.a. todos)
 
-* filtering (with filter option type instead of array)
-* test bool filter
-
-* changing rows-per-page should not reset filters
-* add ui element to remove all filter values
-* make array provider support filtering 
 * make filter input type extendable
  * See \Hyva\Admin\ViewModel\HyvaGrid\GridFilter::guessInputType
  * See \Hyva\Admin\ViewModel\HyvaGrid\GridFilter::apply
-* test boolean data type
+* make array provider support filtering 
+* add ui element to remove all filter values
+* test boolean data type when rendering grid
 * collection source type
 * ajax paging
 * caching the merge result in the grid config reader

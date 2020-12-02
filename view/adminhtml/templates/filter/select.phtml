@@ -8,7 +8,7 @@
 <select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
         form="<?= $filter->getFormId() ?>"
         class="shadow">
-    <option value=""></option>
+    <option value=""> </option>
 <?php foreach ($filter->getOptions() as $option): ?>
 <?php $isSelected = $filter->getValue() === $option->getValueId() ?>
 <option value="<?= $escaper->escapeHtmlAttr($option->getValueId()) ?>"
