@@ -10,7 +10,7 @@ interface GridFilterInterface
 
     public function getHtml(): string;
 
-    public function isEnabled(): bool;
+    public function isDisabled(): bool;
 
     public function getInputType(): string;
 

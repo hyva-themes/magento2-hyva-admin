@@ -68,9 +68,16 @@ class GridFilter implements GridFilterInterface
 
     public function getHtml(): string
     {
+        return $this->isDisabled()
+            ? ''
+            : $this->renderFilter();
+    }
+
+    private function renderFilter(): string
+    {
         $renderer = $this->createRenderer();
 
-        if (!$template = $this->getTemplate()) {
+        if (!($template = $this->getTemplate())) {
             $msg = sprintf('No template is set for the grid filter input type "%s".', $this->getInputType());
             throw new \OutOfBoundsException($msg);
         }
@@ -85,9 +92,9 @@ class GridFilter implements GridFilterInterface
         return $this->columnDefinition;
     }
 
-    public function isEnabled(): bool
+    public function isDisabled(): bool
     {
-        return $this->enabled === 'true';
+        return $this->enabled === 'false';
     }
 
     public function getInputType(): string
@@ -177,6 +184,9 @@ class GridFilter implements GridFilterInterface
 
     public function apply(SearchCriteriaBuilder $searchCriteriaBuilder): void
     {
+        if ($this->isDisabled()) {
+            return;
+        }
         $key = $this->getColumnDefinition()->getKey();
         switch ($this->getInputType()) {
             case 'text':

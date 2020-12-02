@@ -300,13 +300,16 @@ class Navigation implements NavigationInterface
     {
         $filterConfig = $this->getFilterConfig($key);
 
-        return $filterConfig && isset($this->columnDefinitions[$key])
+        $filter = $filterConfig && isset($this->columnDefinitions[$key])
             ? $this->gridFilterFactory->create(merge($filterConfig, [
                 'gridName'         => $this->gridName,
                 'filterFormId'     => $this->getFilterFormId(),
                 'columnDefinition' => $this->columnDefinitions[$key],
                 'request'          => $this->request,
             ]))
+            : null;
+        return $filter && ! $filter->isDisabled()
+            ? $filter
             : null;
     }
 

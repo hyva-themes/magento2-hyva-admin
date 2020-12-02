@@ -43,14 +43,19 @@ class GridFilterTest extends TestCase
         $this->assertInstanceOf(GridFilter::class, $this->createFilter([]));
     }
 
-    public function testIsDisabledByDefault(): void
+    public function testIsNotDisabledByDefault(): void
     {
-        $this->assertFalse($this->createFilter([])->isEnabled());
+        $this->assertFalse($this->createFilter([])->isDisabled());
+    }
+
+    public function isNotDisabledWhenEnabledTrueIsSpecified(): void
+    {
+        $this->assertFalse($this->createFilter(['enabled' => 'true'])->isDisabled());
     }
 
     public function isEnabledWhenSpecified(): void
     {
-        $this->assertTrue($this->createFilter(['enabled' => 'true'])->isEnabled());
+        $this->assertTrue($this->createFilter(['enabled' => 'false'])->isDisabled());
     }
 
     public function testThrowsExceptionIfNoTemplateIsSetForInputType(): void
