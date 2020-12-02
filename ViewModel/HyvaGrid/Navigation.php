@@ -30,6 +30,8 @@ class Navigation implements NavigationInterface
 
     private BackendUrlBuilder $urlBuilder;
 
+    private GridFilterInterfaceFactory $gridFilterFactory;
+
     private array $navigationConfig;
 
     /**
@@ -47,6 +49,7 @@ class Navigation implements NavigationInterface
     public function __construct(
         string $gridName,
         HyvaGridSourceInterface $gridSource,
+        GridFilterInterfaceFactory $gridFilterFactory,
         array $navigationConfig,
         array $columnDefinitions,
         SearchCriteriaBuilder $searchCriteriaBuilder,
@@ -62,6 +65,7 @@ class Navigation implements NavigationInterface
         $this->urlBuilder            = $urlBuilder;
         $this->columnDefinitions     = $columnDefinitions;
         $this->gridName              = $gridName;
+        $this->gridFilterFactory     = $gridFilterFactory;
     }
 
     public function getTotalRowsCount(): int
@@ -162,6 +166,9 @@ class Navigation implements NavigationInterface
         // However, all page links returned by this class will never go beyond the last page.
         $this->searchCriteriaBuilder->setCurrentPage($this->getRequestedPageNumber());
         $this->searchCriteriaBuilder->addSortOrder($this->createSortOrder());
+        map(function (GridFilterInterface $filter): void {
+            $filter->apply($this->searchCriteriaBuilder);
+        }, filter(map([$this, 'getFilter'], keys($this->columnDefinitions))));
 
         return $this->searchCriteriaBuilder->create();
     }
@@ -246,7 +253,7 @@ class Navigation implements NavigationInterface
 
     public function isSortOrderDescending(): bool
     {
-        return ! $this->isSortOrderAscending();
+        return !$this->isSortOrderAscending();
     }
 
     private function getDefaultSortDirection(): string
@@ -264,12 +271,12 @@ class Navigation implements NavigationInterface
 
     public function getSortByUrl(string $columnKey, string $direction): string
     {
-        if (! in_array($direction, [self::ASC, self::DESC], true)) {
+        if (!in_array($direction, [self::ASC, self::DESC], true)) {
             throw new \InvalidArgumentException('Grid Navigation sort order must be "asc" or "desc"');
         }
         return $this->buildUrl('*/*/*', [
             '_current' => true,
-            '_query' => [
+            '_query'   => [
                 'p'             => 1,
                 'sortBy'        => $columnKey,
                 'sortDirection' => $direction,
@@ -282,10 +289,41 @@ class Navigation implements NavigationInterface
         return $this->gridName;
     }
 
+    public function hasFilters(): bool
+    {
+        return reduce(keys($this->columnDefinitions), function (bool $hasFilters, string $key) {
+            return $hasFilters || $this->getFilterConfig($key);
+        }, false);
+    }
+
     public function getFilter(string $key): ?GridFilterInterface
     {
-        return isset($this->columnDefinitions[$key])
-            ? new GridFilter($this->columnDefinitions[$key])
+        $filterConfig = $this->getFilterConfig($key);
+
+        return $filterConfig && isset($this->columnDefinitions[$key])
+            ? $this->gridFilterFactory->create(merge($filterConfig, [
+                'gridName'         => $this->gridName,
+                'filterFormId'     => $this->getFilterFormId(),
+                'columnDefinition' => $this->columnDefinitions[$key],
+                'request'          => $this->request,
+            ]))
             : null;
+    }
+
+    private function getFilterConfig(string $key): ?array
+    {
+        return values(filter($this->navigationConfig['filters'] ?? [], function (array $filterConfig) use ($key) {
+                return ($filterConfig['key'] ?? null) === $key;
+            }))[0] ?? null;
+    }
+
+    public function getFilterFormUrl(): string
+    {
+        return $this->buildUrl('*/*/*', ['_current' => true]);
+    }
+
+    public function getFilterFormId(): string
+    {
+        return 'hyva-grid-filters-' . $this->gridName;
     }
 }

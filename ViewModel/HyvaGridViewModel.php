@@ -244,11 +244,4 @@ class HyvaGridViewModel implements HyvaGridInterface
     {
         return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? null;
     }
-
-    public function hasFilters(): bool
-    {
-        return reduce(keys($this->getColumnDefinitions()), function (bool $hasFilter, string $key) {
-            return $hasFilter || $this->getNavigation()->getFilter($key);
-        }, false);
-    }
 }

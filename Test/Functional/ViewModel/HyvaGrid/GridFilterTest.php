@@ -3,11 +3,15 @@
 namespace Hyva\Admin\Test\Functional\ViewModel\HyvaGrid;
 
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
+use Hyva\Admin\ViewModel\HyvaGrid\FilterOptionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilter;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\TestFramework\ObjectManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function array_map as map;
 use function array_merge as merge;
 
 /**
@@ -15,12 +19,23 @@ use function array_merge as merge;
  */
 class GridFilterTest extends TestCase
 {
+    const TEST_GRID = 'test-grid';
+
     private function createFilter(array $filterArguments, array $columnArguments = []): GridFilter
     {
         $columnArgs = merge(['key' => 'test'], $columnArguments);
         $dummyCol   = ObjectManager::getInstance()->create(ColumnDefinitionInterface::class, $columnArgs);
-        $filterArgs = merge(['columnDefinition' => $dummyCol], $filterArguments);
+        $filterArgs = merge([
+            'filterFormId' => 'filter-form',
+            'gridName' => self::TEST_GRID,
+            'columnDefinition' => $dummyCol,
+        ], $filterArguments);
         return ObjectManager::getInstance()->create(GridFilterInterface::class, $filterArgs);
+    }
+
+    private function stubParams(MockObject $stubRequest, array $params): void
+    {
+        $stubRequest->method('getParam')->willReturnMap([[self::TEST_GRID, null, $params]]);
     }
 
     public function testIsKnownToTheObjectManager(): void
@@ -89,14 +104,14 @@ class GridFilterTest extends TestCase
 
     public function testHasTemplateForSelectInputType(): void
     {
-        $sut = $this->createFilter(['input' => 'select', 'options' => [['label' => 'x', 'value' => 'y']]]);
+        $sut = $this->createFilter(['input' => 'select', 'options' => [['label' => 'x', 'values' => ['y']]]]);
         $this->assertStringContainsString('<select', $sut->getHtml());
     }
 
     public function testHasTemplateForBooleanInputType(): void
     {
         $sut = $this->createFilter(['input' => 'bool']);
-        $this->assertStringContainsString('<option value="0" selected>False', $sut->getHtml());
+        $this->assertStringContainsString('<option value="0">False', $sut->getHtml());
     }
 
     public function testHasTemplateForDateRangeInputType(): void
@@ -113,21 +128,81 @@ class GridFilterTest extends TestCase
 
     public function testUsesGridNameToQualifyFilterFieldNames(): void
     {
-        $this->markTestIncomplete();
+        $sut = $this->createFilter(['gridName' => 'test-grid'], ['key' => 'foo']);
+        $this->assertSame('test-grid[filter][foo]', $sut->getInputName());
+    }
+
+    public function testAddsAspectsToFilterFieldNames(): void
+    {
+        $sut = $this->createFilter(['gridName' => 'test-grid'], ['key' => 'foo']);
+        $this->assertSame('test-grid[filter][foo][from]', $sut->getInputName('from'));
+        $this->assertSame('test-grid[filter][foo][to]', $sut->getInputName('to'));
+    }
+
+    public function testReturnsNullOptionsIfNoneAreSpecified(): void
+    {
+        $sut = $this->createFilter([]);
+        $this->assertNull($sut->getOptions());
     }
 
     public function testUsesFilterOptionsIfSpecified(): void
     {
-        $this->markTestIncomplete();
+        // options for filters have multiple values for one option
+        $options              = [
+            ['label' => 'Option One', 'values' => ['x', 'y', 'z']],
+            ['label' => 'Option Two', 'values' => ['a']],
+        ];
+        $sut                  = $this->createFilter(['options' => $options]);
+        $resultOptionsAsArray = map(function (FilterOptionInterface $option): array {
+            return ['label' => $option->getLabel(), 'values' => $option->getValues()];
+        }, $sut->getOptions());
+        $this->assertSame($options, $resultOptionsAsArray);
     }
 
     public function testUsesColumnOptionsForSelect(): void
     {
-        $this->markTestIncomplete();
+        // options for column definitions can have only a single value
+        $columnOptions        = [
+            ['label' => 'Option One', 'value' => 'x'],
+            ['label' => 'Option Two', 'value' => 'a'],
+        ];
+        $sut                  = $this->createFilter([], ['options' => $columnOptions]);
+        $resultOptionsAsArray = map(function (FilterOptionInterface $option): array {
+            return ['label' => $option->getLabel(), 'value' => $option->getValues()[0]];
+        }, $sut->getOptions());
+        $this->assertSame($columnOptions, $resultOptionsAsArray);
     }
 
-    public function testReturnsFilterValueFromRequestOrNull(): void
+    public function testReturnsFilterValueNullIfNotInRequest(): void
     {
-        $this->markTestIncomplete();
+        $sut = $this->createFilter([]);
+        $this->assertNull($sut->getValue());
+        $this->assertNull($sut->getValue('foo'));
+    }
+
+    public function testReturnsFilterValueFromRequest(): void
+    {
+        $key         = 'foo';
+        $value       = 'bar';
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['filter' => [$key => $value]]);
+
+        $sut = $this->createFilter(['request' => $stubRequest], ['key' => $key]);
+
+        $this->assertSame($value, $sut->getValue());
+    }
+
+    public function testReturnsFilterAspectValueFromRequest(): void
+    {
+        $key         = 'foo';
+        $value       = 'bar';
+        $aspect      = 'buz';
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['filter' => [$key => [$aspect => $value]]]);
+
+        $sut = $this->createFilter(['request' => $stubRequest], ['key' => $key]);
+
+        $this->assertSame([$aspect => $value], $sut->getValue());
+        $this->assertSame($value, $sut->getValue($aspect));
     }
 }

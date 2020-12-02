@@ -23,6 +23,8 @@
                 type="Hyva\Admin\Model\DataType\DataTypeFacade"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\GridFilter"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\FilterOptionInterface"
+                type="Hyva\Admin\ViewModel\HyvaGrid\FilterOption"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>

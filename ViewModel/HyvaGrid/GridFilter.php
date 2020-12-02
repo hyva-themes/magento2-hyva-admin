@@ -4,15 +4,33 @@ namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 use Hyva\Admin\Model\DataType\BooleanDataType;
 use Hyva\Admin\Model\DataType\DateTimeDataTypeConverter;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 
+use function array_filter as filter;
+use function array_map as map;
+
 class GridFilter implements GridFilterInterface
 {
+    private string $gridName;
+
+    private string $filterFormId;
+
     private ColumnDefinitionInterface $columnDefinition;
 
     private LayoutInterface $layout;
+
+    private FilterOptionInterfaceFactory $filterOptionFactory;
+
+    /**
+     * @var string[]
+     */
+    private array $inputTypeTemplateMap;
+
+    private RequestInterface $request;
 
     private ?string $input;
 
@@ -22,34 +40,37 @@ class GridFilter implements GridFilterInterface
 
     private ?array $options;
 
-    /**
-     * @var string[]
-     */
-    private array $inputTypeTemplateMap;
-
     public function __construct(
+        string $gridName,
+        string $filterFormId,
         ColumnDefinitionInterface $columnDefinition,
         LayoutInterface $layout,
+        FilterOptionInterfaceFactory $filterOptionFactory,
+        RequestInterface $request,
         array $inputTypeTemplateMap,
         ?string $input = null,
         ?string $enabled = null,
         ?string $template = null,
         ?array $options = null
     ) {
+        $this->gridName             = $gridName;
         $this->columnDefinition     = $columnDefinition;
         $this->layout               = $layout;
+        $this->filterOptionFactory  = $filterOptionFactory;
+        $this->request              = $request;
         $this->inputTypeTemplateMap = $inputTypeTemplateMap;
         $this->input                = $input;
         $this->enabled              = $enabled;
         $this->template             = $template;
         $this->options              = $options;
+        $this->filterFormId         = $filterFormId;
     }
 
     public function getHtml(): string
     {
         $renderer = $this->createRenderer();
 
-        if (! $template = $this->getTemplate()) {
+        if (!$template = $this->getTemplate()) {
             $msg = sprintf('No template is set for the grid filter input type "%s".', $this->getInputType());
             throw new \OutOfBoundsException($msg);
         }
@@ -90,7 +111,19 @@ class GridFilter implements GridFilterInterface
 
     public function getOptions(): ?array
     {
-        return $this->options;
+        $options = $this->options ?? $this->getColumnDefinition()->getOptionArray() ?? null;
+        return $options
+            ? map([$this, 'buildFilterOption'], $options)
+            : null;
+    }
+
+    private function buildFilterOption(array $optionConfig): FilterOptionInterface
+    {
+        $arguments = [
+            'label'  => $optionConfig['label'],
+            'values' => $optionConfig['values'] ?? ($optionConfig['value'] ? [$optionConfig['value']] : []),
+        ];
+        return $this->filterOptionFactory->create($arguments);
     }
 
     private function getTemplate(): ?string
@@ -108,12 +141,83 @@ class GridFilter implements GridFilterInterface
 
     public function getInputName(string $aspect = null): string
     {
-        // todo: this needs to be qualified by grid name and, if provided, aspect [gridName][key][aspect]
-        return $this->getColumnDefinition()->getKey();
+        $key = $this->getColumnDefinition()->getKey();
+        return isset($aspect)
+            ? sprintf('%s[filter][%s][%s]', $this->gridName, $key, $aspect)
+            : sprintf('%s[filter][%s]', $this->gridName, $key);
     }
 
-    public function getValue(): ?string
+    public function getValue(string $aspect = null)
     {
-        return null;
+        $gridQueryParams = $this->request->getParam($this->gridName);
+        $value           = $gridQueryParams['filter'][$this->getColumnDefinition()->getKey()] ?? null;
+        return isset($aspect) && $value
+            ? $this->extractValueAspect($aspect, $value)
+            : $value;
+    }
+
+    private function extractValueAspect(string $aspect, $value)
+    {
+        if (!is_array($value)) {
+            $msg = sprintf(
+                'Expected query parameter [%s][%s] to be an array, got "%s"',
+                $this->getColumnDefinition()->getKey(),
+                $aspect,
+                gettype($value)
+            );
+            throw new \RuntimeException($msg);
+        }
+        return $value[$aspect] ?? null;
+    }
+
+    public function getFormId(): string
+    {
+        return $this->filterFormId;
+    }
+
+    public function apply(SearchCriteriaBuilder $searchCriteriaBuilder): void
+    {
+        $key = $this->getColumnDefinition()->getKey();
+        switch ($this->getInputType()) {
+            case 'text':
+                if (null !== ($value = $this->getValue())) {
+                    $searchCriteriaBuilder->addFilter($key, '%' . $value . '%', 'like');
+                }
+                return;
+            case 'bool':
+                if (null !== ($value = $this->getValue())) {
+                    $searchCriteriaBuilder->addFilter($key, (int) $value, 'eq');
+                }
+                return;
+            case 'select':
+                if ($selectedOption = $this->getSelectedOption()) {
+                    $searchCriteriaBuilder->addFilter($key, $selectedOption->getValues(), 'in');
+                }
+                return;
+            case 'date-range':
+                if (null !== ($from = $this->getValue('from'))) {
+                    $searchCriteriaBuilder->addFilter($key, $from, 'from');
+                }
+                if (null !== ($to = $this->getValue('to'))) {
+                    $searchCriteriaBuilder->addFilter($key, $to, 'to');
+                }
+                return;
+            case 'value-range':
+                if (null !== ($from = $this->getValue('from'))) {
+                    $searchCriteriaBuilder->addFilter($key, $from, 'gteq');
+                }
+                if (null !== ($to = $this->getValue('to'))) {
+                    $searchCriteriaBuilder->addFilter($key, $to, 'lteq');
+                }
+                return;
+        }
+    }
+
+    private function getSelectedOption(): ?FilterOptionInterface
+    {
+        $value = $this->getValue();
+        return filter($this->getOptions(), function (FilterOptionInterface $option) use ($value): bool {
+                return $value === $option->getValueId();
+            })[0] ?? null;
     }
 }

@@ -46,5 +46,11 @@ interface NavigationInterface
 
     public function getSortByUrl(string $columnKey, string $direction): string;
 
+    public function hasFilters(): bool;
+
     public function getFilter(string $key): ?GridFilterInterface;
+
+    public function getFilterFormUrl(): string;
+
+    public function getFilterFormId(): string;
 }

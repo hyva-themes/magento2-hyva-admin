@@ -7,6 +7,10 @@ It does not use any UI components.
 ## next steps (a.k.a. todos)
 
 * filtering (with filter option type instead of array)
+* add ui element to remove all filter values
+* make filter input type extendable
+ * See \Hyva\Admin\ViewModel\HyvaGrid\GridFilter::guessInputType
+ * See \Hyva\Admin\ViewModel\HyvaGrid\GridFilter::apply
 * test boolean data type
 * collection source type
 * ajax paging

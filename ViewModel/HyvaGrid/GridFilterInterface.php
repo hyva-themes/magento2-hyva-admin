@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
+use Magento\Framework\Api\SearchCriteriaBuilder;
+
 interface GridFilterInterface
 {
     public function getColumnDefinition(): ColumnDefinitionInterface;
@@ -13,11 +15,19 @@ interface GridFilterInterface
     public function getInputType(): string;
 
     /**
-     * @return array[]|null
+     * @return FilterOptionInterface[]|null
      */
     public function getOptions(): ?array;
 
     public function getInputName(string $aspect = null): string;
 
-    public function getValue(): ?string;
+    /**
+     * @param string|null $aspect
+     * @return mixed
+     */
+    public function getValue(string $aspect = null);
+
+    public function getFormId(): string;
+
+    public function apply(SearchCriteriaBuilder $searchCriteriaBuilder): void;
 }

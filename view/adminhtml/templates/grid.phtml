@@ -178,12 +178,12 @@ $uniqueId = '_' . uniqid();
         </div>
         <div>
             <?php if ($massActions = $grid->getMassActions()): ?>
-            <?php $formId = 'hyva-grid-' . $grid->getGridName() ?>
-            <form id="<?= $formId ?>" method="post">
+            <?php $massActionFormId = 'hyva-grid-massaction-' . $grid->getGridName() ?>
+            <form id="<?= $massActionFormId ?>" method="post">
                 <script>
                     function doMassAction(option) {
                         const url = option.value;
-                        const f = document.getElementById('<?= $formId ?>');
+                        const f = document.getElementById('<?= $massActionFormId ?>');
                         const checked = document.querySelectorAll('input[name="<?= $grid->getMassActionIdsParam() ?>[]"]:checked')
                         const select = f.querySelectorAll('select[name="massAction"]')[0];
                         if (! url) {
@@ -203,15 +203,21 @@ $uniqueId = '_' . uniqid();
                     }
                 </script>
                 <label for="massAction<?= $uniqueId?>" class="mr-8"><?= __('Mass Actions:') ?></label>
-                <select onchange="doMassAction(this.selectedOptions[0])" id="massAction<?= $uniqueId ?>" name="massAction" class="form-select">
+                <select onchange="doMassAction(this.selectedOptions[0])" id="massAction<?= $uniqueId ?>" name="massAction" class="form-select" form="<?= $massActionFormId ?>">
                     <option disabled selected hidden><?= __('Select an action') ?></option>
                     <?php foreach ($massActions as $massAction): ?>
                         <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
                         <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>" value="<?= $massActionUrl ?>"><?= $massAction->getLabel() ?></option>
                     <?php endforeach; ?>
                 </select>
+                <?php if ($massActions) { ?></form><?php } ?>
                 <?php endif; ?>
             </form>
+            <?php if ($navigation->hasFilters()): ?>
+            <form id="<?= $navigation->getFilterFormId() ?>" method="get" action="<?= $navigation->getFilterFormUrl() ?>">
+                <input type="submit" hidden />
+            </form>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -249,7 +255,7 @@ $uniqueId = '_' . uniqid();
                         </th>
                     <?php endif; ?>
                 </tr>
-                <?php if ($grid->hasFilters()): ?>
+                <?php if ($navigation->hasFilters()): ?>
                 <tr>
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
                     <th>
@@ -276,7 +282,7 @@ $uniqueId = '_' . uniqid();
                             <td class="border border-gray-100 px-3">
                                 <label
                                     class="text-teal-500 inline-flex justify-between items-center hover:bg-gray-200 px-2 py-2 rounded-lg cursor-pointer">
-                                <input form="<?= $formId ?>"
+                                <input form="<?= $massActionFormId ?>"
                                        type="checkbox"
                                        value="<?= $row->getCell($grid->getMassActionIdColumn())->getRawValue() ?>"
                                        name="<?= $grid->getMassActionIdsParam() ?>[]"
@@ -304,7 +310,6 @@ $uniqueId = '_' . uniqid();
                 <?php endforeach; ?>
                 </tbody>
             </table>
-            <?php if ($massActions) { ?></form><?php } ?>
     </div>
             </div>
         </div>

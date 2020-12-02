@@ -5,8 +5,13 @@
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
 
 ?>
-<select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>">
+<select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
+        form="<?= $filter->getFormId() ?>"
+        class="shadow">
 <?php foreach ($filter->getOptions() as $option): ?>
-<option value="<?= $escaper->escapeHtmlAttr($option['value']) ?>"><?= $escaper->escapeHtml($option['label']) ?></option>
+<?php $isSelected = $filter->getValue() === $option->getValueId() ?>
+<option value="<?= $escaper->escapeHtmlAttr($option->getValueId()) ?>"
+        <?= $isSelected ? 'selected' : '' ?>
+><?= $escaper->escapeHtml($option->getLabel()) ?></option>
 <?php endforeach; ?>
 </select>

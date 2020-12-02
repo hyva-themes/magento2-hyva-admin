@@ -4,8 +4,12 @@
 /** @var \Magento\Framework\Escaper $escaper */
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
 
+$value = $filter->getValue();
+
 ?>
-<select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>">
-    <option value="1" <?= $filter->getValue() ? 'selected' : '' ?>><?= __('True') ?></option>
-    <option value="0" <?= !$filter->getValue() ? 'selected' : '' ?>><?= __('False') ?></option>
+<select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
+        form="<?= $filter->getFormId() ?>"
+        class="shadow">
+    <option value="1"<?= isset($value) && $value ? ' selected' : '' ?>><?= __('True') ?></option>
+    <option value="0"<?= isset($value) && !$value ? ' selected' : '' ?>><?= __('False') ?></option>
 </select>

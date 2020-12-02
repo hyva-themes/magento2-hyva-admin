@@ -5,6 +5,7 @@ namespace Hyva\Admin\Test\Functional\ViewModel\HyvaGrid;
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Hyva\Admin\Test\Functional\TestingGridDataProvider;
+use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\Navigation;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
 use Magento\Backend\Model\UrlInterface as BackendUrlBuilder;
@@ -286,7 +287,7 @@ class NavigationTest extends TestCase
     {
         $stubRequest = $this->createMock(RequestInterface::class);
         $pageSize    = 20;
-        $this->stubParams($stubRequest, ['pageSize' => $pageSize]);;
+        $this->stubParams($stubRequest, ['pageSize' => $pageSize]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
         $navigationConfig = ['pager' => ['pageSizes' => '20, 50, 100']];
@@ -322,6 +323,105 @@ class NavigationTest extends TestCase
         $searchCriteria = $sut->getSearchCriteria();
         $this->assertSame('name', $searchCriteria->getSortOrders()[0]->getField());
         $this->assertSame('ASC', $searchCriteria->getSortOrders()[0]->getDirection());
+    }
+
+    public function testAddsBooleanFiltersToSearchCriteria(): void
+    {
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['filter' => ['id' => '1']]);
+
+        $gridData         = [['id' => 'a', 'name' => 'a'], ['id' => 'b', 'name' => 'b'], ['id' => 'c', 'name' => 'c']];
+        $navigationConfig = ['filters' => [['key' => 'id', 'input' => 'bool']]];
+        $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $searchCriteria = $sut->getSearchCriteria();
+        $filterGroups = $searchCriteria->getFilterGroups();
+        $this->assertCount(1, $filterGroups);
+        $this->assertSame('id', $filterGroups[0]->getFilters()[0]->getField());
+        $this->assertSame(1, $filterGroups[0]->getFilters()[0]->getValue());
+        $this->assertSame('eq', $filterGroups[0]->getFilters()[0]->getConditionType());
+    }
+
+    public function testAddsDateRangeFiltersToSearchCriteria(): void
+    {
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['filter' => ['id' => ['from' => 'a', 'to' => 'b']]]);
+
+        $gridData         = [['id' => 'a', 'name' => 'a'], ['id' => 'b', 'name' => 'b'], ['id' => 'c', 'name' => 'c']];
+        $navigationConfig = ['filters' => [['key' => 'id', 'input' => 'date-range']]];
+        $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $searchCriteria = $sut->getSearchCriteria();
+        $filterGroups = $searchCriteria->getFilterGroups();
+        $this->assertCount(2, $filterGroups);
+        $this->assertSame('id', $filterGroups[0]->getFilters()[0]->getField());
+        $this->assertSame('a', $filterGroups[0]->getFilters()[0]->getValue());
+        $this->assertSame('from', $filterGroups[0]->getFilters()[0]->getConditionType());
+
+        $this->assertSame('id', $filterGroups[1]->getFilters()[0]->getField());
+        $this->assertSame('b', $filterGroups[1]->getFilters()[0]->getValue());
+        $this->assertSame('to', $filterGroups[1]->getFilters()[0]->getConditionType());
+    }
+
+    public function testAddsSelectFiltersToSearchCriteria(): void
+    {
+        $options = [
+            ['label' => 'reddish', 'values' => ['16', '17', '18']],
+            ['label' => 'blueish', 'values' => ['12']],
+            ['label' => 'rose', 'values' => ['100']],
+        ];
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['filter' => ['id' => md5('reddish')]]);
+
+
+        $gridData         = [['id' => 'a', 'name' => 'a'], ['id' => 'b', 'name' => 'b'], ['id' => 'c', 'name' => 'c']];
+        $navigationConfig = ['filters' => [['key' => 'id', 'input' => 'select', 'options' => $options]]];
+        $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $searchCriteria = $sut->getSearchCriteria();
+        $filterGroups = $searchCriteria->getFilterGroups();
+        $this->assertCount(1, $filterGroups);
+        $this->assertSame('id', $filterGroups[0]->getFilters()[0]->getField());
+        $this->assertSame(['16', '17', '18'], $filterGroups[0]->getFilters()[0]->getValue());
+        $this->assertSame('in', $filterGroups[0]->getFilters()[0]->getConditionType());
+    }
+
+    public function testAddsTextFiltersToSearchCriteria(): void
+    {
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['filter' => ['id' => 'xxx']]);
+
+        $gridData         = [['id' => 'a', 'name' => 'a'], ['id' => 'b', 'name' => 'b'], ['id' => 'c', 'name' => 'c']];
+        $navigationConfig = ['filters' => [['key' => 'id', 'input' => 'text']]];
+        $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $searchCriteria = $sut->getSearchCriteria();
+        $filters = $searchCriteria->getFilterGroups();
+        $this->assertCount(1, $filters);
+        $this->assertSame('id', $filters[0]->getFilters()[0]->getField());
+        $this->assertSame('%xxx%', $filters[0]->getFilters()[0]->getValue());
+        $this->assertSame('like', $filters[0]->getFilters()[0]->getConditionType());
+    }
+
+    public function testAddsValueRangeFiltersToSearchCriteria(): void
+    {
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['filter' => ['id' => ['from' => 'a', 'to' => 'b']]]);
+
+        $gridData         = [['id' => 'a', 'name' => 'a'], ['id' => 'b', 'name' => 'b'], ['id' => 'c', 'name' => 'c']];
+        $navigationConfig = ['filters' => [['key' => 'id', 'input' => 'value-range']]];
+        $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $searchCriteria = $sut->getSearchCriteria();
+        $filterGroups = $searchCriteria->getFilterGroups();
+        $this->assertCount(2, $filterGroups);
+        $this->assertSame('id', $filterGroups[0]->getFilters()[0]->getField());
+        $this->assertSame('a', $filterGroups[0]->getFilters()[0]->getValue());
+        $this->assertSame('gteq', $filterGroups[0]->getFilters()[0]->getConditionType());
+
+        $this->assertSame('id', $filterGroups[1]->getFilters()[0]->getField());
+        $this->assertSame('b', $filterGroups[1]->getFilters()[0]->getValue());
+        $this->assertSame('lteq', $filterGroups[1]->getFilters()[0]->getConditionType());
     }
 
     public function testReturnsFirstColumnAsDefaultSortByColumn(): void
@@ -426,7 +526,6 @@ class NavigationTest extends TestCase
         $navigationConfig = [];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
-
         $expected = $this->getUrlBuilder()
                          ->getUrl('*/*/*', [
                              '_current' => true,
@@ -438,5 +537,29 @@ class NavigationTest extends TestCase
                          ]);
 
         $this->assertSame($expected, $sut->getSortByUrl('id', 'desc'));
+    }
+
+    public function testReturnsNoGridFilterIfNotConfiguredForAColumn(): void
+    {
+        $gridData         = [
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+        ];
+        $navigationConfig = [];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+
+        $this->assertNull($sut->getFilter('col_a'));
+    }
+
+    public function testReturnsGridFilterIfConfigured(): void
+    {
+        $gridData         = [
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+            ['col_a' => 'xx', 'col_b' => 'yy'],
+        ];
+        $navigationConfig = ['filters' => [['key' => 'col_a']]];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+
+        $this->assertInstanceOf(GridFilterInterface::class, $sut->getFilter('col_a'));
     }
 }
