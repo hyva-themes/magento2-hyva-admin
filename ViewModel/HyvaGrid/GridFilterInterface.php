@@ -12,8 +12,6 @@ interface GridFilterInterface
 
     public function isDisabled(): bool;
 
-    public function getInputType(): string;
-
     /**
      * @return FilterOptionInterface[]|null
      */

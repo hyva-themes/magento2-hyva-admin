@@ -53,7 +53,7 @@ class ArrayProviderGridSourceTypeTest extends TestCase
 
     public function testExtractsBasicColumnDefinition(): void
     {
-        $value = 123;
+        $value = null;
 
         $key = 'x';
         $sut = $this->createArrayProviderGridSourceTypeWithArray([[$key => $value]]);

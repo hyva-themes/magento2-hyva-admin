@@ -417,10 +417,10 @@ EOXML;
         return <<<EOXML
     <navigation>
         <filters>
-            <filter column="sku" input="text" enabled="true" template="Foo_Bar::filter.phtml"/>
-            <filter column="created_at" input="date-range"/>
-            <filter column="id" input="value-range"/>
-            <filter column="color" input="select">
+            <filter column="sku" enabled="true" template="Foo_Bar::filter.phtml"/>
+            <filter column="created_at"/>
+            <filter column="id" filterType="Foo\Bar\Model\GridFilter\Baz"/>
+            <filter column="color">
                 <option label="reddish">
                     <value>16</value>
                     <value>17</value>
@@ -445,12 +445,11 @@ EOXML;
         return [
             'navigation' => [
                 'filters' => [
-                    ['key' => 'sku', 'input' => 'text', 'enabled' => 'true', 'template' => 'Foo_Bar::filter.phtml'],
-                    ['key' => 'created_at', 'input' => 'date-range'],
-                    ['key' => 'id', 'input' => 'value-range'],
+                    ['key' => 'sku', 'enabled' => 'true', 'template' => 'Foo_Bar::filter.phtml'],
+                    ['key' => 'created_at'],
+                    ['key' => 'id', 'filterType' => 'Foo\Bar\Model\GridFilter\Baz'],
                     [
                         'key'     => 'color',
-                        'input'   => 'select',
                         'options' => [
                             ['label' => 'reddish', 'values' => ['16', '17', '18']],
                             ['label' => 'blueish', 'values' => ['12']],

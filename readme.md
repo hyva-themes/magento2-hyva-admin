@@ -6,9 +6,8 @@ It does not use any UI components.
 
 ## next steps (a.k.a. todos)
 
-* make filter input type extendable
- * See \Hyva\Admin\ViewModel\HyvaGrid\GridFilter::guessInputType
- * See \Hyva\Admin\ViewModel\HyvaGrid\GridFilter::apply
+* properly map id to entity_id when applicable
+* test configured option value groups for select filters
 * make array provider support filtering 
 * add ui element to remove all filter values
 * test boolean data type when rendering grid

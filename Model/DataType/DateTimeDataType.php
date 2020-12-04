@@ -5,7 +5,7 @@ namespace Hyva\Admin\Model\DataType;
 use Hyva\Admin\Api\DataTypeInterface;
 use Magento\Framework\Stdlib\DateTime\DateTimeFormatterInterface;
 
-class DateTimeDataTypeConverter implements DataTypeInterface
+class DateTimeDataType implements DataTypeInterface
 {
     const TYPE_DATETIME = 'datetime';
 

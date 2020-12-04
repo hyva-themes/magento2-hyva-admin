@@ -232,21 +232,11 @@
                         </xs:element>
                     </xs:sequence>
                     <xs:attribute name="column" type="xs:normalizedString" use="required"/>
-                    <xs:attribute name="input" type="filterInputType"/>
                     <xs:attribute name="enabled" type="boolean"/>
                     <xs:attribute name="template" type="templateType"/>
+                    <xs:attribute name="filterType" type="phpType"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-
-    <xs:simpleType name="filterInputType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="text"/>
-            <xs:enumeration value="select"/>
-            <xs:enumeration value="bool"/>
-            <xs:enumeration value="date-range"/>
-            <xs:enumeration value="value-range"/>
-        </xs:restriction>
-    </xs:simpleType>
 </xs:schema>

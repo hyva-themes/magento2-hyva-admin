@@ -58,90 +58,47 @@ class GridFilterTest extends TestCase
         $this->assertTrue($this->createFilter(['enabled' => 'false'])->isDisabled());
     }
 
-    public function testThrowsExceptionIfNoTemplateIsSetForInputType(): void
+    public function testHasFilterTypeText(): void
     {
-        $sut = $this->createFilter(['input' => 'nix']);
-
-        $this->expectException(\OutOfBoundsException::class);
-        $this->expectExceptionMessage('No template is set for the grid filter input type "nix".');
-
-        $sut->getHtml();
-    }
-
-    public function testRendersGridInputTypeBasedTemplate(): void
-    {
-        $sut = $this->createFilter([
-            'input'                => 'foo',
-            'inputTypeTemplateMap' => ['foo' => 'Hyva_Admin::testing/filter-test.phtml'],
-        ]);
-
-        $expected = 'Filter for column test with input type foo.';
-
-        $this->assertSame($expected, trim($sut->getHtml()));
-    }
-
-    /**
-     * @dataProvider columnDefinitionInputProvider
-     */
-    public function testDeterminesInputTypeBasedOnColumnDefinition(string $expected, array $columnArguments): void
-    {
-        $this->assertSame($expected, $this->createFilter([], $columnArguments)->getInputType());
-    }
-
-    public function columnDefinitionInputProvider(): array
-    {
-        // expected filter type => column constructor args
-        return [
-            'none'     => ['text', []],
-            'scalar'   => ['text', ['type' => 'scalar_null']],
-            'unknown'  => ['text', ['type' => 'unknown']],
-            'options'  => ['select', ['options' => [['value' => 'foo', 'label' => 'Foo']]]],
-            'bool'     => ['bool', ['type' => 'bool']],
-            'datetime' => ['date-range', ['type' => 'datetime']],
-        ];
-    }
-
-    public function testHasTemplateForTextInputType(): void
-    {
-        $sut = $this->createFilter(['input' => 'text']);
+        $sut = $this->createFilter([]);
         $this->assertStringContainsString('<input type="text"', $sut->getHtml());
     }
 
-    public function testHasTemplateForSelectInputType(): void
+    public function testHasFilterTypeSelect(): void
     {
-        $sut = $this->createFilter(['input' => 'select', 'options' => [['label' => 'x', 'values' => ['y']]]]);
+        $sut = $this->createFilter(['options' => [['label' => 'x', 'values' => ['y']]]]);
         $this->assertStringContainsString('<select', $sut->getHtml());
     }
 
-    public function testHasTemplateForBooleanInputType(): void
+    public function testHasBooleanFilterType(): void
     {
-        $sut = $this->createFilter(['input' => 'bool']);
-        $this->assertStringContainsString('<option value="0">False', $sut->getHtml());
+        $sut = $this->createFilter([], ['type' => 'bool']);
+        $this->assertStringContainsString('<option value="0">No', $sut->getHtml());
     }
 
-    public function testHasTemplateForDateRangeInputType(): void
+    public function testHasDateRangeFilterType(): void
     {
-        $sut = $this->createFilter(['input' => 'date-range']);
+        $sut = $this->createFilter([], ['type' => 'datetime']);
         $this->assertStringContainsString('From: <input type="date"', $sut->getHtml());
     }
 
-    public function testHasTemplateForValueRangeInputType(): void
+    public function testHasValueRangeFilterType(): void
     {
-        $sut = $this->createFilter(['input' => 'value-range']);
+        $sut = $this->createFilter([], ['type' => 'int']);
         $this->assertStringContainsString('From: <input type="text"', $sut->getHtml());
     }
 
     public function testUsesGridNameToQualifyFilterFieldNames(): void
     {
         $sut = $this->createFilter(['gridName' => 'test-grid'], ['key' => 'foo']);
-        $this->assertSame('test-grid[filter][foo]', $sut->getInputName());
+        $this->assertSame('test-grid[_filter][foo]', $sut->getInputName());
     }
 
     public function testAddsAspectsToFilterFieldNames(): void
     {
         $sut = $this->createFilter(['gridName' => 'test-grid'], ['key' => 'foo']);
-        $this->assertSame('test-grid[filter][foo][from]', $sut->getInputName('from'));
-        $this->assertSame('test-grid[filter][foo][to]', $sut->getInputName('to'));
+        $this->assertSame('test-grid[_filter][foo][from]', $sut->getInputName('from'));
+        $this->assertSame('test-grid[_filter][foo][to]', $sut->getInputName('to'));
     }
 
     public function testReturnsNullOptionsIfNoneAreSpecified(): void
@@ -190,7 +147,7 @@ class GridFilterTest extends TestCase
         $key         = 'foo';
         $value       = 'bar';
         $stubRequest = $this->createMock(RequestInterface::class);
-        $this->stubParams($stubRequest, ['filter' => [$key => $value]]);
+        $this->stubParams($stubRequest, ['_filter' => [$key => $value]]);
 
         $sut = $this->createFilter(['request' => $stubRequest], ['key' => $key]);
 
@@ -203,11 +160,24 @@ class GridFilterTest extends TestCase
         $value       = 'bar';
         $aspect      = 'buz';
         $stubRequest = $this->createMock(RequestInterface::class);
-        $this->stubParams($stubRequest, ['filter' => [$key => [$aspect => $value]]]);
+        $this->stubParams($stubRequest, ['_filter' => [$key => [$aspect => $value]]]);
 
         $sut = $this->createFilter(['request' => $stubRequest], ['key' => $key]);
 
         $this->assertSame([$aspect => $value], $sut->getValue());
         $this->assertSame($value, $sut->getValue($aspect));
+    }
+
+    public function testSetsFilterTemplateIfSpecified(): void
+    {
+        $sut = $this->createFilter(['template' => 'Hyva_Admin::testing/filter-test.phtml']);
+        $this->assertStringContainsString('This is a template assigned to a filter, used in a test.', $sut->getHtml());
+    }
+
+    public function testUsesCustomFilterTypeIfSpecified(): void
+    {
+        $sut = $this->createFilter(['filterType' => StubTestFilterType::class]);
+
+        $this->assertStringContainsString(StubTestFilterType::STUB_OUTPUT, $sut->getHtml());
     }
 }

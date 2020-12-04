@@ -282,8 +282,8 @@ class GridXmlToArrayConverter
          *         <defaultSortDirection>asc</defaultSortDirection>
          *     </sorting>
          *     <filters>
-         *         <filter column="sku" input="text" enabled="true" template="Foo_Bar::filter.phtml"/>
-         *         <filter column="color" input="select">
+         *         <filter column="sku" enabled="true" template="Foo_Bar::filter.phtml"/>
+         *         <filter column="color">
          *             <option label="reddish">
          *                 <value>16</value>
          *                 <value>17</value>
@@ -422,8 +422,8 @@ class GridXmlToArrayConverter
     {
         /*
          * <filters>
-         *     <filter column="sku" input="text" enabled="true" template="Foo_Bar::filter.phtml"/>
-         *     <filter column="color" input="select">
+         *     <filter column="sku" enabled="true" template="Foo_Bar::filter.phtml"/>
+         *     <filter column="color">
          *         <option label="reddish">
          *             <value>16</value>
          *             <value>17</value>
@@ -445,9 +445,9 @@ class GridXmlToArrayConverter
     {
         return merge(
             ['key' => $this->getAttributeConfig($filterElement, 'column')['column'] ?? null],
-            $this->getAttributeConfig($filterElement, 'input'),
             $this->getAttributeConfig($filterElement, 'enabled'),
             $this->getAttributeConfig($filterElement, 'template'),
+            $this->getAttributeConfig($filterElement, 'filterType'),
             $this->getFilterOptionsConfig($filterElement)
         );
     }
@@ -455,7 +455,7 @@ class GridXmlToArrayConverter
     private function getFilterOptionsConfig(\DOMElement $filterElement): array
     {
         /*
-         * <filter column="color" input="select">
+         * <filter column="color">
          *     <option label="reddish">
          *         <value>16</value>
          *         <value>17</value>
