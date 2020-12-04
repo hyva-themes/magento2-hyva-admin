@@ -5,7 +5,6 @@ namespace Hyva\Admin\Model\GridSourceType\RepositorySourceType;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Eav\Model\Entity\AbstractEntity as AbstractEavEntityResource;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
-use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
 use Magento\Framework\Api\CustomAttributesDataInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Data\Form\Element\Multiselect;
@@ -54,11 +53,16 @@ class CustomAttributesExtractor
             : [];
     }
 
-    private function getEntityTypeCodeByEntityModelClass(string $entityModelClass): ?string
+    private function getEntityResourceModelByEntityModelClass(string $entityModelClass): string
     {
-        $resourceModelClass = $this->isResourceModelClass($entityModelClass)
+        return $this->isResourceModelClass($entityModelClass)
             ? $entityModelClass
             : $this->modelClassToResourceModel($entityModelClass);
+    }
+
+    private function getEntityTypeCodeByEntityModelClass(string $entityModelClass): ?string
+    {
+        $resourceModelClass = $this->getEntityResourceModelByEntityModelClass($entityModelClass);
 
         if (is_subclass_of($resourceModelClass, AbstractEavEntityResource::class)) {
             /** @var AbstractEavEntityResource $resourceModel */
@@ -125,6 +129,24 @@ class CustomAttributesExtractor
         return $this->getEntityTypeCodeByEntityModelClass($entityModelClass);
     }
 
+    public function getIdFieldName(string $type): ?string
+    {
+        $class              = $this->diConfig->getPreference($type);
+        $entityModelClass   = $this->removeProxySuffix($this->removeInterceptorSuffix($class));
+        $resourceModelClass = $this->getEntityResourceModelByEntityModelClass($entityModelClass);
+
+        if (is_subclass_of($resourceModelClass, \Magento\Eav\Model\Entity\AbstractEntity::class)) {
+            /** @var \Magento\Eav\Model\Entity\AbstractEntity $resourceModel */
+            $resourceModel = $this->objectManager->get($resourceModelClass);
+            return $resourceModel->getEntityIdField();
+        }
+        if (is_subclass_of($resourceModelClass, \Magento\Framework\Model\ResourceModel\Db\AbstractDb::class)) {
+            $resourceModel = $this->objectManager->get($resourceModelClass);
+            return $resourceModel->getIdFieldName();
+        }
+        return null;
+    }
+
     public function getAttributeBackendType($type, $code): ?string
     {
         $entityTypeCode = $this->getEntityTypeCodeForType($type);
@@ -136,7 +158,7 @@ class CustomAttributesExtractor
 
     private function isArrayAttribute(AbstractAttribute $attribute): bool
     {
-        return $this->isAttributeWithSourceModel($attribute) ||  $this->isAttributeWithOptionsInputRenderer($attribute);
+        return $this->isAttributeWithSourceModel($attribute) || $this->isAttributeWithOptionsInputRenderer($attribute);
     }
 
     private function isAttributeWithOptionsInputRenderer(AbstractAttribute $attribute): bool

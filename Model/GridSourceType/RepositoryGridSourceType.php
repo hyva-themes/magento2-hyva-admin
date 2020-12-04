@@ -130,7 +130,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     public function getColumnDefinition(string $key): ColumnDefinitionInterface
     {
-        if (! isset($this->memoizedColumnDefinitions[$key])) {
+        if (!isset($this->memoizedColumnDefinitions[$key])) {
             $this->memoizedColumnDefinitions[$key] = $this->buildColumnDefinition($key);
         }
         return $this->memoizedColumnDefinitions[$key];
@@ -196,19 +196,35 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         return $this->customAttributesExtractor->getAttributeLabel($type, $key);
     }
 
-    public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
+    private function mapIdFilterToEntityIdField(SearchCriteriaInterface $searchCriteria): SearchCriteriaInterface
     {
         // preprocess $searchCriteria to map ìd to entity_id when applicable
-        foreach ($searchCriteria->getFilterGroups() as $group) {
-            foreach ($group->getFilters() as $filter) {
-                if ($filter->getField() === 'id') {
-                    $filter->setField('entity_id');
+        $idFieldName = $this->customAttributesExtractor->getIdFieldName($this->getRecordType());
+        if ($idFieldName && $idFieldName !== 'id') {
+            foreach ($searchCriteria->getFilterGroups() as $group) {
+                foreach ($group->getFilters() as $filter) {
+                    if ($filter->getField() === 'id') {
+                        $filter->setField($idFieldName);
+                    }
                 }
             }
         }
+        return $searchCriteria;
+    }
+
+    private function preprocessSearchCriteria(SearchCriteriaInterface $searchCriteria): SearchCriteriaInterface
+    {
+        // TODO: add option to add custom preprocessors here.
+        // TODO: Maybe also add a preprocess method to custom filter types?
+        return $this->mapIdFilterToEntityIdField($searchCriteria);
+    }
+
+    public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
+    {
+        $preprocessedSearchCriteria = $this->preprocessSearchCriteria($searchCriteria);
 
         $repositoryGetList = $this->repositorySourceFactory->create($this->getSourceRepoConfig());
-        $result            = $repositoryGetList($searchCriteria);
+        $result            = $repositoryGetList($preprocessedSearchCriteria);
 
         return RawGridSourceContainer::forData($result);
     }

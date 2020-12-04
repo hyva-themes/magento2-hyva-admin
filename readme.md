@@ -6,7 +6,8 @@ It does not use any UI components.
 
 ## next steps (a.k.a. todos)
 
-* properly map id to entity_id when applicable
+* add event or some other hook to allow search criteria preprocessing
+  See \Hyva\Admin\Model\GridSourceType\RepositoryGridSourceType::preprocessSearchCriteria
 * test configured option value groups for select filters
 * make array provider support filtering 
 * add ui element to remove all filter values
