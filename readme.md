@@ -6,7 +6,6 @@ It does not use any UI components.
 
 ## next steps (a.k.a. todos)
 
-* pass option labels configured in grid xml through __()
 * add ui element to remove all filter values
 * test boolean data type when rendering grid
 * collection source type
