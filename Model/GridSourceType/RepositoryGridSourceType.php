@@ -8,6 +8,7 @@ use Hyva\Admin\Model\GridSourceType\RepositorySourceType\ExtensionAttributeTypeE
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\GetterMethodsExtractor;
 use Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory;
+use Hyva\Admin\Model\GridSourceType\RepositorySourceType\SearchCriteriaEventContainer;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
@@ -15,6 +16,8 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchResults;
 
+use Magento\Framework\DataObject;
+use Magento\Framework\Event\ManagerInterface;
 use function array_filter as filter;
 use function array_merge as merge;
 use function array_unique as unique;
@@ -41,6 +44,8 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     private SearchCriteriaBuilder $searchCriteriaBuilder;
 
     private DataTypeGuesserInterface $dataTypeGuesser;
+
+    private ManagerInterface $eventManager;
 
     /**
      * @var string[]
@@ -72,7 +77,8 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         CustomAttributesExtractor $customAttributesExtractor,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        DataTypeGuesserInterface $dataTypeGuesser
+        DataTypeGuesserInterface $dataTypeGuesser,
+        ManagerInterface $eventManager
     ) {
         $this->gridName                        = $gridName;
         $this->sourceConfiguration             = $sourceConfiguration;
@@ -84,6 +90,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         $this->columnDefinitionFactory         = $columnDefinitionFactory;
         $this->searchCriteriaBuilder           = $searchCriteriaBuilder;
         $this->dataTypeGuesser                 = $dataTypeGuesser;
+        $this->eventManager                    = $eventManager;
     }
 
     private function getGetMethodKeys(): array
@@ -214,9 +221,8 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private function preprocessSearchCriteria(SearchCriteriaInterface $searchCriteria): SearchCriteriaInterface
     {
-        // TODO: add option to add custom preprocessors here.
-        // TODO: Maybe also add a preprocess method to custom filter types?
-        return $this->mapIdFilterToEntityIdField($searchCriteria);
+        $searchCriteria = $this->mapIdFilterToEntityIdField($searchCriteria);
+        return $this->dispatchGridRepositorySourcePrefetchEvent($searchCriteria);
     }
 
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
@@ -291,5 +297,21 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     public function extractTotalRowCount(RawGridSourceContainer $rawGridData): int
     {
         return $this->unboxRawGridSourceContainer($rawGridData)->getTotalCount();
+    }
+
+    private function dispatchGridRepositorySourcePrefetchEvent(
+        SearchCriteriaInterface $searchCriteria
+    ): SearchCriteriaInterface {
+        $eventName = 'hyva_grid_repository_source_prefetch_' . $this->getGridNameEventSuffix();
+        $container = new SearchCriteriaEventContainer($searchCriteria);
+        $eventArgs = ['search_criteria_container' => $container];
+        $this->eventManager->dispatch($eventName, $eventArgs);
+
+        return $container->getSearchCriteria();
+    }
+
+    private function getGridNameEventSuffix(): string
+    {
+        return strtolower(preg_replace('/[^[:alpha:]]+/', '_', $this->gridName));
     }
 }
