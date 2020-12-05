@@ -381,9 +381,12 @@ class NavigationTest extends TestCase
         $searchCriteria = $sut->getSearchCriteria();
         $filterGroups   = $searchCriteria->getFilterGroups();
         $this->assertCount(1, $filterGroups);
+        $this->assertCount(3, $filterGroups[0]->getFilters());
         $this->assertSame('id', $filterGroups[0]->getFilters()[0]->getField());
-        $this->assertSame($optionValues, $filterGroups[0]->getFilters()[0]->getValue());
         $this->assertSame('finset', $filterGroups[0]->getFilters()[0]->getConditionType());
+        $this->assertSame($optionValues[0], $filterGroups[0]->getFilters()[0]->getValue());
+        $this->assertSame($optionValues[1], $filterGroups[0]->getFilters()[1]->getValue());
+        $this->assertSame($optionValues[2], $filterGroups[0]->getFilters()[2]->getValue());
     }
 
     public function testAddsTextFiltersToSearchCriteria(): void
