@@ -6,8 +6,8 @@ It does not use any UI components.
 
 ## next steps (a.k.a. todos)
 
-* test configured option value groups for select filters
 * make array provider support filtering 
+* pass option labels configured in grid xml through __()
 * add ui element to remove all filter values
 * test boolean data type when rendering grid
 * collection source type

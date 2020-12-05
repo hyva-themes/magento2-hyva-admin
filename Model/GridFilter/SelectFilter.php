@@ -5,11 +5,13 @@ namespace Hyva\Admin\Model\GridFilter;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\FilterOptionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
+use Magento\Framework\Api\Filter;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 
 use function array_filter as filter;
+use function array_map as map;
 use function array_values as values;
 
 class SelectFilter implements ColumnDefinitionMatchingFilterInterface
@@ -41,8 +43,12 @@ class SelectFilter implements ColumnDefinitionMatchingFilterInterface
         $filterValue
     ): void {
         if ($option = $this->getSelectedOption($gridFilter->getOptions(), $filterValue)) {
-            $key = $gridFilter->getColumnDefinition()->getKey();
-            $searchCriteriaBuilder->addFilter($key, $option->getValues(), 'finset');
+            $key     = $gridFilter->getColumnDefinition()->getKey();
+            $filters = map(function ($value) use ($key): Filter {
+                return $this->buildSelectValueFilter($key, $value);
+            }, $option->getValues());
+
+            $searchCriteriaBuilder->addFilters($filters);
         }
     }
 
@@ -51,5 +57,14 @@ class SelectFilter implements ColumnDefinitionMatchingFilterInterface
         return values(filter($options, function (FilterOptionInterface $option) use ($value): bool {
                 return $option->getValueId() === $value;
             }))[0] ?? null;
+    }
+
+    private function buildSelectValueFilter(string $key, $value): Filter
+    {
+        return new Filter([
+            Filter::KEY_FIELD          => $key,
+            Filter::KEY_VALUE          => $value,
+            Filter::KEY_CONDITION_TYPE => 'finset',
+        ]);
     }
 }
