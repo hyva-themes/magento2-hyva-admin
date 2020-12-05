@@ -7,10 +7,14 @@ use Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
+use Magento\Framework\Api\Filter;
+use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
 
+use function array_contains as contains;
+use function array_filter as filter;
 use function array_keys as keys;
 use function array_reduce as reduce;
 use function array_slice as slice;
@@ -105,8 +109,9 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
             $this->memoizedGridData = $provider->getHyvaGridData();
         }
 
-        $sorted = $this->applySortOrders($this->memoizedGridData, $searchCriteria->getSortOrders() ?? []);
-        $page   = $this->selectPage($sorted, $searchCriteria);
+        $filtered = $this->applyFilterGroups($this->memoizedGridData, $searchCriteria->getFilterGroups() ?? []);
+        $sorted   = $this->applySortOrders($filtered, $searchCriteria->getSortOrders() ?? []);
+        $page     = $this->selectPage($sorted, $searchCriteria);
         return RawGridSourceContainer::forData($page);
     }
 
@@ -160,5 +165,92 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $slice = min($size, max($count - $start, 0));
 
         return slice($gridData, $start, $slice);
+    }
+
+    /**
+     * @param array[] $gridData
+     * @param FilterGroup[] $filterGroups
+     * @return array[]
+     */
+    private function applyFilterGroups(array $gridData, array $filterGroups): array
+    {
+        return values(filter(reduce($filterGroups, [$this, 'applyFilterGroup'], $gridData)));
+    }
+
+    private function applyFilterGroup(array $gridData, FilterGroup $filterGroup): array
+    {
+        return filter($gridData, function (array $record) use ($filterGroup): bool {
+            return $this->hasAnyMatchingFilter($record, $filterGroup->getFilters() ?? []);
+        });
+    }
+
+    private function hasAnyMatchingFilter(array $record, array $filters): bool
+    {
+        return reduce($filters, function (bool $hasMatch, Filter $filter) use ($record): bool {
+            return $hasMatch || $this->isMatchingFilter($record, $filter);
+        }, false);
+    }
+
+    private function isMatchingFilter(array $record, Filter $filter): bool
+    {
+        $fieldValue  = $record[$filter->getField()] ?? null;
+        $filterValue = $filter->getValue();
+        switch ($filter->getConditionType()) {
+            case 'eq':
+            case 'is':
+                return $fieldValue === $filterValue;
+            case 'neq':
+                return $fieldValue !== $filterValue;
+            case 'lteq':
+            case 'to':
+                return $fieldValue <= $filterValue;
+            case 'gteq':
+            case 'moreq':
+            case 'from':
+                return $fieldValue >= $filterValue;
+            case 'gt':
+                return $fieldValue > $filterValue;
+            case 'lt':
+                return $fieldValue < $filterValue;
+            case 'like':
+                return (bool) preg_match($this->likeExpressionToRegex($filterValue), $fieldValue);
+            case 'nlike':
+                return !preg_match($this->likeExpressionToRegex($filterValue), $fieldValue);
+            case 'in':
+                return contains($fieldValue, $filterValue);
+            case 'nin':
+                return !contains($fieldValue, $filterValue);
+            case 'notnull':
+                return isset($fieldValue);
+            case 'null':
+                return is_null($fieldValue);
+            case 'finset':
+                return (bool) preg_match($this->findInSetFilterToRegex($filterValue), $fieldValue);
+            default:
+                throw new \OutOfBoundsException(sprintf(
+                    'Filter condition "%s" is not (currently) supported by array grid data providers',
+                    $filter->getConditionType()
+                ));
+        }
+    }
+
+    private function likeExpressionToRegex(string $filterValue): string
+    {
+        $percentWildcards              = preg_replace('#(?<!\\\)%#', '.*', $filterValue);
+        $percentAndUnderscoreWildcards = preg_replace('#(?<!\\\)_#', '.', $percentWildcards);
+
+        return '/^' . $percentAndUnderscoreWildcards . '$/i';
+    }
+
+    private function findInSetFilterToRegex(string $filterValue): string
+    {
+        $matchOptions = [
+            'only'          => $filterValue,
+            'start of list' => $filterValue . ',.+',
+            'in list'       => '.+,' . $filterValue . ',.+',
+            'end of list'   => '.+,' . $filterValue,
+        ];
+
+        return '/^(?:' . implode('|', $matchOptions) . ')$/i';
     }
 }

@@ -39,7 +39,10 @@ class TextFilter implements ColumnDefinitionMatchingFilterInterface
     ): void {
         if ($this->isValue($filterValue)) {
             $key = $gridFilter->getColumnDefinition()->getKey();
-            $searchCriteriaBuilder->addFilter($key, '%' . $filterValue . '%', 'like');
+            // TODO: improve escaping of LIKE expression wildcards to avoid double escaping
+            // E.g. \% should becode \\\% (not as in the current implementation \\%)
+            $escapedFilterValue = str_replace(['%', '_'], ['\%', '\_'], $filterValue);
+            $searchCriteriaBuilder->addFilter($key, '%' . $escapedFilterValue . '%', 'like');
         }
     }
 

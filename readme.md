@@ -6,12 +6,13 @@ It does not use any UI components.
 
 ## next steps (a.k.a. todos)
 
-* make array provider support filtering 
 * pass option labels configured in grid xml through __()
 * add ui element to remove all filter values
 * test boolean data type when rendering grid
 * collection source type
 * ajax paging
+* fix LIKE wildcard character escaping in
+  \Hyva\Admin\Model\GridFilter\TextFilter::apply
 * caching the merge result in the grid config reader
 * query source type
 * inline grid editing
