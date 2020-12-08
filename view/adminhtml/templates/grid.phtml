@@ -7,71 +7,6 @@ $grid       = $block->getGrid();
 $navigation = $grid->getNavigation();
 $uniqueId = '_' . uniqid();
 ?>
-
-<style>
-
-    .menu-wrapper .logo .logo-img { display: inline; }
-
-    [x-cloak] {
-        display: none;
-    }
-
-    [type="checkbox"] {
-        box-sizing: border-box;
-        padding: 0;
-    }
-
-    .form-checkbox {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        -webkit-print-color-adjust: exact;
-        color-adjust: exact;
-        display: inline-block;
-        vertical-align: middle;
-        background-origin: border-box;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        flex-shrink: 0;
-        color: currentColor;
-        background-color: #fff;
-        border-color: #e2e8f0;
-        border-width: 1px;
-        border-radius: 0.25rem;
-        height: 1.2em;
-        width: 1.2em;
-    }
-
-    .form-checkbox:checked {
-        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e");
-        border-color: transparent;
-        background-color: currentColor;
-        background-size: 100% 100%;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-
-    .form-select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a0aec0'%3e%3cpath d='M15.3 9.3a1 1 0 0 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 1.4-1.4l3.3 3.29 3.3-3.3z'/%3e%3c/svg%3e");
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        -webkit-print-color-adjust: exact;
-        color-adjust: exact;
-        background-repeat: no-repeat;
-        background-color: #fff;
-        border-color: #e2e8f0;
-        border-width: 1px;
-        border-radius: .25rem;
-        padding: .5rem 2.5rem .5rem .75rem;
-        background-position: right .5rem center;
-        background-size: 1.5em 1.5em;
-    }
-
-    img { max-width: none; display: inline-block; }
-</style>
 <div class="antialiased sans-serif" x-data="initDataTable<?=$uniqueId?>()">
 
     <div class="max-w-full mx-auto py-6 px-0">
@@ -98,7 +33,8 @@ $uniqueId = '_' . uniqid();
                                 }
                             }
                         </script>
-                        <select id="pageSize" onchange="goToOptionUrl(this.selectedOptions[0])" class="form-select">
+                        <select id="pageSize" onchange="goToOptionUrl(this.selectedOptions[0])"
+                                class="form-select @apply bg-white border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:z-10 font-medium form-select hover:bg-gray-50 inline-flex items-center leading-loose py-2 relative rounded-md text-gray-700 text-xl">
                             <?php foreach ($navigation->getPageSizes() as $pageSize): ?>
                             <?php $currentPageSize = $navigation->getPageSize() === $pageSize ?>
                             <option value="<?= $navigation->getUrlForPageSize($pageSize) ?>" <?= $currentPageSize ? 'selected' : '' ?>><?= $pageSize ?></option>
@@ -192,7 +128,9 @@ $uniqueId = '_' . uniqid();
                     }
                 </script>
                 <label for="massAction<?= $uniqueId?>" class="mr-8"><?= __('Mass Actions:') ?></label>
-                <select onchange="doMassAction(this.selectedOptions[0])" id="massAction<?= $uniqueId ?>" name="massAction" class="form-select" form="<?= $massActionFormId ?>">
+                <select onchange="doMassAction(this.selectedOptions[0])" id="massAction<?= $uniqueId ?>" name="massAction"
+                        class="form-select @apply bg-white border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:z-10 font-medium form-select hover:bg-gray-50 inline-flex items-center leading-loose py-2 relative rounded-md text-gray-700 text-xl"
+                        form="<?= $massActionFormId ?>">
                     <option disabled selected hidden><?= __('Select an action') ?></option>
                     <?php foreach ($massActions as $massAction): ?>
                         <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
@@ -219,9 +157,9 @@ $uniqueId = '_' . uniqid();
                 <tr class="text-left">
 
                     <?php if ($massActions): ?>
-                        <th class="py-2 px-3 sticky top-0 border border-gray-200 bg-gray-100">
+                        <th class="py-2 px-3 sticky top-0 border border-gray-200 bg-orange-950 text-gray-300">
                             <label
-                                class="text-teal-500 inline-flex justify-between items-center hover:bg-gray-200 px-2 py-2 rounded-lg cursor-pointer">
+                                class="inline-flex justify-between items-center hover:bg-gray-200 px-2 py-2 rounded-lg cursor-pointer">
                                 <input type="checkbox"
                                        class="form-checkbox focus:outline-none focus:shadow-outline"
                                        @click="selectAllCheckbox($event);">
@@ -232,14 +170,14 @@ $uniqueId = '_' . uniqid();
                     <?php $isSortedByColumn = $navigation->getSortByColumn() === $column->getKey() ?>
                     <?php $newDirection = $isSortedByColumn && $navigation->isSortOrderAscending() ? 'desc' : 'asc' ?>
                     <?php $sortIndicator = $isSortedByColumn ? ($navigation->isSortOrderAscending() ? '⬆️' : '⬇️') : '' ?>
-                        <th class="<?= $escaper->escapeHtml($column->getKey()) ?> bg-gray-100 sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xl table-cell align-middle"
+                        <th class="<?= $escaper->escapeHtml($column->getKey()) ?> bg-orange-950 sticky top-0 border border-gray-200 px-6 py-2 text-gray-300 font-semibold tracking-wider uppercase text-xl table-cell align-middle"
                             x-ref="<?= $escaper->escapeHtml($column->getKey()) ?>"
                             onclick="window.location.href='<?= $navigation->getSortByUrl($column->getKey(), $newDirection) ?>'">
                             <?= $escaper->escapeHtml($column->getLabel()) ?> <?= $sortIndicator ?>
                         </th>
                     <?php endforeach; ?>
                     <?php if ($actions = $grid->getActions()): ?>
-                        <th class="actions bg-gray-100 sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xl table-cell align-middle">
+                        <th class="actions bg-orange-950 sticky top-0 border border-gray-200 px-6 py-2 text-gray-300 font-semibold tracking-wider uppercase text-xl table-cell align-middle">
                             <?= __('Actions') ?>
                         </th>
                     <?php endif; ?>

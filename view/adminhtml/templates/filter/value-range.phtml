@@ -5,9 +5,15 @@
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
 
 ?>
-<?= __('From:') ?> <input type="text" form="<?= $filter->getFormId() ?>" class="shadow"
-                          name="<?= $escaper->escapeHtmlAttr($filter->getInputName('from')) ?>"
-                          value="<?= $escaper->escapeHtmlAttr($filter->getValue('from')) ?>"/>
-<?= __('To:') ?> <input type="text" form="<?= $filter->getFormId() ?>" class="shadow"
-                        name="<?= $escaper->escapeHtmlAttr($filter->getInputName('to')) ?>"
-                        value="<?= $escaper->escapeHtmlAttr($filter->getValue('to')) ?>"/>
+<div>
+<?= __('From:') ?>
+    <input type="text" form="<?= $filter->getFormId() ?>" class="shadow"
+           name="<?= $escaper->escapeHtmlAttr($filter->getInputName('from')) ?>"
+           value="<?= $escaper->escapeHtmlAttr($filter->getValue('from')) ?>"/>
+</div>
+<div>
+<?= __('To:') ?>
+    <input type="text" form="<?= $filter->getFormId() ?>" class="shadow"
+           name="<?= $escaper->escapeHtmlAttr($filter->getInputName('to')) ?>"
+           value="<?= $escaper->escapeHtmlAttr($filter->getValue('to')) ?>"/>
+</div>
