@@ -60,7 +60,8 @@ composer require hyva/module-magento2-admin-test --prefer-source
 ### Requirements
 
 The module currently requires PHP 7.4, but I intend to refactor it so it works with PHP 7.3, too.
-Otherwise it should work with pretty much any Magento 2 version, as long as it `$escaper`... TODO: continue here.
+It should work with pretty much any Magento 2 version, as long as the `$escaper` is assigned in templates.
+
 
 ## Quickstart
 
