@@ -37,7 +37,7 @@ Alternative store fronts that do not use UI components (PWA Studio, Hyva Themes)
 I desire a way to do my job (which includes building grids and forms) that doesn't feel like I have to fight the framework.  
 I want to feel empowered and get work done quickly and efficiently.
 After years of bitching about Magento, I was very impressed by the work Willem Wigman has done with the Hyvä frontend theme.
-He inspired me to stop complaining and also take matters into my own hands, and finaly build the tools I desire.
+He inspired me to stop complaining and also take matters into my own hands, and finally build the tools I desire.
 Hence, Hyva_Admin. 
 
 
@@ -50,7 +50,7 @@ composer config repositories.hyva/module-magento2-admin git git@gitlab.hyva.io:h
 composer require hyva/module-magento2-admin --prefer-source
 ```
 
-If you want to just play arond to get a feel for Hyva_Admin grids, you can install a test module that declares an example grid, too:
+If you want to just play around to get a feel for Hyva_Admin grids, you can install a test module that declares an example grid, too:
 
 ```
 composer config repositories.hyva/module-magento2-admin-test git git@gitlab.hyva.io:hyva-admin/hyva-admin-test-module.git
@@ -65,7 +65,7 @@ It should work with pretty much any Magento 2 version, as long as the `$escaper`
 
 ## Quickstart
 
-Once installed, grids can be added to any admin page by adding a bit of layout XML.  
+Once installed, grids can be added to any admin page by adding a bit of layout XML and a grid configuration file.  
 The layout XML has to contain two things:
 
 * A `<update handle="hyva_admin_grid"/>` declaration to load alpine.js and tailwind.
@@ -83,165 +83,13 @@ In many cases the default will be good enough and no further configuration beyon
 
 Grid row actions, mass actions, paging and filtering can also be configured as needed.
 
-More information can be found in the [Hyva Admin docs](https://docs.hyva.io/doc/1-getting-started-VCwsPVVwTP).
+More information can be found in the [Hyva Admin documentation](https://docs.hyva.io/doc/1-getting-started-VCwsPVVwTP).
 
+## Stability
 
-## Examples 
-
-In the following you will find a few examples that might be enough to get you started.
-For more details and more structure can be found in the [docs](https://docs.hyva.io/doc/1-getting-started-VCwsPVVwTP).
-
-### Example Layout XML
-
-The following is all the layout XML that is required to show a Hyva admin grid on an admin page.  
-The grid configuration would then be read from `view/adminhtml/hyva-grid/some-grid.xml`. 
-
-```xml
-<?xml version="1.0"?>
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <update handle="hyva_admin_grid"/>
-    <body>
-        <referenceContainer name="content">
-            <block class="Hyva\Admin\Block\Adminhtml\HyvaGrid" name="demo-grid">
-                <arguments>
-                    <argument name="grid_name" xsi:type="string">some-grid</argument>
-                </arguments>
-            </block>
-        </referenceContainer>
-    </body>
-</page>
-```
-
-#### Example Minimal Grid Configuration:
-
-This is how a grid with an array provider source can be configured.
-Technically not even an exclude column is required - but leaving only the source config in the example seemed like too little.
-
-```xml
-<?xml version="1.0"?>
-<grid xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:module:Hyva_Admin:etc/hyva-grid.xsd">
-    <source>
-        <arrayProvider>\Hyva\AdminTest\Model\LogFileListProvider</arrayProvider>
-    </source>
-    <columns>
-        <exclude>
-            <column name="leaf"/>
-        </exclude>
-    </columns>
-</grid>
-```
-
-#### Example Product Grid Configuration:
-
-This is an example for a grid configuration that uses the product repository as a data source.  
-It showcases more of the grid configuration options, but there are more.
-
-```xml
-<?xml version="1.0"?>
-<grid xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:module:Hyva_Admin:etc/hyva-grid.xsd">
-    <source>
-        <repositoryListMethod>\Magento\Catalog\Api\ProductRepositoryInterface::getList</repositoryListMethod>
-    </source>
-    <columns>
-        <include>
-            <column name="id"/>
-            <column name="sku"/>
-            <column name="activity"/>
-            <column name="name"/>
-            <column name="image" type="magento_product_image" renderAsUnsecureHtml="true" label="Main Image"
-                    template="Hyva_AdminTest::image.phtml"/>
-            <column name="media_gallery" renderAsUnsecureHtml="true"/>
-            <column name="price" type="price"/>
-        </include>
-        <exclude>
-            <column name="category_gear"/>
-        </exclude>
-    </columns>
-    <actions idColumn="id">
-        <action id="edit" label="Edit" url="*/*/edit"/>
-        <action id="delete" label="Delete" url="*/*/delete"/>
-    </actions>
-    <massActions idColumn="id">
-        <action id="reindex" label="Reindex" url="*/massAction/reindex"/>
-        <action id="delete" label="Delete" url="*/massAction/delete" requireConfirmation="true"/>
-    </massActions>
-    <navigation>
-        <pager>
-            <defaultPageSize>5</defaultPageSize>
-            <pageSizes>2,5,10</pageSizes>
-        </pager>
-        <sorting>
-            <defaultSortByColumn>sku</defaultSortByColumn>
-            <defaultSortDirection>desc</defaultSortDirection>
-        </sorting>
-        <filters>
-            <filter column="sku"/>
-            <filter column="activity"/>
-            <filter column="category_ids"/>
-            <filter column="id"/>
-            <filter column="color">
-                <option label="reddish">
-                    <value>16</value>
-                    <value>17</value>
-                    <value>18</value>
-                </option>
-                <option label="blueish">
-                    <value>12</value>
-                </option>
-                <option label="rose">
-                    <value>100</value>
-                </option>
-            </filter>
-        </filters>
-    </navigation>
-</grid>
-```
-
-#### Example Array Grid Data Provider
-
-This is an example for simple array grid data provider.
-Each sub-array is a row in the grid. The grid columns are taken from the first record in the returned array. 
-
-```php
-<?php declare(strict_types=1);
-
-namespace Hyva\AdminTest\Model;
-
-use Hyva\Admin\Api\HyvaGridArrayProviderInterface;
-use Magento\Framework\App\Filesystem\DirectoryList;
-use Magento\Framework\Filesystem\Io\FileFactory;
-
-class LogFileListProvider implements HyvaGridArrayProviderInterface
-{
-
-    /**
-     * @var DirectoryList
-     */
-    private DirectoryList $directoryList;
-
-    /**
-     * @var FileFactory
-     */
-    private FileFactory $fileFactory;
-
-    public function __construct(DirectoryList $directoryList, FileFactory $fileFactory)
-    {
-        $this->directoryList = $directoryList;
-        $this->fileFactory = $fileFactory;
-    }
-
-    public function getHyvaGridData(): array
-    {
-        $file = $this->fileFactory->create();
-        $file->cd($this->directoryList->getPath(DirectoryList::LOG));
-
-        return $file->ls();
-    }
-}
-```
+The module isn’t feature complete or stable. It’s currently in a state comparable to a closed beta.
+The API will remain stable, unless some real flaw is discovered.  
+New features will be added in a backward compatible manner.  
 
 ## Copyright & License
 
