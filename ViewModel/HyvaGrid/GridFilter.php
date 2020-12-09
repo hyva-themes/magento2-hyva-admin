@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
-use Hyva\Admin\Api\GridFilterTypeInterface;
+use Hyva\Admin\Api\HyvaGridFilterTypeInterface;
 use Hyva\Admin\Model\GridFilter\GridFilterTypeLocator;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\RequestInterface;
@@ -73,7 +73,7 @@ class GridFilter implements GridFilterInterface
         return $renderer->toHtml();
     }
 
-    private function getFilterType(): GridFilterTypeInterface
+    private function getFilterType(): HyvaGridFilterTypeInterface
     {
         return $this->filterType
             ? $this->gridFilterTypeLocator->get($this->filterType)

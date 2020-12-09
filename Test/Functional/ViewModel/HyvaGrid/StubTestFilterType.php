@@ -2,13 +2,13 @@
 
 namespace Hyva\Admin\Test\Functional\ViewModel\HyvaGrid;
 
-use Hyva\Admin\Api\GridFilterTypeInterface;
+use Hyva\Admin\Api\HyvaGridFilterTypeInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\View\Element\Template;
 
-class StubTestFilterType implements GridFilterTypeInterface
+class StubTestFilterType implements HyvaGridFilterTypeInterface
 {
     const STUB_OUTPUT = 'This is the output of the dummy filter type';
 
