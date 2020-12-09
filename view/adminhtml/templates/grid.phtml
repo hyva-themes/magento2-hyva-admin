@@ -105,6 +105,7 @@ $uniqueId = '_' . uniqid();
             <?php if ($massActions = $grid->getMassActions()): ?>
             <?php $massActionFormId = 'hyva-grid-massaction-' . $grid->getGridName() ?>
             <form id="<?= $massActionFormId ?>" method="post">
+                <?= $block->getBlockHtml('formkey'); ?>
                 <script>
                     function doMassAction(option) {
                         const url = option.value;
