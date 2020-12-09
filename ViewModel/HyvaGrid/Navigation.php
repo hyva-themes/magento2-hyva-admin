@@ -175,10 +175,13 @@ class Navigation implements NavigationInterface
 
     private function createSortOrder(): SortOrder
     {
-        $this->sortOrderBuilder->setField($this->getRequestedSortByColumn() ?? $this->getDefaultSortByColumn());
-        $this->getRequestedSortDirection() === self::DESC
-            ? $this->sortOrderBuilder->setDescendingDirection()
-            : $this->sortOrderBuilder->setAscendingDirection();
+        $key = $this->getRequestedSortByColumn() ?? $this->getDefaultSortByColumn();
+        if ($key && isset($this->columnDefinitions[$key]) && $this->columnDefinitions[$key]->isSortable()) {
+            $this->sortOrderBuilder->setField($key);
+            $this->getRequestedSortDirection() === self::DESC
+                ? $this->sortOrderBuilder->setDescendingDirection()
+                : $this->sortOrderBuilder->setAscendingDirection();
+        }
         return $this->sortOrderBuilder->create();
     }
 
@@ -308,7 +311,7 @@ class Navigation implements NavigationInterface
                 'request'          => $this->request,
             ]))
             : null;
-        return $filter && ! $filter->isDisabled()
+        return $filter && !$filter->isDisabled()
             ? $filter
             : null;
     }
