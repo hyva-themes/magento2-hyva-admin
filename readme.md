@@ -91,6 +91,11 @@ The module isn’t feature complete or stable. It’s currently in a state compa
 The API will remain stable, unless some real flaw is discovered.  
 New features will be added in a backward compatible manner.  
 
+## Contributions
+
+PR's are very welcome.
+It's early in this modules life, so I will probably like to chime in on bigger changes.
+
 ## Copyright & License
 
 Copyright 2020 Vinai Kopp & Hyvä Themes BV
