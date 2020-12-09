@@ -234,7 +234,9 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getMassActionIdColumn(): ?string
     {
-        $idColumn = $this->getGridDefinition()->getMassActionConfig()['@idColumn'] ?? null;
+        $idColumn = $this->getGridDefinition()->getMassActionConfig()['@idColumn']
+            ?? keys($this->getColumnDefinitions())[0]
+            ?? null;
         $this->validateActionIdColumnExists($idColumn, 'MassActionAction');
 
         return $idColumn;
@@ -242,6 +244,6 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getMassActionIdsParam(): ?string
     {
-        return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? null;
+        return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? $this->getMassActionIdColumn();
     }
 }

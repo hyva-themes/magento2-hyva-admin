@@ -42,7 +42,7 @@ class GridAction implements GridActionInterface
 
     public function getParams(RowInterface $row): array
     {
-        $paramName = $this->idParam ?? $this->getFirstColumnKey($row);
+        $paramName = $this->idParam ?? $this->idColumn ?? $this->getFirstColumnKey($row);
         $paramCol  = $this->idColumn ?? ($row->getCell($paramName) ? $paramName : $this->getFirstColumnKey($row));
         return [$paramName => (string) $row->getCell($paramCol)->getRawValue()];
     }
