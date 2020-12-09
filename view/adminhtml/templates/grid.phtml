@@ -62,6 +62,12 @@ $uniqueId = '_' . uniqid();
                             </span>
                         <?php endif; ?>
                     </div>
+
+                    <?php if ($navigation->hasAppliedFilters()): ?>
+                    <div>
+                        <a href="<?= $navigation->getResetFiltersUrl() ?>"><?= __('Reset filters') ?></a>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <div>

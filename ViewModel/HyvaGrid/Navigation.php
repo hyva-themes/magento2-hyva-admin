@@ -328,6 +328,16 @@ class Navigation implements NavigationInterface
         return $this->buildUrl('*/*/*', ['_current' => true]);
     }
 
+    public function getResetFiltersUrl(): string
+    {
+        return $this->buildUrl('*/*/*', ['_current' => true, '_query' => ['_filter' => '']]);
+    }
+
+    public function hasAppliedFilters(): bool
+    {
+        return (bool) $this->getQueryParam('_filter');
+    }
+
     public function getFilterFormId(): string
     {
         return 'hyva-grid-filters-' . $this->gridName;

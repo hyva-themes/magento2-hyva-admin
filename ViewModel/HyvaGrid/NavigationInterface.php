@@ -52,5 +52,9 @@ interface NavigationInterface
 
     public function getFilterFormUrl(): string;
 
+    public function getResetFiltersUrl(): string;
+
+    public function hasAppliedFilters(): bool;
+
     public function getFilterFormId(): string;
 }

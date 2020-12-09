@@ -5,9 +5,8 @@ Later, when the module stabilizes, this file can be deleted and todo's can be ma
 
 ## Next steps:
 
-* add ui element to remove all filter values
-* test boolean data type when rendering grid
 * collection source type
+* test boolean data type when rendering grid
 * ajax paging
 * fix LIKE wildcard character escaping in
   \Hyva\Admin\Model\GridFilter\TextFilter::apply
