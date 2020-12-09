@@ -124,6 +124,7 @@
         <xs:attribute name="rendererBlockName" type="xs:normalizedString"/>
         <xs:attribute name="label" type="xs:string"/>
         <xs:attribute name="sortOrder" type="xs:integer"/>
+        <xs:attribute name="sortable" type="boolean"/>
         <xs:attribute name="renderAsUnsecureHtml" type="boolean"/>
         <xs:attribute name="source" type="phpType"/>
     </xs:complexType>

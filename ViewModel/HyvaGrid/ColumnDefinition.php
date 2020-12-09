@@ -29,6 +29,8 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     private ?bool $isVisible;
 
+    private ?string $sortable;
+
     public function __construct(
         ObjectManagerInterface $objectManager,
         string $key,
@@ -38,6 +40,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
         ?string $renderAsUnsecureHtml = null,
         ?string $template = null,
         ?string $rendererBlockName = null,
+        ?string $sortable = null,
         ?string $source = null,
         ?array $options = null,
         ?bool $isVisible = null
@@ -50,6 +53,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
         $this->renderAsUnsecureHtml = $renderAsUnsecureHtml;
         $this->template             = $template;
         $this->rendererBlockName    = $rendererBlockName;
+        $this->sortable             = $sortable;
         $this->source               = $source;
         $this->options              = $options;
         $this->isVisible            = $isVisible;
@@ -97,6 +101,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
             'renderAsUnsecureHtml' => $this->renderAsUnsecureHtml,
             'template'             => $this->template,
             'rendererBlockName'    => $this->rendererBlockName,
+            'sortable'             => $this->sortable,
             'source'               => $this->source,
             'options'              => $this->options,
             'isVisible'            => $this->isVisible,
@@ -141,5 +146,10 @@ class ColumnDefinition implements ColumnDefinitionInterface
     public function isVisible(): bool
     {
         return (bool) $this->isVisible;
+    }
+
+    public function isSortable(): bool
+    {
+        return !isset($this->sortable) || $this->sortable !== 'false';
     }
 }

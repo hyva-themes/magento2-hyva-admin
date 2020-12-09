@@ -20,5 +20,7 @@ interface ColumnDefinitionInterface
 
     public function getSortOrder(): int;
 
+    public function isSortable(): bool;
+
     public function isVisible(): bool;
 }

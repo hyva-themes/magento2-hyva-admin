@@ -3,6 +3,8 @@
 namespace Hyva\Admin\Model\GridSourceType;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
+use Hyva\Admin\Model\DataType\ArrayDataType;
+use Hyva\Admin\Model\DataType\ProductGalleryDataType;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\CustomAttributesExtractor;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\ExtensionAttributeTypeExtractor;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\GetterMethodsExtractor;
@@ -12,12 +14,12 @@ use Hyva\Admin\Model\GridSourceType\RepositorySourceType\SearchCriteriaEventCont
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchResults;
-
-use Magento\Framework\DataObject;
 use Magento\Framework\Event\ManagerInterface;
+
 use function array_filter as filter;
 use function array_merge as merge;
 use function array_unique as unique;
@@ -147,19 +149,24 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     {
         $recordType = $this->getRecordType();
         $columnType = $this->getColumnType($key, $recordType);
-        $label      = in_array($key, $this->getCustomAttributeKeys(), true)
+        $label      = $this->isCustomAttribute($key)
             ? $this->getCustomAttributeLabelByColumnKey($key, $recordType)
             : null;
 
-        $options = in_array($key, $this->getCustomAttributeKeys(), true)
+        $options = $this->isCustomAttribute($key)
             ? $this->getCustomAttributeOptions($key)
             : null;
 
+        $sortable = $this->isNonSortableColumn($key, $recordType, $columnType)
+            ? 'false'
+            : null;
+
         $constructorArguments = filter([
-            'key'     => $key,
-            'type'    => $columnType,
-            'label'   => $label,
-            'options' => $options,
+            'key'      => $key,
+            'type'     => $columnType,
+            'label'    => $label,
+            'options'  => $options,
+            'sortable' => $sortable,
         ]);
         return $this->columnDefinitionFactory->create($constructorArguments);
     }
@@ -171,11 +178,11 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private function getColumnType(string $key, string $recordType): string
     {
-        if (in_array($key, $this->getGetMethodKeys(), true)) {
+        if ($this->isSystemAttribute($key)) {
             $columnType = $this->getSourceMethodReturnTypeByColumnKey($key, $recordType);
-        } elseif (in_array($key, $this->getExtensionAttributeKeys(), true)) {
+        } elseif ($this->isExtensionAttribute($key)) {
             $columnType = $this->getExtensionAttributeTypeByColumnKey($key, $recordType);
-        } elseif (in_array($key, $this->getCustomAttributeKeys(), true)) {
+        } elseif ($this->isCustomAttribute($key)) {
             $columnType = $this->getCustomAttributeTypeByColumnKey($key, $recordType);
         } else {
             $columnType = 'unknown';
@@ -215,6 +222,14 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
                     }
                 }
             }
+
+            if ($searchCriteria->getSortOrders()) {
+                foreach ($searchCriteria->getSortOrders() as $sortOrder) {
+                    if ($sortOrder->getField() == 'id') {
+                        $sortOrder->setField($idFieldName);
+                    }
+                }
+            }
         }
         return $searchCriteria;
     }
@@ -242,11 +257,11 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     public function extractValue($record, string $key)
     {
-        if (in_array($key, $this->getGetMethodKeys(), true)) {
+        if ($this->isSystemAttribute($key)) {
             $value = $this->extractValueByMethod($record, $key);
-        } elseif (in_array($key, $this->getExtensionAttributeKeys(), true)) {
+        } elseif ($this->isExtensionAttribute($key)) {
             $value = $this->extractExtensionAttributeValue($record, $key);
-        } elseif (in_array($key, $this->getCustomAttributeKeys(), true)) {
+        } elseif ($this->isCustomAttribute($key)) {
             $value = $this->extractCustomAttributeValue($record, $key);
         } else {
             $value = null;
@@ -313,5 +328,43 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     private function getGridNameEventSuffix(): string
     {
         return strtolower(preg_replace('/[^[:alpha:]]+/', '_', $this->gridName));
+    }
+
+    private function isSystemAttribute(string $key): bool
+    {
+        return in_array($key, $this->getGetMethodKeys(), true);
+    }
+
+    private function isExtensionAttribute(string $key): bool
+    {
+        return in_array($key, $this->getExtensionAttributeKeys(), true);
+    }
+
+    private function isCustomAttribute(string $key): bool
+    {
+        return in_array($key, $this->getCustomAttributeKeys(), true);
+    }
+
+    private function isNonSortableColumn(string $key, string $recordType, string $columnType): bool
+    {
+        if ($this->isExtensionAttribute($key)) {
+            // Most extension attributes are persisted in separate tables loaded in a separate query.
+            return true;
+        }
+        $isProductRecords = ltrim($recordType, '\\') === ProductInterface::class;
+
+        if ($isProductRecords && $columnType === ProductGalleryDataType::TYPE_MAGENTO_PRODUCT_GALLERY) {
+            // The media gallery attributes are loaded in a separate query when Product::getMediaGalleryImages is called
+            // The eav_attribute.backend_type is falsely set to static, so sorting attempts blow up.
+            return true;
+        }
+
+        if ($isProductRecords && $key === 'category_ids') {
+            // Category IDs are loaded in a separate query when Product::getCategoryIds is called.
+            // The eav_attribute.backend_type is falsely set to static, so sorting attempts blow up.
+            return true;
+        }
+
+        return false;
     }
 }

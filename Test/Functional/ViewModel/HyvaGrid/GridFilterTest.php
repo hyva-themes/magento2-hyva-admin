@@ -85,7 +85,7 @@ class GridFilterTest extends TestCase
     public function testHasValueRangeFilterType(): void
     {
         $sut = $this->createFilter([], ['type' => 'int']);
-        $this->assertStringContainsString('From: <input type="text"', $sut->getHtml());
+        $this->assertStringContainsString('<input type="text" form="filter-form"', $sut->getHtml());
     }
 
     public function testUsesGridNameToQualifyFilterFieldNames(): void

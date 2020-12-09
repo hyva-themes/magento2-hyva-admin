@@ -43,6 +43,7 @@ class ColumnDefinitionTest extends TestCase
             'renderAsUnsecureHtml' => 'false',
             'template'             => 'My_Module::template.phtml',
             'rendererBlockName'    => 'some-block-from-layoutxml',
+            'sortable'             => 'true',
             'source'               => 'My\Source\Model',
             'options'              => [
                 ['value' => 'aaa', 'label' => 'Aaa'],
@@ -81,5 +82,29 @@ class ColumnDefinitionTest extends TestCase
         $this->assertTrue(
             (new ColumnDefinition($dummyObjectManager, 'test', null, null, null, 'true'))->getRenderAsUnsecureHtml()
         );
+    }
+
+    public function testIsSortableByDefault(): void
+    {
+        $dummyDi  = $this->createMock(ObjectManagerInterface::class);
+        $sortable = null;
+        $sut      = new ColumnDefinition($dummyDi, 'test', null, null, null, null, null, null, $sortable);
+        $this->assertTrue($sut->isSortable());
+    }
+
+    public function testIsSortableWhenSetToTrue(): void
+    {
+        $dummyDi  = $this->createMock(ObjectManagerInterface::class);
+        $sortable = 'true';
+        $sut      = new ColumnDefinition($dummyDi, 'test', null, null, null, null, null, null, $sortable);
+        $this->assertTrue($sut->isSortable());
+    }
+
+    public function testIsNotSortableWhenSetToFalse(): void
+    {
+        $dummyDi  = $this->createMock(ObjectManagerInterface::class);
+        $sortable = 'false';
+        $sut      = new ColumnDefinition($dummyDi, 'test', null, null, null, null, null, null, $sortable);
+        $this->assertFalse($sut->isSortable());
     }
 }
