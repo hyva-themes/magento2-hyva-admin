@@ -1,0 +1,8 @@
+
+.menu-wrapper .logo .logo-img { display: inline; }
+
+[x-cloak] {
+    display: none;
+}
+
+img { max-width: none; display: inline-block; }
