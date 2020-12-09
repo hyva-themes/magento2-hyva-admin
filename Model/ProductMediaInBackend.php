@@ -35,7 +35,7 @@ class ProductMediaInBackend
         string $productImageType = 'product_page_image_small'
     ): string {
         return sprintf(
-            '<img src="%s" alt="%s"/>',
+            '<img src="%s" alt="%s" loading="lazy" />',
             $this->getImageUrl($file, $productImageType),
             $this->escaper->escapeHtmlAttr($altText)
         );

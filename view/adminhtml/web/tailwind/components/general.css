@@ -1,3 +1,13 @@
+.text-sans-serif {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+.hyva-admin-grid {
+    font-size: 14px;
+    line-height: 16px;
+    @apply antialiased;
+    @apply text-black text-sans-serif leading-normal tracking-normal;
+}
 
 .menu-wrapper .logo .logo-img { display: inline; }
 

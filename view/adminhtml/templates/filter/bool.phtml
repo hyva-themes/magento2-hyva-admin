@@ -9,7 +9,7 @@ $value = $filter->getValue();
 ?>
 <select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
         form="<?= $filter->getFormId() ?>"
-        class="shadow">
+        class="form-select w-full">
     <option value=""> </option>
     <option value="1"<?= isset($value) && $value ? ' selected' : '' ?>><?= __('Yes') ?></option>
     <option value="0"<?= isset($value) && !$value ? ' selected' : '' ?>><?= __('No') ?></option>

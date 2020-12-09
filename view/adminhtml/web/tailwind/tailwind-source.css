@@ -4,6 +4,8 @@
 
 @import url('components/forms.css');
 @import url('components/general.css');
+@import url('components/tables.css');
+@import url('components/theming.css');
 
 /* purgecss end ignore */
 

@@ -1,0 +1,31 @@
+
+.table-head th,
+.table-filters th{
+    @apply bg-container-darker;
+    @apply sticky;
+    @apply top-0;
+    @apply border;
+    @apply border-container-darker;
+    @apply px-6;
+    @apply py-2;
+    @apply text-primary;
+    @apply font-semibold;
+    @apply tracking-wider;
+    @apply uppercase;
+    @apply text-base;
+    @apply table-cell;
+    @apply align-middle;
+
+    &.sortable {
+        @apply cursor-pointer;
+        @apply pr-12;
+    }
+}
+
+.table-filters th {
+    @apply bg-container border-container;
+
+    input {
+        @apply bg-auto bg-container-lighter block border-transparent focus:bg-white focus:border-gray-500 mt-1 rounded-md w-full
+    }
+}

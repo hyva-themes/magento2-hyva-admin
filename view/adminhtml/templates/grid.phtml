@@ -7,7 +7,7 @@ $grid       = $block->getGrid();
 $navigation = $grid->getNavigation();
 $uniqueId = '_' . uniqid();
 ?>
-<div class="antialiased sans-serif" x-data="initDataTable<?=$uniqueId?>()">
+<div class="hyva-admin-grid" x-data="initDataTable<?=$uniqueId?>()">
 
     <div class="max-w-full mx-auto py-6 px-0">
         <div class="mb-4 flex justify-between items-center">
@@ -34,7 +34,7 @@ $uniqueId = '_' . uniqid();
                             }
                         </script>
                         <select id="pageSize" onchange="goToOptionUrl(this.selectedOptions[0])"
-                                class="form-select @apply bg-white border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:z-10 font-medium form-select hover:bg-gray-50 inline-flex items-center leading-loose py-2 relative rounded-md text-gray-700 text-xl">
+                                class="form-select">
                             <?php foreach ($navigation->getPageSizes() as $pageSize): ?>
                             <?php $currentPageSize = $navigation->getPageSize() === $pageSize ?>
                             <option value="<?= $navigation->getUrlForPageSize($pageSize) ?>" <?= $currentPageSize ? 'selected' : '' ?>><?= $pageSize ?></option>
@@ -57,7 +57,7 @@ $uniqueId = '_' . uniqid();
                             <a href="<?= $navigation->getNextPageUrl() ?>"
                             class="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">Next Page</a>
                         <?php else: ?>
-                            <span class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white font-medium text-gray-300 cursor-not-allowed">
+                            <span class="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white font-medium text-gray-300 cursor-not-allowed">
                                 Next Page
                             </span>
                         <?php endif; ?>
@@ -65,7 +65,10 @@ $uniqueId = '_' . uniqid();
 
                     <?php if ($navigation->hasAppliedFilters()): ?>
                     <div>
-                        <a href="<?= $navigation->getResetFiltersUrl() ?>"><?= __('Reset filters') ?></a>
+                        <a href="<?= $navigation->getResetFiltersUrl() ?>"
+                           class="btn btn-primary">
+                            <?= __('Reset filters') ?>
+                        </a>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -136,7 +139,7 @@ $uniqueId = '_' . uniqid();
                 </script>
                 <label for="massAction<?= $uniqueId?>" class="mr-8"><?= __('Mass Actions:') ?></label>
                 <select onchange="doMassAction(this.selectedOptions[0])" id="massAction<?= $uniqueId ?>" name="massAction"
-                        class="form-select @apply bg-white border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:z-10 font-medium form-select hover:bg-gray-50 inline-flex items-center leading-loose py-2 relative rounded-md text-gray-700 text-xl"
+                        class="form-select"
                         form="<?= $massActionFormId ?>">
                     <option disabled selected hidden><?= __('Select an action') ?></option>
                     <?php foreach ($massActions as $massAction): ?>
@@ -161,10 +164,10 @@ $uniqueId = '_' . uniqid();
                 <div class="overflow-hidden border-b border-gray-200">
                     <table class="min-w-full divide-y divide-gray-200">
                 <thead>
-                <tr class="text-left">
+                <tr class="table-head text-left">
 
                     <?php if ($massActions): ?>
-                        <th class="py-2 px-3 sticky top-0 border border-gray-200 bg-orange-950 text-gray-300">
+                        <th class="">
                             <label
                                 class="inline-flex justify-between items-center hover:bg-gray-200 px-2 py-2 rounded-lg cursor-pointer">
                                 <input type="checkbox"
@@ -176,21 +179,34 @@ $uniqueId = '_' . uniqid();
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
                     <?php $isSortedByColumn = $column->isSortable() && $navigation->getSortByColumn() === $column->getKey() ?>
                     <?php $newDirection = $isSortedByColumn && $navigation->isSortOrderAscending() ? 'desc' : 'asc' ?>
-                    <?php $sortIndicator = $isSortedByColumn ? ($navigation->isSortOrderAscending() ? '⬆️' : '⬇️') : '' ?>
-                        <th class="<?= $escaper->escapeHtml($column->getKey()) ?> bg-orange-950 sticky top-0 border border-gray-200 px-6 py-2 text-gray-300 font-semibold tracking-wider uppercase text-xl table-cell align-middle"
+                        <th class="<?= $escaper->escapeHtml($column->getKey()) ?> relative pr-12 <?php if ($column->isSortable()): ?> sortable<?php endif; ?>"
                             x-ref="<?= $escaper->escapeHtml($column->getKey()) ?>"
                             <?php if ($column->isSortable()): ?>onclick="window.location.href='<?= $navigation->getSortByUrl($column->getKey(), $newDirection) ?>'"<?php endif; ?>>
-                            <?= $escaper->escapeHtml($column->getLabel()) ?> <?= $sortIndicator ?>
+                            <?= $escaper->escapeHtml($column->getLabel()) ?>
+                            <?php if ($isSortedByColumn && $navigation->isSortOrderAscending()): ?>
+                            <span class="absolute align-middle mr-2 right-0 text-primary w-6 w-6 my-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                </svg>
+                            </span>
+                            <?php endif; ?>
+                            <?php if ($isSortedByColumn && !$navigation->isSortOrderAscending()): ?>
+                                <span class="absolute align-middle h-6 h-8 mr-2 right-0 text-primary w-6 w-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+                                    </svg>
+                                </span>
+                            <?php endif; ?>
                         </th>
                     <?php endforeach; ?>
                     <?php if ($actions = $grid->getActions()): ?>
-                        <th class="actions bg-orange-950 sticky top-0 border border-gray-200 px-6 py-2 text-gray-300 font-semibold tracking-wider uppercase text-xl table-cell align-middle">
+                        <th class="actions bg-container-darker sticky top-0 border border-gray-200 px-6 py-2 text-gray-300 font-semibold tracking-wider uppercase text-xl table-cell align-middle">
                             <?= __('Actions') ?>
                         </th>
                     <?php endif; ?>
                 </tr>
                 <?php if ($navigation->hasFilters()): ?>
-                <tr>
+                <tr class="table-filters">
                     <?php if ($massActions): ?><th class="py-2 px-3 sticky top-0 border border-gray-200"></th><?php endif; ?>
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
                     <th class="sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 tracking-wider text-xl table-cell align-left">

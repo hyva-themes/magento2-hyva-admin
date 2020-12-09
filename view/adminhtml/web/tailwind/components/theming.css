@@ -1,0 +1,30 @@
+.btn {
+    @apply flex bg-gray-500 rounded-lg px-4 py-2 text-white font-semibold items-center;
+
+    svg {
+        @apply inline-flex;
+    }
+    span {
+        vertical-align: middle;
+    }
+
+    &:hover {
+        @apply bg-gray-600;
+    }
+
+    &-primary {
+        @apply bg-primary border border-primary-darker text-white;
+
+        &:hover {
+            @apply bg-primary-darker border border-primary-darker text-white shadow-sm;
+        }
+    }
+
+    &-secondary {
+        @apply bg-white border-2 border-primary-lighter text-black;
+
+        &:hover {
+            @apply bg-white border-primary-darker shadow-sm;
+        }
+    }
+}

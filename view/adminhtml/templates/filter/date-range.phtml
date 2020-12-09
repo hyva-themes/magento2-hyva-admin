@@ -5,9 +5,9 @@
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
 
 ?>
-<?= __('From:') ?> <input type="date" form="<?= $filter->getFormId() ?>" class="shadow"
+<?= __('From:') ?> <input type="date" form="<?= $filter->getFormId() ?>" class=""
                           name="<?= $escaper->escapeHtmlAttr($filter->getInputName('from')) ?>"
                           value="<?= $escaper->escapeHtmlAttr($filter->getValue('from')) ?>"/>
-<?= __('To:') ?> <input type="date" form="<?= $filter->getFormId() ?>" class="shadow"
+<?= __('To:') ?> <input type="date" form="<?= $filter->getFormId() ?>" class=""
                         name="<?= $escaper->escapeHtmlAttr($filter->getInputName('to')) ?>"
                         value="<?= $escaper->escapeHtmlAttr($filter->getValue('to')) ?>"/>
