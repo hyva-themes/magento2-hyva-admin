@@ -59,7 +59,7 @@ composer require hyva-themes/module-magento2-admin-test --prefer-source
 
 ### Requirements
 
-The module currently requires PHP 7.4, but I intend to refactor it so it works with PHP 7.3, too.
+The module currently requires PHP 7.4. There is a PHP 7.3 compatible backport branch called `php73` that is rebuilt with each release thanks to rector.
 It should work with pretty much any Magento 2 version, as long as the `$escaper` is assigned in templates.
 
 
