@@ -13,7 +13,6 @@
     @apply tracking-wider;
     @apply uppercase;
     @apply text-base;
-    @apply table-cell;
     @apply align-middle;
 
     &.sortable {
@@ -21,9 +20,12 @@
         @apply pr-12;
     }
 }
+.table-content td {
+    @apply border border-container px-3 table-cell align-middle whitespace-nowrap;
+}
 
 .table-filters th {
-    @apply bg-container border-container;
+    @apply bg-container border-container whitespace-nowrap;
 
     input {
         @apply bg-auto bg-container-lighter block border-transparent focus:bg-white focus:border-gray-500 mt-1 rounded-md w-full

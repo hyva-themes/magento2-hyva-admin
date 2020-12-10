@@ -5,9 +5,25 @@
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
 
 ?>
-<?= __('From:') ?> <input type="date" form="<?= $filter->getFormId() ?>" class=""
-                          name="<?= $escaper->escapeHtmlAttr($filter->getInputName('from')) ?>"
-                          value="<?= $escaper->escapeHtmlAttr($filter->getValue('from')) ?>"/>
-<?= __('To:') ?> <input type="date" form="<?= $filter->getFormId() ?>" class=""
-                        name="<?= $escaper->escapeHtmlAttr($filter->getInputName('to')) ?>"
-                        value="<?= $escaper->escapeHtmlAttr($filter->getValue('to')) ?>"/>
+<div class="flex flex-row flex-no-wrap gap-x-2 items-center text-left">
+    <span class="w-1/2 flex">
+        <?= $escaper->escapeHtml(__('From:')) ?>
+    </span>
+    <span class="w-1/2 max-w-full" style="min-width: 150px;">
+        <input type="date" form="<?= $filter->getFormId() ?>" class="form-input"
+               name="<?= $escaper->escapeHtmlAttr($filter->getInputName('from')) ?>"
+               value="<?= $escaper->escapeHtmlAttr($filter->getValue('from')) ?>"
+        />
+    </span>
+</div>
+<div class="flex flex-row flex-no-wrap gap-x-2 items-center text-left">
+    <span class="w-1/2">
+    <?= $escaper->escapeHtml(__('To:')) ?>
+    </span>
+    <span class="w-1/2 max-w-full" style="min-width: 150px;">
+        <input type="date" form="<?= $filter->getFormId() ?>" class="form-input"
+               name="<?= $escaper->escapeHtmlAttr($filter->getInputName('to')) ?>"
+               value="<?= $escaper->escapeHtmlAttr($filter->getValue('to')) ?>"
+        />
+    </span>
+</div>
