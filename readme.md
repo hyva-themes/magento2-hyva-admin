@@ -83,7 +83,7 @@ In many cases the default will be good enough and no further configuration beyon
 
 Grid row actions, mass actions, paging and filtering can also be configured as needed.
 
-More information can be found in the [Hyva Admin documentation](doc/1. Introduction.md).
+More information can be found in the [Hyva Admin documentation](doc/1.+Introduction.md).
 
 ## Stability
 
