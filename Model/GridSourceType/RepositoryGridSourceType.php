@@ -3,7 +3,6 @@
 namespace Hyva\Admin\Model\GridSourceType;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Model\DataType\ArrayDataType;
 use Hyva\Admin\Model\DataType\ProductGalleryDataType;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\CustomAttributesExtractor;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\ExtensionAttributeTypeExtractor;
