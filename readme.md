@@ -46,15 +46,15 @@ Hence, Hyva_Admin.
 The module can be installed via composer by adding the repository as a source and then requiring it: 
 
 ```
-composer config repositories.hyva/module-magento2-admin git git@gitlab.hyva.io:hyva-admin/magento2-hyva-admin.git
-composer require hyva/module-magento2-admin --prefer-source
+composer config repositories.hyva-themes/module-magento2-admin git git@gitlab.hyva.io:hyva-themes/magento2-hyva-admin.git
+composer require hyva-themes/module-magento2-admin --prefer-source
 ```
 
 If you want to just play around to get a feel for Hyva_Admin grids, you can install a test module that declares an example grid, too:
 
 ```
-composer config repositories.hyva/module-magento2-admin-test git git@gitlab.hyva.io:hyva-admin/hyva-admin-test-module.git
-composer require hyva/module-magento2-admin-test --prefer-source
+composer config repositories.hyva-themes/module-magento2-admin-test git git@gitlab.hyva.io:hyva-themes/hyva-admin-test-module.git
+composer require hyva-themes/module-magento2-admin-test --prefer-source
 ```
 
 ### Requirements
@@ -83,7 +83,7 @@ In many cases the default will be good enough and no further configuration beyon
 
 Grid row actions, mass actions, paging and filtering can also be configured as needed.
 
-More information can be found in the [Hyva Admin documentation](https://docs.hyva.io/doc/1-getting-started-VCwsPVVwTP).
+More information can be found in the [Hyva Admin documentation](doc/1. Introduction.md).
 
 ## Stability
 
