@@ -45,7 +45,7 @@ class CustomAttributesExtractor
      * @param string $type
      * @return AbstractAttribute[]
      */
-    public function attributesForType(string $type): array
+    private function attributesForType(string $type): array
     {
         $entityTypeCode = $this->getEntityTypeCodeForType($type);
         return $entityTypeCode

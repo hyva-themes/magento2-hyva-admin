@@ -24,7 +24,7 @@ class GetterMethodsExtractor
         $this->fieldNamer = $fieldNamer;
     }
 
-    public function fromType(string $type): array
+    private function fromType(string $type): array
     {
         $methods          = keys($this->methodsMap->getMethodsMap($type));
         $potentialGetters = filter($methods, function (string $method) use ($type): bool {

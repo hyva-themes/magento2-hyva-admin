@@ -79,13 +79,13 @@ class GridFilterTest extends TestCase
     public function testHasDateRangeFilterType(): void
     {
         $sut = $this->createFilter([], ['type' => 'datetime']);
-        $this->assertStringContainsString('From: <input type="date"', $sut->getHtml());
+        $this->assertMatchesRegularExpression('#From:.+<input type="date" form="filter-form"#s', $sut->getHtml());
     }
 
     public function testHasValueRangeFilterType(): void
     {
         $sut = $this->createFilter([], ['type' => 'int']);
-        $this->assertStringContainsString('<input type="text" form="filter-form"', $sut->getHtml());
+        $this->assertMatchesRegularExpression('#From:.+<input type="text" form="filter-form"#s', $sut->getHtml());
     }
 
     public function testUsesGridNameToQualifyFilterFieldNames(): void

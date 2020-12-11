@@ -6,8 +6,8 @@ use Magento\Framework\Api\ExtensionAttributesInterface;
 use Magento\Framework\Api\SimpleDataObjectConverter;
 use Magento\Framework\Reflection\MethodsMap;
 
-use function array_keys as keys;
 use function array_filter as filter;
+use function array_keys as keys;
 use function array_values as values;
 
 class ExtensionAttributeTypeExtractor
@@ -31,8 +31,8 @@ class ExtensionAttributeTypeExtractor
     {
         $methods = keys($this->methodsMap->getMethodsMap($type));
         return values(filter($methods, function (string $method) use ($type): bool {
-                return $this->isExtensionAttributesType($this->getMethodReturnType($type, $method));
-            }))[0] ?? null;
+            return $this->isExtensionAttributesType($this->getMethodReturnType($type, $method));
+        }))[0] ?? null;
     }
 
     private function isExtensionAttributesType(string $returnType): bool
