@@ -4,12 +4,10 @@ namespace Hyva\Admin\Model\GridSourceType;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
 use Hyva\Admin\Model\DataType\ProductGalleryDataType;
-use Hyva\Admin\Model\GridSourceType\RepositorySourceType\CustomAttributesExtractor;
-use Hyva\Admin\Model\GridSourceType\RepositorySourceType\ExtensionAttributeTypeExtractor;
-use Hyva\Admin\Model\GridSourceType\RepositorySourceType\GetterMethodsExtractor;
 use Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\SearchCriteriaEventContainer;
+use Hyva\Admin\Model\TypeReflection;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
@@ -20,12 +18,9 @@ use Magento\Framework\Api\SearchResults;
 use Magento\Framework\Event\ManagerInterface;
 
 use function array_filter as filter;
-use function array_merge as merge;
-use function array_unique as unique;
 
 class RepositoryGridSourceType implements GridSourceTypeInterface
 {
-
     private string $gridName;
 
     private array $sourceConfiguration;
@@ -33,12 +28,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     private RawGridSourceDataAccessor $gridSourceDataAccessor;
 
     private RepositorySourceFactory $repositorySourceFactory;
-
-    private GetterMethodsExtractor $getterMethodsExtractor;
-
-    private ExtensionAttributeTypeExtractor $extensionAttributeTypeExtractor;
-
-    private CustomAttributesExtractor $customAttributesExtractor;
 
     private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
 
@@ -49,77 +38,32 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     private ManagerInterface $eventManager;
 
     /**
-     * @var string[]
-     */
-    private array $getMethodKeys;
-
-    /**
-     * @var string[]
-     */
-    private array $extensionAttributeKeys;
-
-    /**
-     * @var string[]
-     */
-    private array $customAttributeKeys;
-
-    /**
      * @var ColumnDefinitionInterface[]
      */
     private $memoizedColumnDefinitions = [];
+
+    private TypeReflection $typeReflection;
 
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         RepositorySourceFactory $repositorySourceFactory,
-        GetterMethodsExtractor $getterMethodsExtractor,
-        ExtensionAttributeTypeExtractor $extensionAttributeTypeExtractor,
-        CustomAttributesExtractor $customAttributesExtractor,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         DataTypeGuesserInterface $dataTypeGuesser,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        TypeReflection $typeReflection
     ) {
-        $this->gridName                        = $gridName;
-        $this->sourceConfiguration             = $sourceConfiguration;
-        $this->gridSourceDataAccessor          = $gridSourceDataAccessor;
-        $this->repositorySourceFactory         = $repositorySourceFactory;
-        $this->getterMethodsExtractor          = $getterMethodsExtractor;
-        $this->extensionAttributeTypeExtractor = $extensionAttributeTypeExtractor;
-        $this->customAttributesExtractor       = $customAttributesExtractor;
-        $this->columnDefinitionFactory         = $columnDefinitionFactory;
-        $this->searchCriteriaBuilder           = $searchCriteriaBuilder;
-        $this->dataTypeGuesser                 = $dataTypeGuesser;
-        $this->eventManager                    = $eventManager;
-    }
-
-    private function getGetMethodKeys(): array
-    {
-        if (!isset($this->getMethodKeys)) {
-            $this->getMethodKeys = $this->getterMethodsExtractor->fromTypeAsFieldNames($this->getRecordType());
-        }
-        return $this->getMethodKeys;
-    }
-
-    private function getExtensionAttributeKeys(): array
-    {
-        if (!isset($this->extensionAttributeKeys)) {
-            $type                         = $this->getRecordType();
-            $extensionAttributesType      = $this->extensionAttributeTypeExtractor->forType($type);
-            $this->extensionAttributeKeys = $extensionAttributesType
-                ? $this->getterMethodsExtractor->fromTypeAsFieldNames($extensionAttributesType)
-                : [];
-        }
-        return $this->extensionAttributeKeys;
-    }
-
-    private function getCustomAttributeKeys(): array
-    {
-        if (!isset($this->customAttributeKeys)) {
-            $this->customAttributeKeys = $this->customAttributesExtractor->attributesForTypeAsFieldNames($this->getRecordType());
-        }
-        return $this->customAttributeKeys;
+        $this->gridName                = $gridName;
+        $this->sourceConfiguration     = $sourceConfiguration;
+        $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
+        $this->repositorySourceFactory = $repositorySourceFactory;
+        $this->columnDefinitionFactory = $columnDefinitionFactory;
+        $this->searchCriteriaBuilder   = $searchCriteriaBuilder;
+        $this->dataTypeGuesser         = $dataTypeGuesser;
+        $this->eventManager            = $eventManager;
+        $this->typeReflection          = $typeReflection;
     }
 
     private function getSourceRepoConfig(): string
@@ -129,11 +73,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     public function getColumnKeys(): array
     {
-        return unique(merge(
-            $this->getCustomAttributeKeys(),
-            $this->getExtensionAttributeKeys(),
-            $this->getGetMethodKeys()
-        ));
+        return $this->typeReflection->getFieldNames($this->getRecordType());
     }
 
     public function getColumnDefinition(string $key): ColumnDefinitionInterface
@@ -147,14 +87,9 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     private function buildColumnDefinition(string $key): ColumnDefinitionInterface
     {
         $recordType = $this->getRecordType();
-        $columnType = $this->getColumnType($key, $recordType);
-        $label      = $this->isCustomAttribute($key)
-            ? $this->getCustomAttributeLabelByColumnKey($key, $recordType)
-            : null;
-
-        $options = $this->isCustomAttribute($key)
-            ? $this->getCustomAttributeOptions($key)
-            : null;
+        $columnType = $this->typeReflection->getColumnType($recordType, $key);
+        $label      = $this->typeReflection->extractLabel($recordType, $key);
+        $options    = $this->typeReflection->extractOptions($recordType, $key);
 
         $sortable = $this->isNonSortableColumn($key, $recordType, $columnType)
             ? 'false'
@@ -167,6 +102,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
             'options'  => $options,
             'sortable' => $sortable,
         ]);
+
         return $this->columnDefinitionFactory->create($constructorArguments);
     }
 
@@ -175,44 +111,10 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         return $this->repositorySourceFactory->getRepositoryEntityType($this->getSourceRepoConfig());
     }
 
-    private function getColumnType(string $key, string $recordType): string
-    {
-        if ($this->isSystemAttribute($key)) {
-            $columnType = $this->getSourceMethodReturnTypeByColumnKey($key, $recordType);
-        } elseif ($this->isExtensionAttribute($key)) {
-            $columnType = $this->getExtensionAttributeTypeByColumnKey($key, $recordType);
-        } elseif ($this->isCustomAttribute($key)) {
-            $columnType = $this->getCustomAttributeTypeByColumnKey($key, $recordType);
-        } else {
-            $columnType = 'unknown';
-        }
-        return $this->dataTypeGuesser->typeToTypeCode($columnType);
-    }
-
-    private function getExtensionAttributeTypeByColumnKey(string $key, string $type): string
-    {
-        return $this->extensionAttributeTypeExtractor->getExtensionAttributeType($type, $key);
-    }
-
-    private function getSourceMethodReturnTypeByColumnKey(string $key, string $type): string
-    {
-        return $this->getterMethodsExtractor->getFieldType($type, $key);
-    }
-
-    private function getCustomAttributeTypeByColumnKey(string $key, string $type): ?string
-    {
-        return $this->customAttributesExtractor->getAttributeBackendType($type, $key);
-    }
-
-    private function getCustomAttributeLabelByColumnKey(string $key, string $type): ?string
-    {
-        return $this->customAttributesExtractor->getAttributeLabel($type, $key);
-    }
-
     private function mapIdFilterToEntityIdField(SearchCriteriaInterface $searchCriteria): SearchCriteriaInterface
     {
         // preprocess $searchCriteria to map ìd to entity_id when applicable
-        $idFieldName = $this->customAttributesExtractor->getIdFieldName($this->getRecordType());
+        $idFieldName = $this->typeReflection->getIdFieldName($this->getRecordType());
         if ($idFieldName && $idFieldName !== 'id') {
             foreach ($searchCriteria->getFilterGroups() as $group) {
                 foreach ($group->getFilters() as $filter) {
@@ -256,45 +158,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     public function extractValue($record, string $key)
     {
-        if ($this->isSystemAttribute($key)) {
-            $value = $this->extractValueByMethod($record, $key);
-        } elseif ($this->isExtensionAttribute($key)) {
-            $value = $this->extractExtensionAttributeValue($record, $key);
-        } elseif ($this->isCustomAttribute($key)) {
-            $value = $this->extractCustomAttributeValue($record, $key);
-        } else {
-            $value = null;
-        }
-        return $value;
-    }
-
-    private function extractValueByMethod($record, string $key)
-    {
-        return $this->getterMethodsExtractor->getValue($record, $key);
-    }
-
-    private function extractExtensionAttributeValue($record, string $key)
-    {
-        $recordType = $this->getRecordType();
-
-        return $this->extensionAttributeTypeExtractor->getValue($recordType, $record, $key);
-    }
-
-    private function extractCustomAttributeValue($record, string $key)
-    {
-        $value = $this->customAttributesExtractor->getValue($record, $key);
-        return $this->getColumnDefinition($key)->getType() === 'array' && is_string($value)
-            ? explode(',', $value)
-            : $value;
-    }
-
-    private function getCustomAttributeOptions(string $key): ?array
-    {
-        $recordType = $this->getRecordType();
-        $options    = $this->customAttributesExtractor->getAttributeOptions($recordType, $key);
-        return filter($options, function (array $option) {
-            return $option['value'] !== '';
-        });
+        return $this->typeReflection->extractValue($this->getRecordType(), $key, $record);
     }
 
     /**
@@ -329,21 +193,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         return strtolower(preg_replace('/[^[:alpha:]]+/', '_', $this->gridName));
     }
 
-    private function isSystemAttribute(string $key): bool
-    {
-        return in_array($key, $this->getGetMethodKeys(), true);
-    }
-
-    private function isExtensionAttribute(string $key): bool
-    {
-        return in_array($key, $this->getExtensionAttributeKeys(), true);
-    }
-
-    private function isCustomAttribute(string $key): bool
-    {
-        return in_array($key, $this->getCustomAttributeKeys(), true);
-    }
-
     private function isNonSortableColumn(string $key, string $recordType, string $columnType): bool
     {
         if ($this->isExtensionAttribute($key)) {
@@ -365,5 +214,10 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         }
 
         return false;
+    }
+
+    private function isExtensionAttribute(string $key): bool
+    {
+        return $this->typeReflection->isExtensionAttribute($this->getRecordType(), $key);
     }
 }

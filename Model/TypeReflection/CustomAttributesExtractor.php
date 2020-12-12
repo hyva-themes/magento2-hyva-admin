@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Model\GridSourceType\RepositorySourceType;
+namespace Hyva\Admin\Model\TypeReflection;
 
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Eav\Model\Entity\AbstractEntity as AbstractEavEntityResource;
@@ -24,16 +24,20 @@ class CustomAttributesExtractor
 
     private ObjectManagerInterface $objectManager;
 
+    private MagentoOrmReflection $magentoOrmReflection;
+
     public function __construct(
         DiConfigInterface $diConfig,
         ObjectManagerInterface $objectManager,
         ResourceConnection $dbResource,
-        EavConfig $eavConfig
+        EavConfig $eavConfig,
+        MagentoOrmReflection $magentoOrmReflection
     ) {
-        $this->diConfig      = $diConfig;
-        $this->dbResource    = $dbResource;
-        $this->eavConfig     = $eavConfig;
-        $this->objectManager = $objectManager;
+        $this->diConfig             = $diConfig;
+        $this->dbResource           = $dbResource;
+        $this->eavConfig            = $eavConfig;
+        $this->objectManager        = $objectManager;
+        $this->magentoOrmReflection = $magentoOrmReflection;
     }
 
     public function attributesForTypeAsFieldNames(string $type): array
@@ -53,27 +57,6 @@ class CustomAttributesExtractor
             : [];
     }
 
-    private function getEntityResourceModelByEntityModelClass(string $entityModelClass): string
-    {
-        return $this->isResourceModelClass($entityModelClass)
-            ? $entityModelClass
-            : $this->modelClassToResourceModel($entityModelClass);
-    }
-
-    private function getEntityTypeCodeByEntityModelClass(string $entityModelClass): ?string
-    {
-        $resourceModelClass = $this->getEntityResourceModelByEntityModelClass($entityModelClass);
-
-        if (is_subclass_of($resourceModelClass, AbstractEavEntityResource::class)) {
-            /** @var AbstractEavEntityResource $resourceModel */
-            $resourceModel = $this->objectManager->get($resourceModelClass);
-            return $resourceModel->getEntityType()->getEntityTypeCode();
-        }
-
-        // fall back
-        return $this->selectEntityTypeCode($resourceModelClass);
-    }
-
     private function selectEntityTypeCode(string $resourceModelClass): ?string
     {
         $db             = $this->dbResource->getConnection();
@@ -85,66 +68,18 @@ class CustomAttributesExtractor
         return $entityTypeCode ? $entityTypeCode : null;
     }
 
-    private function removeProxySuffix(string $type): string
-    {
-        return $this->removeGeneratedClassSuffix($type, '\Proxy');
-    }
-
-    private function removeInterceptorSuffix(string $type): string
-    {
-        return $this->removeGeneratedClassSuffix($type, '\Interceptor');
-    }
-
-    private function removeGeneratedClassSuffix(string $class, string $suffix): string
-    {
-        $suffixLength = strlen($suffix);
-        return substr($class, $suffixLength * -1) === $suffix
-            ? substr($class, 0, $suffixLength * -1)
-            : $class;
-    }
-
-    private function modelClassToResourceModel(string $type): string
-    {
-        if (is_subclass_of($type, \Magento\Framework\Model\AbstractModel::class)) {
-            /** @var \Magento\Framework\Model\AbstractModel $model */
-            $model = $this->objectManager->create($type);
-            return $model->getResourceName();
-        }
-        // The customer interface is not implemented by the customer ORM model, we handle that special case here.
-        return is_subclass_of($type, \Magento\Customer\Api\Data\CustomerInterface::class)
-            ? \Magento\Customer\Model\ResourceModel\Customer::class
-            : preg_replace('#\\\Model\\\\#', '\Model\ResourceModel\\', $type);
-    }
-
-    private function isResourceModelClass(string $type): bool
-    {
-        return strpos($type, 'ResourceModel') !== false;
-    }
-
     private function getEntityTypeCodeForType(string $type): ?string
     {
-        $class            = $this->diConfig->getPreference($type);
-        $entityModelClass = $this->removeProxySuffix($this->removeInterceptorSuffix($class));
+        $resourceModelClass = $this->magentoOrmReflection->getResourceModelClassForType($type);
 
-        return $this->getEntityTypeCodeByEntityModelClass($entityModelClass);
-    }
-
-    public function getIdFieldName(string $type): ?string
-    {
-        $class              = $this->diConfig->getPreference($type);
-        $entityModelClass   = $this->removeProxySuffix($this->removeInterceptorSuffix($class));
-        $resourceModelClass = $this->getEntityResourceModelByEntityModelClass($entityModelClass);
-
-        if (is_subclass_of($resourceModelClass, \Magento\Eav\Model\Entity\AbstractEntity::class)) {
-            /** @var \Magento\Eav\Model\Entity\AbstractEntity $resourceModel */
+        if (is_subclass_of($resourceModelClass, AbstractEavEntityResource::class)) {
+            /** @var AbstractEavEntityResource $resourceModel */
             $resourceModel = $this->objectManager->get($resourceModelClass);
-            return $resourceModel->getEntityIdField();
+            return $resourceModel->getEntityType()->getEntityTypeCode();
         }
-        if (is_subclass_of($resourceModelClass, \Magento\Framework\Model\ResourceModel\Db\AbstractDb::class)) {
-            $resourceModel = $this->objectManager->get($resourceModelClass);
-            return $resourceModel->getIdFieldName();
-        }
-        return null;
+
+        // fall back to eav entity type table for legacy eav types like order
+        return $this->selectEntityTypeCode($resourceModelClass);
     }
 
     public function getAttributeBackendType($type, $code): ?string

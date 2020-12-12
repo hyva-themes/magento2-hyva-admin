@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Model\GridSourceType\RepositorySourceType;
+namespace Hyva\Admin\Model\TypeReflection;
 
 use Magento\Framework\Api\ExtensionAttributesInterface;
 use Magento\Framework\Api\SimpleDataObjectConverter;
@@ -93,6 +93,7 @@ class GetterMethodsExtractor
     public function getValue($object, string $key)
     {
         $method = $this->getMethodNameFromKey($object, $key);
+
         return $object->{$method}();
     }
 }

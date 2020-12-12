@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Model\GridSourceType\RepositorySourceType;
+namespace Hyva\Admin\Model\TypeReflection;
 
 use Magento\Framework\Api\ExtensionAttributesInterface;
 use Magento\Framework\Api\SimpleDataObjectConverter;
@@ -56,7 +56,7 @@ class ExtensionAttributeTypeExtractor
             : $returnType;
     }
 
-    public function getValue(string $type, $object, string $key)
+    public function getValue(string $type, string $key, $object)
     {
         $extensionAttributesGetter = $this->getGetterExtensionAttributesGetterMethod($type);
         $extensionAttributes = $object->{$extensionAttributesGetter}();
