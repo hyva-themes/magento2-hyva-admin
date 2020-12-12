@@ -3,8 +3,8 @@
 namespace Hyva\Admin\Model;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
-
 use Hyva\Admin\Model\TypeReflection\MagentoOrmReflection;
+
 use function array_filter as filter;
 use function array_merge as merge;
 use function array_unique as unique;
