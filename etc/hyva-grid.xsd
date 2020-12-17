@@ -29,14 +29,14 @@
         <xs:choice>
             <xs:element name="repositoryListMethod" type="phpTypeAndMethod"/>
             <xs:element name="arrayProvider" type="phpType"/>
-            <!--<xs:element name="collection" type="phpType" />-->
+            <xs:element name="collection" type="phpType" />
         </xs:choice>
         <xs:attribute name="type">
             <xs:simpleType>
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="array"/>
                     <xs:enumeration value="repository"/>
-                    <!--<xs:enumeration value="collection" />-->
+                    <xs:enumeration value="collection" />
                     <!--<xs:enumeration value="query" />-->
                 </xs:restriction>
             </xs:simpleType>

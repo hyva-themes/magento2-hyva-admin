@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\TypeReflection;
 
+use Magento\Framework\Api\ExtensibleDataInterface;
 use Magento\Framework\Api\ExtensionAttributesInterface;
 use Magento\Framework\Api\SimpleDataObjectConverter;
 use Magento\Framework\Reflection\MethodsMap;
@@ -21,7 +22,9 @@ class ExtensionAttributeTypeExtractor
 
     public function forType(string $type): ?string
     {
-        $extensionAttributesGetter = $this->getGetterExtensionAttributesGetterMethod($type);
+        $extensionAttributesGetter = is_subclass_of($type, ExtensibleDataInterface::class)
+            ? $this->getGetterExtensionAttributesGetterMethod($type)
+            : null;
         return $extensionAttributesGetter
             ? $this->getMethodReturnType($type, $extensionAttributesGetter)
             : null;

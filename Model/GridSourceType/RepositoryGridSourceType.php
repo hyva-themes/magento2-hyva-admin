@@ -2,7 +2,6 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
-use Hyva\Admin\Api\DataTypeGuesserInterface;
 use Hyva\Admin\Model\DataType\ProductGalleryDataType;
 use Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory;
@@ -33,8 +32,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private SearchCriteriaBuilder $searchCriteriaBuilder;
 
-    private DataTypeGuesserInterface $dataTypeGuesser;
-
     private ManagerInterface $eventManager;
 
     /**
@@ -51,7 +48,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         RepositorySourceFactory $repositorySourceFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        DataTypeGuesserInterface $dataTypeGuesser,
         ManagerInterface $eventManager,
         TypeReflection $typeReflection
     ) {
@@ -61,7 +57,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         $this->repositorySourceFactory = $repositorySourceFactory;
         $this->columnDefinitionFactory = $columnDefinitionFactory;
         $this->searchCriteriaBuilder   = $searchCriteriaBuilder;
-        $this->dataTypeGuesser         = $dataTypeGuesser;
         $this->eventManager            = $eventManager;
         $this->typeReflection          = $typeReflection;
     }
