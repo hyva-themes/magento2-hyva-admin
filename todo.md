@@ -6,8 +6,6 @@ Later, when the module stabilizes, this file can be deleted and todo's can be ma
 ## Next steps:
 
 * Allow selection of mass action records over more than one page
-* collection source type
-* test boolean data type when rendering grid
 * ajax paging
 * fix LIKE wildcard character escaping in
   \Hyva\Admin\Model\GridFilter\TextFilter::apply
@@ -16,3 +14,4 @@ Later, when the module stabilizes, this file can be deleted and todo's can be ma
 * query source type
 * inline grid editing
 * for support
+
