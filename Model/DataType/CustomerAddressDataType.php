@@ -5,6 +5,7 @@ namespace Hyva\Admin\Model\DataType;
 use Hyva\Admin\Api\DataTypeInterface;
 use Magento\Customer\Api\Data\AddressInterface;
 
+use Magento\Customer\Model\Address\AddressModelInterface;
 use function array_filter as filter;
 
 class CustomerAddressDataType implements DataTypeInterface
@@ -27,12 +28,13 @@ class CustomerAddressDataType implements DataTypeInterface
 
     private function isAddressInstance($value): bool
     {
-        return is_object($value) && $value instanceof AddressInterface;
+        return is_object($value) && ($value instanceof AddressInterface || $value instanceof AddressModelInterface);
     }
 
     private function isAddressClassName($value): bool
     {
-        return is_string($value) && is_subclass_of($value, AddressInterface::class);
+        return is_string($value) &&
+            (is_subclass_of($value, AddressInterface::class) || is_subclass_of($value, AddressModelInterface::class));
     }
 
     /**
@@ -51,7 +53,11 @@ class CustomerAddressDataType implements DataTypeInterface
         return $this->toString($value);
     }
 
-    private function renderAddress(?AddressInterface $value): string
+    /**
+     * @param AddressInterface|AddressModelInterface|null $value
+     * @return string
+     */
+    private function renderAddress($value): string
     {
         $parts = [
             $value->getFirstname() . ' ' . $value->getLastname(),

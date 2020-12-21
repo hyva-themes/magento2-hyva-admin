@@ -83,9 +83,7 @@ class GetterMethodsExtractor
 
     private function getMethodReturnType(string $type, string $method): ?string
     {
-        return method_exists($type, $method)
-            ? $this->methodsMap->getMethodReturnType($type, $method)
-            : null;
+        return $this->methodsMap->getMethodReturnType($type, $method);
     }
 
     /**
@@ -101,7 +99,7 @@ class GetterMethodsExtractor
             return '';
         }
         $method = $prefix . SimpleDataObjectConverter::snakeCaseToUpperCamelCase($key);
-        return method_exists($type, $method)
+        return method_exists($type, $method) || method_exists($type, '__call')
             ? $method
             : $this->getMethodNameFromKey($type, $key, $prefixes);
     }

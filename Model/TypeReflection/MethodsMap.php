@@ -2,12 +2,6 @@
 
 namespace Hyva\Admin\Model\TypeReflection;
 
-use Laminas\Code\Reflection\DocBlock\Tag\ReturnTag;
-use Laminas\Code\Reflection\MethodReflection;
-use Laminas\Code\Reflection\ClassReflection;
-use Laminas\Code\Reflection\DocBlock\Tag\MethodTag;
-use Magento\Framework\Reflection\FieldNamer;
-
 use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
@@ -16,6 +10,12 @@ use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_slice as slice;
 use function array_values as values;
+
+use Laminas\Code\Reflection\ClassReflection;
+use Laminas\Code\Reflection\DocBlock\Tag\MethodTag;
+use Laminas\Code\Reflection\DocBlock\Tag\ReturnTag;
+use Laminas\Code\Reflection\MethodReflection;
+use Magento\Framework\Reflection\FieldNamer;
 
 /**
  * This class is different from \Magento\Framework\Reflection\MethodsMap in several ways
@@ -33,9 +33,12 @@ class MethodsMap
      */
     private $memoizedMethodMaps = [];
 
-    public function __construct(FieldNamer $fieldNamer)
+    private NamespaceMapper $namespaceMapper;
+
+    public function __construct(FieldNamer $fieldNamer, NamespaceMapper $namespaceMapper)
     {
-        $this->fieldNamer = $fieldNamer;
+        $this->fieldNamer      = $fieldNamer;
+        $this->namespaceMapper = $namespaceMapper;
     }
 
     /**
@@ -88,8 +91,10 @@ class MethodsMap
         // because in the end we are only interested in getters without parameters.
         $methodsWithName = filter($methodAnnotations, fn(MethodTag $method): bool => (bool) $method->getMethodName());
 
-        return reduce($methodsWithName, function (array $map, MethodTag $tag): array {
+        return reduce($methodsWithName, function (array $map, MethodTag $tag) use ($class): array {
             $type = $this->reduceToSingleType($tag->getTypes());
+            $type = $this->qualifyNamespace($type, $class);
+
             return merge($map, [rtrim($tag->getMethodName(), '()') => ['return' => $type, 'parameterCount' => 0]]);
         }, []);
     }
@@ -140,8 +145,11 @@ class MethodsMap
         if (!$method) {
             return null;
         }
-        return $this->readAnnotatedReturnTypeFromMethod($method)
+        $returnType = $this->readAnnotatedReturnTypeFromMethod($method)
             ?? $this->getAnnotatedReturnType($this->getParentReflectionMethod($method));
+        return $returnType
+            ? $this->qualifyNamespace($returnType, $method->getDeclaringClass())
+            : null;
     }
 
     private function getParentReflectionMethod(MethodReflection $method): ?MethodReflection
@@ -164,5 +172,19 @@ class MethodsMap
         return ($method->getDocBlock() && ($tags = $method->getDocBlock()->getTags('return')))
             ? slice(values($tags), -1)[0]
             : null;
+    }
+
+    private function isQualifiedTypeName(?string $type): bool
+    {
+        $nonArrayType = rtrim((string) $type, '[]');
+        $pseudoTypes  = ['string', 'int', 'resource', 'null', 'void', 'decimal', 'float', 'bool', 'array', 'mixed'];
+        return in_array($nonArrayType, $pseudoTypes) || class_exists($nonArrayType) || interface_exists($nonArrayType);
+    }
+
+    private function qualifyNamespace(?string $type, ClassReflection $class): string
+    {
+        return $this->isQualifiedTypeName($type)
+            ? $type
+            : $this->namespaceMapper->forFile($class->getFileName())->qualify($type);
     }
 }

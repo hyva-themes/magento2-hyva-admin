@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 
 use Hyva\Admin\Model\DataType\ArrayDataType;
+use Hyva\Admin\Model\DataType\BooleanDataType;
 use Hyva\Admin\Model\DataType\IntDataType;
 use Hyva\Admin\Model\DataType\LongTextDataType;
 use Hyva\Admin\Model\DataType\UnknownDataType;
@@ -66,7 +67,7 @@ class CollectionGridSourceTypeTest extends TestCase
         $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
 
         $columnDefinition = $sut->getColumnDefinition('has_error');
-        $this->assertSame(UnknownDataType::TYPE_UNKNOWN, $columnDefinition->getType());
+        $this->assertSame(BooleanDataType::TYPE_BOOL, $columnDefinition->getType());
         $this->assertSame('Has Error', $columnDefinition->getLabel()); // from EAV table even though system attribute
         $this->assertSame([], $columnDefinition->getOptionArray());
     }
