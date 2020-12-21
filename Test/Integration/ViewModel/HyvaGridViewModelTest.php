@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Functional\ViewModel;
+namespace Hyva\Admin\Test\Integration\ViewModel;
 
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
-use Hyva\Admin\Test\Functional\TestingGridDataProvider;
-use Hyva\Admin\Test\Functional\TestingGridDefinition;
+use Hyva\Admin\Test\Integration\TestingGridDataProvider;
+use Hyva\Admin\Test\Integration\TestingGridDefinition;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridViewModel;
 use Magento\TestFramework\ObjectManager;

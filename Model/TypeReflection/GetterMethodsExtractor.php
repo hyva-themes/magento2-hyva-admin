@@ -2,15 +2,18 @@
 
 namespace Hyva\Admin\Model\TypeReflection;
 
+use function array_diff as diff;
+use function array_filter as filter;
+use function array_keys as keys;
+use function array_map as map;
+use function array_reduce as reduce;
+use function array_values as values;
+
 use Magento\Framework\Api\ExtensionAttributesInterface;
 use Magento\Framework\Api\SimpleDataObjectConverter;
+use Magento\Framework\DataObject;
+use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Reflection\FieldNamer;
-use Magento\Framework\Reflection\MethodsMap;
-
-use function array_keys as keys;
-use function array_filter as filter;
-use function array_map as map;
-use function array_values as values;
 
 class GetterMethodsExtractor
 {
@@ -24,12 +27,35 @@ class GetterMethodsExtractor
         $this->fieldNamer = $fieldNamer;
     }
 
+    private function removeGenericParentClassMethods(string $type, array $methods): array
+    {
+        return reduce(
+            [AbstractModel::class, DataObject::class],
+            fn(array $methods, string $parent): array => is_subclass_of($type, $parent)
+                ? diff($methods, $this->getGenericParentClassMethods($parent))
+                : $methods,
+            $methods
+        );
+    }
+
+    private function getGenericParentClassMethods(string $class): array
+    {
+        $methods = keys($this->methodsMap->getMethodsMap($class));
+        // exclude getId since it needs to be inherited as a field on child classes
+        return filter($methods, fn(string $method): bool => $method !== 'getId');
+    }
+
+    private function isMethodValidForDataField(string $type, string $method): bool
+    {
+        return (bool) $this->methodsMap->isMethodValidForDataField($type, $method);
+    }
+
     private function fromType(string $type): array
     {
-        $methods          = keys($this->methodsMap->getMethodsMap($type));
-        $potentialGetters = filter($methods, function (string $method) use ($type): bool {
-            return (bool) $this->methodsMap->isMethodValidForDataField($type, $method);
-        });
+        $allMethods       = keys($this->methodsMap->getMethodsMap($type));
+        $methods          = $this->removeGenericParentClassMethods($type, $allMethods);
+        $potentialGetters = filter($methods, fn(string $method) => $this->isMethodValidForDataField($type, $method));
+
         return values(filter($potentialGetters, function (string $method) use ($type): bool {
             $returnType = $this->methodsMap->getMethodReturnType($type, $method);
             return $this->isFieldGetter($method, $returnType);
@@ -71,7 +97,7 @@ class GetterMethodsExtractor
     private function getMethodNameFromKey($type, string $key, array $prefixes = ['get', 'has', 'is']): string
     {
         $prefix = array_shift($prefixes);
-        if (! $prefix) {
+        if (!$prefix) {
             return '';
         }
         $method = $prefix . SimpleDataObjectConverter::snakeCaseToUpperCamelCase($key);
@@ -82,7 +108,7 @@ class GetterMethodsExtractor
 
     public function getFieldType(string $type, string $key): string
     {
-        $method = $this->getMethodNameFromKey($type, $key);
+        $method     = $this->getMethodNameFromKey($type, $key);
         $returnType = $this->getMethodReturnType($type, $method) ?? 'unknown';
 
         return substr($returnType, -2) === '[]'

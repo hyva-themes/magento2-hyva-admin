@@ -3,8 +3,8 @@
 namespace Hyva\Admin\Test\Unit\Model\TypeReflection;
 
 use Hyva\Admin\Model\TypeReflection\MethodsMap;
+use Hyva\Admin\Test\Unit\Model\TypeReflection\Stub\StubReflectionTargetGrandchild;
 use Magento\Framework\Reflection\FieldNamer;
-use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,25 +29,31 @@ class MethodsMapTest extends TestCase
     public function testIncludesAnnotatedMethods(): void
     {
         $sut = new MethodsMap(new FieldNamer());
-        $methods = $sut->getMethodsMap(__CLASS__);
-        $this->assertArrayHasKey('getTestMethodAnnotation', $methods);
+        $methods = $sut->getMethodsMap(Stub\StubReflectionTargetGrandchild::class);
+        $this->assertArrayHasKey('getMethodAnnotationWithType', $methods);
     }
 
     public function testReturnsReturnTypeOfRealMethods(): void
     {
         $sut = new MethodsMap(new FieldNamer());
-        $this->assertSame(MockBuilder::class, $sut->getMethodReturnType(__CLASS__, 'getMockBuilder'));
+        $class = Stub\StubReflectionTargetGrandchild::class;
+        $this->assertSame('string', $sut->getMethodReturnType($class, 'getMethodWithOnlySignatureReturnType'));
+        $this->assertSame('int', $sut->getMethodReturnType($class, 'getMethodWithSignatureFromParent'));
+        $this->assertSame('string', $sut->getMethodReturnType($class, 'getMethodWithAnnotationAndSignatureFromParent'));
     }
 
     public function testReturnsReturnTypeOfAnnotatedMethods(): void
     {
         $sut = new MethodsMap(new FieldNamer());
-        $this->assertSame('string', $sut->getMethodReturnType(__CLASS__, 'getTestMethodAnnotation'));
-        $this->assertSame('string', $sut->getMethodReturnType(__CLASS__, 'getTestMethodAnnotationWithStringNull'));
-        $this->assertSame('string', $sut->getMethodReturnType(__CLASS__, 'getTestMethodAnnotationWithNullString'));
-        $this->assertSame('mixed', $sut->getMethodReturnType(__CLASS__, 'getTestMethodAnnotationWithNoReturnType'));
-        $this->assertSame('void', $sut->getMethodReturnType(__CLASS__, 'getTestMethodAnnotationWithOnlyNullReturn'));
-        $this->assertSame('void', $sut->getMethodReturnType(__CLASS__, 'getTestMethodAnnotationWithVoidReturn'));
+        $class = Stub\StubReflectionTargetGrandchild::class;
+        $this->assertSame('StubReflectionTargetGrandchild', $sut->getMethodReturnType($class, 'getMethodAnnotationWithType'));
+        $this->assertSame('string', $sut->getMethodReturnType($class, 'getMethodAnnotationWithTypeOrNull'));
+        $this->assertSame('string', $sut->getMethodReturnType($class, 'getMethodAnnotationWithNullOrType'));
+        $this->assertSame('mixed', $sut->getMethodReturnType($class, 'getMethodAnnotationWithNoReturnType'));
+        $this->assertSame('void', $sut->getMethodReturnType($class, 'getMethodAnnotationWithNullReturnType'));
+        $this->assertSame('void', $sut->getMethodReturnType($class, 'getMethodAnnotationWithVoidReturnType'));
+        $this->assertSame('string', $sut->getMethodReturnType($class, 'getMethodAnnotationWithTwoReturnTypes'));
+        $this->assertSame('int', $sut->getMethodReturnType($class, 'getMethodWithReturnAnnotationFromParent'));
     }
 
     public function testIsValidForDataField(): void
@@ -59,5 +65,33 @@ class MethodsMapTest extends TestCase
         $this->assertFalse($sut->isMethodValidForDataField(__CLASS__, 'getTestMethodAnnotationWithOnlyNullReturn'));
         $this->assertFalse($sut->isMethodValidForDataField(__CLASS__, 'getTestMethodAnnotationWithVoidReturn'));
         $this->assertTrue($sut->isMethodValidForDataField(__CLASS__, 'getTestMethodAnnotation'));
+    }
+
+    public function testUsedDefaultReturnTypeMixed(): void
+    {
+        $sut = new MethodsMap(new FieldNamer());
+        $class = Stub\StubReflectionTargetGrandchild::class;
+        $this->assertSame('mixed', $sut->getMethodReturnType($class, 'getMethodWithoutInheritedReturnAnnotation'));
+    }
+
+    public function testUsesReturnAnnotationIfNeeded(): void
+    {
+        $sut = new MethodsMap(new FieldNamer());
+        $class = Stub\StubReflectionTargetGrandchild::class;
+        $this->assertSame('int', $sut->getMethodReturnType($class, 'getMethodWithReturnAnnotation'));
+    }
+
+    public function testUsesReturnAnnotationOfParentIfNeeded(): void
+    {
+        $sut = new MethodsMap(new FieldNamer());
+        $class = Stub\StubReflectionTargetGrandchild::class;
+        $this->assertSame('string', $sut->getMethodReturnType($class, 'getMethodWithInheritedReturnAnnotation'));
+    }
+
+    public function testReturnsAnnotatedArrayType(): void
+    {
+        $sut = new MethodsMap(new FieldNamer());
+        $class = Stub\StubReflectionTargetGrandchild::class;
+        $this->assertSame('string[]', $sut->getMethodReturnType($class, 'getMethodWithAnnotatedArrayReturnType'));
     }
 }

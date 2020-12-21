@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Functional\Model;
+namespace Hyva\Admin\Test\Integration\Model;
 
 use Hyva\Admin\Model\HyvaGridDefinition;
 use Hyva\Admin\Model\HyvaGridDefinitionInterface;

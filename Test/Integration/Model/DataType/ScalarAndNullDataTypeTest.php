@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Functional\Model\DataType;
+namespace Hyva\Admin\Test\Integration\Model\DataType;
 
 use Hyva\Admin\Model\DataType\ScalarAndNullDataType;
 use PHPUnit\Framework\TestCase;

@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\TypeReflection;
 
+use Laminas\Code\Reflection\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Reflection\MethodReflection;
 use Laminas\Code\Reflection\ClassReflection;
 use Laminas\Code\Reflection\DocBlock\Tag\MethodTag;
@@ -13,8 +14,16 @@ use function array_filter as filter;
 use function array_keys as keys;
 use function array_merge as merge;
 use function array_reduce as reduce;
+use function array_slice as slice;
 use function array_values as values;
 
+/**
+ * This class is different from \Magento\Framework\Reflection\MethodsMap in several ways
+ *
+ * - Doesn't throw exceptions for missing return type phpdoc annotations
+ * - Reads return types from method signatures
+ * - attempts to return annotated type[] array return types when the signature return type is array
+ */
 class MethodsMap
 {
     private FieldNamer $fieldNamer;
@@ -85,22 +94,75 @@ class MethodsMap
         }, []);
     }
 
-    private function reduceToSingleType(array $returnTypes): ?string
+    private function reduceToSingleType(array $returnTypes, ?string $default = 'mixed'): ?string
     {
         return count($returnTypes) === 1 && $returnTypes[0] === 'null'
             ? 'void'
-            : values(filter($returnTypes, fn(string $type): bool => $type !== 'null'))[0] ?? 'mixed';
+            : values(filter($returnTypes, fn(string $type): bool => $type !== 'null'))[0] ?? $default;
     }
 
     private function getRealMethods(ClassReflection $class): array
     {
         $publicMethods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
 
-        return reduce($publicMethods, function (array $map, MethodReflection $method): array {
-            $type       = $method->getReturnType();
-            $paramCount = $method->getNumberOfParameters();
-            $returnType = $type ? $type->getName() : 'mixed';
-            return merge($map, [$method->getName() => ['return' => $returnType, 'parameterCount' => $paramCount]]);
+        return reduce($publicMethods, function (array $map, MethodReflection $method) use ($class): array {
+            $returnType = $this->determineReturnType($method);
+            $methodInfo = ['return' => $returnType ?? 'mixed', 'parameterCount' => $method->getNumberOfParameters()];
+            return merge($map, [$method->getName() => $methodInfo]);
         }, []);
+    }
+
+    private function determineReturnType(MethodReflection $method): ?string
+    {
+        return $this->getMethodSignatureReturnType($method) ?? $this->getAnnotatedReturnType($method);
+    }
+
+    private function getMethodSignatureReturnType(MethodReflection $method): ?string
+    {
+        $type = $method->getReturnType();
+        if ($type) {
+            return $type->getName() === 'array' ? $this->getAnnotatedArrayType($method) : $type->getName();
+        }
+        return null;
+    }
+
+    private function getAnnotatedArrayType(MethodReflection $method): string
+    {
+        $annotatedReturnType = $this->getAnnotatedReturnType($method);
+
+        return $annotatedReturnType && substr($annotatedReturnType, -2) === '[]'
+            ? $annotatedReturnType
+            : 'mixed[]';
+    }
+
+    private function getAnnotatedReturnType(?MethodReflection $method): ?string
+    {
+        if (!$method) {
+            return null;
+        }
+        return $this->readAnnotatedReturnTypeFromMethod($method)
+            ?? $this->getAnnotatedReturnType($this->getParentReflectionMethod($method));
+    }
+
+    private function getParentReflectionMethod(MethodReflection $method): ?MethodReflection
+    {
+        $parent = $method->getDeclaringClass()->getParentClass();
+        return $parent && $parent->hasMethod($method->getName())
+            ? $parent->getMethod($method->getName())
+            : null;
+    }
+
+    private function readAnnotatedReturnTypeFromMethod(MethodReflection $method): ?string
+    {
+        return ($tag = $this->getLastReturnTypeAnnotation($method))
+            ? $this->reduceToSingleType($tag->getTypes())
+            : null;
+    }
+
+    private function getLastReturnTypeAnnotation(MethodReflection $method): ?ReturnTag
+    {
+        return ($method->getDocBlock() && ($tags = $method->getDocBlock()->getTags('return')))
+            ? slice(values($tags), -1)[0]
+            : null;
     }
 }

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Functional\Model\GridSourceType;
+namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 
 use Hyva\Admin\Model\DataType\LongTextDataType;
 use Hyva\Admin\Model\GridSourceType\RepositoryGridSourceType;

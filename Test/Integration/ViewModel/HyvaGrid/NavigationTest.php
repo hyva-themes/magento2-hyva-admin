@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Functional\ViewModel\HyvaGrid;
+namespace Hyva\Admin\Test\Integration\ViewModel\HyvaGrid;
 
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
-use Hyva\Admin\Test\Functional\TestingGridDataProvider;
+use Hyva\Admin\Test\Integration\TestingGridDataProvider;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\Navigation;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;

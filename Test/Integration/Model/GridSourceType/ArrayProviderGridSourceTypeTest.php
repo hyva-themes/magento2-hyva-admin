@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Functional\Model\GridSourceType;
+namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 
 use Hyva\Admin\Model\DataType\LongTextDataType;
 use Hyva\Admin\Model\DataType\ScalarAndNullDataType;
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
-use Hyva\Admin\Test\Functional\TestingGridDataProvider;
+use Hyva\Admin\Test\Integration\TestingGridDataProvider;
 use Magento\Framework\Api\SearchCriteria;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;

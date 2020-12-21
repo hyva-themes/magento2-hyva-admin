@@ -5,7 +5,7 @@ namespace Hyva\Admin\Model\TypeReflection;
 use Magento\Framework\Api\ExtensibleDataInterface;
 use Magento\Framework\Api\ExtensionAttributesInterface;
 use Magento\Framework\Api\SimpleDataObjectConverter;
-use Magento\Framework\Reflection\MethodsMap;
+use Hyva\Admin\Model\TypeReflection\MethodsMap;
 
 use function array_filter as filter;
 use function array_keys as keys;
@@ -34,7 +34,8 @@ class ExtensionAttributeTypeExtractor
     {
         $methods = keys($this->methodsMap->getMethodsMap($type));
         return values(filter($methods, function (string $method) use ($type): bool {
-            return $this->isExtensionAttributesType($this->getMethodReturnType($type, $method));
+                $returnType = $this->getMethodReturnType($type, $method);
+                return $this->isExtensionAttributesType($returnType);
         }))[0] ?? null;
     }
 
@@ -45,9 +46,8 @@ class ExtensionAttributeTypeExtractor
 
     private function getMethodReturnType(string $type, string $method): ?string
     {
-        return method_exists($type, $method)
-            ? $this->methodsMap->getMethodReturnType($type, $method)
-            : null;
+        return $this->methodsMap->getMethodReturnType($type, $method);
+
     }
 
     public function getExtensionAttributeType(string $type, string $key): string

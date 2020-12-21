@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Functional\Model\Config;
+namespace Hyva\Admin\Test\Integration\Model\Config;
 
 use Hyva\Admin\Model\Config\GridConfigReader;
 use Hyva\Admin\Model\Config\HyvaGridConfigReaderInterface;

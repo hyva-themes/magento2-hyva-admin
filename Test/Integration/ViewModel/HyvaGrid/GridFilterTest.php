@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Functional\ViewModel\HyvaGrid;
+namespace Hyva\Admin\Test\Integration\ViewModel\HyvaGrid;
 
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\FilterOptionInterface;
