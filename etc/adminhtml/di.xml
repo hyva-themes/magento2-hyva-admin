@@ -69,5 +69,10 @@
             </argument>
         </arguments>
     </type>
+    <type name="Hyva\Admin\Model\GridSourceType\CollectionGridSourceType">
+        <arguments>
+            <argument name="eavCollectionProcessor" xsi:type="object">Magento\Eav\Model\Api\SearchCriteria\CollectionProcessor</argument>
+        </arguments>
+    </type>
 </config>
 

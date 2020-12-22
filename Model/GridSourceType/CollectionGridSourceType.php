@@ -9,6 +9,7 @@ use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\Model\TypeReflection;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
+use Magento\Eav\Model\Entity\Collection\AbstractCollection as AbstractEavCollection;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
@@ -29,7 +30,9 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     private GridSourceCollectionFactory $gridSourceCollectionFactory;
 
-    private CollectionProcessorInterface $collectionProcessor;
+    private CollectionProcessorInterface $defaultCollectionProcessor;
+
+    private CollectionProcessorInterface $eavCollectionProcessor;
 
     private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
 
@@ -40,7 +43,8 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         GridSourceCollectionFactory $gridSourceCollectionFactory,
-        CollectionProcessorInterface $collectionProcessor,
+        CollectionProcessorInterface $defaultCollectionProcessor,
+        CollectionProcessorInterface $eavCollectionProcessor,
         GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher
     ) {
         $this->gridName                          = $gridName;
@@ -49,7 +53,8 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         $this->gridSourceDataAccessor            = $gridSourceDataAccessor;
         $this->columnDefinitionFactory           = $columnDefinitionFactory;
         $this->gridSourceCollectionFactory       = $gridSourceCollectionFactory;
-        $this->collectionProcessor               = $collectionProcessor;
+        $this->defaultCollectionProcessor        = $defaultCollectionProcessor;
+        $this->eavCollectionProcessor            = $eavCollectionProcessor;
         $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
     }
 
@@ -114,7 +119,11 @@ class CollectionGridSourceType implements GridSourceTypeInterface
             $searchCriteria
         );
 
-        $this->collectionProcessor->process($preprocessedSearchCriteria, $collection);
+        if (is_subclass_of($collection, AbstractEavCollection::class)) {
+            $this->eavCollectionProcessor->process($preprocessedSearchCriteria, $collection);
+        } else {
+            $this->defaultCollectionProcessor->process($preprocessedSearchCriteria, $collection);
+        }
 
         return RawGridSourceContainer::forData($collection);
     }
