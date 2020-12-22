@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
 use Hyva\Admin\Model\GridSourceType\CollectionSourceType\GridSourceCollectionFactory;
 use Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
@@ -30,6 +31,8 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     private CollectionProcessorInterface $collectionProcessor;
 
+    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
+
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
@@ -37,15 +40,17 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         GridSourceCollectionFactory $gridSourceCollectionFactory,
-        CollectionProcessorInterface $collectionProcessor
+        CollectionProcessorInterface $collectionProcessor,
+        GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher
     ) {
-        $this->gridName                    = $gridName;
-        $this->sourceConfiguration         = $sourceConfiguration;
-        $this->typeReflection              = $typeReflection;
-        $this->gridSourceDataAccessor      = $gridSourceDataAccessor;
-        $this->columnDefinitionFactory     = $columnDefinitionFactory;
-        $this->gridSourceCollectionFactory = $gridSourceCollectionFactory;
-        $this->collectionProcessor         = $collectionProcessor;
+        $this->gridName                          = $gridName;
+        $this->sourceConfiguration               = $sourceConfiguration;
+        $this->typeReflection                    = $typeReflection;
+        $this->gridSourceDataAccessor            = $gridSourceDataAccessor;
+        $this->columnDefinitionFactory           = $columnDefinitionFactory;
+        $this->gridSourceCollectionFactory       = $gridSourceCollectionFactory;
+        $this->collectionProcessor               = $collectionProcessor;
+        $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
     }
 
     private function getRecordType(): string
@@ -102,7 +107,14 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         if (method_exists($collection, 'addAttributeToSelect')) {
             $collection->addAttributeToSelect('*');
         }
-        $this->collectionProcessor->process($searchCriteria, $collection);
+
+        $preprocessedSearchCriteria = $this->gridSourcePrefetchEventDispatcher->dispatch(
+            $this->gridName,
+            $this->getRecordType(),
+            $searchCriteria
+        );
+
+        $this->collectionProcessor->process($preprocessedSearchCriteria, $collection);
 
         return RawGridSourceContainer::forData($collection);
     }
