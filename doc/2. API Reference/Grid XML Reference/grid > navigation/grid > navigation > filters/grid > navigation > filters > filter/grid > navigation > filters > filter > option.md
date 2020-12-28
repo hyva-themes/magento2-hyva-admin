@@ -32,7 +32,7 @@ For groups of option values, any record with a matching value will be included i
 
 The above example would render a filter with three options: `reddish`, `blueish` and `rose`.
 
-When `reddish` is selected, only records with the color attribute matching `16`, `17` or `18` would be shown in the grid.
+When `reddish` is selected, any records with the color attribute matching `16`, `17` or `18` would be shown in the grid.
 
 
 The option values don’t have to be integers, string values are valid, too.

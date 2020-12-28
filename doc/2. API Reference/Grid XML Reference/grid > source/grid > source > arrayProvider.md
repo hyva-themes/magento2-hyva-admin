@@ -20,3 +20,15 @@ The method returns an array of records. Each record is a sub array that will be 
 
 
 The columns are determined based on the array keys of the first record.
+
+
+## Example:
+
+
+```markup
+<source>
+    <arrayProvider>\Hyva\AdminTest\Model\LogFileListProvider</arrayProvider>
+</source>
+```
+
+
