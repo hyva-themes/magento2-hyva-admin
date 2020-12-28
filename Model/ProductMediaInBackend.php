@@ -9,22 +9,14 @@ use Magento\Framework\View\DesignInterface;
 
 class ProductMediaInBackend
 {
-    private AppState $appState;
-
     private ImageUrlBuilder $imageUrlBuilder;
 
     private Escaper $escaper;
 
-    private DesignInterface $design;
-
     public function __construct(
-        AppState $appState,
-        DesignInterface $design,
         ImageUrlBuilder $imageUrlBuilder,
         Escaper $escaper
     ) {
-        $this->appState        = $appState;
-        $this->design          = $design;
         $this->imageUrlBuilder = $imageUrlBuilder;
         $this->escaper         = $escaper;
     }
@@ -32,7 +24,7 @@ class ProductMediaInBackend
     public function getImageHtmlElement(
         string $file,
         string $altText,
-        string $productImageType = 'product_page_image_small'
+        string $productImageType = 'product_listing_thumbnail'
     ): string {
         return sprintf(
             '<img src="%s" alt="%s" loading="lazy" />',
@@ -41,27 +33,8 @@ class ProductMediaInBackend
         );
     }
 
-    public function getImageUrl(string $file, string $productImageType = 'product_page_image_small'): string
+    public function getImageUrl(string $file, string $productImageType = 'product_listing_thumbnail'): string
     {
-        return $this->appState->emulateAreaCode('frontend', function () use ($file, $productImageType): string {
-
-            $resetDesign = $this->setFrontendTheme('Magento/blank');
-            $url = $this->imageUrlBuilder->getUrl($file, $productImageType);
-            $resetDesign();
-
-            return $url;
-        });
-    }
-
-    private function setFrontendTheme(string $theme): callable
-    {
-        $currentDesignArea = $this->design->getArea();
-        $currentTheme      = $this->design->getDesignTheme();
-
-        $this->design->setDesignTheme($theme, 'frontend');
-
-        return function () use ($currentDesignArea, $currentTheme) {
-            $this->design->setDesignTheme($currentTheme, $currentDesignArea);
-        };
+        return $this->imageUrlBuilder->getUrl($file, $productImageType);
     }
 }
