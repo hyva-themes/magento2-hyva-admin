@@ -21,7 +21,7 @@
     }
 }
 .table-content td {
-    @apply border border-container px-3 table-cell align-middle whitespace-nowrap;
+    @apply border border-container px-3 align-middle whitespace-nowrap;
 }
 
 .table-filters th {

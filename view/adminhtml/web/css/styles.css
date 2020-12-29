@@ -919,7 +919,6 @@ img { max-width: none; display: inline-block;
   --tw-border-opacity: 1;
   border-color: rgba(228, 228, 231, var(--tw-border-opacity));
   border-width: 1px;
-  display: table-cell;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
   vertical-align: middle;
