@@ -8,24 +8,30 @@ $navigation = $grid->getNavigation();
 $uniqueId = '_' . uniqid();
 ?>
 <div class="hyva-admin-grid"
-     x-data="initDataTable<?=$uniqueId?>()"
-     x-init="$watch('selectedRows', storeSelectedRows<?=$uniqueId?>)">
-    <div class="max-w-full mx-auto py-6 px-0">
-        <div class="mb-4 flex justify-between items-center">
+     x-data="initDataTable<?= /** @noEscape */ $uniqueId ?>()"
+     x-init="getSelectedRows(); $watch('selectedRows', selectedRows => storeSelectedRows(selectedRows));">
+    <div class="max-w-full px-0 py-6 mx-auto">
+        <div class="flex items-center justify-between mb-4">
             <div class="flex-1 pr-4">
-                <div class="relative md:w-3/4 flex flex-wrap gap-x-8">
+                <div class="relative flex flex-wrap md:w-3/4 gap-x-8">
                     <div class="self-center">
-                        <span class="font-medium text-md"><?= __('Current Page:')?></span>
-                        <?= $navigation->getCurrentPageNumber() ?>
+                        <span class="font-medium text-md">
+                            <?= $escaper->escapeHtml(__('Current Page:')) ?>
+                        </span>
+                        <?= (int) $navigation->getCurrentPageNumber() ?>
                     </div>
 
                     <div class="self-center">
-                        <span class="font-medium text-md"><?= __('Total Pages:')?></span>
-                        <?= $navigation->getPageCount() ?>
+                        <span class="font-medium text-md">
+                            <?= $escaper->escapeHtml(__('Total Pages:')) ?>
+                        </span>
+                        <?= (int) $navigation->getPageCount() ?>
                     </div>
 
                     <div>
-                        <label for="pageSize"><?= __('Rows Per Page:') ?></label>
+                        <label for="pageSize">
+                            <?= $escaper->escapeHtml(__('Rows Per Page:')) ?>
+                        </label>
                         <script>
                             function goToOptionUrl(option) {
                                 const url = option.value;
@@ -37,38 +43,52 @@ $uniqueId = '_' . uniqid();
                         <select id="pageSize" onchange="goToOptionUrl(this.selectedOptions[0])"
                                 class="form-select">
                             <?php foreach ($navigation->getPageSizes() as $pageSize): ?>
-                            <?php $currentPageSize = $navigation->getPageSize() === $pageSize ?>
-                            <option value="<?= $navigation->getUrlForPageSize($pageSize) ?>" <?= $currentPageSize ? 'selected' : '' ?>><?= $pageSize ?></option>
+                                <?php $currentPageSize = $navigation->getPageSize() === $pageSize ?>
+                            <option value="<?= $escaper->escapeUrl($navigation->getUrlForPageSize($pageSize)) ?>"
+                                <?= $currentPageSize ? 'selected' : '' ?>>
+                                <?= (int) $pageSize ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
 
-                    <div class="relative z-0 inline-flex shadow-sm rounded-md">
+                    <div class="relative z-0 inline-flex rounded-md shadow-sm">
                         <?php if ($navigation->hasPreviousPage()): ?>
-                            <a href="<?= $navigation->getPreviousPageUrl() ?>"
-                            class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                                Previous Page
+                            <a href="<?= $escaper->escapeUrl($navigation->getPreviousPageUrl()) ?>"
+                            class="relative inline-flex items-center px-4 py-2 font-medium text-gray-700 bg-white
+                                border border-gray-300 rounded-l-md hover:bg-gray-50 focus:z-10 focus:outline-none
+                                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                <?= $escaper->escapeHtml(__('Previous Page')) ?>
                             </a>
                         <?php else: ?>
-                            <span class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white font-medium text-gray-300 cursor-not-allowed">
-                                Previous Page
+                            <span class="relative inline-flex items-center px-4 py-2 font-medium text-gray-300 bg-white
+                                border border-gray-300 cursor-not-allowed rounded-l-md">
+                                <?= $escaper->escapeHtml(__('Previous Page')) ?>
                             </span>
                         <?php endif; ?>
                         <?php if ($navigation->hasNextPage()): ?>
-                            <a href="<?= $navigation->getNextPageUrl() ?>"
-                            class="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">Next Page</a>
+                            <a href="<?= $escaper->escapeUrl($navigation->getNextPageUrl()) ?>"
+                            class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-700 bg-white
+                                border border-gray-300 rounded-r-md hover:bg-gray-50 focus:z-10 focus:outline-none
+                                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                <?= $escaper->escapeHtml(__('Next Page')) ?>
+                            </a>
                         <?php else: ?>
-                            <span class="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white font-medium text-gray-300 cursor-not-allowed">
-                                Next Page
+                            <span class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-300
+                            bg-white border border-gray-300 cursor-not-allowed rounded-r-md"
+                            >
+                                <?= $escaper->escapeHtml(__('Next Page')) ?>
                             </span>
                         <?php endif; ?>
                     </div>
 
                     <?php if ($navigation->hasAppliedFilters()): ?>
                     <div>
-                        <a href="<?= $navigation->getResetFiltersUrl() ?>"
+                        <a href="<?= $escaper->escapeUrl($navigation->getResetFiltersUrl()) ?>"
                            class="btn btn-primary">
-                            <?= __('Reset filters') ?>
+                            <?= $escaper->escapeHtml(__('Reset filters')) ?>
                         </a>
                     </div>
                     <?php endif; ?>
@@ -78,15 +98,25 @@ $uniqueId = '_' . uniqid();
                 <div class="flex">
                     <div class="relative">
                         <button @click.prevent="open = !open"
-                                class="rounded-lg inline-flex items-center bg-white hover:text-blue-500 focus:outline-none focus:shadow-outline text-gray-500 font-semibold py-2 px-2 md:px-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:hidden md:visible" viewBox="0 0 24 24"
-                                 stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-                                 stroke-linejoin="round">
+                                class="inline-flex items-center px-2 py-2 font-semibold text-gray-500 bg-white
+                                    rounded-lg hover:text-blue-500 focus:outline-none focus:shadow-outline md:px-4"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="w-6 h-6 md:hidden md:visible"
+                                 viewBox="0 0 24 24"
+                                 stroke-width="2"
+                                 stroke="currentColor"
+                                 fill="none"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                            >
                                 <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
                                 <path
                                     d="M5.5 5h13a1 1 0 0 1 0.5 1.5L14 12L14 19L10 16L10 12L5 6.5a1 1 0 0 1 0.5 -1.5" />
                             </svg>
-                            <span class="hidden md:block md:visible">Display</span>
+                            <span class="hidden md:block md:visible">
+                                <?= $escaper->escapeHtml(__('Display')) ?>
+                            </span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-1" width="24" height="24"
                                  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                  stroke-linecap="round" stroke-linejoin="round">
@@ -95,15 +125,24 @@ $uniqueId = '_' . uniqid();
                             </svg>
                         </button>
 
-                        <div x-show="open" @click.away="open = false"
-                             class="z-40 absolute top-0 right-0 bg-white rounded-lg shadow-lg mt-16 -mr-1 block p-4 overflow-y-auto" style="max-height: 75vh;">
+                        <div x-show="open"
+                             @click.away="open = false"
+                             class="absolute top-0 right-0 z-40 block p-4 mt-16 -mr-1 overflow-y-auto bg-white
+                                rounded-lg shadow-lg"
+                             style="max-height: 75vh;">
                             <template x-for="heading in headings">
                                 <label
-                                    class="flex justify-start items-center text-truncate hover:bg-gray-100 px-4 py-2">
-                                    <div class="text-teal-600 mr-3">
-                                        <input type="checkbox" class="form-checkbox focus:outline-none focus:shadow-outline" checked @click="toggleColumn(heading.key)">
+                                    class="flex items-center justify-start px-4 py-2 text-truncate hover:bg-gray-100">
+                                    <div class="mr-3 text-teal-600">
+                                        <input type="checkbox"
+                                               class="form-checkbox focus:outline-none focus:shadow-outline"
+                                               checked
+                                               @click="toggleColumn(heading.key)"
+                                        >
                                     </div>
-                                    <div class="select-none text-gray-700" x-text="heading.value"></div>
+                                    <div class="text-gray-700 select-none"
+                                         x-text="heading.value">
+                                    </div>
                                 </label>
                             </template>
                         </div>
@@ -113,75 +152,61 @@ $uniqueId = '_' . uniqid();
         </div>
         <div>
             <?php if ($massActions = $grid->getMassActions()): ?>
-            <?php $massActionFormId = 'hyva-grid-massaction-' . $grid->getGridName() ?>
-            <form id="<?= $massActionFormId ?>" method="post">
+                <?php $massActionFormId = 'hyva-grid-massaction-' . $grid->getGridName() ?>
+            <form id="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>" method="post">
                 <?= $block->getBlockHtml('formkey'); ?>
-                <script>
-                    function doMassAction<?=$uniqueId?>(option) {
-                        const url = option.value;
-                        const form = document.getElementById('<?= $massActionFormId ?>');
-                        const checked = getSelectedRows<?=$uniqueId?>();
-                        const select = form.querySelectorAll('select[name="massAction"]')[0];
-                        if (! url) {
-                            return;
-                        }
-                        if (checked.length === 0) {
-                            alert('Please select the records to apply the mass action to.');
-                            select.selectedIndex = 0;
-                            return;
-                        }
-                        if (option.dataset.requireConfirm === 'true' && ! confirm('Are you sure?')) {
-                            select.selectedIndex = 0;
-                            return;
-                        }
-                        const alreadyPresent = [...form.elements].filter(e => e.checked).map(e => e.value);
-                        const missing = checked.filter(v => ! alreadyPresent.includes(v));
-                        const newFields = missing.map(v => {
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = '<?= $grid->getMassActionIdsParam() ?>[]';
-                            input.value = v;
-                            return input;
-                        });
-                        newFields.length > 0 && form.append(...newFields);
-                        form.action = url;
-                        storeSelectedRows<?=$uniqueId?>([]);
-                        form.submit();
-                    }
-                </script>
-                <label for="massAction<?= $uniqueId?>" class="mr-8"><?= __('Mass Actions:') ?></label>
-                <select onchange="doMassAction<?=$uniqueId?>(this.selectedOptions[0])" id="massAction<?= $uniqueId ?>" name="massAction"
+                <label for="massAction<?= /** @noEscape */ $uniqueId ?>" class="mr-8">
+                    <?= $escaper->escapeHtml(__('Mass Actions:')) ?>
+                </label>
+                <select @change="doMassAction($event.target.selectedOptions[0])"
+                        @keydown.enter="doMassAction($event.target.selectedOptions[0])"
+                        id="massAction<?= /** @noEscape */ $uniqueId ?>"
+                        name="massAction"
                         class="form-select"
-                        form="<?= $massActionFormId ?>">
-                    <option disabled selected hidden><?= __('Select an action') ?></option>
+                        form="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>">
+                    <option disabled selected hidden>
+                        <?= $escaper->escapeHtml(__('Select an action')) ?>
+                    </option>
                     <?php foreach ($massActions as $massAction): ?>
                         <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
-                        <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>" value="<?= $massActionUrl ?>"><?= $massAction->getLabel() ?></option>
+                        <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>"
+                                value="<?= $escaper->escapeUrl($massActionUrl) ?>">
+                            <?= $escaper->escapeHtml($massAction->getLabel()) ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
                 <?php if ($massActions) { ?></form><?php } ?>
                 <?php endif; ?>
-            </form>
-            <div x-show="getSelectedRows<?=$uniqueId?>().length > 0"><?= __('Total selected:') ?> <span x-text="getSelectedRows<?=$uniqueId?>().length"></span></div>
+            <div x-show="selectedRows.length > 0" class="mt-4">
+                <span>
+                    <?= $escaper->escapeHtml(__('Total selected:')) ?>
+                </span> <span x-text="selectedRows.length" >
+                </span>
+                <a href="#" @click.prevent="selectedRows=[]" class="ml-4 underline">
+                    <?= $escaper->escapeHtml(__('reset selection')) ?></a>
+            </div>
             <?php if ($navigation->hasFilters()): ?>
-            <form id="<?= $navigation->getFilterFormId() ?>" method="get" action="<?= $navigation->getFilterFormUrl() ?>">
+            <form id="<?= $escaper->escapeHtmlAttr($navigation->getFilterFormId()) ?>"
+                  method="get"
+                  action="<?= $escaper->escapeUrl($navigation->getFilterFormUrl()) ?>">
                 <input type="submit" hidden />
             </form>
             <?php endif; ?>
         </div>
     </div>
 
-    <div class="table-container flex flex-col">
+    <div class="flex flex-col table-container">
         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                 <div class="overflow-hidden border-b border-gray-200">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
-                        <tr class="table-head text-left">
+                        <tr class="text-left table-head">
                             <?php if ($massActions): ?>
                                 <th class="select-all">
                                     <label
-                                        class="inline-flex justify-between items-center hover:bg-gray-200 px-2 py-2 rounded-lg cursor-pointer">
+                                        class="inline-flex items-center justify-between px-2 py-2 rounded-lg
+                                            cursor-pointer hover:bg-gray-200">
                                         <input type="checkbox"
                                                class="form-checkbox focus:outline-none focus:shadow-outline"
                                                @click="selectAllCheckbox($event);">
@@ -189,44 +214,76 @@ $uniqueId = '_' . uniqid();
                                 </th>
                             <?php endif; ?>
                             <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-                            <?php $isSortedByColumn = $column->isSortable() && $navigation->getSortByColumn() === $column->getKey() ?>
-                            <?php $newDirection = $isSortedByColumn && $navigation->isSortOrderAscending() ? 'desc' : 'asc' ?>
-                                <th class="col-<?= $escaper->escapeHtml($column->getKey()) ?> relative pr-12 <?php if ($column->isSortable()): ?> sortable<?php endif; ?>"
-                                    x-ref="col-<?= $escaper->escapeHtml($column->getKey()) ?>"
-                                    <?php if ($column->isSortable()): ?>onclick="window.location.href='<?= $navigation->getSortByUrl($column->getKey(), $newDirection) ?>'"<?php endif; ?>>
+                                <?php $isSortedByColumn = $column->isSortable() &&
+                                    $navigation->getSortByColumn() === $column->getKey() ?>
+                                <?php $newDirection = $isSortedByColumn &&
+                                    $navigation->isSortOrderAscending() ? 'desc' : 'asc' ?>
+                                <th class="relative pr-12 col-<?= $escaper->escapeHtml($column->getKey()) ?>
+                                        <?php if ($column->isSortable()): ?> sortable<?php endif; ?>"
+                                    x-ref="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>"
+                                    <?php if ($column->isSortable()): ?>
+                                        onclick="window.location.href =
+                                            '<?= $escaper
+                                                ->escapeUrl(
+                                                    $navigation->getSortByUrl($column->getKey(), $newDirection)
+                                                ) ?>'"
+                                    <?php endif; ?>>
                                     <?= $escaper->escapeHtml($column->getLabel()) ?>
                                     <?php if ($isSortedByColumn && $navigation->isSortOrderAscending()): ?>
-                                    <span class="absolute align-middle mr-2 right-0 text-primary w-6 w-6 my-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                    <span class="absolute right-0 w-6 my-1 mr-2 align-middle text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor"
+                                        >
+                                            <path stroke-linecap="round"
+                                                  stroke-linejoin="round"
+                                                  stroke-width="2"
+                                                  d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
+                                            />
                                         </svg>
                                     </span>
                                     <?php endif; ?>
                                     <?php if ($isSortedByColumn && !$navigation->isSortOrderAscending()): ?>
-                                        <span class="absolute align-middle h-6 h-8 mr-2 right-0 text-primary w-6 w-8">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+                                        <span class="absolute right-0 w-6 w-8 h-6 h-8 mr-2 align-middle text-primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                 fill="none"
+                                                 viewBox="0 0 24 24"
+                                                 stroke="currentColor"
+                                            >
+                                                <path stroke-linecap="round"
+                                                      stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"
+                                                />
                                             </svg>
                                         </span>
                                     <?php endif; ?>
                                 </th>
                             <?php endforeach; ?>
                             <?php if ($actions = $grid->getActions()): ?>
-                                <th class="actions bg-container-darker sticky top-0 border border-gray-200 px-6 py-2 text-gray-300 font-semibold tracking-wider uppercase text-xl table-cell align-middle">
-                                    <?= __('Actions') ?>
+                                <th class="sticky top-0 table-cell px-6 py-2 text-xl font-semibold tracking-wider
+                                    text-gray-300 uppercase align-middle border border-gray-200 actions
+                                    bg-container-darker"
+                                >
+                                    <?= $escaper->escapeHtml(__('Actions')) ?>
                                 </th>
                             <?php endif; ?>
                         </tr>
                         <?php if ($navigation->hasFilters()): ?>
                         <tr class="table-filters">
-                            <?php if ($massActions): ?><th class="py-2 px-3 sticky top-0 border border-gray-200"></th><?php endif; ?>
+                            <?php if ($massActions): ?>
+                                <th class="sticky top-0 px-3 py-2 border border-gray-200"></th>
+                            <?php endif; ?>
                             <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-                            <th class="col-<?= $escaper->escapeHtml($column->getKey()) ?> sticky top-0 border border-gray-200 px-6 py-2 text-gray-600 tracking-wider text-xl table-cell align-left">
+                            <th class="col-<?= $escaper->escapeHtml($column->getKey()) ?> sticky top-0 border
+                                border-gray-200 px-6 py-2 text-gray-600 tracking-wider text-xl table-cell align-left"
+                            >
                                 <?php $filter = $navigation->getFilter($column->getKey()) ?>
                                 <?= $filter ? $filter->getHtml() : '' ?>
                             </th>
                             <?php endforeach; ?>
-                            <?php if ($actions): ?><th class="py-2 px-3 sticky top-0 border border-gray-200"></th><?php endif; ?>
+                            <?php if ($actions): ?>
+                                <th class="sticky top-0 px-3 py-2 border border-gray-200"></th>
+                            <?php endif; ?>
                         </tr>
                         <?php endif; ?>
                         </thead>
@@ -243,13 +300,19 @@ $uniqueId = '_' . uniqid();
                             } ?>
                             <tr class="table-content">
                                 <?php if ($massActions): ?>
-                                    <td class="border border-gray-100 px-3">
+                                    <td class="px-3 border border-gray-100">
                                         <label
-                                            class="text-teal-500 inline-flex justify-between items-center hover:bg-gray-200 px-2 py-2 rounded-lg cursor-pointer">
-                                        <input form="<?= $massActionFormId ?>"
+                                            class="inline-flex items-center justify-between px-2 py-2 text-teal-500
+                                            rounded-lg cursor-pointer hover:bg-gray-200">
+                                        <input form="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>"
                                                type="checkbox"
-                                               value="<?= $row->getCell($grid->getMassActionIdColumn())->getRawValue() ?>"
-                                               name="<?= $grid->getMassActionIdsParam() ?>[]"
+                                               value="<?= $escaper
+                                                           ->escapeHtmlAttr(
+                                                               $row
+                                                                   ->getCell($grid->getMassActionIdColumn())
+                                                                   ->getRawValue()
+                                                           ) ?>"
+                                               name="<?= $escaper->escapeHtmlAttr($grid->getMassActionIdsParam()) ?>[]"
                                                class="form-checkbox rowCheckbox focus:outline-none focus:shadow-outline"
                                                x-model="selectedRows"
 
@@ -257,15 +320,22 @@ $uniqueId = '_' . uniqid();
                                     </td>
                                 <?php endif; ?>
                                 <?php foreach ($row->getCells() as $cell): ?>
-                                    <td class="col-<?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()); ?>"
-                                        <?= $rowActionAttribute ?>>
+                                    <td class="col-<?= $escaper
+                                        ->escapeHtmlAttr($cell->getColumnDefinition()->getKey()); ?>"
+                                        <?= $escaper->escapeHtml($rowActionAttribute) ?>>
                                         <?= $cell->getHtml() ?>
                                     </td>
                                 <?php endforeach; ?>
                                 <?php if ($actions): ?>
-                                    <td class="actions border border-gray-100 px-3 text-right">
+                                    <td class="px-3 text-right border border-gray-100 actions">
                                         <?php foreach ($actions as $action): ?>
-                                            <a class=" text-blue-800 hover:text-blue-600 whitespace-no-wrap font-medium px-3" href="<?= $block->getUrl($action->getUrl(), $action->getParams($row)) ?>">
+                                            <a class="px-3 font-medium text-blue-800 whitespace-no-wrap
+                                                hover:text-blue-600"
+                                               href="<?= $escaper
+                                                   ->escapeUrl($block->getUrl(
+                                                       $action->getUrl(),
+                                                       $action->getParams($row)
+                                                   )) ?>">
                                                 <?= $escaper->escapeHtml($action->getLabel()) ?>
                                             </a>
                                         <?php endforeach; ?>
@@ -281,8 +351,22 @@ $uniqueId = '_' . uniqid();
     </div>
 </div>
     <script>
-        function initDataTable<?=$uniqueId?>() {
+        function initDataTable<?= /** @noEscape */ $uniqueId ?>() {
+
             return {
+                selectedRows: [],
+                massActionStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-selectedRows' ?>',
+
+                getSelectedRows() {
+                    const massActionStorageName = this.massActionStorageName;
+                    const selectedRowsJson = window.sessionStorage.getItem(
+                        massActionStorageName
+                    );
+                    this.selectedRows = selectedRowsJson ? JSON.parse(selectedRowsJson) : [];
+
+                    return this.selectedRows;
+                },
+
                 headings: [
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
                     {
@@ -297,7 +381,9 @@ $uniqueId = '_' . uniqid();
                 toggleColumn(key) {
                     let columns = document.querySelectorAll('.' + key);
 
-                    if (this.$refs[key].classList.contains('hidden') && this.$refs[key].classList.contains(key)) {
+                    if (this.$refs[key].classList.contains('hidden') &&
+                        this.$refs[key].classList.contains(key)
+                    ) {
                         columns.forEach(column => {
                             column.classList.remove('hidden');
                         });
@@ -307,8 +393,6 @@ $uniqueId = '_' . uniqid();
                         });
                     }
                 },
-
-                selectedRows: getSelectedRows<?=$uniqueId?>(),
 
                 selectAllCheckbox($event) {
                     const checked = !!$event.target.checked;
@@ -320,27 +404,57 @@ $uniqueId = '_' . uniqid();
                             this.selectedRows.splice(index, 1);
                         }
                     });
+                },
+
+                doMassAction(option) {
+                    const url = option.value;
+                    const form = document.getElementById('<?= $escaper->escapeHtml($massActionFormId) ?>');
+                    const checked = this.getSelectedRows();
+                    const select = form.querySelectorAll('select[name="massAction"]')[0];
+                    if (! url) {
+                        return;
+                    }
+                    if (checked.length === 0) {
+                        alert('Please select the records to apply the mass action to.');
+                        select.selectedIndex = 0;
+                        return;
+                    }
+                    if (option.dataset.requireConfirm === 'true' && ! confirm('Are you sure?')) {
+                        select.selectedIndex = 0;
+                        return;
+                    }
+                    const alreadyPresent = [...form.elements].filter(e => e.checked).map(e => e.value);
+                    const missing = checked.filter(v => ! alreadyPresent.includes(v));
+                    const newFields = missing.map(v => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = '<?= $escaper->escapeHtml($grid->getMassActionIdsParam()) ?>[]';
+                        input.value = v;
+                        return input;
+                    });
+                    newFields.length > 0 && form.append(...newFields);
+                    form.action = url;
+                    this.selectedRows = [];
+                    form.submit();
+                },
+
+                storeSelectedRows(selectedRows) {
+                    const values = selectedRows.filter(value => null !== value);
+                    window.sessionStorage.setItem(
+                        this.massActionStorageName,
+                        JSON.stringify(values)
+                    );
                 }
+
             }
         }
-
-        function massActionStorageName<?=$uniqueId?>() {
-            return '<?= $grid->getGridName() . '-selectedRows' ?>';
-        }
-        function getSelectedRows<?=$uniqueId?>() {
-            const selectedRowsJson = window.sessionStorage.getItem(massActionStorageName<?=$uniqueId?>());
-            return selectedRowsJson ? JSON.parse(selectedRowsJson) : [];
-        }
-        function storeSelectedRows<?=$uniqueId?>(selectedRows)
-        {
-            const vals = selectedRows.filter(v => null !== v);
-            window.sessionStorage.setItem(massActionStorageName<?=$uniqueId?>(), JSON.stringify(vals));
-        }
     </script>
-<div class="container mx-auto py-6 px-4">
+<div class="container px-4 py-6 mx-auto">
     <?php if (!$grid->getRows()) { ?>
         <div>
-            <?= __('No %1 found.', $grid->getEntityDefinition()->getLabelPlural()) ?>
+            <?= $escaper->escapeHtml(
+                __('No %1 found.', $grid->getEntityDefinition()->getLabelPlural())
+            ) ?>
         </div>
     <?php } ?>
 </div>
