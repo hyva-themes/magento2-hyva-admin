@@ -46,22 +46,18 @@ Hence, Hyva_Admin.
 The module can be installed via composer by adding the repository as a source and then requiring it: 
 
 ```
-composer config repositories.hyva-themes/module-magento2-admin git git@gitlab.hyva.io:hyva-themes/magento2-hyva-admin.git
-composer require hyva-themes/module-magento2-admin --prefer-source
+composer require hyva-themes/module-magento2-admin
 ```
 
 If you want to just play around to get a feel for Hyva_Admin grids, you can install a test module that declares an example grid, too:
 
 ```
-composer config repositories.hyva-themes/module-magento2-admin-test git git@gitlab.hyva.io:hyva-themes/hyva-admin-test-module.git
-composer require hyva-themes/module-magento2-admin-test --prefer-source
+composer require hyva-themes/module-magento2-admin-test
 ```
 
 ### Requirements
 
-The module currently requires PHP 7.4. There is a PHP 7.3 compatible backport branch called `php73` that is rebuilt with each release thanks to rector.
 It should work with pretty much any Magento 2 version, as long as the `$escaper` is assigned in templates.
-
 
 ## Quickstart
 
