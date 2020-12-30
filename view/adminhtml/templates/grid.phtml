@@ -9,27 +9,27 @@ $uniqueId = '_' . uniqid();
 ?>
 <div class="hyva-admin-grid"
      x-data="initDataTable<?= /** @noEscape */ $uniqueId ?>()"
-     x-init="getSelectedRows(); $watch('selectedRows', selectedRows => storeSelectedRows(selectedRows));">
+     x-init="refs=$refs; getSelectedRows(); $watch('selectedRows', selectedRows => storeSelectedRows(selectedRows));">
     <div class="max-w-full px-0 py-6 mx-auto">
         <div class="flex items-center justify-between mb-4">
             <div class="flex-1 pr-4">
                 <div class="relative flex flex-wrap md:w-3/4 gap-x-8">
                     <div class="self-center">
-                        <span class="font-medium text-md">
+                        <span class="font-medium text-md mr-4">
                             <?= $escaper->escapeHtml(__('Current Page:')) ?>
                         </span>
                         <?= (int) $navigation->getCurrentPageNumber() ?>
                     </div>
 
                     <div class="self-center">
-                        <span class="font-medium text-md">
+                        <span class="font-medium text-md mr-4">
                             <?= $escaper->escapeHtml(__('Total Pages:')) ?>
                         </span>
                         <?= (int) $navigation->getPageCount() ?>
                     </div>
 
                     <div>
-                        <label for="pageSize">
+                        <label for="pageSize" class="font-medium text-md mr-4">
                             <?= $escaper->escapeHtml(__('Rows Per Page:')) ?>
                         </label>
                         <script>
@@ -150,18 +150,21 @@ $uniqueId = '_' . uniqid();
                 </div>
             </div>
         </div>
-        <div>
+        <div class="flex items-center mb-4 gap-x-8">
             <?php if ($massActions = $grid->getMassActions()): ?>
                 <?php $massActionFormId = 'hyva-grid-massaction-' . $grid->getGridName() ?>
-            <form id="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>" method="post">
+            <form id="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>"
+                  x-ref="massaction-form"
+                  method="post">
                 <?= $block->getBlockHtml('formkey'); ?>
-                <label for="massAction<?= /** @noEscape */ $uniqueId ?>" class="mr-8">
+                <label for="massAction<?= /** @noEscape */ $uniqueId ?>" class="font-medium text-md mr-4">
                     <?= $escaper->escapeHtml(__('Mass Actions:')) ?>
                 </label>
                 <select @change="doMassAction($event.target.selectedOptions[0])"
                         @keydown.enter="doMassAction($event.target.selectedOptions[0])"
                         id="massAction<?= /** @noEscape */ $uniqueId ?>"
                         name="massAction"
+                        x-ref="massaction-select"
                         class="form-select"
                         form="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>">
                     <option disabled selected hidden>
@@ -177,12 +180,12 @@ $uniqueId = '_' . uniqid();
                 </select>
                 <?php if ($massActions) { ?></form><?php } ?>
                 <?php endif; ?>
-            <div x-show="selectedRows.length > 0" class="mt-4">
-                <span>
+            <div x-cloak x-show="selectedRows.length > 0">
+                <span class="font-medium text-md">
                     <?= $escaper->escapeHtml(__('Total selected:')) ?>
                 </span> <span x-text="selectedRows.length" >
                 </span>
-                <a href="#" @click.prevent="selectedRows=[]" class="ml-4 underline">
+                <a href="#" @click.prevent="selectedRows=[]" class="ml-4 inline-flex btn btn-primary">
                     <?= $escaper->escapeHtml(__('reset selection')) ?></a>
             </div>
             <?php if ($navigation->hasFilters()): ?>
@@ -208,6 +211,7 @@ $uniqueId = '_' . uniqid();
                                         class="inline-flex items-center justify-between px-2 py-2 rounded-lg
                                             cursor-pointer hover:bg-gray-200">
                                         <input type="checkbox"
+                                               x-ref="select-all"
                                                class="form-checkbox focus:outline-none focus:shadow-outline"
                                                @click="selectAllCheckbox($event);">
                                     </label>
@@ -230,7 +234,7 @@ $uniqueId = '_' . uniqid();
                                     <?php endif; ?>>
                                     <?= $escaper->escapeHtml($column->getLabel()) ?>
                                     <?php if ($isSortedByColumn && $navigation->isSortOrderAscending()): ?>
-                                    <span class="absolute right-0 w-6 my-1 mr-2 align-middle text-primary">
+                                    <span class="absolute right-0 w-6 h-6 my-1 mr-2 align-middle text-primary">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                              viewBox="0 0 24 24" stroke="currentColor"
                                         >
@@ -243,7 +247,7 @@ $uniqueId = '_' . uniqid();
                                     </span>
                                     <?php endif; ?>
                                     <?php if ($isSortedByColumn && !$navigation->isSortOrderAscending()): ?>
-                                        <span class="absolute right-0 w-6 w-8 h-6 h-8 mr-2 align-middle text-primary">
+                                        <span class="absolute right-0 w-6 h-6 mr-2 align-middle text-primary">
                                             <svg xmlns="http://www.w3.org/2000/svg"
                                                  fill="none"
                                                  viewBox="0 0 24 24"
@@ -354,6 +358,7 @@ $uniqueId = '_' . uniqid();
         function initDataTable<?= /** @noEscape */ $uniqueId ?>() {
 
             return {
+                refs: false,
                 selectedRows: [],
                 massActionStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-selectedRows' ?>',
 
@@ -408,12 +413,14 @@ $uniqueId = '_' . uniqid();
 
                 doMassAction(option) {
                     const url = option.value;
-                    const form = document.getElementById('<?= $escaper->escapeHtml($massActionFormId) ?>');
+                    const form = this.refs['massaction-form'];
                     const checked = this.getSelectedRows();
-                    const select = form.querySelectorAll('select[name="massAction"]')[0];
-                    if (! url) {
+                    const select = this.refs['massaction-select'];
+
+                    if (!url || !form || !select) {
                         return;
                     }
+
                     if (checked.length === 0) {
                         alert('Please select the records to apply the mass action to.');
                         select.selectedIndex = 0;
@@ -423,19 +430,40 @@ $uniqueId = '_' . uniqid();
                         select.selectedIndex = 0;
                         return;
                     }
-                    const alreadyPresent = [...form.elements].filter(e => e.checked).map(e => e.value);
-                    const missing = checked.filter(v => ! alreadyPresent.includes(v));
-                    const newFields = missing.map(v => {
+                    const rowCheckboxName = '<?= $escaper->escapeHtml($grid->getMassActionIdsParam()) ?>[]';
+
+                    const alreadyPresent = Array.from(form.elements)
+                        .filter(element =>  element.name === rowCheckboxName)
+                        .filter(element => element.checked)
+                        .map(element => element.value);
+
+                    const missing = checked.filter(value => ! alreadyPresent.includes(value));
+
+                    missing.map(value => {
                         const input = document.createElement('input');
                         input.type = 'hidden';
-                        input.name = '<?= $escaper->escapeHtml($grid->getMassActionIdsParam()) ?>[]';
-                        input.value = v;
-                        return input;
+                        input.name = rowCheckboxName;
+                        input.value = value;
+                        form.append(input);
                     });
-                    newFields.length > 0 && form.append(...newFields);
+
                     form.action = url;
-                    this.selectedRows = [];
+
+                    this.resetFormState();
+
                     form.submit();
+                },
+
+                resetFormState() {
+                    this.selectedRows = [];
+
+                    if (this.refs && this.refs['select-all']) {
+                        this.refs['select-all'].checked = false;
+                    }
+
+                    if (this.refs && this.refs['massaction-select']) {
+                        this.refs['massaction-select'].value = 0;
+                    }
                 },
 
                 storeSelectedRows(selectedRows) {
