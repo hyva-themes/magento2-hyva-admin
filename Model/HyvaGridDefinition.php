@@ -11,13 +11,25 @@ use function array_map as map;
 
 class HyvaGridDefinition implements HyvaGridDefinitionInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private GridConfigReader $gridConfigReader;
+    /**
+     * @var \Hyva\Admin\Model\Config\GridConfigReader
+     */
+    private $gridConfigReader;
 
-    private ?array $memoizedGridConfig = null;
+    /**
+     * @var mixed[]|null
+     */
+    private $memoizedGridConfig = null;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
     public function __construct(
         string $gridName,

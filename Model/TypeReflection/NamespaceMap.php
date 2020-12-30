@@ -6,13 +6,13 @@ use function array_merge as merge;
 
 class NamespaceMap
 {
-    private array $namespaceMap;
+    /**
+     * @var mixed[]
+     */
+    private $namespaceMap;
 
-    private string $file;
-
-    private function __construct(string $file, array $namespaceMap)
+    private function __construct(array $namespaceMap)
     {
-        $this->file         = $file;
         $this->namespaceMap = $namespaceMap;
     }
 

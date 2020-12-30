@@ -10,9 +10,10 @@ use Hyva\Admin\Model\ProductMediaInBackend;
  */
 class ProductImageDataType implements DataTypeValueToStringConverterInterface
 {
-    const TYPE_MAGENTO_PRODUCT_GALLERY = 'magento_product_image';
-
-    private ProductMediaInBackend $productMedia;
+    /**
+     * @var \Hyva\Admin\Model\ProductMediaInBackend
+     */
+    private $productMedia;
 
     public function __construct(ProductMediaInBackend $productMedia)
     {

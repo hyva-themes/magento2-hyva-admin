@@ -10,7 +10,10 @@ use Magento\Framework\View\LayoutInterface;
 
 class TextFilter implements ColumnDefinitionMatchingFilterInterface
 {
-    private LayoutInterface $layout;
+    /**
+     * @var \Magento\Framework\View\LayoutInterface
+     */
+    private $layout;
 
     public function __construct(LayoutInterface $layout)
     {
