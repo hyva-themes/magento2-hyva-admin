@@ -11,9 +11,15 @@ use function array_map as map;
 
 class GridDefinitionConfigFiles
 {
-    private ModuleListInterface $moduleList;
+    /**
+     * @var \Magento\Framework\Module\ModuleListInterface
+     */
+    private $moduleList;
 
-    private ComponentRegistrarInterface $componentRegistrar;
+    /**
+     * @var \Magento\Framework\Component\ComponentRegistrarInterface
+     */
+    private $componentRegistrar;
 
     public function __construct(ModuleListInterface $moduleList, ComponentRegistrarInterface $componentRegistrar)
     {

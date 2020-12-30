@@ -20,11 +20,6 @@ class GridSourceTest extends TestCase
         $this->assertThat($actual, new ConstraintContainsColumn($columns), $msg);
     }
 
-    private function assertNotContainsColumnWithKey(string $actual, array $columns, string $msg = ''): void
-    {
-        $this->assertThat($actual, new ConstraintNotContainsColumnWithKey($columns), $msg);
-    }
-
     public function createColumnDefinitionByKey(string $key): ColumnDefinitionInterface
     {
         $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);

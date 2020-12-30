@@ -131,19 +131,6 @@ class HyvaGridViewModelTest extends TestCase
         $stubGridDefinition->method('getExcludedColumnKeys')->willReturn($excludedColumnKeys);
     }
 
-    /**
-     * @param HyvaGridDefinitionInterfaceFactory $stubGridDefinitionFactory
-     * @param ColumnDefinitionInterface[] $includedColumns
-     */
-    private function setIncludedColumns(
-        HyvaGridDefinitionInterfaceFactory $stubGridDefinitionFactory,
-        array $includedColumns
-    ): void {
-        /** @var MockObject $stubGridDefinition */
-        $stubGridDefinition = $stubGridDefinitionFactory->create();
-        $stubGridDefinition->method('getIncludedColumns')->willReturn($includedColumns);
-    }
-
     public function testImplementsHyvaGridInterface(): void
     {
         $dummyGridSourceFactory       = $this->createStubGridSourceFactory();

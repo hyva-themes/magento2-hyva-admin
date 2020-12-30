@@ -18,23 +18,50 @@ use function array_values as values;
 
 class CollectionGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private array $sourceConfiguration;
+    /**
+     * @var mixed[]
+     */
+    private $sourceConfiguration;
 
-    private TypeReflection $typeReflection;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection
+     */
+    private $typeReflection;
 
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private GridSourceCollectionFactory $gridSourceCollectionFactory;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\CollectionSourceType\GridSourceCollectionFactory
+     */
+    private $gridSourceCollectionFactory;
 
-    private CollectionProcessorInterface $defaultCollectionProcessor;
+    /**
+     * @var \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface
+     */
+    private $defaultCollectionProcessor;
 
-    private CollectionProcessorInterface $eavCollectionProcessor;
+    /**
+     * @var \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface
+     */
+    private $eavCollectionProcessor;
 
-    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
+    /**
+     * @var \Hyva\Admin\Model\GridSourcePrefetchEventDispatcher
+     */
+    private $gridSourcePrefetchEventDispatcher;
 
     public function __construct(
         string $gridName,
@@ -100,7 +127,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         return $this->columnDefinitionFactory->create($constructorArguments);
     }
 
-    private function isNonSortableColumn(string $key, string $recordType, string $columnType): bool
+    private function isNonSortableColumn(): bool
     {
         // Implement this as needed
         return false;

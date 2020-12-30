@@ -7,7 +7,6 @@ use Hyva\Admin\Api\DataTypeInterface;
 class LongTextDataType implements DataTypeInterface
 {
     const TYPE_LONG_TEXT = 'long_text';
-    const LONG_TEXT_MIN_LENGTH = 200;
     const MAX_LENGTH = 30;
 
     const TEXT_TYPES = [

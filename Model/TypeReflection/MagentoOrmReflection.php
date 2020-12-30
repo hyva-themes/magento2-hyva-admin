@@ -9,9 +9,15 @@ use Magento\Framework\ObjectManagerInterface;
 
 class MagentoOrmReflection
 {
-    private DiConfigInterface $diConfig;
+    /**
+     * @var DiConfigInterface
+     */
+    private $diConfig;
 
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    private $objectManager;
 
     public function __construct(DiConfigInterface $diConfig, ObjectManagerInterface $objectManager)
     {
