@@ -9,7 +9,7 @@ $uniqueId = '_' . uniqid();
 ?>
 <div class="hyva-admin-grid"
      x-data="initDataTable<?= /** @noEscape */ $uniqueId ?>()"
-     x-init="refs=$refs; getSelectedRows(); $watch('selectedRows', selectedRows => storeSelectedRows(selectedRows));">
+     x-init="refs=$refs; initState();">
     <div class="max-w-full px-0 py-6 mx-auto">
         <div class="flex items-center justify-between mb-4">
             <div class="flex-1 pr-4">
@@ -136,7 +136,7 @@ $uniqueId = '_' . uniqid();
                                     <div class="mr-3 text-teal-600">
                                         <input type="checkbox"
                                                class="form-checkbox focus:outline-none focus:shadow-outline"
-                                               checked
+                                               :checked="isColumnVisible(heading.key)"
                                                @click="toggleColumn(heading.key)"
                                         >
                                     </div>
@@ -225,6 +225,7 @@ $uniqueId = '_' . uniqid();
                                 <th class="relative pr-12 col-<?= $escaper->escapeHtml($column->getKey()) ?>
                                         <?php if ($column->isSortable()): ?> sortable<?php endif; ?>"
                                     x-ref="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>"
+                                    x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>')"
                                     <?php if ($column->isSortable()): ?>
                                         onclick="window.location.href =
                                             '<?= $escaper
@@ -280,7 +281,7 @@ $uniqueId = '_' . uniqid();
                             <?php foreach ($grid->getColumnDefinitions() as $column): ?>
                             <th class="col-<?= $escaper->escapeHtml($column->getKey()) ?> sticky top-0 border
                                 border-gray-200 px-6 py-2 text-gray-600 tracking-wider text-xl table-cell align-left"
-                            >
+                                x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>')">
                                 <?php $filter = $navigation->getFilter($column->getKey()) ?>
                                 <?= $filter ? $filter->getHtml() : '' ?>
                             </th>
@@ -324,9 +325,11 @@ $uniqueId = '_' . uniqid();
                                     </td>
                                 <?php endif; ?>
                                 <?php foreach ($row->getCells() as $cell): ?>
-                                    <td class="col-<?= $escaper
-                                        ->escapeHtmlAttr($cell->getColumnDefinition()->getKey()); ?>"
-                                        <?= $escaper->escapeHtml($rowActionAttribute) ?>>
+                                    <td class="col-<?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()); ?>"
+                                        <?= $escaper->escapeHtml($rowActionAttribute) ?>
+                                        x-show="isColumnVisible('col-<?= $escaper
+                                            ->escapeHtmlAttr($cell->getColumnDefinition()->getKey()) ?>')"
+                                    >
                                         <?= $cell->getHtml() ?>
                                     </td>
                                 <?php endforeach; ?>
@@ -360,17 +363,9 @@ $uniqueId = '_' . uniqid();
             return {
                 refs: false,
                 selectedRows: [],
+                hiddenCols: [],
                 massActionStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-selectedRows' ?>',
-
-                getSelectedRows() {
-                    const massActionStorageName = this.massActionStorageName;
-                    const selectedRowsJson = window.sessionStorage.getItem(
-                        massActionStorageName
-                    );
-                    this.selectedRows = selectedRowsJson ? JSON.parse(selectedRowsJson) : [];
-
-                    return this.selectedRows;
-                },
+                hiddenColsStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-hiddenCols' ?>',
 
                 headings: [
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
@@ -383,20 +378,46 @@ $uniqueId = '_' . uniqid();
 
                 open: false,
 
-                toggleColumn(key) {
-                    let columns = document.querySelectorAll('.' + key);
+                initState() {
+                    this.$watch('selectedRows', this.storeSelectedRows.bind(this));
+                    this.$watch('hiddenCols', this.storeHiddenColumns.bind(this));
+                    this.selectedRows = this.getSelectedRows();
+                    this.hiddenCols = this.getHiddenCols();
+                },
 
-                    if (this.$refs[key].classList.contains('hidden') &&
-                        this.$refs[key].classList.contains(key)
-                    ) {
-                        columns.forEach(column => {
-                            column.classList.remove('hidden');
-                        });
+                getSelectedRows() {
+                    const selectedRowsJson = window.sessionStorage.getItem(this.massActionStorageName);
+                    return selectedRowsJson ? JSON.parse(selectedRowsJson) : [];
+                },
+
+                getHiddenCols() {
+                    const hiddenColsJson = window.sessionStorage.getItem(this.hiddenColsStorageName);
+                    return hiddenColsJson ? JSON.parse(hiddenColsJson) : [];
+                },
+
+                toggleColumn(key) {
+                    const index = this.hiddenCols.indexOf(key);
+                    if (index !== -1) {
+                        this.hiddenCols.splice(index, 1);
                     } else {
-                        columns.forEach(column => {
-                            column.classList.add('hidden');
-                        });
+                        this.hiddenCols.push(key);
                     }
+                },
+
+                isColumnVisible(key) {
+                    return ! this.hiddenCols.includes(key);
+                },
+
+                storeHiddenColumns() {
+                    this.storeValues(this.hiddenColsStorageName, this.hiddenCols);
+                },
+
+                storeSelectedRows() {
+                    this.storeValues(this.massActionStorageName, this.selectedRows);
+                },
+
+                storeValues(key, values) {
+                    window.sessionStorage.setItem(key, JSON.stringify(values.filter(value => null !== value)));
                 },
 
                 selectAllCheckbox($event) {
@@ -439,7 +460,7 @@ $uniqueId = '_' . uniqid();
 
                     const missing = checked.filter(value => ! alreadyPresent.includes(value));
 
-                    missing.map(value => {
+                    missing.forEach(value => {
                         const input = document.createElement('input');
                         input.type = 'hidden';
                         input.name = rowCheckboxName;
@@ -464,16 +485,7 @@ $uniqueId = '_' . uniqid();
                     if (this.refs && this.refs['massaction-select']) {
                         this.refs['massaction-select'].value = 0;
                     }
-                },
-
-                storeSelectedRows(selectedRows) {
-                    const values = selectedRows.filter(value => null !== value);
-                    window.sessionStorage.setItem(
-                        this.massActionStorageName,
-                        JSON.stringify(values)
-                    );
                 }
-
             }
         }
     </script>
