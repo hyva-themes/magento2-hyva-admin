@@ -56,15 +56,15 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $this->dataTypeGuesser         = $dataTypeGuesser;
         $this->searchCriteriaBuilder   = $searchCriteriaBuilder;
 
-        $this->validateArrayProviderConfiguration($gridName, $sourceConfiguration);
+        $this->validateArrayProviderConfiguration($sourceConfiguration);
     }
 
-    private function validateArrayProviderConfiguration(string $gridName, array $sourceConfiguration): void
+    private function validateArrayProviderConfiguration(array $sourceConfiguration): void
     {
         $providerClass = $sourceConfiguration['arrayProvider'] ?? '';
 
         if (!$providerClass) {
-            $msg1 = sprintf('No array provider class specified to array provider for grid "%s"', $gridName);
+            $msg1 = sprintf('No array provider class specified to array provider for grid "%s"', $this->gridName);
             throw new \InvalidArgumentException($msg1);
         }
         // No check if the provider class exists happens here so virtual types can be used.
