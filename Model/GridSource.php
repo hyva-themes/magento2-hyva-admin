@@ -17,11 +17,20 @@ use function array_slice as slice;
 
 class GridSource implements HyvaGridSourceInterface
 {
-    private GridSourceType\GridSourceTypeInterface $gridSourceType;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\GridSourceTypeInterface
+     */
+    private $gridSourceType;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private RawGridSourceContainer $rawGridData;
+    /**
+     * @var \Hyva\Admin\Model\RawGridSourceContainer
+     */
+    private $rawGridData;
 
     public function __construct(
         GridSourceType\GridSourceTypeInterface $gridSourceType,
@@ -56,17 +65,6 @@ class GridSource implements HyvaGridSourceInterface
 
         $extractedColumnsWithSortOrder = $this->addMissingSortOrder($extractedColumns);
         return $this->sortColumns($extractedColumnsWithSortOrder);
-    }
-
-    /**
-     * @param ColumnDefinitionInterface ...$columnDefinitions
-     * @return string[]
-     */
-    private function extractKeys(ColumnDefinitionInterface ...$columnDefinitions): array
-    {
-        return map(function (ColumnDefinitionInterface $columnDefinition): string {
-            return $columnDefinition->getKey();
-        }, $columnDefinitions);
     }
 
     private function validateConfiguredKeys(array $configuredKeys, array $availableColumnKeysFromSource): void

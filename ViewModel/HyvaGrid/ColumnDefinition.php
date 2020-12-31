@@ -7,29 +7,65 @@ use Magento\Framework\ObjectManagerInterface;
 
 class ColumnDefinition implements ColumnDefinitionInterface
 {
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    private $objectManager;
 
-    private string $key;
+    /**
+     * @var string
+     */
+    private $key;
 
-    private ?string $label;
+    /**
+     * @var string|null
+     */
+    private $label;
 
-    private ?string $type;
+    /**
+     * @var string|null
+     */
+    private $type;
 
-    private ?string $template;
+    /**
+     * @var string|null
+     */
+    private $template;
 
-    private ?string $source;
+    /**
+     * @var string|null
+     */
+    private $source;
 
-    private ?array $options;
+    /**
+     * @var mixed[]|null
+     */
+    private $options;
 
-    private ?string $rendererBlockName;
+    /**
+     * @var string|null
+     */
+    private $rendererBlockName;
 
-    private ?string $renderAsUnsecureHtml;
+    /**
+     * @var string|null
+     */
+    private $renderAsUnsecureHtml;
 
-    private ?string $sortOrder;
+    /**
+     * @var string|null
+     */
+    private $sortOrder;
 
-    private ?bool $isVisible;
+    /**
+     * @var bool|null
+     */
+    private $isVisible;
 
-    private ?string $sortable;
+    /**
+     * @var string|null
+     */
+    private $sortable;
 
     public function __construct(
         ObjectManagerInterface $objectManager,

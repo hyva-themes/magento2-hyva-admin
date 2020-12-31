@@ -22,29 +22,50 @@ class Navigation implements NavigationInterface
     const DEFAULT_PAGE_SIZE = 20;
     const DEFAULT_PAGE_SIZES = '10,20,50';
 
-    private HyvaGridSourceInterface $gridSource;
-
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
-
-    private RequestInterface $request;
-
-    private BackendUrlBuilder $urlBuilder;
-
-    private GridFilterInterfaceFactory $gridFilterFactory;
-
-    private array $navigationConfig;
+    /**
+     * @var \Hyva\Admin\Model\HyvaGridSourceInterface
+     */
+    private $gridSource;
 
     /**
-     * @var ColumnDefinitionInterface[]
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
      */
-    private array $columnDefinitions;
+    private $searchCriteriaBuilder;
+
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    private $request;
+
+    /**
+     * @var BackendUrlBuilder
+     */
+    private $urlBuilder;
+
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterfaceFactory
+     */
+    private $gridFilterFactory;
+
+    /**
+     * @var mixed[]
+     */
+    private $navigationConfig;
+
+    /**
+     * @var mixed[]
+     */
+    private $columnDefinitions;
 
     /**
      * @var SortOrderBuilder
      */
-    private SortOrderBuilder $sortOrderBuilder;
+    private $sortOrderBuilder;
 
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
     public function __construct(
         string $gridName,

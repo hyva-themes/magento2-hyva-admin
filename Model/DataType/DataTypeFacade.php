@@ -9,11 +9,20 @@ use function array_reduce as reduce;
 
 class DataTypeFacade implements TypeGuesser, DataTypeToStringConverterLocatorInterface
 {
-    private array $dataTypeClassMap;
+    /**
+     * @var mixed[]
+     */
+    private $dataTypeClassMap;
 
-    private DataTypeGuesserFactory $dataTypeGuesserFactory;
+    /**
+     * @var \Hyva\Admin\Model\DataType\DataTypeGuesserFactory
+     */
+    private $dataTypeGuesserFactory;
 
-    private DataTypeValueToStringConverterFactory $dataTypeValueToStringConverterFactory;
+    /**
+     * @var \Hyva\Admin\Model\DataType\DataTypeValueToStringConverterFactory
+     */
+    private $dataTypeValueToStringConverterFactory;
 
     public function __construct(
         array $dataTypeClassMap,
