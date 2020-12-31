@@ -71,4 +71,9 @@ class NamespaceMap
             ? ($this->namespaceMap['@default'] ?? '') . '\\' . $class
             : $this->qualify($base) . '\\' . $rest;
     }
+
+    public function getFile(): string
+    {
+        return $this->file;
+    }
 }
