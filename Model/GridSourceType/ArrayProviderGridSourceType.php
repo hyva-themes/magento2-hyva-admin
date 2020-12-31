@@ -47,7 +47,6 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         DataTypeGuesserInterface $dataTypeGuesser,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-        $this->validateArrayProviderConfiguration($gridName, $sourceConfiguration);
 
         $this->gridName                = $gridName;
         $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
@@ -56,6 +55,8 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         $this->columnDefinitionFactory = $columnDefinitionFactory;
         $this->dataTypeGuesser         = $dataTypeGuesser;
         $this->searchCriteriaBuilder   = $searchCriteriaBuilder;
+
+        $this->validateArrayProviderConfiguration($gridName, $sourceConfiguration);
     }
 
     private function validateArrayProviderConfiguration(string $gridName, array $sourceConfiguration): void
