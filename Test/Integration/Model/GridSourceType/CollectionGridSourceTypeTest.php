@@ -19,6 +19,9 @@ use PHPUnit\Framework\TestCase;
  */
 class CollectionGridSourceTypeTest extends TestCase
 {
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/multiselect_attribute.php
+     */
     public function testExtractsColumnKeys(): void
     {
         $args = [
@@ -35,8 +38,7 @@ class CollectionGridSourceTypeTest extends TestCase
         $this->assertContains('name', $keys);
 
         // custom attribute based keys (a.k.a. EAV attributes)
-        $this->assertContains('activity', $keys);
-        $this->assertContains('gender', $keys);
+        $this->assertContains('multiselect_attribute', $keys);
     }
 
     public function testExtractsGetterBasedColumnDefinition(): void
@@ -72,6 +74,9 @@ class CollectionGridSourceTypeTest extends TestCase
         $this->assertSame([], $columnDefinition->getOptionArray());
     }
 
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/multiselect_attribute.php
+     */
     public function testExtractsEavCustomAttributeBasedColumnDefinition(): void
     {
         $args = [
@@ -81,12 +86,16 @@ class CollectionGridSourceTypeTest extends TestCase
         /** @var CollectionGridSourceType $sut */
         $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
 
-        $columnDefinition = $sut->getColumnDefinition('activity');
+        $columnDefinition = $sut->getColumnDefinition('multiselect_attribute');
         $this->assertSame(ArrayDataType::TYPE_ARRAY, $columnDefinition->getType());
-        $this->assertSame('Activity', $columnDefinition->getLabel()); // from EAV table even though system attribute
+        $this->assertSame('Multiselect Attribute', $columnDefinition->getLabel());
         $this->assertNotEmpty($columnDefinition->getOptionArray());
     }
 
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Catalog/_files/products_list.php
+     */
     public function testLoadsAndExtractsData(): void
     {
         $args = [
@@ -102,6 +111,10 @@ class CollectionGridSourceTypeTest extends TestCase
         $this->assertContainsOnly(Product::class, $records);
     }
 
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Catalog/_files/products_list.php
+     */
     public function testExtractsCollectionSize(): void
     {
         $args = [

@@ -18,6 +18,9 @@ use function array_values as values;
  */
 class RepositoryGridSourceTypeTest extends TestCase
 {
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/multiselect_attribute.php
+     */
     public function testExtractsColumnKeys(): void
     {
         $repoGetListMethod  = ProductRepositoryInterface::class . '::getList';
@@ -41,8 +44,7 @@ class RepositoryGridSourceTypeTest extends TestCase
         $this->assertContains('configurable_product_links', $keys);
 
         // custom attribute based keys (a.k.a. EAV attributes)
-        $this->assertContains('activity', $keys);
-        $this->assertContains('gender', $keys);
+        $this->assertContains('multiselect_attribute', $keys);
     }
 
     public function testExtractsGetterBasedColumnDefinition(): void
@@ -78,6 +80,9 @@ class RepositoryGridSourceTypeTest extends TestCase
         $this->assertSame('Website Ids', $columnDefinition->getLabel());
     }
 
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/multiselect_attribute.php
+     */
     public function testExtractsScalarCustomAttributeColumnDefinition(): void
     {
         $repoGetListMethod  = ProductRepositoryInterface::class . '::getList';
@@ -89,9 +94,9 @@ class RepositoryGridSourceTypeTest extends TestCase
         /** @var RepositoryGridSourceType $sut */
         $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
 
-        $columnDefinition = $sut->getColumnDefinition('activity');
+        $columnDefinition = $sut->getColumnDefinition('multiselect_attribute');
         $this->assertSame('array', $columnDefinition->getType());
-        $this->assertSame('Activity', $columnDefinition->getLabel());
+        $this->assertSame('Multiselect Attribute', $columnDefinition->getLabel());
         $this->assertNotEmpty($columnDefinition->getOptionArray());
     }
 
