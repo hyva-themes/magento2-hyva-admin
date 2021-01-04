@@ -25,10 +25,6 @@ class UnknownDataTypeTest extends TestCase
     public function testThrowsExceptionIfValueCanNotBeCastToString(): void
     {
         $nonStringableObject = new class() {
-            public function __toString(): string
-            {
-                throw new \Exception('do not cast to string');
-            }
         };
 
         $this->expectException(\RuntimeException::class);
