@@ -24,7 +24,7 @@ jobs:
                 options: --health-cmd="curl localhost:9200/_cluster/health?wait_for_status=yellow&timeout=60s" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
             - uses: actions/checkout@v2
-            - name: Hyva Integration Tests with Magento2
+            - name: Run Integration Tests
               uses: extdn/github-actions-m2/magento-integration-tests/7.4@master
               with:
                   module_name: Hyva_Admin
