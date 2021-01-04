@@ -1,0 +1,15 @@
+name: Hyva Admin Unit Tests
+on: [push, pull_request]
+
+jobs:
+    unit-tests:
+        name: Hyvä Admin Unit Tests
+        runs-on: ubuntu-latest
+        env:
+            MAGENTO_VERSION: '2.4.1'
+            MODULE_NAME: Hyva_Admin
+            COMPOSER_NAME: hyva-themes/module-magento2-admin
+        steps:
+            - uses: actions/checkout@v2
+            - name: Run Unit Tests
+              uses: docker://yireo/github-actions-magento-unit-tests:7.4
