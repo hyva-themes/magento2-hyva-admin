@@ -9,6 +9,8 @@ jobs:
             MAGENTO_VERSION: '2.4.1'
             MODULE_NAME: Hyva_Admin
             COMPOSER_NAME: hyva-themes/module-magento2-admin
+            MAGENTO_MARKETPLACE_USERNAME: ${{ secrets.MAGENTO_MARKETPLACE_USERNAME }}
+            MAGENTO_MARKETPLACE_PASSWORD: ${{ secrets.MAGENTO_MARKETPLACE_PASSWORD }}
         steps:
             - uses: actions/checkout@v2
             - name: Run Unit Tests
