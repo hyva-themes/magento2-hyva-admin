@@ -61,6 +61,8 @@ It should work with pretty much any Magento 2 version, as long as the `$escaper`
 
 ## Quickstart
 
+**Note:** Both an overview with a step by step walkthrough and an API reference can be found in the [doc/](./doc/) folder.
+
 Once installed, grids can be added to any admin page by adding a bit of layout XML and a grid configuration file.  
 The layout XML has to contain two things:
 
