@@ -13,11 +13,13 @@
 echo "Changing the current working directory to ${MAGENTO_ROOT}"
 cd $MAGENTO_ROOT
 
+composer require rector/rector --dev
+
 echo "Backporting to PHP 7.3"
 echo "Current working directory: " $(pwd)
 
 bin/magento setup:di:compile
-docker run --rm -v $(pwd):/project rector/rector:0.8.8 process --config /project/vendor/hyva-themes/module-magento2-admin/build/rector.php --autoload-file=/project/vendor/autoload.php /project/vendor/hyva-themes/module-magento2-admin
+vendor/bin/rector --config vendor/hyva-themes/module-magento2-admin/build/rector.php --autoload-file=vendor/autoload.php vendor/hyva-themes/module-magento2-admin
 
 echo "Changing the current working directory back to it's previous location."
 cd -
