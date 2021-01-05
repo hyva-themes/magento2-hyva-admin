@@ -3,7 +3,7 @@ on: [ push, pull_request ]
 
 jobs:
     php73-backport-tests:
-        name: Check PHP73 Backportability
+        name: Check PHP73 backportability
         runs-on: ubuntu-latest
         services:
             mysql:
