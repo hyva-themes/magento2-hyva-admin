@@ -12,5 +12,8 @@
 set -e
 
 BUILD_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+echo "Executing backport to PHP 7.3 and unit test build scripts in directory" ${BUILD_SCRIPT_DIR}
+
 ${BUILD_SCRIPT_DIR}/backport-php73.sh
 ${BUILD_SCRIPT_DIR}/run-unit-tests.sh
