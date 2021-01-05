@@ -1,9 +1,11 @@
-
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js"></script>
 <?php
 /** @var \Magento\Backend\Block\Page\RequireJs $block */
 /** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
+?>
 
+<script src="<?php echo $block->getViewFileUrl('Hyva_Admin::js/alpine.js'); ?>"></script>
+
+<?php
 $scriptString = '
     var BASE_URL = \'' . /* @noEscape */ $block->getUrl('*') . '\';
     var FORM_KEY = \'' . /* @noEscape */ $block->getFormKey() . '\';
