@@ -13,6 +13,7 @@
 echo "Changing the current working directory to ${MAGENTO_ROOT}"
 cd $MAGENTO_ROOT
 
+composer require --no-update phpstan/phpstan:@dev
 composer require rector/rector-prefixed --dev
 
 echo "Backporting to PHP 7.3"
