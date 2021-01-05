@@ -3,7 +3,7 @@ on: [ push, pull_request ]
 
 jobs:
     php73-backport-tests:
-        name: PHP73 Backportability
+        name: Check PHP73 Backportability
         runs-on: ubuntu-latest
         services:
             mysql:
@@ -24,10 +24,10 @@ jobs:
                 options: --health-cmd="curl localhost:9200/_cluster/health?wait_for_status=yellow&timeout=60s" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
             -   uses: actions/checkout@v2
-            -   name: Backport and test
+            -   name: Run rector to backport and execute tests
                 uses: extdn/github-actions-m2/magento-integration-tests/7.3@master
                 with:
                     module_name: Hyva_Admin
                     composer_name: hyva-themes/module-magento2-admin
                     ce_version: '2.4.1'
-                    magento_post_install_script: vendor/hyva-themes/module-magento2-admin/build/backport-and-unit-test.sh
+                    magento_post_install_script: build/backport-and-unit-test.sh
