@@ -10,10 +10,6 @@ set -e
 
 echo "Running custom entrypoint ${0}"
 
-echo MAGENTO_ROOT=$MAGENTO_ROOT
-echo MODULE_SOURCE=$MODULE_SOURCE
-echo GITHUB_ACTION=$GITHUB_ACTION
-
 test -z "${CE_VERSION}" || MAGENTO_VERSION=$CE_VERSION
 
 test -z "${COMPOSER_NAME}" && COMPOSER_NAME=$INPUT_COMPOSER_NAME
@@ -55,8 +51,10 @@ composer config repositories.local-source path local-source/\*
 composer config repositories.foomanmirror composer https://repo-magento-mirror.fooman.co.nz/
 composer require $COMPOSER_NAME:@dev --no-update --no-interaction
 
+echo "::group::Run composer install"
 echo "Run installation"
 composer install --no-interaction --no-progress --no-suggest
+echo "::endgroup::"
 
 if [[ "$MAGENTO_VERSION" == "2.4.0" ]]; then
     #Dotdigital tests don't work out of the box
@@ -79,8 +77,10 @@ if [[ "$ELASTICSEARCH" == "1" ]]; then
     SETUP_ARGS="$SETUP_ARGS --elasticsearch-host=es --elasticsearch-port=9200 --elasticsearch-enable-auth=0 --elasticsearch-timeout=60"
 fi
 
+echo "::group::Run bin/magento setup:install"
 echo "Run Magento setup: $SETUP_ARGS"
 php bin/magento setup:install $SETUP_ARGS
+echo "::endgroup::"
 
 if [[ "$ELASTICSEARCH" == "1" ]]; then
     cp /docker-files/install-config-mysql-with-es.php dev/tests/integration/etc/install-config-mysql.php

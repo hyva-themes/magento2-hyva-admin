@@ -24,17 +24,20 @@ php --version | head -1 | grep -q 7.4 || (echo "The ${0} requires PHP 7.4" && ex
 cd ${MAGENTO_ROOT}
 
 echo "Backporting Hyva_Admin to PHP 7.3 with rector"
-echo "step 1: compile generated/code"
+echo "::group::Run bin/magento setup:di:compile"
 bin/magento setup:di:compile
+echo "::endgroup::"
 
-echo "step 2: install rector"
+echo "::group::Install rector"
 composer require --dev bamarni/composer-bin-plugin
 composer bin rectorphp require --dev rector/rector:0.8.8
+echo "::endgroup::"
 
-echo "step 3: run rector"
+echo "group::Run rector process"
 ${MAGENTO_ROOT}/vendor/bin/rector process \
     --config ${MODULE_SOURCE}/build/rector.php \
     --autoload-file=${MAGENTO_ROOT}/vendor/autoload.php \
     ${MAGENTO_ROOT}/vendor/${COMPOSER_NAME}
+echo "::endgroup::"
 
 cd -
