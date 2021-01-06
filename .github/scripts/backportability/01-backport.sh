@@ -30,6 +30,7 @@ echo "::endgroup::"
 
 echo "::group::Install rector"
 composer require --dev bamarni/composer-bin-plugin
+composer bin rectorphp require --dev "nikic/php-parser:4.10.4 as 4.10.2"
 composer bin rectorphp require --dev rector/rector:0.8.56
 echo "::endgroup::"
 
