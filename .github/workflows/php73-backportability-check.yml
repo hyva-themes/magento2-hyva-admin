@@ -30,5 +30,6 @@ jobs:
                     module_name: Hyva_Admin
                     composer_name: hyva-themes/module-magento2-admin
                     ce_version: '2.4.1'
-                    pre_project_script: build/prep-composer-deps-for-backport.sh
-                    magento_post_install_script: build/backport-php73-run-unit-test.sh
+                    pre_project_script: build/00-prep-composer-deps-for-backport.sh
+                    magento_pre_install_script: build/01-disable-module-installation.sh
+                    magento_post_install_script: build/02-backport-and-run-unit-tests.sh
