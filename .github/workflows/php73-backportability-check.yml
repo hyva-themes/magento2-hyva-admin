@@ -5,6 +5,9 @@ jobs:
     backportability-php73-check:
         name: Check PHP73 Backportability
         runs-on: ubuntu-latest
+        container:
+            volumes:
+                - /data/magento
         services:
             mysql:
                 image: mysql:5.7
@@ -23,25 +26,28 @@ jobs:
                     ES_JAVA_OPTS: "-Xms64m -Xmx512m"
                 options: --health-cmd="curl localhost:9200/_cluster/health?wait_for_status=yellow&timeout=60s" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
+            - run: |
+                  export MAGENTO_ROOT=/data/magento
+                  echo "::set-env name=MAGENTO_ROOT::$MAGENTO_ROOT"
             -   uses: actions/checkout@v2
             -   name: Install Magento with PHP 7.4
                 uses: extdn/github-actions-m2/magento-integration-tests/7.4@master
                 with:
-                    entrypoint: ./.github/scripts/backportability/00-install-magento-entrypoint.sh
+                    entrypoint: .github/scripts/backportability/00-install-magento-entrypoint.sh
                     composer_name: hyva-themes/module-magento2-admin
                     ce_version: '2.4.1'
             -   name: Backport Hyvä Admin with PHP 7.4
                 uses: extdn/github-actions-m2/magento-integration-tests/7.4@master
                 with:
-                    entrypoint: ./.github/scripts/backportability/01-backport.sh
+                    entrypoint: .github/scripts/backportability/01-backport.sh
                     composer_name: hyva-themes/module-magento2-admin
             -   name: Run unit tests with PHP 7.3
                 uses: extdn/github-actions-m2/magento-integration-tests/7.3@master
                 with:
-                    entrypoint: ./.github/scripts/backportability/02-unit-tests.sh
+                    entrypoint: .github/scripts/backportability/02-unit-tests.sh
                     composer_name: hyva-themes/module-magento2-admin
             -   name: Run integration tests with PHP 7.3
                 uses: extdn/github-actions-m2/magento-integration-tests/7.3@master
                 with:
-                    entrypoint: ./.github/scripts/backportability/03-integration-tests.sh
+                    entrypoint: .github/scripts/backportability/03-integration-tests.sh
                     composer_name: hyva-themes/module-magento2-admin
