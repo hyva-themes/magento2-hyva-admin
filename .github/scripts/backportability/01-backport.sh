@@ -30,7 +30,7 @@ echo "::endgroup::"
 
 echo "::group::Install rector"
 composer require --dev bamarni/composer-bin-plugin
-composer bin rectorphp require --dev rector/rector:0.8.8
+composer bin rectorphp require --dev rector/rector:0.8.56
 echo "::endgroup::"
 
 echo "group::Run rector process"
