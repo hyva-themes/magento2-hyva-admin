@@ -30,15 +30,10 @@ echo "::endgroup::"
 
 echo "::group::Install rector"
 composer require --dev bamarni/composer-bin-plugin
-composer bin rectorphp require --dev "nikic/php-parser:4.10.4 as 4.10.2"
-composer bin rectorphp require --dev rector/rector:0.8.56
+#composer bin rectorphp require --dev "nikic/php-parser:4.10.4 as 4.10.2"
+#composer bin rectorphp require --dev rector/rector
+composer bin rectorphp require --dev rector/rector-prefixed:0.8.8
 
-echo "Force composer-bin install of phpstan to be used"
-cd vendor/bin
-rm phpstan phpstan.phar
-ln -s ../../vendor-bin/rectorphp/phpstan/phpstan ./phpstan
-ln -s ../../vendor-bin/rectorphp/phpstan/phpstan.phar ./phpstan.phar
-cd -
 echo "::endgroup::"
 
 echo "group::Run rector process"
