@@ -15,7 +15,7 @@ test -z "${COMPOSER_NAME}" && COMPOSER_NAME=$INPUT_COMPOSER_NAME
 test -z "${COMPOSER_NAME}" && (echo "'composer_name' is not set in your GitHub Actions YAML file" && exit 1)
 test -z "${MAGENTO_VERSION}" && (echo "'ce_version' is not set in your GitHub Actions YAML file" && exit 1)
 
-php --version | head -1 | grep -q 7.3 && (echo "The ${0} requires PHP 7.3" && exit 1)
+php --version | head -1 | grep -q 7.3 || (echo "The ${0} requires PHP 7.3" && exit 1)
 
 MAGENTO_ROOT=/tmp/m2
 PROJECT_PATH=$GITHUB_WORKSPACE
