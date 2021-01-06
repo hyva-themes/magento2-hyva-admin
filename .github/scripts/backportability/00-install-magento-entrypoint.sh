@@ -27,6 +27,7 @@ test -z "${MAGENTO_VERSION}" && (echo "'ce_version' is not set in your GitHub Ac
 
 php --version | head -1 | grep -q 7.4 || (echo "The ${0} requires PHP 7.4" && exit 1)
 
+echo "::group::Create magento project in ${MAGENTO_ROOT}"
 echo "Using MAGENTO_ROOT: ${MAGENTO_ROOT}"
 echo "Using MODULE_SOURCE: ${MODULE_SOURCE}"
 
@@ -50,12 +51,14 @@ composer config --unset repo.0
 composer config repositories.local-source path local-source/\*
 composer config repositories.foomanmirror composer https://repo-magento-mirror.fooman.co.nz/
 composer require $COMPOSER_NAME:@dev --no-update --no-interaction
+echo "::endgroup::"
 
 echo "::group::Run composer install"
 echo "Run installation"
 composer install --no-interaction --no-progress --no-suggest
 echo "::endgroup::"
 
+echo "::group::Run bin/magento setup:install"
 if [[ "$MAGENTO_VERSION" == "2.4.0" ]]; then
     #Dotdigital tests don't work out of the box
     rm -rf "$MAGENTO_ROOT/vendor/dotmailer/dotmailer-magento2-extension/Test/Integration/"
@@ -77,7 +80,6 @@ if [[ "$ELASTICSEARCH" == "1" ]]; then
     SETUP_ARGS="$SETUP_ARGS --elasticsearch-host=es --elasticsearch-port=9200 --elasticsearch-enable-auth=0 --elasticsearch-timeout=60"
 fi
 
-echo "::group::Run bin/magento setup:install"
 echo "Run Magento setup: $SETUP_ARGS"
 php bin/magento setup:install $SETUP_ARGS
 echo "::endgroup::"
