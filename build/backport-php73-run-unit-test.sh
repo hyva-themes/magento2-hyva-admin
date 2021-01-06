@@ -9,8 +9,9 @@ cd $MAGENTO_ROOT
 bin/magento setup:di:compile
 cd -
 
-composer global require --dev rector/rector
-$HOME/.composer/vendor/bin/rector process GITHUB_WORKSPACE \
+composer require --dev bamarni/composer-bin-plugin
+composer bin rectorphp require --dev rector/rector:0.8.8
+${MAGENTO_ROOT}/vendor/bin/rector process \
     --config ${GITHUB_WORKSPACE}/build/rector.php \
     --autoload-file=${MAGENTO_ROOT}/vendor/autoload.php \
     ${MAGENTO_ROOT}/vendor/${COMPOSER_NAME}
