@@ -10,6 +10,9 @@ set -e
 
 echo "Running custom entrypoint ${0}"
 
+echo MAGENTO_ROOT=$MAGENTO_ROOT
+
+
 test -z "${COMPOSER_NAME}" && COMPOSER_NAME=$INPUT_COMPOSER_NAME
 
 test -z "${MAGENTO_ROOT}" && (echo "'MAGENTO_ROOT' is not set in the environment" && exit 1)
@@ -19,7 +22,6 @@ test -z "${MAGENTO_VERSION}" && (echo "'ce_version' is not set in your GitHub Ac
 php --version | head -1 | grep -q 7.3 || (echo "The ${0} requires PHP 7.3" && exit 1)
 
 echo "Using MAGENTO_ROOT: ${MAGENTO_ROOT}"
-PROJECT_PATH=$GITHUB_WORKSPACE
 
 echo "Running unit tests"
 ${MAGENTO_ROOT}/vendor/bin/phpunit \

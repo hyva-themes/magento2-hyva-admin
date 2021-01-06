@@ -10,9 +10,9 @@ set -e
 
 echo "Running custom entrypoint ${0}"
 
+echo MAGENTO_ROOT=$MAGENTO_ROOT
 echo MODULE_SOURCE=$MODULE_SOURCE
 echo GITHUB_ACTION=$GITHUB_ACTION
-echo GITHUB_WORKSPACE=$GITHUB_WORKSPACE
 
 test -z "${CE_VERSION}" || MAGENTO_VERSION=$CE_VERSION
 
@@ -25,13 +25,14 @@ if [[ "$MAGENTO_VERSION" == "2.4."* ]]; then
 fi
 
 test -z "${MAGENTO_ROOT}" && (echo "'MAGENTO_ROOT' is not set in the environment" && exit 1)
+test -z "${MODULE_SOURCE}" && (echo "'MODULE_SOURCE' is not set in the environment" && exit 1)
 test -z "${COMPOSER_NAME}" && (echo "'composer_name' is not set in your GitHub Actions YAML file" && exit 1)
 test -z "${MAGENTO_VERSION}" && (echo "'ce_version' is not set in your GitHub Actions YAML file" && exit 1)
 
 php --version | head -1 | grep -q 7.4 || (echo "The ${0} requires PHP 7.4" && exit 1)
 
 echo "Using MAGENTO_ROOT: ${MAGENTO_ROOT}"
-PROJECT_PATH=$GITHUB_WORKSPACE
+echo "Using MODULE_SOURCE: ${MODULE_SOURCE}"
 
 echo "MySQL checks"
 nc -z -w1 mysql 3306 || (echo "MySQL is not running" && exit)
@@ -45,7 +46,7 @@ echo "Setup extension source folder within Magento root"
 cd $MAGENTO_ROOT
 mkdir -p local-source/
 cd local-source/
-cp -R ${GITHUB_WORKSPACE}/${MODULE_SOURCE} $GITHUB_ACTION
+cp -R ${MODULE_SOURCE} $GITHUB_ACTION
 cd $MAGENTO_ROOT
 
 echo "Configure extension source in composer"

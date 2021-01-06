@@ -10,22 +10,25 @@ set -e
 
 echo "Running custom entrypoint ${0}"
 
+echo MAGENTO_ROOT=$MAGENTO_ROOT
+echo MODULE_SOURCE=$MODULE_SOURCE
+
 test -z "${COMPOSER_NAME}" && COMPOSER_NAME=$INPUT_COMPOSER_NAME
 test -z "${PHPUNIT_FILE}" && PHPUNIT_FILE=$INPUT_PHPUNIT_FILE
 
+test -z "${MODULE_SOURCE}" && (echo "'MODULE_SOURCE' is not set in the environment" && exit 1)
 test -z "${MAGENTO_ROOT}" && (echo "'MAGENTO_ROOT' is not set in the environment" && exit 1)
 test -z "${COMPOSER_NAME}" && (echo "'composer_name' is not set in your GitHub Actions YAML file" && exit 1)
 
 php --version | head -1 | grep -q 7.3 || (echo "The ${0} requires PHP 7.3" && exit 1)
 
 echo "Using MAGENTO_ROOT: ${MAGENTO_ROOT}"
-PROJECT_PATH=$GITHUB_WORKSPACE
 
 cd ${MAGENTO_ROOT}
 
 echo "Trying phpunit.xml file $PHPUNIT_FILE"
 if [[ ! -z "$PHPUNIT_FILE" ]] ; then
-    PHPUNIT_FILE=${GITHUB_WORKSPACE}/${PHPUNIT_FILE}
+    PHPUNIT_FILE=${MODULE_SOURCE}/${PHPUNIT_FILE}
 fi
 
 if [[ ! -f "$PHPUNIT_FILE" ]] ; then
