@@ -6,3 +6,5 @@
 echo "Disabling module ${COMPOSER_NAME} during initial installation"
 mv -v ${MAGENTO_ROOT}/local-source/${GITHUB_ACTION}/registration.php \
       ${MAGENTO_ROOT}/local-source/${GITHUB_ACTION}/registration-disabled.php
+
+echo "<?php" > ${MAGENTO_ROOT}/local-source/${GITHUB_ACTION}/registration.php
