@@ -24,12 +24,24 @@ jobs:
                 options: --health-cmd="curl localhost:9200/_cluster/health?wait_for_status=yellow&timeout=60s" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
             -   uses: actions/checkout@v2
-            -   name: Backport to php73 and run tests
-                uses: extdn/github-actions-m2/magento-integration-tests/7.3@master
+            -   name: Install Magento with PHP 7.4
+                uses: extdn/github-actions-m2/magento-integration-tests/7.4@master
                 with:
-                    module_name: Hyva_Admin
+                    entrypoint: ./.github/scripts/backportability/00-install-magento-entrypoint.sh
                     composer_name: hyva-themes/module-magento2-admin
                     ce_version: '2.4.1'
-                    pre_project_script: build/00-prep-composer-deps-for-backport.sh
-                    magento_pre_install_script: build/01-disable-module-installation.sh
-                    magento_post_install_script: build/02-backport-and-run-unit-tests.sh
+            -   name: Backport Hyvä Admin with PHP 7.4
+                uses: extdn/github-actions-m2/magento-integration-tests/7.4@master
+                with:
+                    entrypoint: ./.github/scripts/backportability/01-backport.sh
+                    composer_name: hyva-themes/module-magento2-admin
+            -   name: Run unit tests with PHP 7.3
+                uses: extdn/github-actions-m2/magento-integration-tests/7.3@master
+                with:
+                    entrypoint: ./.github/scripts/backportability/02-unit-tests.sh
+                    composer_name: hyva-themes/module-magento2-admin
+            -   name: Run integration tests with PHP 7.3
+                uses: extdn/github-actions-m2/magento-integration-tests/7.3@master
+                with:
+                    entrypoint: ./.github/scripts/backportability/03-integration-tests.sh
+                    composer_name: hyva-themes/module-magento2-admin
