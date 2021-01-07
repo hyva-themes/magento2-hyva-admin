@@ -8,7 +8,10 @@ use Magento\Framework\View\Element\Template;
 
 class HyvaGrid extends Template
 {
-    private HyvaGridInterfaceFactory $gridFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGridInterfaceFactory
+     */
+    private $gridFactory;
 
     public function __construct(
         Template\Context $context,

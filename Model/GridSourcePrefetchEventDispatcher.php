@@ -10,7 +10,10 @@ use function array_reduce as reduce;
 
 class GridSourcePrefetchEventDispatcher
 {
-    private EventManagerInterface $eventManager;
+    /**
+     * @var EventManagerInterface
+     */
+    private $eventManager;
 
     public function __construct(EventManagerInterface $eventManager)
     {
@@ -27,10 +30,9 @@ class GridSourcePrefetchEventDispatcher
                 'hyva_grid_repository_source_prefetch_' . $this->getGridNameEventSuffix($gridName),
                 'hyva_grid_source_prefetch',
             ],
-            fn (
-                SearchCriteriaInterface $searchCriteria,
-                string $eventName
-            ): SearchCriteriaInterface => $this->dispatchEvent($gridName, $recordType, $eventName, $searchCriteria),
+            function (SearchCriteriaInterface $searchCriteria, string $eventName) use ($gridName, $recordType) : SearchCriteriaInterface {
+                return $this->dispatchEvent($gridName, $recordType, $eventName, $searchCriteria);
+            },
             $searchCriteria
         );
     }

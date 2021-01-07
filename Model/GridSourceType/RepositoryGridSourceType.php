@@ -19,21 +19,40 @@ use function array_filter as filter;
 
 class RepositoryGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private array $sourceConfiguration;
+    /**
+     * @var mixed[]
+     */
+    private $sourceConfiguration;
 
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private RepositorySourceFactory $repositorySourceFactory;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory
+     */
+    private $repositorySourceFactory;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection
+     */
+    private $typeReflection;
 
-    private TypeReflection $typeReflection;
-
-    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
+    /**
+     * @var \Hyva\Admin\Model\GridSourcePrefetchEventDispatcher
+     */
+    private $gridSourcePrefetchEventDispatcher;
 
     /**
      * @var ColumnDefinitionInterface[]
@@ -46,7 +65,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         RepositorySourceFactory $repositorySourceFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
         GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher,
         TypeReflection $typeReflection
     ) {
@@ -55,7 +73,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         $this->gridSourceDataAccessor            = $gridSourceDataAccessor;
         $this->repositorySourceFactory           = $repositorySourceFactory;
         $this->columnDefinitionFactory           = $columnDefinitionFactory;
-        $this->searchCriteriaBuilder             = $searchCriteriaBuilder;
         $this->typeReflection                    = $typeReflection;
         $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
     }

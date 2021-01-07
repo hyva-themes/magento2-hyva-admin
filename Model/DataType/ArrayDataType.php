@@ -14,9 +14,15 @@ class ArrayDataType implements DataTypeInterface
     const TYPE_ARRAY = 'array';
     const LIMIT = 5;
 
-    private DataTypeToStringConverterLocatorInterface $toStringConverterLocator;
+    /**
+     * @var \Hyva\Admin\Model\DataType\DataTypeToStringConverterLocatorInterface
+     */
+    private $toStringConverterLocator;
 
-    private DataTypeGuesserInterface $dataTypeGuesser;
+    /**
+     * @var \Hyva\Admin\Api\DataTypeGuesserInterface
+     */
+    private $dataTypeGuesser;
 
     public function __construct(
         DataTypeToStringConverterLocatorInterface $toStringConverterLocator,
