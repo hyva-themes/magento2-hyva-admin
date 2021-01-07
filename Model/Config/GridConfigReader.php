@@ -66,7 +66,7 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
 
     private function mergeGridConfigs(array $files): array
     {
-        $first        = array_pop($files);
+        $first        = array_shift($files);
         $mergedConfig = reduce($files, [$this, 'mergeFile'], $this->createDom(file_get_contents($first)));
 
         return $this->gridXmlToArrayConverter->convert($mergedConfig->getDom());
@@ -74,8 +74,7 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
 
     private function mergeFile(XmlDom $merged, string $file): XmlDom
     {
-        $content = file_get_contents($file);
-        $merged->merge($this->createDom($content));
+        $merged->merge(file_get_contents($file));
         $this->validateMerged($merged);
 
         return $merged;

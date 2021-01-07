@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<grid xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Hyva_Admin:etc/hyva-grid.xsd">
+    <source>
+        <arrayProvider>\Bar</arrayProvider>
+    </source>
+    <columns>
+        <include>
+            <column name="bbb" label="file B label"/>
+            <column name="yyy"/>
+        </include>
+    </columns>
+</grid>
+
