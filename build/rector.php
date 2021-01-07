@@ -3,8 +3,11 @@
 declare(strict_types=1);
 
 /*
- * I use this config with the dockerized rector 0.8.8 sometimes which uses
- * the php downgrade constants on SetList. In CI I use rector latest which uses DowngradeSetList.
+ * This config is used with the dockerized rector 0.8.8 sometimes which uses the php downgrade constants on SetList.
+ *
+ * Newer versions use DowngradeSetList, but they currently are broken for downgrades.
+ * In future, once they are fixed, I might decide to upgrade, so I'll leave the DowngradeSetList in here as a reference
+ * until then.
  */
 
 use Rector\Core\Configuration\Option;
