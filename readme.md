@@ -3,6 +3,9 @@
 This module aims to make creating grids and forms in the Magento 2 adminhtml area joyful and fast.    
 It does not use any UI components.
 
+![main branch tests](https://github.com/hyva-themes/magento2-hyva-admin/workflows/Hyv%C3%A4%20Admin%20Tests/badge.svg)
+![php73 branch tests](https://github.com/hyva-themes/magento2-hyva-admin/workflows/Hyv%C3%A4%20Admin%20Tests/badge.svg?branch=php73)
+
 > They  came  round  the  corner,  and there was Eeyore's
   house, looking as comfy as anything.  
           "There you are," said Piglet.  
