@@ -57,18 +57,7 @@ class GridSource implements HyvaGridSourceInterface
         $extractedColumnsWithSortOrder = $this->addMissingSortOrder($extractedColumns);
         return $this->sortColumns($extractedColumnsWithSortOrder);
     }
-
-    /**
-     * @param ColumnDefinitionInterface ...$columnDefinitions
-     * @return string[]
-     */
-    private function extractKeys(ColumnDefinitionInterface ...$columnDefinitions): array
-    {
-        return map(function (ColumnDefinitionInterface $columnDefinition): string {
-            return $columnDefinition->getKey();
-        }, $columnDefinitions);
-    }
-
+    
     private function validateConfiguredKeys(array $configuredKeys, array $availableColumnKeysFromSource): void
     {
         if ($missing = array_diff($configuredKeys, $availableColumnKeysFromSource)) {

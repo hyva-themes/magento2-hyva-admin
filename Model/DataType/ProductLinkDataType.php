@@ -10,18 +10,6 @@ class ProductLinkDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_PRODUCT_LINK = 'magento_product_link';
 
-    private DataObjectProcessor $dataObjectProcessor;
-
-    private DataTypeToStringConverterLocatorInterface $toStringConverterLocator;
-
-    public function __construct(
-        DataObjectProcessor $dataObjectProcessor,
-        DataTypeToStringConverterLocatorInterface $toStringConverterLocator
-    ) {
-        $this->dataObjectProcessor = $dataObjectProcessor;
-        $this->toStringConverterLocator = $toStringConverterLocator;
-    }
-
     public function valueToTypeCode($value): ?string
     {
         return $this->isProductLinkInstance($value)

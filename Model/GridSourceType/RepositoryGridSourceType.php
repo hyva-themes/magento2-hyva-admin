@@ -29,8 +29,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
 
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
-
     private TypeReflection $typeReflection;
 
     private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
@@ -46,7 +44,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         RepositorySourceFactory $repositorySourceFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
         GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher,
         TypeReflection $typeReflection
     ) {
@@ -55,7 +52,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         $this->gridSourceDataAccessor            = $gridSourceDataAccessor;
         $this->repositorySourceFactory           = $repositorySourceFactory;
         $this->columnDefinitionFactory           = $columnDefinitionFactory;
-        $this->searchCriteriaBuilder             = $searchCriteriaBuilder;
         $this->typeReflection                    = $typeReflection;
         $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
     }
