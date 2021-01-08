@@ -2,33 +2,15 @@
 
 namespace Hyva\Admin\Block\Adminhtml;
 
-use Hyva\Admin\ViewModel\HyvaGridInterface;
-use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
-use Magento\Framework\View\Element\Template;
+use Hyva\Admin\Block\BaseHyvaGrid;
 
-class HyvaGrid extends Template
+/**
+ * This class is intended to be used for adminhtml grids.
+ *
+ * It currently contains no additional logic to the parent class. The reason for this class is:
+ * Originally the class was only intended for use in the admin area, and removing this class from the Adminhtml
+ * namespace would be a backward incompatible change.
+ */
+class HyvaGrid extends BaseHyvaGrid
 {
-    private HyvaGridInterfaceFactory $gridFactory;
-
-    public function __construct(
-        Template\Context $context,
-        string $gridTemplate,
-        HyvaGridInterfaceFactory $gridFactory,
-        array $data = []
-    ) {
-        $this->setTemplate($gridTemplate);
-        parent::__construct($context, $data);
-        $this->gridFactory = $gridFactory;
-    }
-
-    public function getGrid(): HyvaGridInterface
-    {
-        if (!$this->getData('grid_name')) {
-            $msg = 'The name of the hyvä grid configuration needs to be configured in the block arguments.';
-            throw new \LogicException($msg);
-        }
-
-        return $this->gridFactory->create(['gridName' => $this->getData('grid_name')]);
-    }
-
 }
