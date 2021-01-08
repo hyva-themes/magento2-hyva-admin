@@ -11,31 +11,11 @@ use function array_map as map;
 
 class GridDefinitionConfigFiles
 {
-    private ModuleListInterface $moduleList;
+    private HyvaGridDirs $hyvaGridDirs;
 
-    private ComponentRegistrarInterface $componentRegistrar;
-
-    public function __construct(ModuleListInterface $moduleList, ComponentRegistrarInterface $componentRegistrar)
+    public function __construct(HyvaGridDirs $hyvaGridDirs)
     {
-        $this->componentRegistrar = $componentRegistrar;
-        $this->moduleList         = $moduleList;
-    }
-
-    private function getHyvaGridDirName(string $module): string
-    {
-        return $this->componentRegistrar->getPath(ComponentRegistrar::MODULE, $module) . '/view/adminhtml/hyva-grid';
-    }
-
-    private function getActiveModules(): array
-    {
-        return $this->moduleList->getNames();
-    }
-
-    private function getHyvaGridDirs(): array
-    {
-        $potentialHyvaGridDirs = map([$this, 'getHyvaGridDirName'], $this->getActiveModules());
-
-        return filter($potentialHyvaGridDirs, 'is_dir');
+        $this->hyvaGridDirs = $hyvaGridDirs;
     }
 
     private function buildGridDefinitionFileName(string $gridName, string $dir): string
@@ -53,7 +33,7 @@ class GridDefinitionConfigFiles
     {
         $potentialGridConfigFiles = map(function (string $dir) use ($gridName): string {
             return $this->buildGridDefinitionFileName($gridName, $dir);
-        }, $this->getHyvaGridDirs());
+        }, $this->hyvaGridDirs->list());
 
         return filter($potentialGridConfigFiles, 'file_exists');
     }
