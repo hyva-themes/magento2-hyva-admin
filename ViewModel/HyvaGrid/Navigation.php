@@ -3,7 +3,7 @@
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 use Hyva\Admin\Model\HyvaGridSourceInterface;
-use Magento\Backend\Model\UrlInterface as BackendUrlBuilder;
+use Magento\Framework\UrlInterface as UrlBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
@@ -28,7 +28,7 @@ class Navigation implements NavigationInterface
 
     private RequestInterface $request;
 
-    private BackendUrlBuilder $urlBuilder;
+    private UrlBuilder $urlBuilder;
 
     private GridFilterInterfaceFactory $gridFilterFactory;
 
@@ -55,7 +55,7 @@ class Navigation implements NavigationInterface
         SearchCriteriaBuilder $searchCriteriaBuilder,
         SortOrderBuilder $sortOrderBuilder,
         RequestInterface $request,
-        BackendUrlBuilder $urlBuilder
+        UrlBuilder $urlBuilder
     ) {
         $this->gridSource            = $gridSource;
         $this->navigationConfig      = $navigationConfig;

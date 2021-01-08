@@ -8,7 +8,7 @@ use Hyva\Admin\Test\Integration\TestingGridDataProvider;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\Navigation;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
-use Magento\Backend\Model\UrlInterface as BackendUrlBuilder;
+use Magento\Framework\UrlInterface as UrlBuilder;
 use Magento\Framework\App\RequestInterface;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -50,9 +50,9 @@ class NavigationTest extends TestCase
         }));
     }
 
-    private function getUrlBuilder(): BackendUrlBuilder
+    private function getUrlBuilder(): UrlBuilder
     {
-        return ObjectManager::getInstance()->get(BackendUrlBuilder::class);
+        return ObjectManager::getInstance()->get(UrlBuilder::class);
     }
 
     public function testIsKnownToObjectManager(): void
