@@ -5,7 +5,6 @@ Later, when the module stabilizes, this file can be deleted and todo's can be ma
 
 ## Next steps:
 
-* Allow selection of mass action records over more than one page
 * ajax paging
 * fix LIKE wildcard character escaping in
   \Hyva\Admin\Model\GridFilter\TextFilter::apply
