@@ -2,10 +2,10 @@
 
 namespace Hyva\Admin\Model;
 
-use Hyva\Admin\Model\GridSourceType\SourceTypeLocator;
-use Magento\Framework\ObjectManagerInterface;
-
 use function array_merge as merge;
+use Hyva\Admin\Model\GridSourceType\SourceTypeLocator;
+
+use Magento\Framework\ObjectManagerInterface;
 
 class HyvaGridSourceFactory
 {
@@ -28,16 +28,17 @@ class HyvaGridSourceFactory
             throw new \RuntimeException($message);
         }
 
-        $constructorArguments    = [
+        $constructorArguments = [
             'gridName'            => $gridDefinition->getName(),
             'sourceConfiguration' => $gridSourceConfiguration,
         ];
-        $gridSourceType          = $this->objectManager->create(
+        $gridSourceType       = $this->objectManager->create(
             $this->sourceTypeLocator->getFor($gridDefinition->getName(), $gridSourceConfiguration),
             $constructorArguments
         );
         return $this->objectManager->create(
             HyvaGridSourceInterface::class,
-            merge(['gridSourceType' => $gridSourceType], $constructorArguments));
+            merge(['gridSourceType' => $gridSourceType], $constructorArguments)
+        );
     }
 }
