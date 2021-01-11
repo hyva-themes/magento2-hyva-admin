@@ -28,6 +28,6 @@ abstract class BaseHyvaGrid extends Template
             throw new \LogicException($msg);
         }
 
-        return $this->gridFactory->create(['gridName' => $this->getData('grid_name')]);
+        return $this->gridFactory->create(['gridName' => $this->_getData('grid_name')]);
     }
 }
