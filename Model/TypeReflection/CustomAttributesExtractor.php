@@ -16,24 +16,32 @@ use function array_keys as keys;
 
 class CustomAttributesExtractor
 {
-    private ResourceConnection $dbResource;
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
+    private $dbResource;
 
-    private EavConfig $eavConfig;
+    /**
+     * @var EavConfig
+     */
+    private $eavConfig;
 
-    private DiConfigInterface $diConfig;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    private $objectManager;
 
-    private ObjectManagerInterface $objectManager;
-
-    private MagentoOrmReflection $magentoOrmReflection;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection\MagentoOrmReflection
+     */
+    private $magentoOrmReflection;
 
     public function __construct(
-        DiConfigInterface $diConfig,
         ObjectManagerInterface $objectManager,
         ResourceConnection $dbResource,
         EavConfig $eavConfig,
         MagentoOrmReflection $magentoOrmReflection
     ) {
-        $this->diConfig             = $diConfig;
         $this->dbResource           = $dbResource;
         $this->eavConfig            = $eavConfig;
         $this->objectManager        = $objectManager;
