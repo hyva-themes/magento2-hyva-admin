@@ -27,6 +27,8 @@ class TypeReflection
 
     private MagentoOrmReflection $magentoOrmReflection;
 
+    private array $memoizedColumnTypes = [];
+
     public function __construct(
         TypeReflection\CustomAttributesExtractor $customAttributesExtractor,
         TypeReflection\ExtensionAttributeTypeExtractor $extensionAttributeTypeExtractor,
@@ -93,6 +95,14 @@ class TypeReflection
     }
 
     public function getColumnType(string $phpType, string $key): string
+    {
+        if (! isset($this->memoizedColumnTypes[$phpType][$key])) {
+            $this->memoizedColumnTypes[$phpType][$key] = $this->determineColumnType($phpType, $key);
+        }
+        return $this->memoizedColumnTypes[$phpType][$key];
+    }
+
+    private function determineColumnType(string $phpType, string $key): string
     {
         if ($this->isSystemAttribute($phpType, $key)) {
             $columnType = $this->getterMethodsExtractor->getFieldType($phpType, $key);

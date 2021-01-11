@@ -5,7 +5,6 @@ namespace Hyva\Admin\Model\TypeReflection;
 use Magento\Framework\Api\ExtensibleDataInterface;
 use Magento\Framework\Api\ExtensionAttributesInterface;
 use Magento\Framework\Api\SimpleDataObjectConverter;
-use Hyva\Admin\Model\TypeReflection\MethodsMap;
 
 use function array_filter as filter;
 use function array_keys as keys;

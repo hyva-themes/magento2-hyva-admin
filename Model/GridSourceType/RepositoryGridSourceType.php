@@ -36,7 +36,9 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     /**
      * @var ColumnDefinitionInterface[]
      */
-    private $memoizedColumnDefinitions = [];
+    private array $memoizedColumnDefinitions = [];
+
+    private string $memoizedRecordType;
 
     public function __construct(
         string $gridName,
@@ -98,7 +100,11 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private function getRecordType(): string
     {
-        return $this->repositorySourceFactory->getRepositoryEntityType($this->getSourceRepoConfig());
+        if (!isset($this->memoizedRecordType)) {
+            $config                   = $this->getSourceRepoConfig();
+            $this->memoizedRecordType = $this->repositorySourceFactory->getRepositoryEntityType($config);
+        }
+        return $this->memoizedRecordType;
     }
 
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
