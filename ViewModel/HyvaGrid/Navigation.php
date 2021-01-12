@@ -362,7 +362,7 @@ class Navigation implements NavigationInterface
     private function sortButtonConfig(array $buttonsConfig): array
     {
         // sort all buttons with a sortOrder before the ones without a sortOrder
-        $maxSortOrder = max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig));
+        $maxSortOrder = max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig)) + 1;
         usort(
             $buttonsConfig,
             fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
