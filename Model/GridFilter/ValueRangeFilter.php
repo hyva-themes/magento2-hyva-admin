@@ -27,7 +27,7 @@ class ValueRangeFilter implements ColumnDefinitionMatchingFilterInterface
     {
         /** @var Template $templateBlock */
         $templateBlock = $this->layout->createBlock(Template::class);
-        $templateBlock->setTemplate('Hyva_Admin::filter/value-range.phtml');
+        $templateBlock->setTemplate('Hyva_Admin::grid/filter/value-range.phtml');
 
         return $templateBlock;
     }

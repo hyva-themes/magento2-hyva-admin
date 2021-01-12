@@ -32,7 +32,7 @@ class SelectFilter implements ColumnDefinitionMatchingFilterInterface
     {
         /** @var Template $templateBlock */
         $templateBlock = $this->layout->createBlock(Template::class);
-        $templateBlock->setTemplate('Hyva_Admin::filter/select.phtml');
+        $templateBlock->setTemplate('Hyva_Admin::grid/filter/select.phtml');
 
         return $templateBlock;
     }

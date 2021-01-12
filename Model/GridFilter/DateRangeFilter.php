@@ -27,7 +27,7 @@ class DateRangeFilter implements ColumnDefinitionMatchingFilterInterface
     {
         /** @var Template $templateBlock */
         $templateBlock = $this->layout->createBlock(Template::class);
-        $templateBlock->setTemplate('Hyva_Admin::filter/date-range.phtml');
+        $templateBlock->setTemplate('Hyva_Admin::grid/filter/date-range.phtml');
 
         return $templateBlock;
     }

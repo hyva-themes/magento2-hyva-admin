@@ -295,6 +295,10 @@ class GridXmlToArrayConverter
          *             </option>
          *         </filter>
          *     </filters>
+         *     <buttons>
+         *         <button id="add" label="Add" url="*\/*\/add"/>
+         *         <button id="foo" label="Foo" onclick="doFoo"/>
+         *     </buttons>
          * </navigation>
          */
         $navigationElement = $this->getChildByName($root, 'navigation');
@@ -303,6 +307,7 @@ class GridXmlToArrayConverter
                 'pager'   => $this->getPagerConfig($navigationElement),
                 'sorting' => $this->getSortingConfig($navigationElement),
                 'filters' => $this->getFiltersConfig($navigationElement),
+                'buttons' => $this->getButtonsConfig($navigationElement),
             ])
             : [];
     }
@@ -417,6 +422,34 @@ class GridXmlToArrayConverter
                 return $v === 'true';
             }, $this->getAttributeConfig($actionElement, 'requireConfirmation')),
         ));
+    }
+
+    private function getButtonsConfig(\DOMElement $navigationElement): ?array
+    {
+        /*
+         * <buttons>
+         *     <button id="add" label="Add" url="*\/*\/add" enabled="true"/>
+         *     <button id="foo" label="Foo" onclick="doFoo"/>
+         *     <button id="bar" template="Module_Name::button.phtml"/>
+         * </buttons>
+         */
+        $buttonsElement = $this->getChildByName($navigationElement, 'buttons');
+        return $buttonsElement
+            ? map([$this, 'getButtonConfig'], $this->getChildrenByName($buttonsElement, 'button'))
+            : null;
+    }
+
+    private function getButtonConfig(\DOMElement $buttonsElement): ?array
+    {
+        return merge(
+            $this->getAttributeConfig($buttonsElement, 'id'),
+            $this->getAttributeConfig($buttonsElement, 'label'),
+            $this->getAttributeConfig($buttonsElement, 'template'),
+            $this->getAttributeConfig($buttonsElement, 'url'),
+            $this->getAttributeConfig($buttonsElement, 'onclick'),
+            $this->getAttributeConfig($buttonsElement, 'sortOrder'),
+            $this->getAttributeConfig($buttonsElement, 'enabled'),
+        );
     }
 
     private function getFiltersConfig(\DOMElement $navigationElement): ?array

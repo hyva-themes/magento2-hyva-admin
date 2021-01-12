@@ -57,4 +57,9 @@ interface NavigationInterface
     public function hasAppliedFilters(): bool;
 
     public function getFilterFormId(): string;
+
+    /**
+     * @return GridButtonInterface[]
+     */
+    public function getButtons(): array;
 }
