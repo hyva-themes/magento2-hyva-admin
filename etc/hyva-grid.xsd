@@ -252,6 +252,7 @@
                     <xs:attribute name="onclick" type="xs:string"/>
                     <xs:attribute name="enabled" type="boolean"/>
                     <xs:attribute name="template" type="templateType"/>
+                    <xs:attribute name="sortOrder" type="xs:int"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
