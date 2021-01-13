@@ -20,15 +20,30 @@ class Cell implements CellInterface
      */
     private $value;
 
-    private ColumnDefinitionInterface $columnDefinition;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface
+     */
+    private $columnDefinition;
 
-    private DataTypeToStringConverterLocatorInterface $dataTypeToStringConverterLocator;
+    /**
+     * @var \Hyva\Admin\Model\DataType\DataTypeToStringConverterLocatorInterface
+     */
+    private $dataTypeToStringConverterLocator;
 
-    private ?RowInterface $row;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\RowInterface|null
+     */
+    private $row;
 
-    private LayoutInterface $layout;
+    /**
+     * @var \Magento\Framework\View\LayoutInterface
+     */
+    private $layout;
 
-    private Escaper $escaper;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     public function __construct(
         $value,

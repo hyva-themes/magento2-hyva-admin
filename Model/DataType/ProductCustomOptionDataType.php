@@ -9,7 +9,10 @@ class ProductCustomOptionDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_PRODUCT_CUSTOM_OPTION = 'magento_product_custom_option';
 
-    private DataTypeToStringConverterLocatorInterface $dataTypeToStringConverterLocator;
+    /**
+     * @var \Hyva\Admin\Model\DataType\DataTypeToStringConverterLocatorInterface
+     */
+    private $dataTypeToStringConverterLocator;
 
     public function __construct(DataTypeToStringConverterLocatorInterface $dataTypeToStringConverterLocator)
     {

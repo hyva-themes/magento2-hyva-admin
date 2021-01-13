@@ -4,7 +4,10 @@ namespace Hyva\Admin\Model\GridSourceType;
 
 class SourceTypeLocator
 {
-    private array $typeToGridSourceClassMap = [
+    /**
+     * @var mixed[]
+     */
+    private $typeToGridSourceClassMap = [
         'repository' => RepositoryGridSourceType::class,
         'collection' => CollectionGridSourceType::class,
         'query'      => QueryGridSourceType::class,

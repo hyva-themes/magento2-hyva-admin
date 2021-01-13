@@ -19,26 +19,50 @@ use function array_filter as filter;
 
 class RepositoryGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
-
-    private array $sourceConfiguration;
-
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
-
-    private RepositorySourceFactory $repositorySourceFactory;
-
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
-
-    private TypeReflection $typeReflection;
-
-    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
+    /**
+     * @var string
+     */
+    private $gridName;
 
     /**
-     * @var ColumnDefinitionInterface[]
+     * @var mixed[]
      */
-    private array $memoizedColumnDefinitions = [];
+    private $sourceConfiguration;
 
-    private string $memoizedRecordType;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
+
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory
+     */
+    private $repositorySourceFactory;
+
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
+
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection
+     */
+    private $typeReflection;
+
+    /**
+     * @var \Hyva\Admin\Model\GridSourcePrefetchEventDispatcher
+     */
+    private $gridSourcePrefetchEventDispatcher;
+
+    /**
+     * @var mixed[]
+     */
+    private $memoizedColumnDefinitions = [];
+
+    /**
+     * @var string
+     */
+    private $memoizedRecordType;
 
     public function __construct(
         string $gridName,
