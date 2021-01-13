@@ -51,6 +51,8 @@ class Navigation implements NavigationInterface
      */
     private GridButtonInterfaceFactory $gridButtonFactory;
 
+    private bool $isAjaxEnabled;
+
     public function __construct(
         string $gridName,
         HyvaGridSourceInterface $gridSource,
@@ -61,7 +63,8 @@ class Navigation implements NavigationInterface
         SortOrderBuilder $sortOrderBuilder,
         RequestInterface $request,
         UrlBuilder $urlBuilder,
-        GridButtonInterfaceFactory $gridButtonFactory
+        GridButtonInterfaceFactory $gridButtonFactory,
+        bool $isAjaxEnabled = true
     ) {
         $this->gridSource            = $gridSource;
         $this->navigationConfig      = $navigationConfig;
@@ -73,6 +76,7 @@ class Navigation implements NavigationInterface
         $this->gridName              = $gridName;
         $this->gridFilterFactory     = $gridFilterFactory;
         $this->gridButtonFactory     = $gridButtonFactory;
+        $this->isAjaxEnabled         = $isAjaxEnabled;
     }
 
     public function getTotalRowsCount(): int
@@ -141,7 +145,7 @@ class Navigation implements NavigationInterface
         return reduce(
             $this->columnDefinitions,
             fn(bool $isEnabled, ColumnDefinitionInterface $c): bool => $isEnabled || (bool) $c->getRendererBlockName(),
-            true
+            $this->isAjaxEnabled
         );
     }
 
