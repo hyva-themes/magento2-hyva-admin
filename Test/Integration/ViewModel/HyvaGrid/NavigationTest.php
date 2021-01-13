@@ -45,6 +45,7 @@ class NavigationTest extends TestCase
             'navigationConfig'  => $navigationConfig,
             'columnDefinitions' => $hyvaGridSource->extractColumnDefinitions([], [], false),
             'request'           => $request,
+            'isAjaxEnabled'     => false,
         ], function ($v): bool {
             return isset($v);
         }));
@@ -166,8 +167,8 @@ class NavigationTest extends TestCase
         $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
-        $expected = $this->getUrlBuilder()
-                         ->getUrl('*/*/*', ['_current' => true, '_query' => [self::TEST_GRID . '[p]' => 1]]);
+        $queryParams = [self::TEST_GRID . '[p]' => 1];
+        $expected    = $this->getUrlBuilder()->getUrl('*/*/*', ['_current' => true, '_query' => $queryParams]);
         $this->assertSame($expected, $sut->getPreviousPageUrl());
     }
 
@@ -330,7 +331,11 @@ class NavigationTest extends TestCase
         $stubRequest = $this->createMock(RequestInterface::class);
         $this->stubParams($stubRequest, ['_filter' => ['id' => '1']]);
 
-        $gridData         = [['id' => true, 'name' => 'a'], ['id' => false, 'name' => 'b'], ['id' => true, 'name' => 'c']];
+        $gridData         = [
+            ['id' => true, 'name' => 'a'],
+            ['id' => false, 'name' => 'b'],
+            ['id' => true, 'name' => 'c'],
+        ];
         $navigationConfig = ['filters' => [['key' => 'id']]];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
