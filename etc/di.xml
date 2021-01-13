@@ -25,6 +25,8 @@
                 type="Hyva\Admin\ViewModel\HyvaGrid\GridFilter"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\FilterOptionInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\FilterOption"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\GridButtonInterface"
+                type="Hyva\Admin\ViewModel\HyvaGrid\GridButton"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>

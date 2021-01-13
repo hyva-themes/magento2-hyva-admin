@@ -27,7 +27,7 @@ class TextFilter implements ColumnDefinitionMatchingFilterInterface
     {
         /** @var Template $templateBlock */
         $templateBlock = $this->layout->createBlock(Template::class);
-        $templateBlock->setTemplate('Hyva_Admin::filter/text.phtml');
+        $templateBlock->setTemplate('Hyva_Admin::grid/filter/text.phtml');
 
         return $templateBlock;
     }
