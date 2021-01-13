@@ -3,12 +3,12 @@
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 use Hyva\Admin\Model\HyvaGridSourceInterface;
-use Magento\Framework\UrlInterface as UrlBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
 use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\UrlInterface as UrlBuilder;
 
 use function array_filter as filter;
 use function array_keys as keys;
@@ -46,6 +46,11 @@ class Navigation implements NavigationInterface
 
     private string $gridName;
 
+    /**
+     * @var GridButtonInterfaceFactory
+     */
+    private GridButtonInterfaceFactory $gridButtonFactory;
+
     public function __construct(
         string $gridName,
         HyvaGridSourceInterface $gridSource,
@@ -55,7 +60,8 @@ class Navigation implements NavigationInterface
         SearchCriteriaBuilder $searchCriteriaBuilder,
         SortOrderBuilder $sortOrderBuilder,
         RequestInterface $request,
-        UrlBuilder $urlBuilder
+        UrlBuilder $urlBuilder,
+        GridButtonInterfaceFactory $gridButtonFactory
     ) {
         $this->gridSource            = $gridSource;
         $this->navigationConfig      = $navigationConfig;
@@ -66,6 +72,7 @@ class Navigation implements NavigationInterface
         $this->columnDefinitions     = $columnDefinitions;
         $this->gridName              = $gridName;
         $this->gridFilterFactory     = $gridFilterFactory;
+        $this->gridButtonFactory     = $gridButtonFactory;
     }
 
     public function getTotalRowsCount(): int
@@ -87,7 +94,6 @@ class Navigation implements NavigationInterface
         return $this->isValidPageSize($requestedPageSize)
             ? $requestedPageSize
             : $this->getDefaultPageSize();
-
     }
 
     private function getDefaultPageSize(): int
@@ -341,5 +347,30 @@ class Navigation implements NavigationInterface
     public function getFilterFormId(): string
     {
         return 'hyva-grid-filters-' . $this->gridName;
+    }
+
+    public function getButtons(): array
+    {
+        return map([$this, 'buildButton'], $this->sortButtonConfig($this->navigationConfig['buttons'] ?? []));
+    }
+
+    private function buildButton(array $buttonConfig): GridButtonInterface
+    {
+        return $this->gridButtonFactory->create(merge([], $buttonConfig));
+    }
+
+    private function sortButtonConfig(array $buttonsConfig): array
+    {
+        if (empty($buttonsConfig)) {
+            return [];
+        }
+        // sort all buttons with a sortOrder before the ones without a sortOrder
+        $maxSortOrder = max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig)) + 1;
+        usort(
+            $buttonsConfig,
+            fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
+        );
+
+        return $buttonsConfig;
     }
 }

@@ -5,6 +5,7 @@ namespace Hyva\Admin\Test\Integration\ViewModel\HyvaGrid;
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Hyva\Admin\Test\Integration\TestingGridDataProvider;
+use Hyva\Admin\ViewModel\HyvaGrid\GridButton;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\Navigation;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
@@ -15,6 +16,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 use function array_filter as filter;
+use function array_map as map;
 
 /**
  * @magentoAppArea adminhtml
@@ -330,7 +332,11 @@ class NavigationTest extends TestCase
         $stubRequest = $this->createMock(RequestInterface::class);
         $this->stubParams($stubRequest, ['_filter' => ['id' => '1']]);
 
-        $gridData         = [['id' => true, 'name' => 'a'], ['id' => false, 'name' => 'b'], ['id' => true, 'name' => 'c']];
+        $gridData         = [
+            ['id' => true, 'name' => 'a'],
+            ['id' => false, 'name' => 'b'],
+            ['id' => true, 'name' => 'c'],
+        ];
         $navigationConfig = ['filters' => [['key' => 'id']]];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
@@ -564,5 +570,20 @@ class NavigationTest extends TestCase
         $sut              = $this->createNavigation($gridData, $navigationConfig);
 
         $this->assertInstanceOf(GridFilterInterface::class, $sut->getFilter('col_a'));
+    }
+
+    public function testReturnsSortedButtons(): void
+    {
+        $gridData         = [];
+        $navigationConfig = [
+            'buttons' => [
+                ['id' => 'A', 'sortOrder' => 2],
+                ['id' => 'B', 'sortOrder' => -1],
+                ['id' => 'C', 'sortOrder' => 1],
+                ['id' => 'D'],
+            ],
+        ];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+        $this->assertSame(['B', 'C', 'A', 'D'], map(fn(GridButton $b) => $b->getId(), $sut->getButtons()));
     }
 }

@@ -323,6 +323,11 @@ EOXML;
         <filters>
             <filter column="id"/>
         </filters>
+        <buttons>
+            <button id="add" label="Add" url="*/*/add" enabled="false"/>
+            <button id="foo" label="Foo" onclick="doFoo" sortOrder="123"/>
+            <button id="bar" template="Module_Name::button.phtml"/>
+        </buttons>
     </navigation>
 EOXML;
     }
@@ -335,6 +340,11 @@ EOXML;
                 'sorting' => ['defaultSortByColumn' => 'id', 'defaultSortDirection' => 'asc'],
                 'filters' => [
                     ['key' => 'id'],
+                ],
+                'buttons' => [
+                    ['id' => 'add', 'label' => 'Add', 'url' => '*/*/add', 'enabled' => 'false'],
+                    ['id' => 'foo', 'label' => 'Foo', 'onclick' => 'doFoo', 'sortOrder' => '123'],
+                    ['id' => 'bar', 'template' => 'Module_Name::button.phtml'],
                 ],
             ],
         ];

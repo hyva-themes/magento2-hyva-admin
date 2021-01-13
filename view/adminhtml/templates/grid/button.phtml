@@ -1,0 +1,18 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\GridButtonInterface $button */
+
+if ($button->getOnClick()) {
+    $onclickAction = $button->getOnClick();
+} elseif ($button->getUrl()) {
+    $onclickAction = sprintf("window.location.href='%s'", $escaper->escapeJs($button->getUrl()));
+} else {
+    $onclickAction = null;
+}
+?>
+<a class="btn btn-primary inline-flex mx-2 cursor-pointer"
+    <?= $onclickAction ? sprintf('onclick="%s"', $onclickAction) : '' ?>>
+    <span><?= $escaper->escapeHtml($button->getLabel()) ?></span>
+</a>
