@@ -29,6 +29,8 @@ interface NavigationInterface
 
     public function getUrlForPage(int $pageNum): string;
 
+    public function isAjaxEnabled(): bool;
+
     public function getSearchCriteria(): SearchCriteriaInterface;
 
     /**

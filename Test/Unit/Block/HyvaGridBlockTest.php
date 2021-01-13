@@ -19,8 +19,8 @@ class HyvaGridBlockTest extends TestCase
 
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(
-            'The name of the hyvä grid configuration needs ' .
-            'to be configured in the block arguments.'
+            'The name of the hyvä grid needs ' .
+            'to be set on the block instance.'
         );
 
         $sut->getGrid();

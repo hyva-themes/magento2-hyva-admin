@@ -12,6 +12,8 @@ interface ColumnDefinitionInterface
 
     public function getRenderAsUnsecureHtml(): bool;
 
+    public function getRendererBlockName(): ?string;
+
     public function getTemplate(): ?string;
 
     public function toArray(): array;
