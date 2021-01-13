@@ -2,20 +2,20 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
-use Hyva\Admin\Model\HyvaGridSourceInterface;
-use Magento\Framework\UrlInterface as UrlBuilder;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Api\SortOrder;
-use Magento\Framework\Api\SortOrderBuilder;
-use Magento\Framework\App\RequestInterface;
-
 use function array_filter as filter;
 use function array_keys as keys;
 use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_values as values;
+use Hyva\Admin\Model\HyvaGridSourceInterface;
+
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Api\SortOrder;
+use Magento\Framework\Api\SortOrderBuilder;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\UrlInterface as UrlBuilder;
 
 class Navigation implements NavigationInterface
 {
@@ -87,7 +87,6 @@ class Navigation implements NavigationInterface
         return $this->isValidPageSize($requestedPageSize)
             ? $requestedPageSize
             : $this->getDefaultPageSize();
-
     }
 
     private function getDefaultPageSize(): int
@@ -130,15 +129,41 @@ class Navigation implements NavigationInterface
         return $this->getUrlForPage($nextPage);
     }
 
-    public function getUrlForPage(int $pageNum): string
+    public function isAjaxEnabled(): bool
     {
-        $p = min(max($pageNum, 1), $this->getPageCount());
-        return $this->buildUrl('*/*/*', ['_current' => true, '_query' => ['p' => $p]]);
+        return reduce(
+            $this->columnDefinitions,
+            fn(bool $isEnabled, ColumnDefinitionInterface $c): bool => $isEnabled || (bool) $c->getRendererBlockName(),
+            true
+        );
     }
 
-    private function buildUrl(string $route, array $params): string
+    private function getNavigationRoute(): string
     {
-        $namespacedQuery = $this->qualifyQueryParamsWithGridNamespace($params['_query'] ?? []);
+        return $this->isAjaxEnabled()
+            ? 'hyva_admin/ajax/paging'
+            : '*/*/*';
+    }
+
+    public function getUrlForPage(int $pageNum): string
+    {
+        $p      = min(max($pageNum, 1), $this->getPageCount());
+        $params = ['_current' => true, '_query' => filter(['p' => $p])];
+        return $this->buildAjaxUrl($this->getNavigationRoute(), $params);
+    }
+
+    private function buildAjaxUrl(string $route, array $params): string
+    {
+        $nonNsQueryParams = filter([
+            'ajax'     => $this->isAjaxEnabled() ? '1' : null,
+            'gridName' => $this->isAjaxEnabled() ? $this->gridName : null,
+        ]);
+        return $this->buildUrl($route, $params, $nonNsQueryParams);
+    }
+
+    private function buildUrl(string $route, array $params, array $nonNsParams = []): string
+    {
+        $namespacedQuery = merge($this->qualifyQueryParamsWithGridNamespace($params['_query'] ?? []), $nonNsParams);
         return $this->urlBuilder->getUrl($route, merge($params, ['_query' => $namespacedQuery]));
     }
 
@@ -212,7 +237,8 @@ class Navigation implements NavigationInterface
             ? $requestedPageSize
             : $this->getDefaultPageSize();
 
-        return $this->buildUrl('*/*/*', ['_current' => true, '_query' => ['p' => 1, 'pageSize' => $targetPageSize]]);
+        $route = $this->getNavigationRoute();
+        return $this->buildAjaxUrl($route, ['_current' => true, '_query' => ['p' => 1, 'pageSize' => $targetPageSize]]);
     }
 
     private function getRequestedPageNumber(): int
@@ -277,7 +303,7 @@ class Navigation implements NavigationInterface
         if (!in_array($direction, [self::ASC, self::DESC], true)) {
             throw new \InvalidArgumentException('Grid Navigation sort order must be "asc" or "desc"');
         }
-        return $this->buildUrl('*/*/*', [
+        return $this->buildAjaxUrl($this->getNavigationRoute(), [
             '_current' => true,
             '_query'   => [
                 'p'             => 1,
@@ -325,12 +351,13 @@ class Navigation implements NavigationInterface
 
     public function getFilterFormUrl(): string
     {
-        return $this->buildUrl('*/*/*', ['_current' => true]);
+        return $this->buildAjaxUrl($this->getNavigationRoute(), ['_current' => true]);
     }
 
     public function getResetFiltersUrl(): string
     {
-        return $this->buildUrl('*/*/*', ['_current' => true, '_query' => ['_filter' => '']]);
+        $route = $this->getNavigationRoute();
+        return $this->buildAjaxUrl($route, ['_current' => true, '_query' => ['_filter' => '', 'p' => 1]]);
     }
 
     public function hasAppliedFilters(): bool
