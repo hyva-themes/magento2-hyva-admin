@@ -14,5 +14,5 @@ if ($button->getOnClick()) {
 ?>
 <a class="btn btn-primary inline-flex mx-2 cursor-pointer"
     <?= $onclickAction ? sprintf('onclick="%s"', $onclickAction) : '' ?>>
-    <span><?= $escaper->escapeHtml($button->getLabel()) ?></span>
+    <span><?= $escaper->escapeHtml(__($button->getLabel())) ?></span>
 </a>
