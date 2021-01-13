@@ -6,9 +6,15 @@ use function array_merge as merge;
 
 class NamespaceMap
 {
-    private array $namespaceMap;
+    /**
+     * @var mixed[]
+     */
+    private $namespaceMap;
 
-    private string $file;
+    /**
+     * @var string
+     */
+    private $file;
 
     private function __construct(string $file, array $namespaceMap)
     {

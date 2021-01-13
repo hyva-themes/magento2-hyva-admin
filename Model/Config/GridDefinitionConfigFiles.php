@@ -11,7 +11,10 @@ use function array_map as map;
 
 class GridDefinitionConfigFiles
 {
-    private HyvaGridDirs $hyvaGridDirs;
+    /**
+     * @var \Hyva\Admin\Model\Config\HyvaGridDirs
+     */
+    private $hyvaGridDirs;
 
     public function __construct(HyvaGridDirs $hyvaGridDirs)
     {

@@ -14,11 +14,20 @@ use function array_values as values;
 
 class HyvaGridDirs
 {
-    private ModuleListInterface $moduleList;
+    /**
+     * @var \Magento\Framework\Module\ModuleListInterface
+     */
+    private $moduleList;
 
-    private ComponentRegistrarInterface $componentRegistrar;
+    /**
+     * @var \Magento\Framework\Component\ComponentRegistrarInterface
+     */
+    private $componentRegistrar;
 
-    private AppState $appState;
+    /**
+     * @var AppState
+     */
+    private $appState;
 
     public function __construct(
         ModuleListInterface $moduleList,
@@ -50,6 +59,8 @@ class HyvaGridDirs
     private function getHyvaGridDirNames(string $module): array
     {
         $areaDirs = ['base', $this->appState->getAreaCode()];
-        return map(fn (string $area): string => $this->moduleDir($module) . '/view/' . $area . '/hyva-grid', $areaDirs);
+        return map(function (string $area) use ($module) : string {
+            return $this->moduleDir($module) . '/view/' . $area . '/hyva-grid';
+        }, $areaDirs);
     }
 }
