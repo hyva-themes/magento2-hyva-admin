@@ -16,6 +16,9 @@ There are no attributes.
     <filters>
         <filter column="sku"/>
     </filters>
+    <buttons>
+        <button id="add" label="Add" url="*/*/add" enabled="false"/>
+    </buttons>
 </navigation>
 ```
 
