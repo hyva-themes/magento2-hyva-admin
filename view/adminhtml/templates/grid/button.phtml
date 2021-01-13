@@ -11,9 +11,8 @@ if ($button->getOnClick()) {
 } else {
     $onclickAction = null;
 }
-
 ?>
-<button
+<a class="btn btn-primary inline-flex mx-2 cursor-pointer"
     <?= $onclickAction ? sprintf('onclick="%s"', $onclickAction) : '' ?>>
     <span><?= $escaper->escapeHtml($button->getLabel()) ?></span>
-</button>
+</a>

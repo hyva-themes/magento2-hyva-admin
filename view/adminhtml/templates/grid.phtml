@@ -11,7 +11,7 @@ $uniqueId = '_' . uniqid();
      x-data="initDataTable<?= /** @noEscape */ $uniqueId ?>()"
      x-init="refs=$refs; initState();">
     <div class="max-w-full px-0 py-6 mx-auto">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-start justify-between mb-4">
             <div class="flex-1 pr-4">
                 <div class="relative flex flex-wrap md:w-3/4 gap-x-8">
                     <div class="self-center">
@@ -97,9 +97,10 @@ $uniqueId = '_' . uniqid();
             <div>
                 <div class="flex">
                     <div class="relative">
-                        <?php foreach($navigation->getButtons() as $button): ?>
-                        <?= $button->getHtml() ?>
+                        <?php foreach ($navigation->getButtons() as $button): ?>
+                            <?= $button->getHtml() ?>
                         <?php endforeach; ?>
+
                         <button @click.prevent="open = !open"
                                 class="inline-flex items-center px-2 py-2 font-semibold text-gray-500 bg-white
                                     rounded-lg hover:text-blue-500 focus:outline-none focus:shadow-outline md:px-4"

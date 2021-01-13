@@ -351,7 +351,7 @@ class Navigation implements NavigationInterface
 
     public function getButtons(): array
     {
-        return map([$this, 'buildButton'], $this->sortButtonConfig($this->navigationConfig['buttons']) ?? []);
+        return map([$this, 'buildButton'], $this->sortButtonConfig($this->navigationConfig['buttons'] ?? []));
     }
 
     private function buildButton(array $buttonConfig): GridButtonInterface
@@ -361,6 +361,9 @@ class Navigation implements NavigationInterface
 
     private function sortButtonConfig(array $buttonsConfig): array
     {
+        if (empty($buttonsConfig)) {
+            return [];
+        }
         // sort all buttons with a sortOrder before the ones without a sortOrder
         $maxSortOrder = max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig)) + 1;
         usort(
