@@ -23,6 +23,8 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
         '/grid/columns/include/column' => 'name',
         '/grid/columns/include/column/option' => 'value',
         '/grid/columns/exclude/column' => 'name',
+        '/grid/navigation/filters/filter' => 'column',
+        '/grid/navigation/buttons/button' => 'id',
     ];
 
     private ?string $perFileSchema;
