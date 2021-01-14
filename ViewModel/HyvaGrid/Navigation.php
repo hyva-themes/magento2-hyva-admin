@@ -144,7 +144,7 @@ class Navigation implements NavigationInterface
     {
         return reduce(
             $this->columnDefinitions,
-            fn(bool $isEnabled, ColumnDefinitionInterface $c): bool => $isEnabled || (bool) $c->getRendererBlockName(),
+            fn(bool $isEnabled, ColumnDefinitionInterface $c): bool => $isEnabled && ! $c->getRendererBlockName(),
             $this->isAjaxEnabled
         );
     }
