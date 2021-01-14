@@ -392,7 +392,7 @@ $uniqueId = '_' . uniqid();
                 selectedRows: [],
                 hiddenCols: [
                     <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-                        <?php if ($column->getIsInitiallyHidden()): ?>
+                        <?php if ($column->isInitiallyHidden()): ?>
                         'col-<?= $escaper->escapeHtml($column->getKey()) ?>',
                         <?php endif; ?>
                     <?php endforeach; ?>
@@ -425,7 +425,7 @@ $uniqueId = '_' . uniqid();
 
                 getHiddenCols() {
                     const hiddenColsJson = window.sessionStorage.getItem(this.hiddenColsStorageName);
-                    return hiddenColsJson ? JSON.parse(hiddenColsJson) : JSON.parse(JSON.stringify(this.hiddenCols));
+                    return hiddenColsJson ? JSON.parse(hiddenColsJson) : this.hiddenCols;
                 },
 
                 toggleColumn(key) {

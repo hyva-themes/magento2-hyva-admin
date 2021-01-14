@@ -24,5 +24,5 @@ interface ColumnDefinitionInterface
 
     public function isVisible(): bool;
 
-    public function getIsInitiallyHidden(): bool;
+    public function isInitiallyHidden(): bool;
 }

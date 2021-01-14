@@ -158,7 +158,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
         return !isset($this->sortable) || $this->sortable !== 'false';
     }
 
-    public function getIsInitiallyHidden(): bool
+    public function isInitiallyHidden(): bool
     {
         return isset($this->isInitiallyHidden) && $this->isInitiallyHidden === 'true';
     }
