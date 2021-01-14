@@ -1,15 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Controller\Adminhtml\Ajax;
+namespace Hyva\Admin\Controller\Ajax;
 
 use Hyva\Admin\Model\GridBlockRenderer;
-use Magento\Backend\App\Action;
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 
-class Paging extends Action implements HttpGetActionInterface
+class Paging implements ActionInterface
 {
     private RequestInterface $request;
 
@@ -17,17 +15,11 @@ class Paging extends Action implements HttpGetActionInterface
 
     private JsonResultFactory $jsonResultFactory;
 
-    public function __construct(
-        Context $context,
-        RequestInterface $request,
-        JsonResultFactory $jsonResultFactory,
-        GridBlockRenderer $gridBlockRenderer
-    ) {
-        parent::__construct($context);
-
-        $this->request           = $request;
-        $this->jsonResultFactory = $jsonResultFactory;
+    public function __construct(RequestInterface $request, GridBlockRenderer $gridBlockRenderer, JsonResultFactory $jsonResultFactory)
+    {
+        $this->request = $request;
         $this->gridBlockRenderer = $gridBlockRenderer;
+        $this->jsonResultFactory = $jsonResultFactory;
     }
 
     public function execute()
