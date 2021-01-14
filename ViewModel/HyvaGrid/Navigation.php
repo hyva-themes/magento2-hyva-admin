@@ -8,8 +8,8 @@ use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_values as values;
-
 use Hyva\Admin\Model\HyvaGridSourceInterface;
+
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
