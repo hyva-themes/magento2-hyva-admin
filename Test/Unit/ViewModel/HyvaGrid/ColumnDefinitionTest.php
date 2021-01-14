@@ -50,7 +50,7 @@ class ColumnDefinitionTest extends TestCase
                 ['value' => 'bbb', 'label' => 'Bbb'],
             ],
             'isVisible'            => true,
-            'isInitiallyHidden'    => 'true'
+            'initiallyHidden'      => 'true'
         ];
 
         $column1 = new ColumnDefinition($dummyObjectManager, ...values($original));

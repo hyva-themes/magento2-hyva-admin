@@ -413,7 +413,6 @@ $uniqueId = '_' . uniqid();
 
                 initState() {
                     this.$watch('selectedRows', this.storeSelectedRows.bind(this));
-                    this.$watch('hiddenCols', this.storeHiddenColumns.bind(this));
                     this.selectedRows = this.getSelectedRows();
                     this.hiddenCols = this.getHiddenCols();
                 },
@@ -435,6 +434,7 @@ $uniqueId = '_' . uniqid();
                     } else {
                         this.hiddenCols.push(key);
                     }
+                    this.storeHiddenColumns();
                 },
 
                 isColumnVisible(key) {

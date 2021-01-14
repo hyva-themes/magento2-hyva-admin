@@ -234,7 +234,7 @@ class GridXmlToArrayConverter
             $this->getAttributeConfig($columnElement, 'sortable'),
             $this->getAttributeConfig($columnElement, 'source'),
             $this->getAttributeConfig($columnElement, 'template'),
-            $this->getAttributeConfig($columnElement, 'isInitiallyHidden'),
+            $this->getAttributeConfig($columnElement, 'initiallyHidden'),
             $this->getColumnOptionsConfig($columnElement),
         ));
     }
