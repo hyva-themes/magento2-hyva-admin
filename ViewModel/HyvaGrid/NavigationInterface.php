@@ -23,9 +23,13 @@ interface NavigationInterface
 
     public function getPreviousPageUrl(): string;
 
+    public function getFirstPageUrl(): string;
+
     public function hasNextPage(): bool;
 
     public function getNextPageUrl(): string;
+
+    public function getLastPageUrl(): string;
 
     public function getUrlForPage(int $pageNum): string;
 
