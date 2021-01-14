@@ -184,6 +184,7 @@
             <xs:element name="filters" type="filtersType" minOccurs="0"/>
             <xs:element name="buttons" type="buttonsType" minOccurs="0"/>
         </xs:all>
+        <xs:attribute name="useAjax" type="boolean"/>
     </xs:complexType>
 
     <xs:complexType name="pagerType">

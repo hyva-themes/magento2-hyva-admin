@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\Test\Integration\ViewModel\HyvaGrid;
 
+use function array_filter as filter;
+use function array_map as map;
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Hyva\Admin\Test\Integration\TestingGridDataProvider;
@@ -9,14 +11,12 @@ use Hyva\Admin\ViewModel\HyvaGrid\GridButton;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\Navigation;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
-use Magento\Framework\UrlInterface as UrlBuilder;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\UrlInterface as UrlBuilder;
 use Magento\TestFramework\ObjectManager;
+
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-
-use function array_filter as filter;
-use function array_map as map;
 
 /**
  * @magentoAppArea adminhtml
@@ -47,7 +47,6 @@ class NavigationTest extends TestCase
             'navigationConfig'  => $navigationConfig,
             'columnDefinitions' => $hyvaGridSource->extractColumnDefinitions([], [], false),
             'request'           => $request,
-            'isAjaxEnabled'     => false,
         ], function ($v): bool {
             return isset($v);
         }));
@@ -166,7 +165,7 @@ class NavigationTest extends TestCase
         $this->stubParams($stubRequest, ['p' => 1]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
-        $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
+        $navigationConfig = ['pager' => ['defaultPageSize' => 1], '@isAjaxEnabled' => 'false'];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
         $queryParams = [self::TEST_GRID . '[p]' => 1];
@@ -180,7 +179,7 @@ class NavigationTest extends TestCase
         $this->stubParams($stubRequest, ['p' => 2]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
-        $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
+        $navigationConfig = ['pager' => ['defaultPageSize' => 1], '@isAjaxEnabled' => 'false'];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
         $expected = $this->getUrlBuilder()
@@ -194,7 +193,7 @@ class NavigationTest extends TestCase
         $this->stubParams($stubRequest, ['p' => 4]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
-        $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
+        $navigationConfig = ['pager' => ['defaultPageSize' => 1], '@isAjaxEnabled' => 'false'];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
         $expected = $this->getUrlBuilder()
@@ -208,7 +207,7 @@ class NavigationTest extends TestCase
         $this->stubParams($stubRequest, ['p' => 2]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
-        $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
+        $navigationConfig = ['pager' => ['defaultPageSize' => 1], '@isAjaxEnabled' => 'false'];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
         $expected = $this->getUrlBuilder()
@@ -222,7 +221,7 @@ class NavigationTest extends TestCase
         $this->stubParams($stubRequest, ['p' => 2]);
 
         $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
-        $navigationConfig = ['pager' => ['defaultPageSize' => 1]];
+        $navigationConfig = ['pager' => ['defaultPageSize' => 1], '@isAjaxEnabled' => 'false'];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
         $expected = $this->getUrlBuilder()
@@ -533,7 +532,7 @@ class NavigationTest extends TestCase
         $this->stubParams($stubRequest, ['p' => 2, 'sortBy' => 'foo', 'sortDirection' => 'desc']);
 
         $gridData         = [['id' => 'a'], ['id' => 'b']];
-        $navigationConfig = [];
+        $navigationConfig = ['@isAjaxEnabled' => 'false'];
         $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
 
         $expected = $this->getUrlBuilder()
@@ -585,6 +584,39 @@ class NavigationTest extends TestCase
             ],
         ];
         $sut              = $this->createNavigation($gridData, $navigationConfig);
-        $this->assertSame(['B', 'C', 'A', 'D'], map(fn(GridButton $b) => $b->getId(), $sut->getButtons()));
+        $this->assertSame(['B', 'C', 'A', 'D'], map(fn (GridButton $b) => $b->getId(), $sut->getButtons()));
+    }
+
+    public function testAjaxNavigationBaseUrl()
+    {
+        $gridData         = [
+            ['col_a' => 'a', 'col_b' => 'b'],
+        ];
+        $navigationConfig = ['@isAjaxEnabled' => 'true'];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+        $expectedWithSecurityKey = $this->getUrlBuilder()
+                         ->getUrl('hyva_admin/ajax/paging');
+        $expected = substr($expectedWithSecurityKey, 0, (strpos($expectedWithSecurityKey, '/key')));
+        $this->assertStringStartsWith($expected, $sut->getNextPageUrl());
+    }
+
+    public function testAjaxNavigationIsEnabledByDefault(): void
+    {
+        $gridData         = [
+            ['col_a' => 'a', 'col_b' => 'b'],
+        ];
+        $navigationConfig = [];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+        $this->assertTrue($sut->isAjaxEnabled());
+    }
+
+    public function testAjaxNavigationCanBeDisabled(): void
+    {
+        $gridData         = [
+            ['col_a' => 'a', 'col_b' => 'b'],
+        ];
+        $navigationConfig = ['@isAjaxEnabled' => 'false'];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+        $this->assertFalse($sut->isAjaxEnabled());
     }
 }

@@ -311,7 +311,7 @@ EOXML;
     private function getNavigationXml(): string
     {
         return <<<EOXML
-    <navigation>
+    <navigation useAjax="true">
         <pager>
             <defaultPageSize>10</defaultPageSize>
             <pageSizes>10,20,50,100</pageSizes>
@@ -336,12 +336,13 @@ EOXML;
     {
         return [
             'navigation' => [
-                'pager'   => ['defaultPageSize' => '10', 'pageSizes' => '10,20,50,100'],
-                'sorting' => ['defaultSortByColumn' => 'id', 'defaultSortDirection' => 'asc'],
-                'filters' => [
+                '@isAjaxEnabled' => 'true',
+                'pager'          => ['defaultPageSize' => '10', 'pageSizes' => '10,20,50,100'],
+                'sorting'        => ['defaultSortByColumn' => 'id', 'defaultSortDirection' => 'asc'],
+                'filters'        => [
                     ['key' => 'id'],
                 ],
-                'buttons' => [
+                'buttons'        => [
                     ['id' => 'add', 'label' => 'Add', 'url' => '*/*/add', 'enabled' => 'false'],
                     ['id' => 'foo', 'label' => 'Foo', 'onclick' => 'doFoo', 'sortOrder' => '123'],
                     ['id' => 'bar', 'template' => 'Module_Name::button.phtml'],

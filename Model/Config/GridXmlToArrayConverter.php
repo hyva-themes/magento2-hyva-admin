@@ -273,7 +273,7 @@ class GridXmlToArrayConverter
     private function convertNavigationConfig(\DOMElement $root): array
     {
         /*
-         * <navigation>
+         * <navigation useAjax="true">
          *     <pager>
          *         <defaultPageSize>10</defaultPageSize>
          *         <pageSizes>10,20,50,100</pageSizes>
@@ -304,10 +304,11 @@ class GridXmlToArrayConverter
         $navigationElement = $this->getChildByName($root, 'navigation');
         return $navigationElement
             ? filter([
-                'pager'   => $this->getPagerConfig($navigationElement),
-                'sorting' => $this->getSortingConfig($navigationElement),
-                'filters' => $this->getFiltersConfig($navigationElement),
-                'buttons' => $this->getButtonsConfig($navigationElement),
+                '@isAjaxEnabled' => $navigationElement->getAttribute('useAjax') ?? null,
+                'pager'          => $this->getPagerConfig($navigationElement),
+                'sorting'        => $this->getSortingConfig($navigationElement),
+                'filters'        => $this->getFiltersConfig($navigationElement),
+                'buttons'        => $this->getButtonsConfig($navigationElement),
             ])
             : [];
     }
