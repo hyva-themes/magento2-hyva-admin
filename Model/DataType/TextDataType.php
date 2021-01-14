@@ -14,6 +14,7 @@ class TextDataType implements DataTypeInterface
 
     const TEXT_TYPES = [
         self::TYPE_TRUNCATED_TEXT,
+        'text',
         'string',
     ];
 
