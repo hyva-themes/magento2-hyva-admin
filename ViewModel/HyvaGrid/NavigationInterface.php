@@ -11,6 +11,8 @@ interface NavigationInterface
 
     public function getTotalRowsCount(): int;
 
+    public function isPagerEnabled(): bool;
+
     public function getPageCount(): int;
 
     public function getPageSize(): int;

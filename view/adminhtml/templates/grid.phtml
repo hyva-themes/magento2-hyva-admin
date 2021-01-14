@@ -14,6 +14,7 @@ $uniqueId = '_' . uniqid();
         <div class="flex items-start justify-between mb-4">
             <div class="flex-1 pr-4">
                 <div class="relative flex flex-wrap md:w-3/4 gap-x-8">
+                    <?php if ($navigation->isPagerEnabled()): ?>
                     <div class="self-center">
                         <span class="font-medium text-md mr-4">
                             <?= $escaper->escapeHtml(__('Current Page:')) ?>
@@ -106,6 +107,7 @@ $uniqueId = '_' . uniqid();
                             </span>
                         <?php endif; ?>
                     </div>
+                    <?php endif; ?>
 
                     <?php if ($navigation->hasAppliedFilters()): ?>
                     <div>

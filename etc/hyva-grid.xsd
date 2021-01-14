@@ -203,6 +203,7 @@
                 </xs:simpleType>
             </xs:element>
         </xs:all>
+        <xs:attribute name="enabled" type="boolean"/>
     </xs:complexType>
 
     <xs:complexType name="sortingType">

@@ -317,6 +317,7 @@ class GridXmlToArrayConverter
         $pagerElement = $this->getChildByName($navigationElement, 'pager');
         return $pagerElement
             ? filter(merge(
+                ['@enabled' => $pagerElement->getAttribute('enabled')],
                 $this->getElementConfig($pagerElement, 'defaultPageSize'),
                 $this->getElementConfig($pagerElement, 'pageSizes')
             ))

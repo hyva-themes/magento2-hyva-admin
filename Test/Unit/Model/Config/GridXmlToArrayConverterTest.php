@@ -312,7 +312,7 @@ EOXML;
     {
         return <<<EOXML
     <navigation>
-        <pager>
+        <pager enabled="false">
             <defaultPageSize>10</defaultPageSize>
             <pageSizes>10,20,50,100</pageSizes>
         </pager>
@@ -336,7 +336,7 @@ EOXML;
     {
         return [
             'navigation' => [
-                'pager'   => ['defaultPageSize' => '10', 'pageSizes' => '10,20,50,100'],
+                'pager'   => ['@enabled' => 'false', 'defaultPageSize' => '10', 'pageSizes' => '10,20,50,100'],
                 'sorting' => ['defaultSortByColumn' => 'id', 'defaultSortDirection' => 'asc'],
                 'filters' => [
                     ['key' => 'id'],

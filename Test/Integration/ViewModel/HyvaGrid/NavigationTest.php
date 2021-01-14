@@ -2,6 +2,9 @@
 
 namespace Hyva\Admin\Test\Integration\ViewModel\HyvaGrid;
 
+use function array_filter as filter;
+use function array_map as map;
+
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Hyva\Admin\Test\Integration\TestingGridDataProvider;
@@ -9,14 +12,11 @@ use Hyva\Admin\ViewModel\HyvaGrid\GridButton;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\Navigation;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
-use Magento\Framework\UrlInterface as UrlBuilder;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\UrlInterface as UrlBuilder;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-
-use function array_filter as filter;
-use function array_map as map;
 
 /**
  * @magentoAppArea adminhtml
@@ -299,6 +299,20 @@ class NavigationTest extends TestCase
         $this->assertSame($pageSize, $searchCriteria->getPageSize());
     }
 
+    public function testSetsNoPageSizeAndCurrentPageIfPaginationIsDisabled(): void
+    {
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['pageSize' => 20]);
+
+        $gridData         = [['id' => 'a'], ['id' => 'b'], ['id' => 'c']];
+        $navigationConfig = ['pager' => ['pageSizes' => '20, 50, 100', '@enabled' => 'false']];
+        $sut              = $this->createNavigation($gridData, $navigationConfig, $stubRequest);
+
+        $searchCriteria = $sut->getSearchCriteria();
+        $this->assertNull($searchCriteria->getPageSize());
+        $this->assertNull($searchCriteria->getCurrentPage());
+    }
+
     public function testSetsCurrentPageOnSearchCriteria(): void
     {
         $stubRequest = $this->createMock(RequestInterface::class);
@@ -311,6 +325,30 @@ class NavigationTest extends TestCase
 
         $searchCriteria = $sut->getSearchCriteria();
         $this->assertSame($currentPage, $searchCriteria->getCurrentPage());
+    }
+
+    public function testPaginationIsEnabledByDefault(): void
+    {
+        $gridData         = [];
+        $navigationConfig = [];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+        $this->assertTrue($sut->isPagerEnabled());
+    }
+
+    public function testPaginationCanBeExplicitlyEnabled(): void
+    {
+        $gridData         = [];
+        $navigationConfig = ['pager' => ['@enabled' => 'true']];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+        $this->assertTrue($sut->isPagerEnabled());
+    }
+
+    public function testPaginationCanBeDisabled(): void
+    {
+        $gridData         = [];
+        $navigationConfig = ['pager' => ['@enabled' => 'false']];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+        $this->assertFalse($sut->isPagerEnabled());
     }
 
     public function testSetsSortOrderSearchCriteria(): void
@@ -584,6 +622,6 @@ class NavigationTest extends TestCase
             ],
         ];
         $sut              = $this->createNavigation($gridData, $navigationConfig);
-        $this->assertSame(['B', 'C', 'A', 'D'], map(fn(GridButton $b) => $b->getId(), $sut->getButtons()));
+        $this->assertSame(['B', 'C', 'A', 'D'], map(fn (GridButton $b) => $b->getId(), $sut->getButtons()));
     }
 }
