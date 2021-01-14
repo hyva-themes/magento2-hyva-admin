@@ -12,7 +12,13 @@ $uniqueId   = '_' . md5($grid->getGridName());
      $uniqueId ?>()"
      x-init="refs=$refs; initState();">
     <div class="max-w-full px-0 py-6 mx-auto">
-        <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center justify-between mb-4">
+            <div style="display: none" x-show="loading">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="red" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            </div>
             <div class="flex-1 pr-4">
                 <div class="relative flex flex-wrap md:w-3/4 gap-x-8">
                     <div class="self-center">
@@ -365,6 +371,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
             refs: false,
             selectedRows: [],
             hiddenCols: [],
+            loading: false,
             massActionStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-selectedRows' ?>',
             hiddenColsStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-hiddenCols' ?>',
 
@@ -473,6 +480,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
 
                 this.resetFormState();
 
+                this.loading = true;
                 form.submit();
             },
 
@@ -504,20 +512,23 @@ $uniqueId   = '_' . md5($grid->getGridName());
                 }
             },
 
-            ajaxGridUpdate(url, method) {
+            ajaxGridUpdate(url) {
+                this.loading = true;
                 fetch(url, {
-                    method: method || 'GET',
+                    method: 'get',
                     headers: {'Content-Type': 'application/json'}
                 })
                     .then(response => response.json())
                     .then(responseBody => {
+                        this.loading = false;
                         if (responseBody.message) alert(responseBody.message);
                         if (responseBody.grid_html) {
                             const tmpContainer = document.createElement('div');
                             tmpContainer.innerHTML = responseBody.grid_html;
                             this.$el.replaceWith(tmpContainer.querySelector('.hyva-admin-grid'));
                         }
-                    });
+                    })
+                    .catch(console.error);
             }
         }
     }

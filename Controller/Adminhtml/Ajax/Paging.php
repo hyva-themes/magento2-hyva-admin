@@ -10,7 +10,7 @@ use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 
-class Paging extends Action implements HttpGetActionInterface, HttpPostActionInterface
+class Paging extends Action implements HttpGetActionInterface
 {
     private RequestInterface $request;
 
