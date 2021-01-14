@@ -122,6 +122,11 @@ class Navigation implements NavigationInterface
         return $this->getUrlForPage($prevPage);
     }
 
+    public function getFirstPageUrl(): string
+    {
+        return $this->getUrlForPage(1);
+    }
+
     public function hasNextPage(): bool
     {
         return $this->getCurrentPageNumber() < $this->getPageCount();
@@ -134,6 +139,11 @@ class Navigation implements NavigationInterface
             : $this->getCurrentPageNumber();
 
         return $this->getUrlForPage($nextPage);
+    }
+
+    public function getLastPageUrl(): string
+    {
+        return $this->getUrlForPage($this->getPageCount());
     }
 
     public function getUrlForPage(int $pageNum): string
