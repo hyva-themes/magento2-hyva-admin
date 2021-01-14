@@ -5,7 +5,7 @@ namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 use Hyva\Admin\Model\DataType\ArrayDataType;
 use Hyva\Admin\Model\DataType\BooleanDataType;
 use Hyva\Admin\Model\DataType\IntDataType;
-use Hyva\Admin\Model\DataType\LongTextDataType;
+use Hyva\Admin\Model\DataType\TextDataType;
 use Hyva\Admin\Model\DataType\UnknownDataType;
 use Hyva\Admin\Model\GridSourceType\CollectionGridSourceType;
 use Magento\Catalog\Model\Product;
@@ -54,7 +54,7 @@ class CollectionGridSourceTypeTest extends TestCase
         $this->assertSame(IntDataType::TYPE_INT, $storeIdColumnDefinition->getType());
 
         $columnDefinition = $sut->getColumnDefinition('name');
-        $this->assertSame(LongTextDataType::TYPE_LONG_TEXT, $columnDefinition->getType());
+        $this->assertSame(TextDataType::TYPE_TRUNCATED_TEXT, $columnDefinition->getType());
         $this->assertSame('Product Name', $columnDefinition->getLabel()); // from EAV table even though system attribute
         $this->assertSame([], $columnDefinition->getOptionArray());
     }

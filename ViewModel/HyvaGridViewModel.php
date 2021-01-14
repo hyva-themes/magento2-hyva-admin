@@ -194,7 +194,7 @@ class HyvaGridViewModel implements HyvaGridInterface
 
         $actions = map(function (array $actionConfig) use ($actionsConfig): HyvaGrid\GridActionInterface {
             $idColumn = $actionsConfig['@idColumn'] ?? null;
-            $this->validateActionIdColumnExists($idColumn, 'Action');
+            $this->validateActionIdColumnExists((string) $idColumn, 'Action');
 
             return $this->actionFactory->create(merge($actionConfig, ['idColumn' => $idColumn]));
         }, $actionsConfig['actions'] ?? []);
@@ -235,7 +235,7 @@ class HyvaGridViewModel implements HyvaGridInterface
     public function getMassActionIdColumn(): ?string
     {
         $idColumn = $this->getGridDefinition()->getMassActionConfig()['@idColumn']
-            ?? keys($this->getColumnDefinitions())[0]
+            ?? (string) keys($this->getColumnDefinitions())[0]
             ?? null;
         $this->validateActionIdColumnExists($idColumn, 'MassActionAction');
 

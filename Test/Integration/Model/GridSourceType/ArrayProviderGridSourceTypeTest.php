@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 
-use Hyva\Admin\Model\DataType\LongTextDataType;
+use Hyva\Admin\Model\DataType\TextDataType;
 use Hyva\Admin\Model\DataType\ScalarAndNullDataType;
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Test\Integration\TestingGridDataProvider;
@@ -70,8 +70,8 @@ class ArrayProviderGridSourceTypeTest extends TestCase
         $rowWithNumericKeys = ['aaa', 'bbb'];
         $sut                = $this->createArrayProviderGridSourceTypeWithArray([$rowWithNumericKeys]);
         $this->assertSame([0, 1], $sut->getColumnKeys());
-        $this->assertSame(LongTextDataType::TYPE_LONG_TEXT, $sut->getColumnDefinition('0')->getType());
-        $this->assertSame(LongTextDataType::TYPE_LONG_TEXT, $sut->getColumnDefinition('1')->getType());
+        $this->assertSame(TextDataType::TYPE_TRUNCATED_TEXT, $sut->getColumnDefinition('0')->getType());
+        $this->assertSame(TextDataType::TYPE_TRUNCATED_TEXT, $sut->getColumnDefinition('1')->getType());
     }
 
     public function testReturnsAndExtractsGridData(): void
