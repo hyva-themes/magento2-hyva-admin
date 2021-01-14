@@ -14,6 +14,7 @@ The include `column` can have a number of attributes, almost all of which are op
 * sortOrder
 * sortable
 * source
+* isInitiallyHidden
 
 
 In the following you can find a description of each column attribute.
@@ -184,3 +185,16 @@ The class has to implement the `\Magento\Eav\Model\Entity\Attribute\Source\Sourc
 
 
 Note that for simple cases attribute options can also be configured using option child elements. Please refer to the grid:columns:include:column:option documentation for more information.
+
+
+### isInitiallyHidden
+
+By default, all columns inside the <include> section will be displayed on the grid the first time it is loaded.
+
+If you need to hide that column by default, but keep at the same time the option to display it on the grid, you can set this option to "true".
+
+Note that this only affects to the initial state of the grid. Once it has been loaded for the first time, a session variable will be set storing the column states.
+
+```markup
+<column name="image" isInitiallyHidden="true"/>
+```

@@ -127,6 +127,7 @@
         <xs:attribute name="sortable" type="boolean"/>
         <xs:attribute name="renderAsUnsecureHtml" type="boolean"/>
         <xs:attribute name="source" type="phpType"/>
+        <xs:attribute name="isInitiallyHidden" type="boolean"/>
     </xs:complexType>
 
     <xs:complexType name="baseActionType">

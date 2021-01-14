@@ -390,7 +390,13 @@ $uniqueId = '_' . uniqid();
             return {
                 refs: false,
                 selectedRows: [],
-                hiddenCols: [],
+                hiddenCols: [
+                    <?php foreach ($grid->getColumnDefinitions() as $column): ?>
+                        <?php if ($column->getIsInitiallyHidden()): ?>
+                        'col-<?= $escaper->escapeHtml($column->getKey()) ?>',
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                ],
                 massActionStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-selectedRows' ?>',
                 hiddenColsStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-hiddenCols' ?>',
 
@@ -419,7 +425,7 @@ $uniqueId = '_' . uniqid();
 
                 getHiddenCols() {
                     const hiddenColsJson = window.sessionStorage.getItem(this.hiddenColsStorageName);
-                    return hiddenColsJson ? JSON.parse(hiddenColsJson) : [];
+                    return hiddenColsJson ? JSON.parse(hiddenColsJson) : JSON.parse(JSON.stringify(this.hiddenCols));
                 },
 
                 toggleColumn(key) {

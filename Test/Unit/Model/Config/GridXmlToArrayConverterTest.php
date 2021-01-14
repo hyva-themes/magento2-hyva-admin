@@ -193,7 +193,7 @@ EOXML;
             <column name="id" sortOrder="1"/>
             <column name="note" type="text" template="Module_Name::file.phtml"/>
             <column name="name" rendererBlockName="name-renderer-block"/>
-            <column name="speed" label="km/h"/>
+            <column name="speed" label="km/h" isInitiallyHidden="true"/>
             <column name="logo" renderAsUnsecureHtml="true" sortable="false"/>
             <column name="color" source="My\SourceModel"/>
             <column name="background_color">
@@ -224,7 +224,7 @@ EOXML;
                     ['key' => 'id', 'sortOrder' => '1'],
                     ['key' => 'note', 'type' => 'text', 'template' => 'Module_Name::file.phtml'],
                     ['key' => 'name', 'rendererBlockName' => 'name-renderer-block'],
-                    ['key' => 'speed', 'label' => 'km/h'],
+                    ['key' => 'speed', 'label' => 'km/h', 'isInitiallyHidden' => 'true'],
                     ['key' => 'logo', 'renderAsUnsecureHtml' => 'true', 'sortable' => 'false'],
                     ['key' => 'color', 'source' => 'My\SourceModel'],
                     ['key' => 'background_color', 'options' => $options],

@@ -31,6 +31,8 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     private ?string $sortable;
 
+    private ?string $isInitiallyHidden;
+
     public function __construct(
         ObjectManagerInterface $objectManager,
         string $key,
@@ -43,7 +45,8 @@ class ColumnDefinition implements ColumnDefinitionInterface
         ?string $sortable = null,
         ?string $source = null,
         ?array $options = null,
-        ?bool $isVisible = null
+        ?bool $isVisible = null,
+        ?string $isInitiallyHidden = null
     ) {
         $this->objectManager        = $objectManager;
         $this->key                  = $key;
@@ -57,6 +60,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
         $this->source               = $source;
         $this->options              = $options;
         $this->isVisible            = $isVisible;
+        $this->isInitiallyHidden    = $isInitiallyHidden;
     }
 
     private function camelCaseToWords(string $camel): string
@@ -105,6 +109,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
             'source'               => $this->source,
             'options'              => $this->options,
             'isVisible'            => $this->isVisible,
+            'isInitiallyHidden'    => $this->isInitiallyHidden
         ];
     }
 
@@ -151,5 +156,10 @@ class ColumnDefinition implements ColumnDefinitionInterface
     public function isSortable(): bool
     {
         return !isset($this->sortable) || $this->sortable !== 'false';
+    }
+
+    public function getIsInitiallyHidden(): bool
+    {
+        return isset($this->isInitiallyHidden) && $this->isInitiallyHidden === 'true';
     }
 }
