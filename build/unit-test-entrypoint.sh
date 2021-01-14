@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Updated version of https://github.com/extdn/github-actions-m2/blob/master/magento-unit-tests/entrypoint.sh
+# The difference is this one uses repo-magento-mirror.fooman.co.nz instead of the official repo for the unit
+# test build in order to avoid specifying github secrets. This makes CI work for PRs.
+
 set -e
 
 test -z "${CE_VERSION}" || MAGENTO_VERSION=$CE_VERSION
@@ -11,8 +15,6 @@ test -z "${MAGENTO_VERSION}" && MAGENTO_VERSION=$INPUT_MAGENTO_VERSION
 test -z "${MODULE_NAME}" && (echo "'module_name' is not set" && exit 1)
 test -z "${COMPOSER_NAME}" && (echo "'composer_name' is not set" && exit 1)
 test -z "${MAGENTO_VERSION}" && (echo "'magento_version' is not set" && exit 1)
-#test -z "${MAGENTO_MARKETPLACE_USERNAME}" && (echo "'MAGENTO_MARKETPLACE_USERNAME' is not set" && exit 1)
-#test -z "${MAGENTO_MARKETPLACE_PASSWORD}" && (echo "'MAGENTO_MARKETPLACE_PASSWORD' is not set" && exit 1)
 
 MAGENTO_ROOT=/tmp/m2
 PROJECT_PATH=$GITHUB_WORKSPACE
