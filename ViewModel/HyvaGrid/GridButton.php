@@ -8,24 +8,45 @@ use Magento\Framework\View\LayoutInterface;
 
 class GridButton implements GridButtonInterface
 {
-    private LayoutInterface $layout;
+    /**
+     * @var \Magento\Framework\View\LayoutInterface
+     */
+    private $layout;
 
-    private string $id;
+    /**
+     * @var string
+     */
+    private $id;
 
-    private ?string $label;
+    /**
+     * @var string|null
+     */
+    private $label;
 
-    private ?string $url;
+    /**
+     * @var string|null
+     */
+    private $url;
 
-    private ?string $onclick;
+    /**
+     * @var string|null
+     */
+    private $onclick;
 
-    private ?string $enabled;
+    /**
+     * @var string|null
+     */
+    private $enabled;
 
-    private ?string $template;
+    /**
+     * @var string|null
+     */
+    private $template;
 
     /**
      * @var UrlBuilder
      */
-    private UrlBuilder $urlBuilder;
+    private $urlBuilder;
 
     public function __construct(
         LayoutInterface $layout,

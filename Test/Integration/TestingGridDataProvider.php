@@ -16,8 +16,7 @@ class TestingGridDataProvider implements HyvaGridArrayProviderInterface
 
     public function getHyvaGridData(): array
     {
-        $testGridData = self::$testGridData;
-        return $testGridData;
+        return self::$testGridData;
     }
 
     public function reset(): void

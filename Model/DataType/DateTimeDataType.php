@@ -9,7 +9,10 @@ class DateTimeDataType implements DataTypeInterface
 {
     const TYPE_DATETIME = 'datetime';
 
-    private DateTimeFormatterInterface $dateTimeFormatter;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTimeFormatterInterface
+     */
+    private $dateTimeFormatter;
 
     public function __construct(DateTimeFormatterInterface $dateTimeFormatter)
     {

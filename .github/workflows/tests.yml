@@ -14,7 +14,7 @@ jobs:
         steps:
             -   uses: actions/checkout@v2
             -   name: Run Unit Tests
-                uses: docker://yireo/github-actions-magento-unit-tests:7.4
+                uses: docker://yireo/github-actions-magento-unit-tests:7.3
     integration-tests:
         name: Integration Tests
         runs-on: ubuntu-latest
@@ -38,7 +38,7 @@ jobs:
         steps:
             -   uses: actions/checkout@v2
             -   name: Run Integration Tests
-                uses: extdn/github-actions-m2/magento-integration-tests/7.4@master
+                uses: extdn/github-actions-m2/magento-integration-tests/7.3@master
                 with:
                     module_name: Hyva_Admin
                     composer_name: hyva-themes/module-magento2-admin

@@ -11,25 +11,55 @@ use function array_map as map;
 
 class GridFilter implements GridFilterInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private string $filterFormId;
+    /**
+     * @var string
+     */
+    private $filterFormId;
 
-    private ColumnDefinitionInterface $columnDefinition;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface
+     */
+    private $columnDefinition;
 
-    private FilterOptionInterfaceFactory $filterOptionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\FilterOptionInterfaceFactory
+     */
+    private $filterOptionFactory;
 
-    private RequestInterface $request;
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    private $request;
 
-    private GridFilterTypeLocator $gridFilterTypeLocator;
+    /**
+     * @var \Hyva\Admin\Model\GridFilter\GridFilterTypeLocator
+     */
+    private $gridFilterTypeLocator;
 
-    private ?string $enabled;
+    /**
+     * @var string|null
+     */
+    private $enabled;
 
-    private ?array $options;
+    /**
+     * @var mixed[]|null
+     */
+    private $options;
 
-    private ?string $filterType;
+    /**
+     * @var string|null
+     */
+    private $filterType;
 
-    private ?string $template;
+    /**
+     * @var string|null
+     */
+    private $template;
 
     public function __construct(
         string $gridName,
