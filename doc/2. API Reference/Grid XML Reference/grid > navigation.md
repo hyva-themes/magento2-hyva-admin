@@ -2,11 +2,11 @@
 
 The grid navigation contains the paging, sorting and filtering grid configuration.
 
-There are no attributes.
+There is one attribute, `useAjax`.
 
 
 ```markup
-<navigation>
+<navigation useAjax="false">
     <pager>
         <pageSizes>2,5,10</pageSizes>
     </pager>
@@ -23,3 +23,15 @@ There are no attributes.
 ```
 
 
+By default, grids use Ajax navigation. The `useAjax` attribute can be used to disable Ajax navigation for a grid.
+
+
+**Note**: if a grid uses a column with a cell renderer via `rendererBlockName` Ajax paging will be automatically disabled for the grid, too, because the layout XML that defines the renderer block will not be loaded during Ajax navigation request processing.
+
+For example:
+
+```markup
+<column name="activity" rendererBlockName="myRendererBlock"/>
+```
+
+A column like this will disable Ajax navigation.

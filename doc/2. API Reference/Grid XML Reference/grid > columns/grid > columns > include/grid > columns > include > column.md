@@ -134,6 +134,9 @@ This PHP code snippet is only shown to further understanding of the internal wor
 Please note that this block has to be declared in layout XML on every page the grid is used.
 
 
+Please also note that adding a block renderer for a column automatically disables Ajax navigation, because the layout XML that defines the renderer block would not be loaded during the processing of the Ajax navigation request.
+
+
 ### sortOrder
 
 Without any include columns configuration, columns are sorted however they are returned by the grid source type class.
@@ -189,12 +192,16 @@ Note that for simple cases attribute options can also be configured using option
 
 ### initiallyHidden
 
-By default, all columns inside the <include> section will be displayed on the grid the first time it is loaded.
+By default, all columns inside the `<include>` section will be displayed on the grid the first time it is loaded.
 
-If you need to hide that column by default, but keep at the same time the option to display it on the grid, you can set this option to "true".
+If you need to hide a column by initially, but at the same time allow a user to display it in the grid using the “Display” dropdown, you can set this attribute to `"true"`.
 
-Note that this only affects to the initial state of the grid. Once it has been loaded for the first time, a session variable will be set storing the column states.
+
+Please note this only affects the initial state of the grid. Once it has been loaded into the browser page, the column display state is stored in session storage. 
+
 
 ```markup
 <column name="image" initiallyHidden="true"/>
 ```
+
+
