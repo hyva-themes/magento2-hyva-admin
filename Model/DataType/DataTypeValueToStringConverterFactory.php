@@ -7,7 +7,10 @@ use Magento\Framework\ObjectManagerInterface;
 
 class DataTypeValueToStringConverterFactory
 {
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    private $objectManager;
 
     public function __construct(ObjectManagerInterface $objectManager)
     {

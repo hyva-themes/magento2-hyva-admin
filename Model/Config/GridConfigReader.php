@@ -11,13 +11,25 @@ use function array_reduce as reduce;
 
 class GridConfigReader implements HyvaGridConfigReaderInterface
 {
-    private GridDefinitionConfigFiles $definitionConfigFiles;
+    /**
+     * @var \Hyva\Admin\Model\Config\GridDefinitionConfigFiles
+     */
+    private $definitionConfigFiles;
 
-    private GridXmlToArrayConverter $gridXmlToArrayConverter;
+    /**
+     * @var \Hyva\Admin\Model\Config\GridXmlToArrayConverter
+     */
+    private $gridXmlToArrayConverter;
 
-    private ValidationStateInterface $appValidationState;
+    /**
+     * @var \Magento\Framework\Config\ValidationStateInterface
+     */
+    private $appValidationState;
 
-    private array $idAttributes = [
+    /**
+     * @var mixed[]
+     */
+    private $idAttributes = [
         '/grid/massActions/action' => 'id',
         '/grid/actions/action' => 'id',
         '/grid/columns/include/column' => 'name',
@@ -27,14 +39,20 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
         '/grid/navigation/buttons/button' => 'id',
     ];
 
-    private ?string $perFileSchema;
+    /**
+     * @var string|null
+     */
+    private $perFileSchema;
 
-    private ?string $mergedSchema;
+    /**
+     * @var string|null
+     */
+    private $mergedSchema;
 
     /**
      * @var ModuleDirReader
      */
-    private ModuleDirReader $moduleDirReader;
+    private $moduleDirReader;
 
     public function __construct(
         GridDefinitionConfigFiles $definitionConfigFiles,

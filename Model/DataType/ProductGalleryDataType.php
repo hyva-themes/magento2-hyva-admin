@@ -11,7 +11,10 @@ class ProductGalleryDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_PRODUCT_GALLERY = 'magento_product_gallery';
 
-    private ProductMediaInBackend $productMedia;
+    /**
+     * @var \Hyva\Admin\Model\ProductMediaInBackend
+     */
+    private $productMedia;
 
     public function __construct(ProductMediaInBackend $productMedia)
     {

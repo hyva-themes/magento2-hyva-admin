@@ -5,9 +5,9 @@ namespace Hyva\Admin\Model\TypeReflection;
 class NamespaceMapper
 {
     /**
-     * @var NamespaceMap[]
+     * @var mixed[]
      */
-    private array $memizedNamespaceMaps = [];
+    private $memizedNamespaceMaps = [];
 
     public function forFile(string $file): NamespaceMap
     {

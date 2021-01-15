@@ -22,21 +22,45 @@ use function array_values as values;
 
 class ArrayProviderGridSourceType implements GridSourceTypeInterface
 {
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private ArrayProviderSourceType\ArrayProviderFactory $arrayProviderFactory;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\ArrayProviderSourceType\ArrayProviderFactory
+     */
+    private $arrayProviderFactory;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private DataTypeGuesserInterface $dataTypeGuesser;
+    /**
+     * @var \Hyva\Admin\Api\DataTypeGuesserInterface
+     */
+    private $dataTypeGuesser;
 
-    private array $memoizedGridData;
+    /**
+     * @var mixed[]
+     */
+    private $memoizedGridData;
 
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
+    /**
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
 
-    private string $arrayProviderClass;
+    /**
+     * @var string
+     */
+    private $arrayProviderClass;
 
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
     public function __construct(
         string $gridName,
