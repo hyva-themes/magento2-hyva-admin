@@ -8,8 +8,8 @@ use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_values as values;
-use Hyva\Admin\Model\HyvaGridSourceInterface;
 
+use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
@@ -80,6 +80,11 @@ class Navigation implements NavigationInterface
         return $this->gridSource->getTotalCount($this->getSearchCriteria());
     }
 
+    public function isPagerEnabled(): bool
+    {
+        return ($this->navigationConfig['pager']['@enabled'] ?? '') !== 'false';
+    }
+
     public function getPageCount(): int
     {
         $totalRowsCount = $this->getTotalRowsCount();
@@ -122,6 +127,11 @@ class Navigation implements NavigationInterface
         return $this->getUrlForPage($prevPage);
     }
 
+    public function getFirstPageUrl(): string
+    {
+        return $this->getUrlForPage(1);
+    }
+
     public function hasNextPage(): bool
     {
         return $this->getCurrentPageNumber() < $this->getPageCount();
@@ -152,6 +162,11 @@ class Navigation implements NavigationInterface
         return $this->isAjaxEnabled()
             ? 'hyva_admin/ajax/paging'
             : '*/*/*';
+    }
+
+    public function getLastPageUrl(): string
+    {
+        return $this->getUrlForPage($this->getPageCount());
     }
 
     public function getUrlForPage(int $pageNum): string
@@ -192,13 +207,15 @@ class Navigation implements NavigationInterface
 
     public function getSearchCriteria(): SearchCriteriaInterface
     {
-        $this->searchCriteriaBuilder->setPageSize($this->getPageSize());
-        // The requested page number has to be used here instead of the current page number,
-        // because the current page number requires the search criteria to load the records from the source,
-        // which creates a circular dependency. This means the grid source has to deal with the case
-        // when the page number on the search criteria is larger than the available pages.
-        // However, all page links returned by this class will never go beyond the last page.
-        $this->searchCriteriaBuilder->setCurrentPage($this->getRequestedPageNumber());
+        if ($this->isPagerEnabled()) {
+            $this->searchCriteriaBuilder->setPageSize($this->getPageSize());
+            // The requested page number has to be used here instead of the current page number,
+            // because the current page number requires the search criteria to load the records from the source,
+            // which creates a circular dependency. This means the grid source has to deal with the case
+            // when the page number on the search criteria is larger than the available pages.
+            // However, all page links returned by this class will never go beyond the last page.
+            $this->searchCriteriaBuilder->setCurrentPage($this->getRequestedPageNumber());
+        }
         $this->searchCriteriaBuilder->addSortOrder($this->createSortOrder());
         map(function (GridFilterInterface $filter): void {
             $filter->apply($this->searchCriteriaBuilder);
@@ -354,8 +371,8 @@ class Navigation implements NavigationInterface
     private function getFilterConfig(string $key): ?array
     {
         return values(filter($this->navigationConfig['filters'] ?? [], function (array $filterConfig) use ($key) {
-                return ($filterConfig['key'] ?? null) === $key;
-            }))[0] ?? null;
+            return ($filterConfig['key'] ?? null) === $key;
+        }))[0] ?? null;
     }
 
     public function getFilterFormUrl(): string
@@ -395,10 +412,10 @@ class Navigation implements NavigationInterface
             return [];
         }
         // sort all buttons with a sortOrder before the ones without a sortOrder
-        $maxSortOrder = max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig)) + 1;
+        $maxSortOrder = max(map(fn (array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig)) + 1;
         usort(
             $buttonsConfig,
-            fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
+            fn (array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
         );
 
         return $buttonsConfig;

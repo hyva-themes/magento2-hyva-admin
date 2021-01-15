@@ -25,4 +25,6 @@ interface ColumnDefinitionInterface
     public function isSortable(): bool;
 
     public function isVisible(): bool;
+
+    public function isInitiallyHidden(): bool;
 }

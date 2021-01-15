@@ -234,6 +234,7 @@ class GridXmlToArrayConverter
             $this->getAttributeConfig($columnElement, 'sortable'),
             $this->getAttributeConfig($columnElement, 'source'),
             $this->getAttributeConfig($columnElement, 'template'),
+            $this->getAttributeConfig($columnElement, 'initiallyHidden'),
             $this->getColumnOptionsConfig($columnElement),
         ));
     }
@@ -318,6 +319,7 @@ class GridXmlToArrayConverter
         $pagerElement = $this->getChildByName($navigationElement, 'pager');
         return $pagerElement
             ? filter(merge(
+                ['@enabled' => $pagerElement->getAttribute('enabled')],
                 $this->getElementConfig($pagerElement, 'defaultPageSize'),
                 $this->getElementConfig($pagerElement, 'pageSizes')
             ))

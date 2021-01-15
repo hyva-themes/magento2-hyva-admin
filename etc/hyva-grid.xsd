@@ -127,6 +127,7 @@
         <xs:attribute name="sortable" type="boolean"/>
         <xs:attribute name="renderAsUnsecureHtml" type="boolean"/>
         <xs:attribute name="source" type="phpType"/>
+        <xs:attribute name="initiallyHidden" type="boolean"/>
     </xs:complexType>
 
     <xs:complexType name="baseActionType">
@@ -204,6 +205,7 @@
                 </xs:simpleType>
             </xs:element>
         </xs:all>
+        <xs:attribute name="enabled" type="boolean"/>
     </xs:complexType>
 
     <xs:complexType name="sortingType">

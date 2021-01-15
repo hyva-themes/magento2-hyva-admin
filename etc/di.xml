@@ -38,8 +38,9 @@
             <argument name="dataTypeClassMap" xsi:type="array">
                 <item name="datetime" xsi:type="string">Hyva\Admin\Model\DataType\DateTimeDataType</item>
                 <item name="long_text" xsi:type="string">Hyva\Admin\Model\DataType\LongTextDataType</item>
-                <item name="string" xsi:type="string">Hyva\Admin\Model\DataType\LongTextDataType</item>
-                <item name="text" xsi:type="string">Hyva\Admin\Model\DataType\LongTextDataType</item>
+                <item name="text" xsi:type="string">Hyva\Admin\Model\DataType\TextDataType</item>
+                <item name="truncated_text" xsi:type="string">Hyva\Admin\Model\DataType\TextDataType</item>
+                <item name="string" xsi:type="string">Hyva\Admin\Model\DataType\TextDataType</item>
                 <item name="array" xsi:type="string">Hyva\Admin\Model\DataType\ArrayDataType</item>
                 <item name="bool" xsi:type="string">Hyva\Admin\Model\DataType\BooleanDataType</item>
                 <item name="int" xsi:type="string">Hyva\Admin\Model\DataType\IntDataType</item>
