@@ -392,7 +392,13 @@ $uniqueId = '_' . uniqid();
             return {
                 refs: false,
                 selectedRows: [],
-                hiddenCols: [],
+                hiddenCols: [
+                    <?php foreach ($grid->getColumnDefinitions() as $column): ?>
+                        <?php if ($column->isInitiallyHidden()): ?>
+                        'col-<?= $escaper->escapeHtml($column->getKey()) ?>',
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                ],
                 massActionStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-selectedRows' ?>',
                 hiddenColsStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-hiddenCols' ?>',
 
@@ -409,7 +415,6 @@ $uniqueId = '_' . uniqid();
 
                 initState() {
                     this.$watch('selectedRows', this.storeSelectedRows.bind(this));
-                    this.$watch('hiddenCols', this.storeHiddenColumns.bind(this));
                     this.selectedRows = this.getSelectedRows();
                     this.hiddenCols = this.getHiddenCols();
                 },
@@ -421,7 +426,7 @@ $uniqueId = '_' . uniqid();
 
                 getHiddenCols() {
                     const hiddenColsJson = window.sessionStorage.getItem(this.hiddenColsStorageName);
-                    return hiddenColsJson ? JSON.parse(hiddenColsJson) : [];
+                    return hiddenColsJson ? JSON.parse(hiddenColsJson) : this.hiddenCols;
                 },
 
                 toggleColumn(key) {
@@ -431,6 +436,7 @@ $uniqueId = '_' . uniqid();
                     } else {
                         this.hiddenCols.push(key);
                     }
+                    this.storeHiddenColumns();
                 },
 
                 isColumnVisible(key) {
