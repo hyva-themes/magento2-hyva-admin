@@ -186,7 +186,7 @@ class GridXmlToArrayConverter
          *         <column name="id" sortOrder="10"/>
          *         <column name="note" type="text"/>
          *         <column name="name" renderer="My\NameRendererBlock"/>
-         *         <column name="speed" label="km/h"/>
+         *         <column name="speed" label="km/h" initiallyHidden="true"/>
          *         <column name="logo" renderAsUnsecureHtml="true" sortable="false"/>
          *         <column name="color" source="My\SourceModel"/>
          *         <column name="background_color">
