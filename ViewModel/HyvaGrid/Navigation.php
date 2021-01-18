@@ -152,7 +152,7 @@ class Navigation implements NavigationInterface
         // initializes the renderer block will not be loaded during the processing of the ajax request.
         return reduce(
             $this->columnDefinitions,
-            fn(bool $isEnabled, ColumnDefinitionInterface $c): bool => $isEnabled && ! $c->getRendererBlockName(),
+            fn(bool $isEnabled, ColumnDefinitionInterface $c): bool => $isEnabled && !$c->getRendererBlockName(),
             ($this->navigationConfig['@isAjaxEnabled'] ?? '') !== 'false'
         );
     }
@@ -371,8 +371,8 @@ class Navigation implements NavigationInterface
     private function getFilterConfig(string $key): ?array
     {
         return values(filter($this->navigationConfig['filters'] ?? [], function (array $filterConfig) use ($key) {
-            return ($filterConfig['key'] ?? null) === $key;
-        }))[0] ?? null;
+                return ($filterConfig['key'] ?? null) === $key;
+            }))[0] ?? null;
     }
 
     public function getFilterFormUrl(): string
@@ -408,14 +408,13 @@ class Navigation implements NavigationInterface
 
     private function sortButtonConfig(array $buttonsConfig): array
     {
-        if (empty($buttonsConfig)) {
-            return [];
-        }
         // sort all buttons with a sortOrder before the ones without a sortOrder
-        $maxSortOrder = max(map(fn (array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig)) + 1;
+        $maxSortOrder = empty($buttonsConfig)
+            ? 0
+            : max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig)) + 1;
         usort(
             $buttonsConfig,
-            fn (array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
+            fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
         );
 
         return $buttonsConfig;

@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Model\GridSourceType;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
+use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
 use Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
@@ -38,6 +39,11 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     private string $gridName;
 
+    /**
+     * @var GridSourcePrefetchEventDispatcher
+     */
+    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
+
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
@@ -45,16 +51,18 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         ArrayProviderSourceType\ArrayProviderFactory $arrayProviderFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         DataTypeGuesserInterface $dataTypeGuesser,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher
     ) {
 
-        $this->gridName                = $gridName;
-        $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
-        $this->arrayProviderFactory    = $arrayProviderFactory;
-        $this->arrayProviderClass      = $sourceConfiguration['arrayProvider'] ?? '';
-        $this->columnDefinitionFactory = $columnDefinitionFactory;
-        $this->dataTypeGuesser         = $dataTypeGuesser;
-        $this->searchCriteriaBuilder   = $searchCriteriaBuilder;
+        $this->gridName                          = $gridName;
+        $this->gridSourceDataAccessor            = $gridSourceDataAccessor;
+        $this->arrayProviderFactory              = $arrayProviderFactory;
+        $this->arrayProviderClass                = $sourceConfiguration['arrayProvider'] ?? '';
+        $this->columnDefinitionFactory           = $columnDefinitionFactory;
+        $this->dataTypeGuesser                   = $dataTypeGuesser;
+        $this->searchCriteriaBuilder             = $searchCriteriaBuilder;
+        $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
 
         $this->validateArrayProviderConfiguration($sourceConfiguration);
     }
@@ -110,10 +118,23 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
             $this->memoizedGridData = $provider->getHyvaGridData();
         }
 
-        $filtered = $this->applyFilterGroups($this->memoizedGridData, $searchCriteria->getFilterGroups() ?? []);
+        $preprocessedSearchCriteria = $this->gridSourcePrefetchEventDispatcher->dispatch(
+            $this->gridName,
+            'array',
+            $searchCriteria
+        );
+
+        $gridData = $this->applySearchCriteria($this->memoizedGridData, $preprocessedSearchCriteria);
+
+        return RawGridSourceContainer::forData($gridData);
+    }
+
+    private function applySearchCriteria(array $gridData, SearchCriteriaInterface $searchCriteria): array
+    {
+        $filtered = $this->applyFilterGroups($gridData, $searchCriteria->getFilterGroups() ?? []);
         $sorted   = $this->applySortOrders($filtered, $searchCriteria->getSortOrders() ?? []);
-        $page     = $this->selectPage($sorted, $searchCriteria);
-        return RawGridSourceContainer::forData($page);
+
+        return $this->selectPage($sorted, $searchCriteria);
     }
 
     public function extractRecords(RawGridSourceContainer $rawGridData): array
@@ -132,10 +153,6 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         return count($this->memoizedGridData);
     }
 
-    /**
-     * @param array $memoizedGridData
-     * @param SortOrder[] $getSortOrders
-     */
     private function applySortOrders(array $gridData, array $sortOrders): array
     {
         return reduce($sortOrders, [$this, 'applySortOrder'], $gridData);
@@ -155,7 +172,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         return $gridData;
     }
 
-    private function selectPage(array $gridData, SearchCriteriaInterface $searchCriteria)
+    private function selectPage(array $gridData, SearchCriteriaInterface $searchCriteria): array
     {
         $count = count($gridData);
         $page  = $searchCriteria->getCurrentPage()
