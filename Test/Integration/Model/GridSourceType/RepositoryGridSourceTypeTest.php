@@ -23,8 +23,8 @@ class RepositoryGridSourceTypeTest extends TestCase
      */
     public function testExtractsColumnKeys(): void
     {
-        $repoGetListMethod  = ProductRepositoryInterface::class . '::getList';
-        $args = [
+        $repoGetListMethod = ProductRepositoryInterface::class . '::getList';
+        $args              = [
             'gridName'            => 'test',
             'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
         ];
@@ -49,14 +49,14 @@ class RepositoryGridSourceTypeTest extends TestCase
 
     public function testExtractsGetterBasedColumnDefinition(): void
     {
-        $repoGetListMethod  = ProductRepositoryInterface::class . '::getList';
-        $args = [
+        $repoGetListMethod = ProductRepositoryInterface::class . '::getList';
+        $args              = [
             'gridName'            => 'test',
             'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
         ];
 
         /** @var RepositoryGridSourceType $sut */
-        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $sut = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
 
         $columnDefinition = $sut->getColumnDefinition('name');
         $this->assertSame(TextDataType::TYPE_TRUNCATED_TEXT, $columnDefinition->getType());
@@ -66,14 +66,14 @@ class RepositoryGridSourceTypeTest extends TestCase
 
     public function testExtractsExtensionAttributesColumnDefinition(): void
     {
-        $repoGetListMethod  = ProductRepositoryInterface::class . '::getList';
-        $args = [
+        $repoGetListMethod = ProductRepositoryInterface::class . '::getList';
+        $args              = [
             'gridName'            => 'test',
             'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
         ];
 
         /** @var RepositoryGridSourceType $sut */
-        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $sut = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
 
         $columnDefinition = $sut->getColumnDefinition('website_ids');
         $this->assertSame('array', $columnDefinition->getType());
@@ -85,14 +85,14 @@ class RepositoryGridSourceTypeTest extends TestCase
      */
     public function testExtractsScalarCustomAttributeColumnDefinition(): void
     {
-        $repoGetListMethod  = ProductRepositoryInterface::class . '::getList';
-        $args = [
+        $repoGetListMethod = ProductRepositoryInterface::class . '::getList';
+        $args              = [
             'gridName'            => 'test',
             'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
         ];
 
         /** @var RepositoryGridSourceType $sut */
-        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $sut = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
 
         $columnDefinition = $sut->getColumnDefinition('multiselect_attribute');
         $this->assertSame('array', $columnDefinition->getType());
@@ -105,16 +105,16 @@ class RepositoryGridSourceTypeTest extends TestCase
      */
     public function testExtractsRepositoryRecords(): void
     {
-        $repoGetListMethod  = CustomerRepositoryInterface::class . '::getList';
-        $args = [
+        $repoGetListMethod = CustomerRepositoryInterface::class . '::getList';
+        $args              = [
             'gridName'            => 'test',
             'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
         ];
 
         /** @var RepositoryGridSourceType $sut */
-        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $sut            = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
         $searchCriteria = (new SearchCriteria())->setPageSize(1);
-        $records = $sut->extractRecords($sut->fetchData($searchCriteria));
+        $records        = $sut->extractRecords($sut->fetchData($searchCriteria));
         $this->assertIsArray($records);
         $this->assertNotEmpty($records);
         $this->assertContainsOnly(CustomerInterface::class, $records);
@@ -125,17 +125,17 @@ class RepositoryGridSourceTypeTest extends TestCase
      */
     public function testExtractsGetterBasedValues(): void
     {
-        $repoGetListMethod  = CustomerRepositoryInterface::class . '::getList';
-        $args = [
+        $repoGetListMethod = CustomerRepositoryInterface::class . '::getList';
+        $args              = [
             'gridName'            => 'test',
             'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
         ];
 
         /** @var RepositoryGridSourceType $sut */
-        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $sut            = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
         $searchCriteria = (new SearchCriteria())->setPageSize(1);
-        $records = $sut->extractRecords($sut->fetchData($searchCriteria));
-        $email = $sut->extractValue($records[0], 'email');
+        $records        = $sut->extractRecords($sut->fetchData($searchCriteria));
+        $email          = $sut->extractValue($records[0], 'email');
         $this->assertSame('customer@example.com', $email);
     }
 
@@ -144,17 +144,17 @@ class RepositoryGridSourceTypeTest extends TestCase
      */
     public function testExtractsExtensionAttributeBasedValues(): void
     {
-        $repoGetListMethod  = CustomerRepositoryInterface::class . '::getList';
-        $args = [
+        $repoGetListMethod = CustomerRepositoryInterface::class . '::getList';
+        $args              = [
             'gridName'            => 'test',
             'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
         ];
 
         /** @var RepositoryGridSourceType $sut */
-        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $sut            = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
         $searchCriteria = (new SearchCriteria())->setPageSize(1);
-        $records = $sut->extractRecords($sut->fetchData($searchCriteria));
-        $isSubscribed = $sut->extractValue($records[0], 'is_subscribed');
+        $records        = $sut->extractRecords($sut->fetchData($searchCriteria));
+        $isSubscribed   = $sut->extractValue($records[0], 'is_subscribed');
         $this->assertSame(false, $isSubscribed);
     }
 
@@ -163,16 +163,16 @@ class RepositoryGridSourceTypeTest extends TestCase
      */
     public function testExtractsCustomAttributeBasedValues(): void
     {
-        $repoGetListMethod  = ProductRepositoryInterface::class . '::getList';
-        $args = [
+        $repoGetListMethod = ProductRepositoryInterface::class . '::getList';
+        $args              = [
             'gridName'            => 'test',
             'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
         ];
 
         /** @var RepositoryGridSourceType $sut */
-        $sut  = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $sut            = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
         $searchCriteria = (new SearchCriteria())->setPageSize(1);
-        $records = values($sut->extractRecords($sut->fetchData($searchCriteria)));
+        $records        = values($sut->extractRecords($sut->fetchData($searchCriteria)));
 
         $metaTitle = $sut->extractValue($records[0], 'meta_title');
         $this->assertSame('meta title', $metaTitle);

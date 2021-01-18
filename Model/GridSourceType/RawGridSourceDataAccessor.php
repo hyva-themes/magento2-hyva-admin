@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Model\GridSourceType\Internal;
+namespace Hyva\Admin\Model\GridSourceType;
 
 use Hyva\Admin\Model\RawGridSourceContainer;
 

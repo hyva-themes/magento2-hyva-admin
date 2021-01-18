@@ -4,7 +4,7 @@ namespace Hyva\Admin\Model\GridSourceType;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
 use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
-use Hyva\Admin\Model\GridSourceType\Internal\RawGridSourceDataAccessor;
+use Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
