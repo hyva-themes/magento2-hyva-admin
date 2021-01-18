@@ -31,8 +31,6 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private TypeReflection $typeReflection;
 
-    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
-
     /**
      * @var ColumnDefinitionInterface[]
      */
@@ -46,16 +44,14 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         RepositorySourceFactory $repositorySourceFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
-        GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher,
         TypeReflection $typeReflection
     ) {
-        $this->gridName                          = $gridName;
-        $this->sourceConfiguration               = $sourceConfiguration;
-        $this->gridSourceDataAccessor            = $gridSourceDataAccessor;
-        $this->repositorySourceFactory           = $repositorySourceFactory;
-        $this->columnDefinitionFactory           = $columnDefinitionFactory;
-        $this->typeReflection                    = $typeReflection;
-        $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
+        $this->gridName                = $gridName;
+        $this->sourceConfiguration     = $sourceConfiguration;
+        $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
+        $this->repositorySourceFactory = $repositorySourceFactory;
+        $this->columnDefinitionFactory = $columnDefinitionFactory;
+        $this->typeReflection          = $typeReflection;
     }
 
     private function getSourceRepoConfig(): string
@@ -98,7 +94,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         return $this->columnDefinitionFactory->create($constructorArguments);
     }
 
-    private function getRecordType(): string
+    public function getRecordType(): string
     {
         if (!isset($this->memoizedRecordType)) {
             $config                   = $this->getSourceRepoConfig();
@@ -109,14 +105,8 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
-        $preprocessedSearchCriteria = $this->gridSourcePrefetchEventDispatcher->dispatch(
-            $this->gridName,
-            $this->getRecordType(),
-            $searchCriteria
-        );
-
         $repositoryGetList = $this->repositorySourceFactory->create($this->getSourceRepoConfig());
-        $result            = $repositoryGetList($preprocessedSearchCriteria);
+        $result            = $repositoryGetList($searchCriteria);
 
         return RawGridSourceContainer::forData($result);
     }

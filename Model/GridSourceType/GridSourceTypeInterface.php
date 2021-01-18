@@ -17,6 +17,8 @@ interface GridSourceTypeInterface
 
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer;
 
+    public function getRecordType(): string;
+
     /**
      * @param RawGridSourceContainer $rawGridData
      * @return mixed[]

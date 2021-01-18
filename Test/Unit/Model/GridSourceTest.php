@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Test\Unit\Model;
 
 use Hyva\Admin\Model\GridSource;
+use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
 use Hyva\Admin\Model\GridSourceType\GridSourceTypeInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinition;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
@@ -58,13 +59,14 @@ class GridSourceTest extends TestCase
     {
         $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
+        $stubEventDispatcher         = $this->createMock(GridSourcePrefetchEventDispatcher::class);
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar', 'baz']);
         $configuredIncludeColumns    = [
             'foo' => new ColumnDefinition($dummyObjectManager, 'foo'),
             'bar' => new ColumnDefinition($dummyObjectManager, 'bar'),
         ];
 
-        $sut              = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
+        $sut              = new GridSource('test', $gridSourceType, $stubColumnDefinitionFactory, $stubEventDispatcher);
         $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
 
         $this->assertContainsColumn(new ColumnDefinition($dummyObjectManager, 'foo'), $extractedColumns);
@@ -76,6 +78,7 @@ class GridSourceTest extends TestCase
     {
         $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
+        $stubEventDispatcher         = $this->createMock(GridSourcePrefetchEventDispatcher::class);
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar', 'baz']);
 
         $configuredIncludeColumns = [
@@ -84,7 +87,7 @@ class GridSourceTest extends TestCase
             new ColumnDefinition($dummyObjectManager, 'does_not_exist'),
         ];
 
-        $sut = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
+        $sut = new GridSource('test', $gridSourceType, $stubColumnDefinitionFactory, $stubEventDispatcher);
         $this->expectException(\OutOfBoundsException::class);
         $this->expectExceptionMessage('Column(s) not found on source: ');
 
@@ -95,6 +98,7 @@ class GridSourceTest extends TestCase
     {
         $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
+        $stubEventDispatcher         = $this->createMock(GridSourcePrefetchEventDispatcher::class);
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar']);
 
         $configuredIncludeColumns = [
@@ -102,7 +106,8 @@ class GridSourceTest extends TestCase
             'bar' => new ColumnDefinition($dummyObjectManager, 'bar', null, 'int'), // configured type
         ];
 
-        $sut                       = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
+        $sut = new GridSource('test', $gridSourceType, $stubColumnDefinitionFactory, $stubEventDispatcher);
+
         $extractedColumns          = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
         $expectedColumnDefinition1 = new ColumnDefinition($dummyObjectManager, 'foo', 'Foo Label');
         $expectedColumnDefinition2 = new ColumnDefinition($dummyObjectManager, 'bar', null, 'int');
@@ -114,11 +119,12 @@ class GridSourceTest extends TestCase
     {
         $sourceColumnKeys            = ['foo', 'bar', 'baz'];
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
+        $stubEventDispatcher         = $this->createMock(GridSourcePrefetchEventDispatcher::class);
         $gridSourceType              = $this->createStubGridSourceType($sourceColumnKeys);
 
         $configuredIncludeColumns = [];
 
-        $sut              = new GridSource($gridSourceType, $stubColumnDefinitionFactory);
+        $sut              = new GridSource('test', $gridSourceType, $stubColumnDefinitionFactory, $stubEventDispatcher);
         $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
         $extractedKeys    = map(function (ColumnDefinitionInterface $columnDefinition): string {
             return $columnDefinition->getKey();

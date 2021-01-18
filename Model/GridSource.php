@@ -23,12 +23,20 @@ class GridSource implements HyvaGridSourceInterface
 
     private RawGridSourceContainer $rawGridData;
 
+    private string $gridName;
+
+    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
+
     public function __construct(
+        string $gridName,
         GridSourceType\GridSourceTypeInterface $gridSourceType,
-        ColumnDefinitionInterfaceFactory $columnDefinitionFactory
+        ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
+        GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher
     ) {
-        $this->gridSourceType          = $gridSourceType;
-        $this->columnDefinitionFactory = $columnDefinitionFactory;
+        $this->gridName                          = $gridName;
+        $this->gridSourceType                    = $gridSourceType;
+        $this->columnDefinitionFactory           = $columnDefinitionFactory;
+        $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
     }
 
     public function extractColumnDefinitions(array $configuredColumns, array $hiddenKeys, bool $keepAll): array
@@ -57,7 +65,7 @@ class GridSource implements HyvaGridSourceInterface
         $extractedColumnsWithSortOrder = $this->addMissingSortOrder($extractedColumns);
         return $this->sortColumns($extractedColumnsWithSortOrder);
     }
-    
+
     private function validateConfiguredKeys(array $configuredKeys, array $availableColumnKeysFromSource): void
     {
         if ($missing = array_diff($configuredKeys, $availableColumnKeysFromSource)) {
@@ -71,8 +79,8 @@ class GridSource implements HyvaGridSourceInterface
         bool $isVisible
     ): ColumnDefinitionInterface {
         $configuredArray = $configured ? filter($configured->toArray()) : [];
-        $extractedArray   = $extracted->toArray();
-        $isVisibleArray   = ['isVisible' => $isVisible];
+        $extractedArray  = $extracted->toArray();
+        $isVisibleArray  = ['isVisible' => $isVisible];
         return $this->columnDefinitionFactory->create(merge($extractedArray, $configuredArray, $isVisibleArray));
     }
 
@@ -89,7 +97,12 @@ class GridSource implements HyvaGridSourceInterface
     private function getRawGridData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
         if (!isset($this->rawGridData)) {
-            $this->rawGridData = $this->gridSourceType->fetchData($searchCriteria);
+            $preprocessedSearchCriteria = $this->gridSourcePrefetchEventDispatcher->dispatch(
+                $this->gridName,
+                $this->gridSourceType->getRecordType(),
+                $searchCriteria
+            );
+            $this->rawGridData = $this->gridSourceType->fetchData($preprocessedSearchCriteria);
         }
         return $this->rawGridData;
     }

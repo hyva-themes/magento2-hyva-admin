@@ -34,8 +34,6 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     private CollectionProcessorInterface $eavCollectionProcessor;
 
-    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
-
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
@@ -44,21 +42,19 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         GridSourceCollectionFactory $gridSourceCollectionFactory,
         CollectionProcessorInterface $defaultCollectionProcessor,
-        CollectionProcessorInterface $eavCollectionProcessor,
-        GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher
+        CollectionProcessorInterface $eavCollectionProcessor
     ) {
-        $this->gridName                          = $gridName;
-        $this->sourceConfiguration               = $sourceConfiguration;
-        $this->typeReflection                    = $typeReflection;
-        $this->gridSourceDataAccessor            = $gridSourceDataAccessor;
-        $this->columnDefinitionFactory           = $columnDefinitionFactory;
-        $this->gridSourceCollectionFactory       = $gridSourceCollectionFactory;
-        $this->defaultCollectionProcessor        = $defaultCollectionProcessor;
-        $this->eavCollectionProcessor            = $eavCollectionProcessor;
-        $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
+        $this->gridName                    = $gridName;
+        $this->sourceConfiguration         = $sourceConfiguration;
+        $this->typeReflection              = $typeReflection;
+        $this->gridSourceDataAccessor      = $gridSourceDataAccessor;
+        $this->columnDefinitionFactory     = $columnDefinitionFactory;
+        $this->gridSourceCollectionFactory = $gridSourceCollectionFactory;
+        $this->defaultCollectionProcessor  = $defaultCollectionProcessor;
+        $this->eavCollectionProcessor      = $eavCollectionProcessor;
     }
 
-    private function getRecordType(): string
+    public function getRecordType(): string
     {
         return $this->gridSourceCollectionFactory->create($this->getCollectionConfig())->getItemObjectClass();
     }
@@ -113,16 +109,10 @@ class CollectionGridSourceType implements GridSourceTypeInterface
             $collection->addAttributeToSelect('*');
         }
 
-        $preprocessedSearchCriteria = $this->gridSourcePrefetchEventDispatcher->dispatch(
-            $this->gridName,
-            $this->getRecordType(),
-            $searchCriteria
-        );
-
         if (is_subclass_of($collection, AbstractEavCollection::class)) {
-            $this->eavCollectionProcessor->process($preprocessedSearchCriteria, $collection);
+            $this->eavCollectionProcessor->process($searchCriteria, $collection);
         } else {
-            $this->defaultCollectionProcessor->process($preprocessedSearchCriteria, $collection);
+            $this->defaultCollectionProcessor->process($searchCriteria, $collection);
         }
 
         return RawGridSourceContainer::forData($collection);

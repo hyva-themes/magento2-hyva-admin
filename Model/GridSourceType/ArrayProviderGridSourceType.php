@@ -39,11 +39,6 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     private string $gridName;
 
-    /**
-     * @var GridSourcePrefetchEventDispatcher
-     */
-    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
-
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
@@ -51,20 +46,23 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         ArrayProviderSourceType\ArrayProviderFactory $arrayProviderFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         DataTypeGuesserInterface $dataTypeGuesser,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
 
-        $this->gridName                          = $gridName;
-        $this->gridSourceDataAccessor            = $gridSourceDataAccessor;
-        $this->arrayProviderFactory              = $arrayProviderFactory;
-        $this->arrayProviderClass                = $sourceConfiguration['arrayProvider'] ?? '';
-        $this->columnDefinitionFactory           = $columnDefinitionFactory;
-        $this->dataTypeGuesser                   = $dataTypeGuesser;
-        $this->searchCriteriaBuilder             = $searchCriteriaBuilder;
-        $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
+        $this->gridName                = $gridName;
+        $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
+        $this->arrayProviderFactory    = $arrayProviderFactory;
+        $this->arrayProviderClass      = $sourceConfiguration['arrayProvider'] ?? '';
+        $this->columnDefinitionFactory = $columnDefinitionFactory;
+        $this->dataTypeGuesser         = $dataTypeGuesser;
+        $this->searchCriteriaBuilder   = $searchCriteriaBuilder;
 
         $this->validateArrayProviderConfiguration($sourceConfiguration);
+    }
+
+    public function getRecordType(): string
+    {
+        return 'array';
     }
 
     private function validateArrayProviderConfiguration(array $sourceConfiguration): void
@@ -118,13 +116,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
             $this->memoizedGridData = $provider->getHyvaGridData();
         }
 
-        $preprocessedSearchCriteria = $this->gridSourcePrefetchEventDispatcher->dispatch(
-            $this->gridName,
-            'array',
-            $searchCriteria
-        );
-
-        $gridData = $this->applySearchCriteria($this->memoizedGridData, $preprocessedSearchCriteria);
+        $gridData = $this->applySearchCriteria($this->memoizedGridData, $searchCriteria);
 
         return RawGridSourceContainer::forData($gridData);
     }

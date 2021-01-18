@@ -27,10 +27,11 @@ class NavigationTest extends TestCase
 
     private function createArrayGridSource(array $gridData): HyvaGridSourceInterface
     {
+        $gridName         = 'testing-grid';
         $gridSourceConfig = ['arrayProvider' => TestingGridDataProvider::withArray($gridData)];
-        $sourceTypeArgs   = ['gridName' => 'testing-grid', 'sourceConfiguration' => $gridSourceConfig];
+        $sourceTypeArgs   = ['gridName' => $gridName, 'sourceConfiguration' => $gridSourceConfig];
         $arraySourceType  = ObjectManager::getInstance()->create(ArrayProviderGridSourceType::class, $sourceTypeArgs);
-        $gridSourceArgs   = ['gridSourceType' => $arraySourceType];
+        $gridSourceArgs   = ['gridSourceType' => $arraySourceType, 'gridName' => $gridName];
 
         return ObjectManager::getInstance()->create(HyvaGridSourceInterface::class, $gridSourceArgs);
     }
@@ -622,19 +623,19 @@ class NavigationTest extends TestCase
             ],
         ];
         $sut              = $this->createNavigation($gridData, $navigationConfig);
-        $this->assertSame(['B', 'C', 'A', 'D'], map(fn (GridButton $b) => $b->getId(), $sut->getButtons()));
+        $this->assertSame(['B', 'C', 'A', 'D'], map(fn(GridButton $b) => $b->getId(), $sut->getButtons()));
     }
 
     public function testAjaxNavigationBaseUrl()
     {
-        $gridData         = [
+        $gridData                = [
             ['col_a' => 'a', 'col_b' => 'b'],
         ];
-        $navigationConfig = ['@isAjaxEnabled' => 'true'];
-        $sut              = $this->createNavigation($gridData, $navigationConfig);
+        $navigationConfig        = ['@isAjaxEnabled' => 'true'];
+        $sut                     = $this->createNavigation($gridData, $navigationConfig);
         $expectedWithSecurityKey = $this->getUrlBuilder()
-                         ->getUrl('hyva_admin/ajax/paging');
-        $expected = substr($expectedWithSecurityKey, 0, (strpos($expectedWithSecurityKey, '/key')));
+                                        ->getUrl('hyva_admin/ajax/paging');
+        $expected                = substr($expectedWithSecurityKey, 0, (strpos($expectedWithSecurityKey, '/key')));
         $this->assertStringStartsWith($expected, $sut->getNextPageUrl());
     }
 
