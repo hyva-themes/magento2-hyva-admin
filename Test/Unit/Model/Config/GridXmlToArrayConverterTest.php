@@ -86,6 +86,10 @@ class GridXmlToArrayConverterTest extends TestCase
                 $this->getFiltersXml(),
                 $this->getFiltersExpected(),
             ],
+            'bindparams'               => [
+                $this->getSearchCriteriaBindParamsXml(),
+                $this->getSearchCriteriaBindParamsExpected(),
+            ],
         ];
     }
 
@@ -337,7 +341,7 @@ EOXML;
         return [
             'navigation' => [
                 '@isAjaxEnabled' => 'true',
-                'pager'   => ['@enabled' => 'false', 'defaultPageSize' => '10', 'pageSizes' => '10,20,50,100'],
+                'pager'          => ['@enabled' => 'false', 'defaultPageSize' => '10', 'pageSizes' => '10,20,50,100'],
                 'sorting'        => ['defaultSortByColumn' => 'id', 'defaultSortDirection' => 'asc'],
                 'filters'        => [
                     ['key' => 'id'],
@@ -466,6 +470,52 @@ EOXML;
                             ['label' => 'blueish', 'values' => ['12']],
                             ['label' => 'rose', 'values' => ['100']],
                         ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    private function getSearchCriteriaBindParamsXml(): string
+    {
+        return <<<EOXML
+    <source type="array">
+        <arrayProvider>ArrayProviderInterface</arrayProvider>
+        <defaultSearchCriteriaBindings>
+            <field name="my_id" requestParam="id"/>
+            <field name="entity_id" class="Magento\Framework\App\RequestInterface" method="getParam" param="id"/>
+            <field name="store_id" class="Magento\Store\Model\StoreManagerInterface" method="getStore" property="id"/>
+            <field name="customer_ids" condition="finset" class="Magento\Customer\Model\Session" method="getCustomerId"/>
+        </defaultSearchCriteriaBindings>
+    </source>
+EOXML;
+    }
+
+    private function getSearchCriteriaBindParamsExpected(): array
+    {
+        return [
+            'source' => [
+                '@type'                         => 'array',
+                'arrayProvider'                 => 'ArrayProviderInterface',
+                'defaultSearchCriteriaBindings' => [
+                    ['name' => 'my_id', 'requestParam' => 'id'],
+                    [
+                        'name'   => 'entity_id',
+                        'class'  => 'Magento\Framework\App\RequestInterface',
+                        'method' => 'getParams',
+                        'param'  => 'id',
+                    ],
+                    [
+                        'name'   => 'store_id',
+                        'class'  => 'Magento\Store\Model\StoreManagerInterface',
+                        'method' => 'getStore',
+                        'property'  => 'id',
+                    ],
+                    [
+                        'name'   => 'customer_ids',
+                        'class'  => 'Magento\Customer\Model\Session',
+                        'method' => 'getCustomerId',
+                        'condition'  => 'finset',
                     ],
                 ],
             ],
