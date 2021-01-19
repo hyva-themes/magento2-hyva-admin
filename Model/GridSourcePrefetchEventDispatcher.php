@@ -24,7 +24,7 @@ class GridSourcePrefetchEventDispatcher
     ): SearchCriteriaInterface {
         return reduce(
             [
-                'hyva_grid_repository_source_prefetch_' . $this->getGridNameEventSuffix($gridName),
+                'hyva_grid_source_prefetch_' . $this->getGridNameEventSuffix($gridName),
                 'hyva_grid_source_prefetch',
             ],
             fn (
