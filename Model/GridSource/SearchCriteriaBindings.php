@@ -55,9 +55,9 @@ class SearchCriteriaBindings
 
     private function fetchBindValue(array $binding)
     {
-        $type = $binding['class'] ?? (isset($binding['requestParam']) ? RequestInterface::class : null);
+        $typeAndMethod = $binding['method'] ?? (isset($binding['requestParam']) ? RequestInterface::class . '::getParam' : null);
 
-        $method = $binding['method'] ?? (isset($binding['requestParam']) ? 'getParam' : null);
+        [$type, $method] = $this->splitTypeAndMethod($typeAndMethod, $binding['field'] ?? '- not specified -');
 
         $param = $binding['param'] ?? $binding['requestParam'] ?? null;
 
@@ -98,5 +98,14 @@ class SearchCriteriaBindings
         }
         $msg = sprintf('Unable to fetch property "%s" from an instance of "%s"', $property, get_class($value));
         throw new UnableToFetchPropertyFromValueException($msg);
+    }
+
+    private function splitTypeAndMethod(?string $typeAndMethod, string $field): array
+    {
+        if (!$typeAndMethod || !preg_match('/^.+::.+$/', $typeAndMethod)) {
+            $msg = sprintf('Invalid defaultSearchCriteriaBinding "%s" specified: method="%s"', $field, $typeAndMethod);
+            throw new \RuntimeException($msg);
+        }
+        return explode('::', $typeAndMethod);
     }
 }

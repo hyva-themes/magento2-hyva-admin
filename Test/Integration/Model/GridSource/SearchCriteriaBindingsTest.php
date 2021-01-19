@@ -56,7 +56,7 @@ class SearchCriteriaBindingsTest extends TestCase
     /**
      * This method is used as a getter in tests
      */
-    public function getSomeTestValue($arg = 'no argument')
+    public function getTestMethodValue($arg = 'no argument')
     {
         return $arg;
     }
@@ -76,14 +76,13 @@ class SearchCriteriaBindingsTest extends TestCase
         $field          = 'test';
         $bindingsConfig = [
             'field'  => $field,
-            'class'  => __CLASS__,
-            'method' => 'getSomeTestValue',
+            'method' => __CLASS__ . '::getTestMethodValue',
         ];
         $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings([$bindingsConfig]);
         $sut->apply($searchCriteria);
-        $this->assertHasFilter($field, $this->getSomeTestValue(), 'eq', $searchCriteria);
+        $this->assertHasFilter($field, $this->getTestMethodValue(), 'eq', $searchCriteria);
     }
 
     public function testGetterWithArgument(): void
@@ -91,15 +90,14 @@ class SearchCriteriaBindingsTest extends TestCase
         $field          = 'test';
         $bindingsConfig = [
             'field'  => $field,
-            'class'  => __CLASS__,
-            'method' => 'getSomeTestValue',
+            'method' => __CLASS__ . '::getTestMethodValue',
             'param'  => 123,
         ];
         $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings([$bindingsConfig]);
         $sut->apply($searchCriteria);
-        $this->assertHasFilter($field, $this->getSomeTestValue(123), 'eq', $searchCriteria);
+        $this->assertHasFilter($field, $this->getTestMethodValue(123), 'eq', $searchCriteria);
     }
 
     public function testGetterWithArgumentAndProperty(): void
@@ -107,8 +105,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $field          = 'test';
         $bindingsConfig = [
             'field'    => $field,
-            'class'    => __CLASS__,
-            'method'   => 'getSomeTestValue',
+            'method'   => __CLASS__ . '::getTestMethodValue',
             'param'    => ['foo' => 'bar'],
             'property' => 'foo',
         ];
@@ -146,8 +143,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $bindingsConfig    = [
             'field'        => $field,
             'requestParam' => 'id',
-            'class'        => __CLASS__,
-            'method'       => 'getSomeTestValue',
+            'method'       => __CLASS__ . '::getTestMethodValue',
             'param'        => 'class method value',
         ];
 
@@ -167,15 +163,14 @@ class SearchCriteriaBindingsTest extends TestCase
         $field          = 'test';
         $bindingsConfig = [
             'field'     => $field,
-            'class'     => __CLASS__,
-            'method'    => 'getSomeTestValue',
+            'method'    => __CLASS__ . '::getTestMethodValue',
             'condition' => 'finset',
         ];
         $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings([$bindingsConfig]);
         $sut->apply($searchCriteria);
-        $this->assertHasFilter($field, $this->getSomeTestValue(), 'finset', $searchCriteria);
+        $this->assertHasFilter($field, $this->getTestMethodValue(), 'finset', $searchCriteria);
     }
 
     public function testAppliesMultipleFieldBindings(): void
@@ -188,8 +183,7 @@ class SearchCriteriaBindingsTest extends TestCase
             ],
             [
                 'field'     => 'field_b',
-                'class'     => __CLASS__,
-                'method'    => 'getSomeTestValue',
+                'method'    => __CLASS__ . '::getTestMethodValue',
                 'param'     => '%abc%',
                 'condition' => 'like',
             ],
@@ -212,8 +206,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $field          = 'test';
         $bindingsConfig = [
             'field'    => $field,
-            'class'    => __CLASS__,
-            'method'   => 'getSomeTestValue',
+            'method'   => __CLASS__ . '::getTestMethodValue',
             'param'    => 'a string has no properties to access here',
             'property' => 'prop',
         ];
@@ -230,8 +223,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'class'    => __CLASS__,
-                'method'   => 'getSomeTestValue',
+                'method'   => __CLASS__ . '::getTestMethodValue',
                 'param'    => new class() {
 
                 },
@@ -251,8 +243,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'class'    => __CLASS__,
-                'method'   => 'getSomeTestValue',
+                'method'   => __CLASS__ . '::getTestMethodValue',
                 'param'    => new class() {
                     public function getProp(): string
                     {
@@ -275,8 +266,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'class'    => __CLASS__,
-                'method'   => 'getSomeTestValue',
+                'method'   => __CLASS__ . '::getTestMethodValue',
                 'param'    => new class() {
                     public function getData($key): string
                     {
@@ -301,8 +291,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'class'    => __CLASS__,
-                'method'   => 'getSomeTestValue',
+                'method'   => __CLASS__ . '::getTestMethodValue',
                 'param'    => new class() implements \ArrayAccess {
                     public function offsetExists($offset)
                     {
@@ -340,8 +329,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'class'    => __CLASS__,
-                'method'   => 'getSomeTestValue',
+                'method'   => __CLASS__ . '::getTestMethodValue',
                 'param'    => new class() {
                     public $prop = 'fine :)';
                 },

@@ -483,9 +483,9 @@ EOXML;
         <arrayProvider>ArrayProviderInterface</arrayProvider>
         <defaultSearchCriteriaBindings>
             <field name="my_id" requestParam="id"/>
-            <field name="entity_id" class="Magento\Framework\App\RequestInterface" method="getParam" param="id"/>
-            <field name="store_id" class="Magento\Store\Model\StoreManagerInterface" method="getStore" property="id"/>
-            <field name="customer_ids" condition="finset" class="Magento\Customer\Model\Session" method="getCustomerId"/>
+            <field name="entity_id" method="Magento\Framework\App\RequestInterface::getParam" param="id"/>
+            <field name="store_id" method="Magento\Store\Model\StoreManagerInterface::getStore" property="id"/>
+            <field name="customer_ids" condition="finset" method="Magento\Customer\Model\Session::getCustomerId"/>
         </defaultSearchCriteriaBindings>
     </source>
 EOXML;
@@ -501,20 +501,17 @@ EOXML;
                     ['field' => 'my_id', 'requestParam' => 'id'],
                     [
                         'field'   => 'entity_id',
-                        'class'  => 'Magento\Framework\App\RequestInterface',
-                        'method' => 'getParam',
+                        'method'  => 'Magento\Framework\App\RequestInterface::getParam',
                         'param'  => 'id',
                     ],
                     [
                         'field'   => 'store_id',
-                        'class'  => 'Magento\Store\Model\StoreManagerInterface',
-                        'method' => 'getStore',
+                        'method'  => 'Magento\Store\Model\StoreManagerInterface::getStore',
                         'property'  => 'id',
                     ],
                     [
                         'field'   => 'customer_ids',
-                        'class'  => 'Magento\Customer\Model\Session',
-                        'method' => 'getCustomerId',
+                        'method'  => 'Magento\Customer\Model\Session::getCustomerId',
                         'condition'  => 'finset',
                     ],
                 ],

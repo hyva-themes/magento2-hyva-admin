@@ -31,15 +31,6 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="phpMethod">
-        <xs:annotation>
-            <xs:documentation>Two or more letters.</xs:documentation>
-        </xs:annotation>
-        <xs:restriction base="xs:normalizedString">
-            <xs:pattern value="[a-z][A-Za-z]+"/>
-        </xs:restriction>
-    </xs:simpleType>
-
     <xs:simpleType name="paramName">
         <xs:annotation>
             <xs:documentation>Zero or more letters or numbers or underscore, starting with a letter.</xs:documentation>
@@ -299,8 +290,7 @@
                 <xs:complexType>
                     <xs:attribute name="name" type="paramName"/>
                     <xs:attribute name="requestParam" type="paramName"/>
-                    <xs:attribute name="class" type="phpType"/>
-                    <xs:attribute name="method" type="phpMethod"/>
+                    <xs:attribute name="method" type="phpTypeAndMethod"/>
                     <xs:attribute name="param" type="paramName"/>
                     <xs:attribute name="property" type="paramName"/>
                     <xs:attribute name="condition" type="conditionType"/>

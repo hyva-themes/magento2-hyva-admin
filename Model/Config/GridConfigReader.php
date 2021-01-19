@@ -18,6 +18,7 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
     private ValidationStateInterface $appValidationState;
 
     private array $idAttributes = [
+        '/grid/source/defaultSearchCriteriaBindings/field' => 'name',
         '/grid/massActions/action' => 'id',
         '/grid/actions/action' => 'id',
         '/grid/columns/include/column' => 'name',
