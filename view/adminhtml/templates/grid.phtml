@@ -533,7 +533,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
                 const encodedFields = Array.from(form.elements)
                     .map(input => encodeURIComponent(input.name) + '=' + encodeURIComponent(input.value))
                     .join('&');
-                this.updateGrid(url + (url.includes('?') ? '' : '?') + encodedFields)
+                this.updateGrid(url + (url.includes('?') ? '&' : '?') + encodedFields)
             },
 
             updateGrid(url) {

@@ -95,7 +95,7 @@
                             <xs:attribute name="idParam">
                                 <xs:simpleType>
                                     <xs:restriction base="xs:string">
-                                        <xs:pattern value="[a-zA-Z]+"/>
+                                        <xs:pattern value="[a-zA-Z_]+"/>
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:attribute>
@@ -114,7 +114,6 @@
         </xs:all>
         <xs:attribute name="rowAction" type="xs:normalizedString"/>
     </xs:complexType>
-
     <xs:complexType name="includeColumns">
         <xs:annotation>
             <xs:documentation>
@@ -168,7 +167,7 @@
             <xs:documentation>The Magento three-part route/controller/action syntax. A * indicates the current value.</xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:string">
-            <xs:pattern value="(\*|[a-zA-Z0-9]+)/((\*|[a-zA-Z0-9/]+)/)?(\*|[a-zA-Z0-9/]+)?"/>
+            <xs:pattern value="(\*|[a-zA-Z0-9]+)/((\*|[a-zA-Z0-9_/]+)/)?(\*|[a-zA-Z0-9/]+)?"/>
         </xs:restriction>
     </xs:simpleType>
 
