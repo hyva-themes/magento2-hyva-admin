@@ -9,7 +9,6 @@ use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteria;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Reflection\DataObjectProcessor;
 use Magento\TestFramework\ObjectManager;
 use Magento\TestFramework\Request;
 use PHPUnit\Framework\TestCase;
@@ -76,7 +75,7 @@ class SearchCriteriaBindingsTest extends TestCase
     {
         $field          = 'test';
         $bindingsConfig = [
-            'name'   => $field,
+            'field'  => $field,
             'class'  => __CLASS__,
             'method' => 'getSomeTestValue',
         ];
@@ -91,7 +90,7 @@ class SearchCriteriaBindingsTest extends TestCase
     {
         $field          = 'test';
         $bindingsConfig = [
-            'name'   => $field,
+            'field'  => $field,
             'class'  => __CLASS__,
             'method' => 'getSomeTestValue',
             'param'  => 123,
@@ -107,7 +106,7 @@ class SearchCriteriaBindingsTest extends TestCase
     {
         $field          = 'test';
         $bindingsConfig = [
-            'name'     => $field,
+            'field'    => $field,
             'class'    => __CLASS__,
             'method'   => 'getSomeTestValue',
             'param'    => ['foo' => 'bar'],
@@ -125,7 +124,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $requestParamValue = 'foo';
         $field             = 'test';
         $bindingsConfig    = [
-            'name'         => $field,
+            'field'        => $field,
             'requestParam' => 'id',
         ];
 
@@ -145,7 +144,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $requestParamValue = 'requestParamValue';
         $field             = 'test';
         $bindingsConfig    = [
-            'name'         => $field,
+            'field'        => $field,
             'requestParam' => 'id',
             'class'        => __CLASS__,
             'method'       => 'getSomeTestValue',
@@ -167,7 +166,7 @@ class SearchCriteriaBindingsTest extends TestCase
     {
         $field          = 'test';
         $bindingsConfig = [
-            'name'      => $field,
+            'field'     => $field,
             'class'     => __CLASS__,
             'method'    => 'getSomeTestValue',
             'condition' => 'finset',
@@ -184,11 +183,11 @@ class SearchCriteriaBindingsTest extends TestCase
         $requestParamValue = 111;
         $bindingsConfigs   = [
             [
-                'name'         => 'field_a',
+                'field'        => 'field_a',
                 'requestParam' => 'id',
             ],
             [
-                'name'      => 'field_b',
+                'field'     => 'field_b',
                 'class'     => __CLASS__,
                 'method'    => 'getSomeTestValue',
                 'param'     => '%abc%',
@@ -212,7 +211,7 @@ class SearchCriteriaBindingsTest extends TestCase
     {
         $field          = 'test';
         $bindingsConfig = [
-            'name'     => $field,
+            'field'    => $field,
             'class'    => __CLASS__,
             'method'   => 'getSomeTestValue',
             'param'    => 'a string has no properties to access here',
@@ -230,7 +229,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $field           = 'test';
         $bindingsConfigs = [
             [
-                'name'     => $field,
+                'field'    => $field,
                 'class'    => __CLASS__,
                 'method'   => 'getSomeTestValue',
                 'param'    => new class() {
@@ -251,7 +250,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $field           = 'test';
         $bindingsConfigs = [
             [
-                'name'     => $field,
+                'field'    => $field,
                 'class'    => __CLASS__,
                 'method'   => 'getSomeTestValue',
                 'param'    => new class() {
@@ -275,7 +274,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $field           = 'test';
         $bindingsConfigs = [
             [
-                'name'     => $field,
+                'field'    => $field,
                 'class'    => __CLASS__,
                 'method'   => 'getSomeTestValue',
                 'param'    => new class() {
@@ -301,7 +300,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $field           = 'test';
         $bindingsConfigs = [
             [
-                'name'     => $field,
+                'field'    => $field,
                 'class'    => __CLASS__,
                 'method'   => 'getSomeTestValue',
                 'param'    => new class() implements \ArrayAccess {
@@ -340,7 +339,7 @@ class SearchCriteriaBindingsTest extends TestCase
         $field           = 'test';
         $bindingsConfigs = [
             [
-                'name'     => $field,
+                'field'    => $field,
                 'class'    => __CLASS__,
                 'method'   => 'getSomeTestValue',
                 'param'    => new class() {

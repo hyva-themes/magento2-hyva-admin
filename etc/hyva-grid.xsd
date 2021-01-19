@@ -14,23 +14,50 @@
     </xs:element>
 
     <xs:simpleType name="phpTypeAndMethod">
+        <xs:annotation>
+            <xs:documentation>A PHP Class or Interface name and a method name, separated by two colons.</xs:documentation>
+        </xs:annotation>
         <xs:restriction base="xs:normalizedString">
             <xs:pattern value="\\?[A-Z][a-zA-Z0-9]*(\\[A-Z][A-Za-z0-9]*)*::[a-z][A-Za-z]+"/>
         </xs:restriction>
     </xs:simpleType>
 
     <xs:simpleType name="phpType">
+        <xs:annotation>
+            <xs:documentation>A PHP Class or Interface name, with or without the leading backslash.</xs:documentation>
+        </xs:annotation>
         <xs:restriction base="xs:normalizedString">
             <xs:pattern value="\\?[A-Z][a-zA-Z0-9]*(\\[A-Z][A-Za-z0-9]*)*"/>
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="phpMethod">
+        <xs:annotation>
+            <xs:documentation>Two or more letters.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="[a-z][A-Za-z]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="paramName">
+        <xs:annotation>
+            <xs:documentation>Zero or more letters or numbers, starting with a letter.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="[a-z]?[A-Za-z0-9]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:complexType name="source">
-        <xs:choice>
-            <xs:element name="repositoryListMethod" type="phpTypeAndMethod"/>
-            <xs:element name="arrayProvider" type="phpType"/>
-            <xs:element name="collection" type="phpType" />
-        </xs:choice>
+        <xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="1">
+                <xs:element name="repositoryListMethod" type="phpTypeAndMethod"/>
+                <xs:element name="arrayProvider" type="phpType"/>
+                <xs:element name="collection" type="phpType" />
+            </xs:choice>
+            <xs:element name="defaultSearchCriteriaBindings" type="searchCriteriaBindingsType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
         <xs:attribute name="type">
             <xs:simpleType>
                 <xs:restriction base="xs:string">
@@ -137,12 +164,18 @@
     </xs:complexType>
 
     <xs:simpleType name="routeType">
+        <xs:annotation>
+            <xs:documentation>The Magento three-part route/controller/action syntax. A * indicates the current value.</xs:documentation>
+        </xs:annotation>
         <xs:restriction base="xs:string">
             <xs:pattern value="(\*|[a-zA-Z0-9]+)/((\*|[a-zA-Z0-9/]+)/)?(\*|[a-zA-Z0-9/]+)?"/>
         </xs:restriction>
     </xs:simpleType>
 
     <xs:simpleType name="templateType">
+        <xs:annotation>
+            <xs:documentation>A fully qualified module name and a template file path within a modules view/[are]/templates/ folder, separeted by two colons.</xs:documentation>
+        </xs:annotation>
         <xs:restriction base="xs:normalizedString">
             <xs:pattern value="[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*::[a-zA-Z/.-]+\.phtml"/>
         </xs:restriction>
@@ -260,4 +293,42 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
+
+    <xs:complexType name="searchCriteriaBindingsType">
+        <xs:sequence>
+            <xs:element name="field" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="name" type="paramName"/>
+                    <xs:attribute name="requestParam" type="paramName"/>
+                    <xs:attribute name="class" type="phpType"/>
+                    <xs:attribute name="method" type="phpMethod"/>
+                    <xs:attribute name="param" type="paramName"/>
+                    <xs:attribute name="property" type="paramName"/>
+                    <xs:attribute name="condition" type="conditionType"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="conditionType">
+        <xs:restriction base="xs:normalizedString">
+            <xs:enumeration value="eq"/>
+            <xs:enumeration value="is"/>
+            <xs:enumeration value="neq" />
+            <xs:enumeration value="lteq" />
+            <xs:enumeration value="to" />
+            <xs:enumeration value="gteq" />
+            <xs:enumeration value="moreeq" />
+            <xs:enumeration value="from" />
+            <xs:enumeration value="gt" />
+            <xs:enumeration value="lt" />
+            <xs:enumeration value="like" />
+            <xs:enumeration value="nlike" />
+            <xs:enumeration value="in" />
+            <xs:enumeration value="nin" />
+            <xs:enumeration value="notnull" />
+            <xs:enumeration value="null" />
+            <xs:enumeration value="finset" />
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

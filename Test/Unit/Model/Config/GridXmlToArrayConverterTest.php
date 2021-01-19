@@ -498,21 +498,21 @@ EOXML;
                 '@type'                         => 'array',
                 'arrayProvider'                 => 'ArrayProviderInterface',
                 'defaultSearchCriteriaBindings' => [
-                    ['name' => 'my_id', 'requestParam' => 'id'],
+                    ['field' => 'my_id', 'requestParam' => 'id'],
                     [
-                        'name'   => 'entity_id',
+                        'field'   => 'entity_id',
                         'class'  => 'Magento\Framework\App\RequestInterface',
-                        'method' => 'getParams',
+                        'method' => 'getParam',
                         'param'  => 'id',
                     ],
                     [
-                        'name'   => 'store_id',
+                        'field'   => 'store_id',
                         'class'  => 'Magento\Store\Model\StoreManagerInterface',
                         'method' => 'getStore',
                         'property'  => 'id',
                     ],
                     [
-                        'name'   => 'customer_ids',
+                        'field'   => 'customer_ids',
                         'class'  => 'Magento\Customer\Model\Session',
                         'method' => 'getCustomerId',
                         'condition'  => 'finset',

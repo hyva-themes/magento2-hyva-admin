@@ -43,7 +43,7 @@ class SearchCriteriaBindings
 
     private function applyBinding(array $filterGroups, array $binding): array
     {
-        $filter = $this->filterBuilder->setField($binding['name'] ?? '')
+        $filter = $this->filterBuilder->setField($binding['field'] ?? '')
                                       ->setValue($this->fetchBindValue($binding))
                                       ->setConditionType($binding['condition'] ?? 'eq')
                                       ->create();

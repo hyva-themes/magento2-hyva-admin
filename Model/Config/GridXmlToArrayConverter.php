@@ -32,7 +32,8 @@ class GridXmlToArrayConverter
                 $this->getArrayProviderSourceConfig($sourceElement),
                 $this->getRepositoryProviderSourceConfig($sourceElement),
                 $this->getCollectionSourceConfig($sourceElement),
-                $this->getQuerySourceConfig($sourceElement)
+                $this->getQuerySourceConfig($sourceElement),
+                $this->getDefaultSourceCriteriaBindingsConfig($sourceElement)
             )
             : [];
     }
@@ -85,11 +86,12 @@ class GridXmlToArrayConverter
      * @param string $name
      * @return string[]
      */
-    private function getAttributeConfig(\DOMElement $element, string $name): array
+    private function getAttributeConfig(\DOMElement $element, string $name, string $withIndexKey = null): array
     {
+        $idx = $withIndexKey ?? $name;
         $value = $element->getAttribute($name);
         return $value !== ''
-            ? [$name => $value]
+            ? [$idx => $value]
             : [];
     }
 
@@ -170,6 +172,37 @@ class GridXmlToArrayConverter
         return $queryConfig ?? [];
     }
 
+    private function getDefaultSourceCriteriaBindingsConfig(\DOMElement $sourceElement): array
+    {
+        $bindingsElement = $this->getChildByName($sourceElement, 'defaultSearchCriteriaBindings');
+        return $bindingsElement
+            ? ['defaultSearchCriteriaBindings' => $this->getDefaultSourceCriteriaBindingFieldsConfig($bindingsElement)]
+            : [];
+    }
+
+    private function getDefaultSourceCriteriaBindingFieldsConfig(\DOMElement $bindingsElement): array
+    {
+        /*
+         * <defaultSearchCriteriaBindings>
+         *     <field name="my_id" requestParam="id"/>
+         *     <field name="entity_id" class="Magento\Framework\App\RequestInterface" method="getParam" param="id"/>
+         *     <field name="store_id" class="Magento\Store\Model\StoreManagerInterface" method="getStore" property="id"/>
+         *     <field name="customer_ids" condition="finset" class="Magento\Customer\Model\Session" method="getCustomerId"/>
+         * </defaultSearchCriteriaBindings>
+         */
+        return map(function (\DOMElement $fieldElement): array {
+            return filter(merge(
+                $this->getAttributeConfig($fieldElement, 'name', 'field'),
+                $this->getAttributeConfig($fieldElement, 'requestParam'),
+                $this->getAttributeConfig($fieldElement, 'class'),
+                $this->getAttributeConfig($fieldElement, 'method'),
+                $this->getAttributeConfig($fieldElement, 'param'),
+                $this->getAttributeConfig($fieldElement, 'property'),
+                $this->getAttributeConfig($fieldElement, 'condition'),
+            ));
+        }, $this->getChildrenByName($bindingsElement, 'field'));
+    }
+
     private function convertColumnsConfig(\DOMElement $root): array
     {
         $columnsElement = $this->getChildByName($root, 'columns');
@@ -225,7 +258,7 @@ class GridXmlToArrayConverter
     private function buildIncludeColumnConfig(\DOMElement $columnElement): array
     {
         return filter(merge(
-            ['key' => $this->getAttributeConfig($columnElement, 'name')['name'] ?? null], // rename idx "name" to "key"
+            $this->getAttributeConfig($columnElement, 'name', 'key'),
             $this->getAttributeConfig($columnElement, 'type'),
             $this->getAttributeConfig($columnElement, 'sortOrder'),
             $this->getAttributeConfig($columnElement, 'rendererBlockName'),
