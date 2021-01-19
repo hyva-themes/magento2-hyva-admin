@@ -18,24 +18,42 @@ use function array_values as values;
 
 class CollectionGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
+    /**
+     * @var mixed[]
+     */
+    private $sourceConfiguration;
 
-    private array $sourceConfiguration;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection
+     */
+    private $typeReflection;
 
-    private TypeReflection $typeReflection;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\CollectionSourceType\GridSourceCollectionFactory
+     */
+    private $gridSourceCollectionFactory;
 
-    private GridSourceCollectionFactory $gridSourceCollectionFactory;
+    /**
+     * @var \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface
+     */
+    private $defaultCollectionProcessor;
 
-    private CollectionProcessorInterface $defaultCollectionProcessor;
-
-    private CollectionProcessorInterface $eavCollectionProcessor;
+    /**
+     * @var \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface
+     */
+    private $eavCollectionProcessor;
 
     public function __construct(
-        string $gridName,
         array $sourceConfiguration,
         TypeReflection $typeReflection,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
@@ -44,7 +62,6 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         CollectionProcessorInterface $defaultCollectionProcessor,
         CollectionProcessorInterface $eavCollectionProcessor
     ) {
-        $this->gridName                    = $gridName;
         $this->sourceConfiguration         = $sourceConfiguration;
         $this->typeReflection              = $typeReflection;
         $this->gridSourceDataAccessor      = $gridSourceDataAccessor;
@@ -96,7 +113,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         return $this->columnDefinitionFactory->create($constructorArguments);
     }
 
-    private function isNonSortableColumn(string $key, string $recordType, string $columnType): bool
+    private function isNonSortableColumn(): bool
     {
         // Implement this as needed
         return false;

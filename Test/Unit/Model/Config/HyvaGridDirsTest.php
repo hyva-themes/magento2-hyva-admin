@@ -20,7 +20,9 @@ class HyvaGridDirsTest extends TestCase
 
         $stubComponentRegistrar = $this->createMock(ComponentRegistrarInterface::class);
         $stubComponentRegistrar->method('getPath')->willReturnCallback(
-            fn(string $_, string $module) => __DIR__ . '/test-grid-dirs/' . $module
+            function (string $_, string $module) {
+                return __DIR__ . '/test-grid-dirs/' . $module;
+            }
         );
 
         return new HyvaGridDirs($stubModuleList, $stubComponentRegistrar, $stubAppState);

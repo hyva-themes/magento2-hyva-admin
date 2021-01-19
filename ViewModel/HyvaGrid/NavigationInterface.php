@@ -6,8 +6,8 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 
 interface NavigationInterface
 {
-    const ASC = 'asc';
-    const DESC = 'desc';
+    public const ASC = 'asc';
+    public const DESC = 'desc';
 
     public function getTotalRowsCount(): int;
 
