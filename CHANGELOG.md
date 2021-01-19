@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 - Currently, nothing.
 
+## [1.1.0] - 2021-01-19
+### Added
+- Add feature to declare default search criteria bindings for embedded grids.
+  More information can be found in the [docs](./doc/1.%Overview/3.%Walkthrough/4.1%Declaring%source%search%bindings.md).
+
+### Changed
+- A number of small bugfixes that I forgot to include individually in this changelog. Still getting used to it.
+
+### Removed
+- No removals.
+
 ## [1.0.8] - 2021-01-15
 ### Added
 - Add this CHANGELOG.md file.
