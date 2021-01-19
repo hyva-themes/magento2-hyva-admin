@@ -9,9 +9,10 @@ Currently supported data providers are:
 
 * repositoryListMethod
 * arrayProvider
+* collection
 
 
-More data provider types will be added in future. The next provider types will likely be a collection provider and a SQL query provider.
+More data provider types will be added in future. The next provider type will likely be a SQL query provider.
 
 
 ## Examples:
@@ -27,6 +28,13 @@ More data provider types will be added in future. The next provider types will l
 ```markup
 <source>
     <repositoryListMethod>\Magento\Catalog\Api\ProductRepositoryInterface::getList</repositoryListMethod>
+</source>
+```
+
+
+```markup
+<source>
+    <collection>\Magento\Catalog\Model\ResourceModel\Product\Collection</collection>
 </source>
 ```
 
