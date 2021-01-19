@@ -164,4 +164,9 @@ class TypeReflection
     {
         return $this->magentoOrmReflection->getIdFieldNameForType($type);
     }
+
+    public function isUserDefined(string $phpType, string $key): string
+    {
+        return $this->customAttributesExtractor->isAttributeUserDefined($phpType, $key);
+    }
 }

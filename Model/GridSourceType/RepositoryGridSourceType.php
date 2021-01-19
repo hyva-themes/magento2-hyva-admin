@@ -78,6 +78,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         $columnType = $this->typeReflection->getColumnType($recordType, $key);
         $label      = $this->typeReflection->extractLabel($recordType, $key);
         $options    = $this->typeReflection->extractOptions($recordType, $key);
+        $isUserDefined = $this->typeReflection->isUserDefined($recordType, $key);
 
         $sortable = $this->isNonSortableColumn($key, $recordType, $columnType)
             ? 'false'
@@ -89,6 +90,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
             'label'    => $label,
             'options'  => $options,
             'sortable' => $sortable,
+            'is_user_defined' => $isUserDefined
         ]);
 
         return $this->columnDefinitionFactory->create($constructorArguments);

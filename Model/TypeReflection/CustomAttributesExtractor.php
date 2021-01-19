@@ -143,4 +143,12 @@ class CustomAttributesExtractor
             ? $sourceModel->getAllOptions()
             : [];
     }
+
+    public function isAttributeUserDefined($type, $code): ?string
+    {
+        $entityTypeCode = $this->getEntityTypeCodeForType($type);
+        $attribute      = $this->eavConfig->getAttribute($entityTypeCode, $code);
+
+        return $attribute->getIsUserDefined();
+    }
 }

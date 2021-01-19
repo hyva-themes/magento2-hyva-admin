@@ -33,6 +33,8 @@ class ColumnDefinition implements ColumnDefinitionInterface
 
     private ?string $initiallyHidden;
 
+    private ?string $isUserDefined;
+
     public function __construct(
         ObjectManagerInterface $objectManager,
         string $key,
@@ -46,7 +48,8 @@ class ColumnDefinition implements ColumnDefinitionInterface
         ?string $source = null,
         ?array $options = null,
         ?bool $isVisible = null,
-        ?string $initiallyHidden = null
+        ?string $initiallyHidden = null,
+        ?string $isUserDefined = null
     ) {
         $this->objectManager        = $objectManager;
         $this->key                  = $key;
@@ -61,6 +64,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
         $this->options              = $options;
         $this->isVisible            = $isVisible;
         $this->initiallyHidden      = $initiallyHidden;
+        $this->isUserDefined        = $isUserDefined;
     }
 
     private function camelCaseToWords(string $camel): string
@@ -109,7 +113,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
             'source'               => $this->source,
             'options'              => $this->options,
             'isVisible'            => $this->isVisible,
-            'initiallyHidden'      => $this->initiallyHidden
+            'initiallyHidden'      => $this->initiallyHidden || !$this->isUserDefined ? 'true' : 'false'
         ];
     }
 
