@@ -42,10 +42,10 @@
 
     <xs:simpleType name="paramName">
         <xs:annotation>
-            <xs:documentation>Zero or more letters or numbers, starting with a letter.</xs:documentation>
+            <xs:documentation>Zero or more letters or numbers or underscore, starting with a letter.</xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:normalizedString">
-            <xs:pattern value="[a-z]?[A-Za-z0-9]*"/>
+            <xs:pattern value="[a-z]?[A-Za-z0-9_]*"/>
         </xs:restriction>
     </xs:simpleType>
 
