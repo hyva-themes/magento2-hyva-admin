@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model;
 
+use Hyva\Admin\Model\GridSource\SearchCriteriaBindings;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Framework\Api\SearchCriteriaInterface;
@@ -23,20 +24,24 @@ class GridSource implements HyvaGridSourceInterface
 
     private RawGridSourceContainer $rawGridData;
 
-    private string $gridName;
-
     private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
+
+    private SearchCriteriaBindings $defaultSearchCriteriaBindings;
+
+    private string $gridName;
 
     public function __construct(
         string $gridName,
         GridSourceType\GridSourceTypeInterface $gridSourceType,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
-        GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher
+        GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher,
+        SearchCriteriaBindings $searchCriteriaBindings
     ) {
         $this->gridName                          = $gridName;
         $this->gridSourceType                    = $gridSourceType;
         $this->columnDefinitionFactory           = $columnDefinitionFactory;
         $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
+        $this->defaultSearchCriteriaBindings     = $searchCriteriaBindings;
     }
 
     public function extractColumnDefinitions(array $configuredColumns, array $hiddenKeys, bool $keepAll): array
@@ -97,14 +102,19 @@ class GridSource implements HyvaGridSourceInterface
     private function getRawGridData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
         if (!isset($this->rawGridData)) {
-            $preprocessedSearchCriteria = $this->gridSourcePrefetchEventDispatcher->dispatch(
-                $this->gridName,
-                $this->gridSourceType->getRecordType(),
-                $searchCriteria
-            );
-            $this->rawGridData = $this->gridSourceType->fetchData($preprocessedSearchCriteria);
+            $preprocessedSearchCriteria = $this->preprocessSearchCriteria($searchCriteria);
+            $this->rawGridData          = $this->gridSourceType->fetchData($preprocessedSearchCriteria);
         }
         return $this->rawGridData;
+    }
+
+    private function preprocessSearchCriteria(SearchCriteriaInterface $searchCriteria): SearchCriteriaInterface
+    {
+        return $this->gridSourcePrefetchEventDispatcher->dispatch(
+            $this->gridName,
+            $this->gridSourceType->getRecordType(),
+            $this->defaultSearchCriteriaBindings->apply($searchCriteria)
+        );
     }
 
     public function getTotalCount(SearchCriteriaInterface $searchCriteria): int

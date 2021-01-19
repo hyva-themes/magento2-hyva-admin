@@ -2,6 +2,9 @@
 
 namespace Hyva\Admin\Test\Unit\Model;
 
+use function array_combine as zip;
+use function array_map as map;
+
 use Hyva\Admin\Model\GridSource;
 use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
 use Hyva\Admin\Model\GridSourceType\GridSourceTypeInterface;
@@ -10,9 +13,6 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Framework\ObjectManagerInterface;
 use PHPUnit\Framework\TestCase;
-
-use function array_combine as zip;
-use function array_map as map;
 
 class GridSourceTest extends TestCase
 {
@@ -59,14 +59,13 @@ class GridSourceTest extends TestCase
     {
         $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
-        $stubEventDispatcher         = $this->createMock(GridSourcePrefetchEventDispatcher::class);
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar', 'baz']);
         $configuredIncludeColumns    = [
             'foo' => new ColumnDefinition($dummyObjectManager, 'foo'),
             'bar' => new ColumnDefinition($dummyObjectManager, 'bar'),
         ];
 
-        $sut              = new GridSource('test', $gridSourceType, $stubColumnDefinitionFactory, $stubEventDispatcher);
+        $sut              = $this->createGridSource('test', $gridSourceType, $stubColumnDefinitionFactory);
         $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
 
         $this->assertContainsColumn(new ColumnDefinition($dummyObjectManager, 'foo'), $extractedColumns);
@@ -78,7 +77,6 @@ class GridSourceTest extends TestCase
     {
         $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
-        $stubEventDispatcher         = $this->createMock(GridSourcePrefetchEventDispatcher::class);
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar', 'baz']);
 
         $configuredIncludeColumns = [
@@ -87,7 +85,7 @@ class GridSourceTest extends TestCase
             new ColumnDefinition($dummyObjectManager, 'does_not_exist'),
         ];
 
-        $sut = new GridSource('test', $gridSourceType, $stubColumnDefinitionFactory, $stubEventDispatcher);
+        $sut = $this->createGridSource('test', $gridSourceType, $stubColumnDefinitionFactory);
         $this->expectException(\OutOfBoundsException::class);
         $this->expectExceptionMessage('Column(s) not found on source: ');
 
@@ -98,7 +96,6 @@ class GridSourceTest extends TestCase
     {
         $dummyObjectManager          = $this->createMock(ObjectManagerInterface::class);
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
-        $stubEventDispatcher         = $this->createMock(GridSourcePrefetchEventDispatcher::class);
         $gridSourceType              = $this->createStubGridSourceType(['foo', 'bar']);
 
         $configuredIncludeColumns = [
@@ -106,8 +103,7 @@ class GridSourceTest extends TestCase
             'bar' => new ColumnDefinition($dummyObjectManager, 'bar', null, 'int'), // configured type
         ];
 
-        $sut = new GridSource('test', $gridSourceType, $stubColumnDefinitionFactory, $stubEventDispatcher);
-
+        $sut                       = $this->createGridSource('test', $gridSourceType, $stubColumnDefinitionFactory);
         $extractedColumns          = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
         $expectedColumnDefinition1 = new ColumnDefinition($dummyObjectManager, 'foo', 'Foo Label');
         $expectedColumnDefinition2 = new ColumnDefinition($dummyObjectManager, 'bar', null, 'int');
@@ -119,12 +115,11 @@ class GridSourceTest extends TestCase
     {
         $sourceColumnKeys            = ['foo', 'bar', 'baz'];
         $stubColumnDefinitionFactory = $this->createStubColumnDefinitionFactory();
-        $stubEventDispatcher         = $this->createMock(GridSourcePrefetchEventDispatcher::class);
         $gridSourceType              = $this->createStubGridSourceType($sourceColumnKeys);
 
-        $configuredIncludeColumns = [];
+        $configuredIncludeColumns    = [];
 
-        $sut              = new GridSource('test', $gridSourceType, $stubColumnDefinitionFactory, $stubEventDispatcher);
+        $sut              = $this->createGridSource('test', $gridSourceType, $stubColumnDefinitionFactory);
         $extractedColumns = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
         $extractedKeys    = map(function (ColumnDefinitionInterface $columnDefinition): string {
             return $columnDefinition->getKey();
@@ -132,4 +127,17 @@ class GridSourceTest extends TestCase
         $this->assertSame(zip($sourceColumnKeys, $sourceColumnKeys), $extractedKeys);
     }
 
+    private function createGridSource(
+        string $gridName,
+        GridSourceTypeInterface $gridSourceType,
+        ColumnDefinitionInterfaceFactory $stubColumnDefinitionFactory
+    ): GridSource {
+        return new GridSource(
+            $gridName,
+            $gridSourceType,
+            $stubColumnDefinitionFactory,
+            $this->createMock(GridSourcePrefetchEventDispatcher::class),
+            $this->createMock(GridSource\SearchCriteriaBindings::class)
+        );
+    }
 }
