@@ -9,6 +9,7 @@ use Hyva\Admin\Model\HyvaGridSourceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
+use Hyva\Admin\ViewModel\HyvaGridViewPrefetchEventDispatcher;
 
 use function array_combine as zip;
 use function array_filter as filter;
@@ -40,6 +41,8 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private HyvaGrid\MassActionInterfaceFactory $massActionFactory;
 
+    private HyvaGridViewPrefetchEventDispatcher $hyvaGridViewPrefetchEventDispatcher;
+
     private string $gridName;
 
     private array $memoizedColumnDefinitions;
@@ -53,7 +56,8 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGrid\NavigationInterfaceFactory $navigationFactory,
         HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory,
         HyvaGrid\GridActionInterfaceFactory $actionFactory,
-        HyvaGrid\MassActionInterfaceFactory $massActionFactory
+        HyvaGrid\MassActionInterfaceFactory $massActionFactory,
+        HyvaGridViewPrefetchEventDispatcher $hyvaGridViewPrefetchEventDispatcher
     ) {
         $this->gridName                = $gridName;
         $this->gridSourceFactory       = $gridSourceFactory;
@@ -64,6 +68,7 @@ class HyvaGridViewModel implements HyvaGridInterface
         $this->entityDefinitionFactory = $entityDefinitionFactory;
         $this->actionFactory           = $actionFactory;
         $this->massActionFactory       = $massActionFactory;
+        $this->hyvaGridViewPrefetchEventDispatcher = $hyvaGridViewPrefetchEventDispatcher;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -89,7 +94,17 @@ class HyvaGridViewModel implements HyvaGridInterface
         $keysToHide       = $this->getGridDefinition()->getExcludedColumnKeys();
         $availableColumns = $this->getGridSourceModel()->extractColumnDefinitions($columns, $keysToHide, $showAll);
 
+        $availableColumns = $this->preprocessColumnDefinitions($availableColumns);
+
         return zip($this->getColumnKeys($availableColumns), values($availableColumns));
+    }
+
+    private function preprocessColumnDefinitions($columnDefinitions): array
+    {
+        return $this->hyvaGridViewPrefetchEventDispatcher->dispatch(
+            $this->gridName,
+            $columnDefinitions
+        );
     }
 
     public function getColumnDefinitions(): array
