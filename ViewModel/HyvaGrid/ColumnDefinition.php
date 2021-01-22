@@ -5,6 +5,9 @@ namespace Hyva\Admin\ViewModel\HyvaGrid;
 use Magento\Eav\Model\Entity\Attribute\Source\SourceInterface;
 use Magento\Framework\ObjectManagerInterface;
 
+use function array_merge as merge;
+use function array_reduce as reduce;
+
 class ColumnDefinition implements ColumnDefinitionInterface
 {
     private ObjectManagerInterface $objectManager;
@@ -109,7 +112,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
             'source'               => $this->source,
             'options'              => $this->options,
             'isVisible'            => $this->isVisible,
-            'initiallyHidden'      => $this->initiallyHidden
+            'initiallyHidden'      => $this->initiallyHidden,
         ];
     }
 
@@ -161,5 +164,20 @@ class ColumnDefinition implements ColumnDefinitionInterface
     public function isInitiallyHidden(): bool
     {
         return isset($this->initiallyHidden) && $this->initiallyHidden === 'true';
+    }
+
+    public function mergeArray(array $definition): ColumnDefinitionInterface
+    {
+        return $this->objectManager->create(ColumnDefinitionInterface::class, merge($this->toArray(), $definition));
+    }
+
+    public function mergeColumnDefinition(ColumnDefinitionInterface ...$columnDefinitions): ColumnDefinitionInterface
+    {
+        return reduce($columnDefinitions, [$this, 'merge'], $this);
+    }
+
+    private function merge(ColumnDefinitionInterface $a, ColumnDefinitionInterface $b): ColumnDefinitionInterface
+    {
+        return $this->objectManager->create(ColumnDefinitionInterface::class, merge($a->toArray(), $b->toArray()));
     }
 }

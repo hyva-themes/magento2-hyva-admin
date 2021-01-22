@@ -56,7 +56,11 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     public function getRecordType(): string
     {
-        return $this->gridSourceCollectionFactory->create($this->getCollectionConfig())->getItemObjectClass();
+        $collection = $this->gridSourceCollectionFactory->create($this->getCollectionConfig());
+        $type       = $collection->getItemObjectClass();
+        return $type === \Magento\Framework\View\Element\UiComponent\DataProvider\Document::class
+            ? $collection->getMainTable() // seems to work okay for now
+            : $type;
     }
 
     private function getCollectionConfig(): string
@@ -105,8 +109,8 @@ class CollectionGridSourceType implements GridSourceTypeInterface
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
         $collection = $this->gridSourceCollectionFactory->create($this->getCollectionConfig());
-        if (method_exists($collection, 'addAttributeToSelect')) {
-            $collection->addAttributeToSelect('*');
+        if (method_exists($collection, 'addFieldToSelect')) {
+            $collection->addFieldToSelect('*');
         }
 
         if (is_subclass_of($collection, AbstractEavCollection::class)) {

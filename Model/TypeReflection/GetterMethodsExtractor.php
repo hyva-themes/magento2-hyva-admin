@@ -52,6 +52,13 @@ class GetterMethodsExtractor
 
     private function fromType(string $type): array
     {
+        return class_exists($type) || interface_exists($type)
+            ? $this->buildMethodList($type)
+            : [];
+    }
+
+    private function buildMethodList(string $type): array
+    {
         $allMethods       = keys($this->methodsMap->getMethodsMap($type));
         $methods          = $this->removeGenericParentClassMethods($type, $allMethods);
         $potentialGetters = filter($methods, fn(string $method) => $this->isMethodValidForDataField($type, $method));

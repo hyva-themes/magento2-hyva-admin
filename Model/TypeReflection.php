@@ -19,13 +19,15 @@ class TypeReflection
 
     private DataTypeGuesserInterface $dataTypeGuesser;
 
+    private MagentoOrmReflection $magentoOrmReflection;
+
+    private TypeReflection\TableColumnExtractor $tableColumnExtractor;
+
     private array $customAttributeKeys = [];
 
     private array $extensionAttributeKeys = [];
 
     private array $getMethodKeys = [];
-
-    private MagentoOrmReflection $magentoOrmReflection;
 
     private array $memoizedColumnTypes = [];
 
@@ -33,12 +35,14 @@ class TypeReflection
         TypeReflection\CustomAttributesExtractor $customAttributesExtractor,
         TypeReflection\ExtensionAttributeTypeExtractor $extensionAttributeTypeExtractor,
         TypeReflection\GetterMethodsExtractor $getterMethodsExtractor,
+        TypeReflection\TableColumnExtractor $tableReflection,
         DataTypeGuesserInterface $dataTypeGuesser,
         MagentoOrmReflection $magentoOrmReflection
     ) {
         $this->customAttributesExtractor       = $customAttributesExtractor;
         $this->extensionAttributeTypeExtractor = $extensionAttributeTypeExtractor;
         $this->getterMethodsExtractor          = $getterMethodsExtractor;
+        $this->tableColumnExtractor            = $tableReflection;
         $this->dataTypeGuesser                 = $dataTypeGuesser;
         $this->magentoOrmReflection            = $magentoOrmReflection;
     }
@@ -48,7 +52,8 @@ class TypeReflection
         return unique(merge(
             $this->getCustomAttributeKeys($type),
             $this->getExtensionAttributeKeys($type),
-            $this->getGetMethodKeys($type)
+            $this->getGetMethodKeys($type),
+            $this->getDbTableColumnKeys($type)
         ));
     }
 
@@ -79,6 +84,11 @@ class TypeReflection
         return $this->getMethodKeys[$type];
     }
 
+    private function getDbTableColumnKeys(string $type): array
+    {
+        return $this->tableColumnExtractor->getTableColumns($type);
+    }
+
     public function isSystemAttribute(string $type, string $key): bool
     {
         return in_array($key, $this->getGetMethodKeys($type), true);
@@ -94,9 +104,14 @@ class TypeReflection
         return in_array($key, $this->getCustomAttributeKeys($type), true);
     }
 
+    public function isTableColumnAttribute(string $type, string $key): bool
+    {
+        return in_array($key, $this->getDbTableColumnKeys($type));
+    }
+
     public function getColumnType(string $phpType, string $key): string
     {
-        if (! isset($this->memoizedColumnTypes[$phpType][$key])) {
+        if (!isset($this->memoizedColumnTypes[$phpType][$key])) {
             $this->memoizedColumnTypes[$phpType][$key] = $this->determineColumnType($phpType, $key);
         }
         return $this->memoizedColumnTypes[$phpType][$key];
@@ -110,6 +125,8 @@ class TypeReflection
             $columnType = $this->extensionAttributeTypeExtractor->getExtensionAttributeType($phpType, $key);
         } elseif ($this->isCustomAttribute($phpType, $key)) {
             $columnType = $this->customAttributesExtractor->getAttributeBackendType($phpType, $key);
+        } elseif ($this->isTableColumnAttribute($phpType, $key)) {
+            $columnType = $this->tableColumnExtractor->getColumnType($phpType, $key);
         } else {
             $columnType = 'unknown';
         }
@@ -124,6 +141,8 @@ class TypeReflection
             $value = $this->extensionAttributeTypeExtractor->getValue($type, $key, $object);
         } elseif ($this->isCustomAttribute($type, $key)) {
             $value = $this->extractCustomAttributeValue($type, $key, $object);
+        } elseif ($this->isTableColumnAttribute($type, $key)) {
+            $value = $this->tableColumnExtractor->extractColumnValue($type, $key, $object);
         } else {
             $value = null;
         }
