@@ -8,7 +8,7 @@
 <select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
         form="<?= $filter->getFormId() ?>"
         class="form-select w-full"
-        onchange="this.form.submit()"
+        @change="formGridUpdate($event.target.form)"
 >
     <option value=""> </option>
 <?php foreach ($filter->getOptions() as $option): ?>
