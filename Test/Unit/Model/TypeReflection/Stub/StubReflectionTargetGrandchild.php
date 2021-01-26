@@ -13,16 +13,6 @@ namespace Hyva\Admin\Test\Unit\Model\TypeReflection\Stub;
  */
 class StubReflectionTargetGrandchild extends StubReflectionTargetChild
 {
-    public function getMethodWithInheritedReturnAnnotation()
-    {
-        return parent::getMethodWithInheritedReturnAnnotation();
-    }
-
-    public function getMethodWithoutInheritedReturnAnnotation()
-    {
-        return parent::getMethodWithoutInheritedReturnAnnotation();
-    }
-
     /**
      * @return int
      */

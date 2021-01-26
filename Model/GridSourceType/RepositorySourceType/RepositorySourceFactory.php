@@ -9,9 +9,15 @@ use Magento\Framework\Reflection\MethodsMap;
 
 class RepositorySourceFactory
 {
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    private $objectManager;
 
-    private MethodsMap $reflectionMethodsMap;
+    /**
+     * @var \Magento\Framework\Reflection\MethodsMap
+     */
+    private $reflectionMethodsMap;
 
     public function __construct(ObjectManagerInterface $objectManager, MethodsMap $reflectionMethodsMap)
     {
@@ -62,7 +68,10 @@ class RepositorySourceFactory
         return new class($repo, $method) implements RepositoryGetListInterface {
             private $repo;
 
-            private string $method;
+            /**
+             * @var string
+             */
+            private $method;
 
             public function __construct($repo, string $method)
             {

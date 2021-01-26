@@ -12,7 +12,10 @@ use function array_values as values;
 
 class ExtensionAttributeTypeExtractor
 {
-    private MethodsMap $methodsMap;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection\MethodsMap
+     */
+    private $methodsMap;
 
     public function __construct(MethodsMap $methodsMap)
     {

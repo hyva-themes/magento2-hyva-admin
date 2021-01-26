@@ -26,14 +26,20 @@ use Magento\Framework\Reflection\FieldNamer;
  */
 class MethodsMap
 {
-    private FieldNamer $fieldNamer;
+    /**
+     * @var \Magento\Framework\Reflection\FieldNamer
+     */
+    private $fieldNamer;
 
     /**
      * @var array[]
      */
     private $memoizedMethodMaps = [];
 
-    private NamespaceMapper $namespaceMapper;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection\NamespaceMapper
+     */
+    private $namespaceMapper;
 
     public function __construct(FieldNamer $fieldNamer, NamespaceMapper $namespaceMapper)
     {
@@ -89,7 +95,9 @@ class MethodsMap
         $methodAnnotations = $class->getDocBlock() ? $class->getDocBlock()->getTags('method') : [];
         // Methods annotations with params are returned as instances with a null method name, which we can ignore
         // because in the end we are only interested in getters without parameters.
-        $methodsWithName = filter($methodAnnotations, fn(MethodTag $method): bool => (bool) $method->getMethodName());
+        $methodsWithName = filter($methodAnnotations, function (MethodTag $method) : bool {
+            return (bool) $method->getMethodName();
+        });
 
         return reduce($methodsWithName, function (array $map, MethodTag $tag) use ($class): array {
             $type = $this->reduceToSingleType($tag->getTypes());
@@ -103,7 +111,9 @@ class MethodsMap
     {
         return count($returnTypes) === 1 && $returnTypes[0] === 'null'
             ? 'void'
-            : values(filter($returnTypes, fn(string $type): bool => $type !== 'null'))[0] ?? $default;
+            : values(filter($returnTypes, function (string $type) : bool {
+                return $type !== 'null';
+            }))[0] ?? $default;
     }
 
     private function getRealMethods(ClassReflection $class): array

@@ -10,9 +10,10 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
  */
 class PriceDataType implements DataTypeValueToStringConverterInterface
 {
-    const TYPE_PRICE = 'price';
-
-    private PriceCurrencyInterface $priceCurrency;
+    /**
+     * @var \Magento\Framework\Pricing\PriceCurrencyInterface
+     */
+    private $priceCurrency;
 
     public function __construct(PriceCurrencyInterface $priceCurrency)
     {

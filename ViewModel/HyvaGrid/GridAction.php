@@ -6,15 +6,30 @@ use function array_values as values;
 
 class GridAction implements GridActionInterface
 {
-    private string $label;
+    /**
+     * @var string
+     */
+    private $label;
 
-    private string $url;
+    /**
+     * @var string
+     */
+    private $url;
 
-    private ?string $id;
+    /**
+     * @var string|null
+     */
+    private $id;
 
-    private ?string $idParam;
+    /**
+     * @var string|null
+     */
+    private $idParam;
 
-    private ?string $idColumn;
+    /**
+     * @var string|null
+     */
+    private $idColumn;
 
     public function __construct(
         string $label,
