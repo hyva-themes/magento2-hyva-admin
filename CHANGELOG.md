@@ -4,7 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
-- Currently, nothing.
+Nothing currently.
+
+## [1.1.1] - 2021-01-26
+### Added
+- Support collections that use the generic entity type
+  `\Magento\Framework\View\Element\UiComponent\DataProvider\Document`
+  This is mainly used in the standard adminhtml (non-hyva) grids.
+  For example `Magento\Sales\Model\ResourceModel\Order\Grid\Collection´
+
+### Changed
+- Backward compatible bugfix for select filter with ajax pagination.
 
 ## [1.1.0] - 2021-01-19
 ### Added
