@@ -19,34 +19,48 @@ use function array_filter as filter;
 
 class RepositoryGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
-
-    private array $sourceConfiguration;
-
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
-
-    private RepositorySourceFactory $repositorySourceFactory;
-
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
-
-    private TypeReflection $typeReflection;
+    /**
+     * @var mixed[]
+     */
+    private $sourceConfiguration;
 
     /**
-     * @var ColumnDefinitionInterface[]
+     * @var \Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor
      */
-    private array $memoizedColumnDefinitions = [];
+    private $gridSourceDataAccessor;
 
-    private string $memoizedRecordType;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory
+     */
+    private $repositorySourceFactory;
+
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
+
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection
+     */
+    private $typeReflection;
+
+    /**
+     * @var mixed[]
+     */
+    private $memoizedColumnDefinitions = [];
+
+    /**
+     * @var string
+     */
+    private $memoizedRecordType;
 
     public function __construct(
-        string $gridName,
         array $sourceConfiguration,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         RepositorySourceFactory $repositorySourceFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         TypeReflection $typeReflection
     ) {
-        $this->gridName                = $gridName;
         $this->sourceConfiguration     = $sourceConfiguration;
         $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
         $this->repositorySourceFactory = $repositorySourceFactory;

@@ -20,29 +20,65 @@ use function array_values as values;
 
 class HyvaGridViewModel implements HyvaGridInterface
 {
-    private HyvaGridDefinitionInterfaceFactory $gridDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory
+     */
+    private $gridDefinitionFactory;
 
-    private HyvaGrid\CellInterfaceFactory $cellFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\CellInterfaceFactory
+     */
+    private $cellFactory;
 
-    private HyvaGridSourceFactory $gridSourceFactory;
+    /**
+     * @var \Hyva\Admin\Model\HyvaGridSourceFactory
+     */
+    private $gridSourceFactory;
 
-    private HyvaGrid\RowInterfaceFactory $rowFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\RowInterfaceFactory
+     */
+    private $rowFactory;
 
-    private HyvaGrid\NavigationInterfaceFactory $navigationFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\NavigationInterfaceFactory
+     */
+    private $navigationFactory;
 
-    private HyvaGridDefinitionInterface $memoizedGridDefinition;
+    /**
+     * @var \Hyva\Admin\Model\HyvaGridDefinitionInterface
+     */
+    private $memoizedGridDefinition;
 
-    private HyvaGridSourceInterface $memoizedGridSource;
+    /**
+     * @var \Hyva\Admin\Model\HyvaGridSourceInterface
+     */
+    private $memoizedGridSource;
 
-    private HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterfaceFactory
+     */
+    private $entityDefinitionFactory;
 
-    private HyvaGrid\GridActionInterfaceFactory $actionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\GridActionInterfaceFactory
+     */
+    private $actionFactory;
 
-    private HyvaGrid\MassActionInterfaceFactory $massActionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\MassActionInterfaceFactory
+     */
+    private $massActionFactory;
 
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private array $memoizedColumnDefinitions;
+    /**
+     * @var mixed[]
+     */
+    private $memoizedColumnDefinitions;
 
     public function __construct(
         string $gridName,

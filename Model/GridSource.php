@@ -18,17 +18,35 @@ use function array_slice as slice;
 
 class GridSource implements HyvaGridSourceInterface
 {
-    private GridSourceType\GridSourceTypeInterface $gridSourceType;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\GridSourceTypeInterface
+     */
+    private $gridSourceType;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private RawGridSourceContainer $rawGridData;
+    /**
+     * @var \Hyva\Admin\Model\RawGridSourceContainer
+     */
+    private $rawGridData;
 
-    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
+    /**
+     * @var \Hyva\Admin\Model\GridSourcePrefetchEventDispatcher
+     */
+    private $gridSourcePrefetchEventDispatcher;
 
-    private SearchCriteriaBindings $defaultSearchCriteriaBindings;
+    /**
+     * @var \Hyva\Admin\Model\GridSource\SearchCriteriaBindings
+     */
+    private $defaultSearchCriteriaBindings;
 
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
     public function __construct(
         string $gridName,
