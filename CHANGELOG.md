@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 Nothing currently.
 
+## [1.1.2] - 2021-01-28
+### Added
+- Filters now can have source models:
+  `<filter column="store_id" source="\Magento\Config\Model\Config\Source\Store"/>`
+
+### Changed
+- No changes
+
+### Removed
+- No removals.
+
 ## [1.1.1] - 2021-01-26
 ### Added
 - Support collections that use the generic entity type
@@ -15,6 +26,9 @@ Nothing currently.
 
 ### Changed
 - Backward compatible bugfix for select filter with ajax pagination.
+
+### Removed
+- No removals.
 
 ## [1.1.0] - 2021-01-19
 ### Added
