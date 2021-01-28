@@ -3,6 +3,7 @@
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 use Hyva\Admin\Api\HyvaGridFilterTypeInterface;
+use Hyva\Admin\Model\GridFilter\FilterSourceModelFactory;
 use Hyva\Admin\Model\GridFilter\GridFilterTypeLocator;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\RequestInterface;
@@ -19,9 +20,11 @@ class GridFilter implements GridFilterInterface
 
     private FilterOptionInterfaceFactory $filterOptionFactory;
 
-    private RequestInterface $request;
+    private FilterSourceModelFactory $filterSourceModelFactory;
 
     private GridFilterTypeLocator $gridFilterTypeLocator;
+
+    private RequestInterface $request;
 
     private ?string $enabled;
 
@@ -31,28 +34,34 @@ class GridFilter implements GridFilterInterface
 
     private ?string $template;
 
+    private ?string $source;
+
     public function __construct(
         string $gridName,
         string $filterFormId,
         ColumnDefinitionInterface $columnDefinition,
         GridFilterTypeLocator $gridFilterTypeLocator,
         FilterOptionInterfaceFactory $filterOptionFactory,
+        FilterSourceModelFactory $filterSourceModelFactory,
         RequestInterface $request,
         ?string $enabled = null,
         ?string $filterType = null,
         ?string $template = null,
-        ?array $options = null
+        ?array $options = null,
+        ?string $source = null
     ) {
-        $this->gridName              = $gridName;
-        $this->columnDefinition      = $columnDefinition;
-        $this->filterOptionFactory   = $filterOptionFactory;
-        $this->request               = $request;
-        $this->enabled               = $enabled;
-        $this->filterType            = $filterType;
-        $this->options               = $options;
-        $this->filterFormId          = $filterFormId;
-        $this->gridFilterTypeLocator = $gridFilterTypeLocator;
-        $this->template              = $template;
+        $this->gridName                 = $gridName;
+        $this->columnDefinition         = $columnDefinition;
+        $this->filterOptionFactory      = $filterOptionFactory;
+        $this->request                  = $request;
+        $this->enabled                  = $enabled;
+        $this->filterType               = $filterType;
+        $this->options                  = $options;
+        $this->filterFormId             = $filterFormId;
+        $this->gridFilterTypeLocator    = $gridFilterTypeLocator;
+        $this->template                 = $template;
+        $this->source                   = $source;
+        $this->filterSourceModelFactory = $filterSourceModelFactory;
     }
 
     public function getHtml(): string
@@ -92,9 +101,21 @@ class GridFilter implements GridFilterInterface
 
     public function getOptions(): ?array
     {
-        $options = $this->options ?? $this->getColumnDefinition()->getOptionArray() ?? null;
+        $options = $this->options ?? $this->getSourceOptions() ?? $this->getColumnDefinitonOptions() ?? null;
         return $options
             ? map([$this, 'buildFilterOption'], $options)
+            : null;
+    }
+
+    private function getColumnDefinitonOptions(): ?array
+    {
+        return $this->getColumnDefinition()->getOptionArray();
+    }
+
+    private function getSourceOptions(): ?array
+    {
+        return $this->source
+            ? $this->filterSourceModelFactory->create($this->source)->toOptionArray()
             : null;
     }
 

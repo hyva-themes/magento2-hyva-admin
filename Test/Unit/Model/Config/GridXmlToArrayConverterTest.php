@@ -450,6 +450,7 @@ EOXML;
                 <option label="empty">
                 </option>
             </filter>
+            <filter column="store_id" source="\Magento\Config\Model\Config\Source\Store"/>
         </filters>
     </navigation>
 EOXML;
@@ -471,6 +472,7 @@ EOXML;
                             ['label' => 'rose', 'values' => ['100']],
                         ],
                     ],
+                    ['key' => 'store_id', 'source' => '\Magento\Config\Model\Config\Source\Store']
                 ],
             ],
         ];

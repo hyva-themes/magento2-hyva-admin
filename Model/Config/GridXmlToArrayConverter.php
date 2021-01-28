@@ -327,6 +327,7 @@ class GridXmlToArrayConverter
          *                 <value>12</value>
          *             </option>
          *         </filter>
+         *         <filter column="store_id" source="\Magento\Config\Model\Config\Source\Store"/>
          *     </filters>
          *     <buttons>
          *         <button id="add" label="Add" url="*\/*\/add"/>
@@ -502,6 +503,7 @@ class GridXmlToArrayConverter
          *             <value>12</value>
          *         </option>
          *     </filter>
+         *     <filter column="store_id" source="\Magento\Config\Model\Config\Source\Store"/>
          * </filters>
          */
         $filtersElement = $this->getChildByName($navigationElement, 'filters');
@@ -517,6 +519,7 @@ class GridXmlToArrayConverter
             $this->getAttributeConfig($filterElement, 'enabled'),
             $this->getAttributeConfig($filterElement, 'template'),
             $this->getAttributeConfig($filterElement, 'filterType'),
+            $this->getAttributeConfig($filterElement, 'source'),
             $this->getFilterOptionsConfig($filterElement)
         );
     }

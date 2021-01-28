@@ -263,6 +263,7 @@
                     <xs:attribute name="enabled" type="boolean"/>
                     <xs:attribute name="template" type="templateType"/>
                     <xs:attribute name="filterType" type="phpType"/>
+                    <xs:attribute name="source" type="phpType"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>

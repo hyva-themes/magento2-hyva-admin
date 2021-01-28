@@ -10,6 +10,7 @@ use Hyva\Admin\Model\DataType\UnknownDataType;
 use Hyva\Admin\Model\GridSourceType\CollectionGridSourceType;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Cms\Model\ResourceModel\Page\Collection as CmsPageCollection;
 use Magento\Framework\Api\SearchCriteria;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
@@ -147,5 +148,21 @@ class CollectionGridSourceTypeTest extends TestCase
         $this->assertSame('meta title', $sut->extractValue($records[0], 'meta_title'));
         $this->assertSame('simple', $sut->extractValue($records[0], 'sku'));
         $this->assertSame('Simple Product', $sut->extractValue($records[0], 'name'));
+    }
+
+    public function testExtractsStoreIdFieldFromCmsPageCollection(): void
+    {
+        $args = [
+            'gridName'            => 'test',
+            'sourceConfiguration' => ['collection' => CmsPageCollection::class],
+        ];
+        /** @var CollectionGridSourceType $sut */
+        $sut    = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
+        $column = $sut->getColumnDefinition('store_id');
+        $this->assertSame('int', $column->getType());
+        $result = $sut->fetchData((new SearchCriteria())->setPageSize(1));
+        $records = $sut->extractRecords($result);
+        $this->assertCount(1, $records);
+        $this->assertArrayHasKey(0, $records);
     }
 }
