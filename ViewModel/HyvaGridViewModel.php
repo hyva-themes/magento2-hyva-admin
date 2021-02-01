@@ -6,10 +6,10 @@ use Hyva\Admin\Model\HyvaGridDefinitionInterface;
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Hyva\Admin\Model\HyvaGridSourceFactory;
+use Hyva\Admin\Model\HyvaPrefetchEventDispatcher;
 use Hyva\Admin\ViewModel\HyvaGrid;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
-use Hyva\Admin\ViewModel\HyvaGridViewPrefetchEventDispatcher;
 
 use function array_combine as zip;
 use function array_filter as filter;
@@ -41,7 +41,7 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private HyvaGrid\MassActionInterfaceFactory $massActionFactory;
 
-    private HyvaGridViewPrefetchEventDispatcher $hyvaGridViewPrefetchEventDispatcher;
+    private HyvaPrefetchEventDispatcher $hyvaPrefetchEventDispatcher;
 
     private string $gridName;
 
@@ -57,7 +57,7 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory,
         HyvaGrid\GridActionInterfaceFactory $actionFactory,
         HyvaGrid\MassActionInterfaceFactory $massActionFactory,
-        HyvaGridViewPrefetchEventDispatcher $hyvaGridViewPrefetchEventDispatcher
+        HyvaPrefetchEventDispatcher $hyvaPrefetchEventDispatcher
     ) {
         $this->gridName                = $gridName;
         $this->gridSourceFactory       = $gridSourceFactory;
@@ -68,7 +68,7 @@ class HyvaGridViewModel implements HyvaGridInterface
         $this->entityDefinitionFactory = $entityDefinitionFactory;
         $this->actionFactory           = $actionFactory;
         $this->massActionFactory       = $massActionFactory;
-        $this->hyvaGridViewPrefetchEventDispatcher = $hyvaGridViewPrefetchEventDispatcher;
+        $this->hyvaPrefetchEventDispatcher = $hyvaPrefetchEventDispatcher;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -101,7 +101,7 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private function preprocessColumnDefinitions($columnDefinitions): array
     {
-        return $this->hyvaGridViewPrefetchEventDispatcher->dispatch(
+        return $this->hyvaPrefetchEventDispatcher->dispatch(
             $this->gridName,
             $columnDefinitions
         );
