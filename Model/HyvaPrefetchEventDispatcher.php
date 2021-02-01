@@ -19,7 +19,7 @@ class HyvaPrefetchEventDispatcher
     public function dispatch(
         string $gridName,
         $data
-    ): array {
+    ) {
         return reduce(
             [
                 'hyva_grid_source_prefetch_' . $this->getGridNameEventSuffix($gridName),
@@ -35,7 +35,7 @@ class HyvaPrefetchEventDispatcher
     private function dispatchEvent(
         string $gridName,
         string $eventName,
-        array $data
+        $data
     ) {
         $container = new HyvaAdminEventContainer($data);
 
