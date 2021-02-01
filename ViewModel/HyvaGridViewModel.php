@@ -59,15 +59,15 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGrid\MassActionInterfaceFactory $massActionFactory,
         HyvaPrefetchEventDispatcher $hyvaPrefetchEventDispatcher
     ) {
-        $this->gridName                = $gridName;
-        $this->gridSourceFactory       = $gridSourceFactory;
-        $this->gridDefinitionFactory   = $gridDefinitionFactory;
-        $this->rowFactory              = $rowFactory;
-        $this->cellFactory             = $cellFactory;
-        $this->navigationFactory       = $navigationFactory;
-        $this->entityDefinitionFactory = $entityDefinitionFactory;
-        $this->actionFactory           = $actionFactory;
-        $this->massActionFactory       = $massActionFactory;
+        $this->gridName                    = $gridName;
+        $this->gridSourceFactory           = $gridSourceFactory;
+        $this->gridDefinitionFactory       = $gridDefinitionFactory;
+        $this->rowFactory                  = $rowFactory;
+        $this->cellFactory                 = $cellFactory;
+        $this->navigationFactory           = $navigationFactory;
+        $this->entityDefinitionFactory     = $entityDefinitionFactory;
+        $this->actionFactory               = $actionFactory;
+        $this->massActionFactory           = $massActionFactory;
         $this->hyvaPrefetchEventDispatcher = $hyvaPrefetchEventDispatcher;
     }
 
