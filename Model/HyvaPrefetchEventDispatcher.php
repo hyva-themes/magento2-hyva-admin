@@ -20,16 +20,9 @@ class HyvaPrefetchEventDispatcher
         string $gridName,
         $data
     ) {
-        return reduce(
-            [
-                'hyva_grid_source_prefetch_' . $this->getGridNameEventSuffix($gridName),
-            ],
-            fn (
-                $data,
-                string $eventName
-            ) => $this->dispatchEvent($gridName, $eventName, $data),
-            $data
-        );
+        $eventName = 'hyva_grid_source_prefetch_' . $this->getGridNameEventSuffix($gridName);
+
+        return $this->dispatchEvent($gridName, $eventName, $data);
     }
 
     private function dispatchEvent(

@@ -4,20 +4,20 @@ namespace Hyva\Admin\Model\GridSourceType\RepositorySourceType;
 
 class HyvaAdminEventContainer
 {
-    private $hyvaAdminContainer;
+    private $hyvaAdminEventObject;
 
-    public function __construct($hyvaAdminContainer)
+    public function __construct($hyvaAdminEventObject)
     {
-        $this->hyvaAdminContainer = $hyvaAdminContainer;
+        $this->hyvaAdminEventObject = $hyvaAdminEventObject;
     }
 
-    public function replaceContainerData($hyvaAdminContainer): void
+    public function replaceContainerData($hyvaAdminEventObject): void
     {
-        $this->hyvaAdminContainer = $hyvaAdminContainer;
+        $this->hyvaAdminEventObject = $hyvaAdminEventObject;
     }
 
     public function getContainerData()
     {
-        return $this->hyvaAdminContainer;
+        return $this->hyvaAdminEventObject;
     }
 }
