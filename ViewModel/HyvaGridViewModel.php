@@ -92,10 +92,10 @@ class HyvaGridViewModel implements HyvaGridInterface
         $columns                      = $this->getGridDefinition()->getIncludedColumns();
         $showAll                      = $this->getGridDefinition()->isKeepSourceColumns();
         $keysToHide                   = $this->getGridDefinition()->getExcludedColumnKeys();
-        $preprocessedAvailableColumns = $this->getGridSourceModel()->extractColumnDefinitions($columns, $keysToHide, $showAll);
-        $availableColumns             = $this->preprocessColumnDefinitions($preprocessedAvailableColumns);
+        $availableColumns             = $this->getGridSourceModel()->extractColumnDefinitions($columns, $keysToHide, $showAll);
+        $preprocessedAvailableColumns = $this->preprocessColumnDefinitions($availableColumns);
 
-        return zip($this->getColumnKeys($availableColumns), values($availableColumns));
+        return zip($this->getColumnKeys($preprocessedAvailableColumns), values($preprocessedAvailableColumns));
     }
 
     private function preprocessColumnDefinitions(array $columnDefinitions): array
