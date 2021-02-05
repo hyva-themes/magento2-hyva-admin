@@ -116,7 +116,7 @@ class HyvaGridViewModelTest extends TestCase
     private function createStubHyvaPrefetchEventDispatcher(): MockObject
     {
         $dispatcher = $this->createMock(HyvaPrefetchEventDispatcher::class);
-        $dispatcher->method('dispatch')->willReturnArgument(0);
+        $dispatcher->method('dispatch')->willReturnArgument(1);
         return $dispatcher;
     }
 
