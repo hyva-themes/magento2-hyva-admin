@@ -6,6 +6,7 @@ use Hyva\Admin\Model\HyvaGridDefinitionInterface;
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Hyva\Admin\Model\HyvaGridSourceFactory;
+use Hyva\Admin\Model\HyvaPrefetchEventDispatcher;
 use Hyva\Admin\ViewModel\HyvaGrid;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
@@ -40,6 +41,8 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private HyvaGrid\MassActionInterfaceFactory $massActionFactory;
 
+    private HyvaPrefetchEventDispatcher $hyvaPrefetchEventDispatcher;
+
     private string $gridName;
 
     private array $memoizedColumnDefinitions;
@@ -53,17 +56,19 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGrid\NavigationInterfaceFactory $navigationFactory,
         HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory,
         HyvaGrid\GridActionInterfaceFactory $actionFactory,
-        HyvaGrid\MassActionInterfaceFactory $massActionFactory
+        HyvaGrid\MassActionInterfaceFactory $massActionFactory,
+        HyvaPrefetchEventDispatcher $hyvaPrefetchEventDispatcher
     ) {
-        $this->gridName                = $gridName;
-        $this->gridSourceFactory       = $gridSourceFactory;
-        $this->gridDefinitionFactory   = $gridDefinitionFactory;
-        $this->rowFactory              = $rowFactory;
-        $this->cellFactory             = $cellFactory;
-        $this->navigationFactory       = $navigationFactory;
-        $this->entityDefinitionFactory = $entityDefinitionFactory;
-        $this->actionFactory           = $actionFactory;
-        $this->massActionFactory       = $massActionFactory;
+        $this->gridName                    = $gridName;
+        $this->gridSourceFactory           = $gridSourceFactory;
+        $this->gridDefinitionFactory       = $gridDefinitionFactory;
+        $this->rowFactory                  = $rowFactory;
+        $this->cellFactory                 = $cellFactory;
+        $this->navigationFactory           = $navigationFactory;
+        $this->entityDefinitionFactory     = $entityDefinitionFactory;
+        $this->actionFactory               = $actionFactory;
+        $this->massActionFactory           = $massActionFactory;
+        $this->hyvaPrefetchEventDispatcher = $hyvaPrefetchEventDispatcher;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -84,12 +89,21 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private function buildColumnDefinitions(): array
     {
-        $columns          = $this->getGridDefinition()->getIncludedColumns();
-        $showAll          = $this->getGridDefinition()->isKeepSourceColumns();
-        $keysToHide       = $this->getGridDefinition()->getExcludedColumnKeys();
-        $availableColumns = $this->getGridSourceModel()->extractColumnDefinitions($columns, $keysToHide, $showAll);
+        $columns                      = $this->getGridDefinition()->getIncludedColumns();
+        $showAll                      = $this->getGridDefinition()->isKeepSourceColumns();
+        $keysToHide                   = $this->getGridDefinition()->getExcludedColumnKeys();
+        $availableColumns             = $this->getGridSourceModel()->extractColumnDefinitions($columns, $keysToHide, $showAll);
+        $preprocessedAvailableColumns = $this->preprocessColumnDefinitions($availableColumns);
 
-        return zip($this->getColumnKeys($availableColumns), values($availableColumns));
+        return zip($this->getColumnKeys($preprocessedAvailableColumns), values($preprocessedAvailableColumns));
+    }
+
+    private function preprocessColumnDefinitions(array $columnDefinitions): array
+    {
+        return $this->hyvaPrefetchEventDispatcher->dispatch(
+            $this->gridName,
+            $columnDefinitions
+        );
     }
 
     public function getColumnDefinitions(): array
