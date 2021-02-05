@@ -10,8 +10,6 @@ use Hyva\Admin\Api\DataTypeValueToStringConverterInterface;
  */
 class LongTextDataType implements DataTypeValueToStringConverterInterface
 {
-    const TYPE_TEXT = 'long_text';
-
     public function toString($value): ?string
     {
         return (string) $value;

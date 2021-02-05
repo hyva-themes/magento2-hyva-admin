@@ -4,7 +4,7 @@ namespace Hyva\Admin\Api;
 
 interface DataTypeValueToStringConverterInterface
 {
-    const UNLIMITED_RECURSION = -1;
+    public const UNLIMITED_RECURSION = -1;
 
     public function toString($value): ?string;
 
