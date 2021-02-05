@@ -6,7 +6,7 @@ use Hyva\Admin\Model\HyvaGridDefinitionInterface;
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
 use Hyva\Admin\Model\HyvaGridSourceFactory;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
-use Hyva\Admin\Model\HyvaPrefetchEventDispatcher;
+use Hyva\Admin\Model\HyvaGridEventDispatcher;
 use Hyva\Admin\ViewModel\HyvaGrid\GridActionInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterfaceFactory;
@@ -111,11 +111,11 @@ class HyvaGridViewModelTest extends TestCase
     }
 
     /**
-     * @return MockObject|HyvaPrefetchEventDispatcher
+     * @return MockObject|HyvaGridEventDispatcher
      */
     private function createStubHyvaPrefetchEventDispatcher(): MockObject
     {
-        $dispatcher = $this->createMock(HyvaPrefetchEventDispatcher::class);
+        $dispatcher = $this->createMock(HyvaGridEventDispatcher::class);
         $dispatcher->method('dispatch')->willReturnArgument(1);
         return $dispatcher;
     }

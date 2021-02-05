@@ -45,8 +45,7 @@ class GridSourcePrefetchEventDispatcher
         $this->eventManager->dispatch($eventName, [
             'search_criteria_container' => $container,
             'grid_name'                 => $gridName,
-            'record_type'               => $recordType,
-            'source_type'               => 'repository',
+            'record_type'               => $recordType
         ]);
 
         return $container->getSearchCriteria();

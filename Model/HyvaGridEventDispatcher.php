@@ -3,9 +3,9 @@
 namespace Hyva\Admin\Model;
 
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
-use Hyva\Admin\Model\GridSourceType\RepositorySourceType\HyvaAdminEventContainer;
+use Hyva\Admin\Model\GridSourceType\RepositorySourceType\HyvaGridEventContainer;
 
-class HyvaPrefetchEventDispatcher
+class HyvaGridEventDispatcher
 {
     private EventManagerInterface $eventManager;
 
@@ -14,16 +14,16 @@ class HyvaPrefetchEventDispatcher
         $this->eventManager = $eventManager;
     }
 
-    public function dispatch(string $gridName, $data)
+    public function dispatch(string $gridName, string $eventPrefix, $data)
     {
-        $eventName = 'hyva_grid_source_prefetch_' . $this->getGridNameEventSuffix($gridName);
+        $eventName = $eventPrefix . $this->getGridNameEventSuffix($gridName);
 
         return $this->dispatchEvent($gridName, $eventName, $data);
     }
 
     private function dispatchEvent(string $gridName, string $eventName, $data)
     {
-        $container = new HyvaAdminEventContainer($data);
+        $container = new HyvaGridEventContainer($data);
 
         $this->eventManager->dispatch($eventName, [
             'grid_name' => $gridName,
