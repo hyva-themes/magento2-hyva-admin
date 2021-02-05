@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 Nothing currently.
 
+## [1.1.3] - 2021-02-05
+### Added
+- New event to customize column definitions conditionally:  
+  `'hyva_grid_column_definition_build_after_' . $gridNameSuffix`  
+  Thanks to [@paugnu](https://github.com/paugnu) for the PR!
+
+### Changed
+- No changes
+
+### Removed
+- No removals.
+
 ## [1.1.2] - 2021-01-28
 ### Added
 - Filters now can have source models:
