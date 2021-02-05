@@ -59,16 +59,16 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGrid\MassActionInterfaceFactory $massActionFactory,
         HyvaGridEventDispatcher $hyvaPrefetchEventDispatcher
     ) {
-        $this->gridName                    = $gridName;
-        $this->gridSourceFactory           = $gridSourceFactory;
-        $this->gridDefinitionFactory       = $gridDefinitionFactory;
-        $this->rowFactory                  = $rowFactory;
-        $this->cellFactory                 = $cellFactory;
-        $this->navigationFactory           = $navigationFactory;
-        $this->entityDefinitionFactory     = $entityDefinitionFactory;
-        $this->actionFactory               = $actionFactory;
-        $this->massActionFactory           = $massActionFactory;
-        $this->hyvaEventDispatcher = $hyvaPrefetchEventDispatcher;
+        $this->gridName                = $gridName;
+        $this->gridSourceFactory       = $gridSourceFactory;
+        $this->gridDefinitionFactory   = $gridDefinitionFactory;
+        $this->rowFactory              = $rowFactory;
+        $this->cellFactory             = $cellFactory;
+        $this->navigationFactory       = $navigationFactory;
+        $this->entityDefinitionFactory = $entityDefinitionFactory;
+        $this->actionFactory           = $actionFactory;
+        $this->massActionFactory       = $massActionFactory;
+        $this->hyvaEventDispatcher     = $hyvaPrefetchEventDispatcher;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -89,13 +89,13 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private function buildColumnDefinitions(): array
     {
-        $columns                      = $this->getGridDefinition()->getIncludedColumns();
-        $showAll                      = $this->getGridDefinition()->isKeepSourceColumns();
-        $keysToHide                   = $this->getGridDefinition()->getExcludedColumnKeys();
-        $availableColumns             = $this->getGridSourceModel()->extractColumnDefinitions($columns, $keysToHide, $showAll);
-        $preprocessedAvailableColumns = $this->preprocessColumnDefinitions($availableColumns);
+        $columns          = $this->getGridDefinition()->getIncludedColumns();
+        $showAll          = $this->getGridDefinition()->isKeepSourceColumns();
+        $keysToHide       = $this->getGridDefinition()->getExcludedColumnKeys();
+        $availableColumns = $this->getGridSourceModel()->extractColumnDefinitions($columns, $keysToHide, $showAll);
+        $allColumns       = zip($this->getColumnKeys($availableColumns), values($availableColumns));
 
-        return zip($this->getColumnKeys($preprocessedAvailableColumns), values($preprocessedAvailableColumns));
+        return $this->preprocessColumnDefinitions($allColumns);
     }
 
     private function preprocessColumnDefinitions(array $columnDefinitions): array
