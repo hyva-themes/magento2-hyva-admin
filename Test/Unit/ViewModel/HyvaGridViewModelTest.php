@@ -113,11 +113,11 @@ class HyvaGridViewModelTest extends TestCase
     /**
      * @return MockObject|HyvaPrefetchEventDispatcher
      */
-    private function createStubHyvaPrefetchEventDispatcher(array $columnDefinitions): MockObject
+    private function createStubHyvaPrefetchEventDispatcher(): MockObject
     {
-        $column = $this->createMock(HyvaPrefetchEventDispatcher::class);
-        $column->method('dispatch')->willReturn($columnDefinitions);
-        return $column;
+        $dispatcher = $this->createMock(HyvaPrefetchEventDispatcher::class);
+        $dispatcher->method('dispatch')->willReturnArgument(0);
+        return $dispatcher;
     }
 
     private function setColumnDefinitionOnFactory(
@@ -152,7 +152,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyEntityDefinitionFactory     = $this->createStubEntityDefinitionFactory();
         $dummyActionFactory               = $this->createStubActionFactory();
         $dummyMassActionFactory           = $this->createStubMassActionFactory();
-        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher([$this->createStubColumn('foo')]);
+        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -187,7 +187,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyEntityDefinitionFactory     = $this->createStubEntityDefinitionFactory();
         $dummyActionFactory               = $this->createStubActionFactory();
         $dummyMassActionFactory           = $this->createStubMassActionFactory();
-        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher($columnDefinitions);
+        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher();
 
         $sut = new HyvaGridViewModel(
             'test-grid-name',
@@ -220,7 +220,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyEntityDefinitionFactory     = $this->createStubEntityDefinitionFactory();
         $dummyActionFactory               = $this->createStubActionFactory();
         $dummyMassActionFactory           = $this->createStubMassActionFactory();
-        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher($columnDefinitions);
+        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -255,7 +255,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyEntityDefinitionFactory     = $this->createStubEntityDefinitionFactory();
         $dummyActionFactory               = $this->createStubActionFactory();
         $dummyMassActionFactory           = $this->createStubMassActionFactory();
-        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher([$columnFoo, $columnBar, $columnBaz, $columnQux]);
+        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -301,7 +301,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyEntityDefinitionFactory     = $this->createStubEntityDefinitionFactory();
         $dummyActionFactory               = $this->createStubActionFactory();
         $dummyMassActionFactory           = $this->createStubMassActionFactory();
-        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher([$columnBaz, $columnQux]);
+        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -333,7 +333,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyEntityDefinitionFactory     = $this->createStubEntityDefinitionFactory();
         $dummyActionFactory               = $this->createStubActionFactory();
         $dummyMassActionFactory           = $this->createStubMassActionFactory();
-        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher([$this->createStubColumn('foo')]);
+        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -362,7 +362,7 @@ class HyvaGridViewModelTest extends TestCase
         $stubEntityDefinitionFactory->method('create')->willReturn($this->createMock(EntityDefinitionInterface::class));
         $dummyActionFactory               = $this->createStubActionFactory();
         $dummyMassActionFactory           = $this->createStubMassActionFactory();
-        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher([$this->createStubColumn('foo')]);
+        $dummyHyvaPrefetchEventDispatcher = $this->createStubHyvaPrefetchEventDispatcher();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
