@@ -60,8 +60,8 @@ class ConstraintContainsColumn extends Constraint
         return $actual
             ? sprintf(
                 "column '%s' properties match expected\n%s\nActual %s", $other->getKey(),
-                $this->exporter()->export($other),
-                $this->exporter()->export($actual)
+                $this->exporter()->export($other->toArray()),
+                $this->exporter()->export($actual->toArray())
             )
             : sprintf('column "%s" exists', $other->getKey());
     }

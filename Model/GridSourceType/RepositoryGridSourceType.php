@@ -2,16 +2,13 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
-use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
 use Hyva\Admin\Model\DataType\ProductGalleryDataType;
-use Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\Model\TypeReflection;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchResults;
 

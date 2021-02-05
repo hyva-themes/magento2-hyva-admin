@@ -4,7 +4,6 @@ namespace Hyva\Admin\Model;
 
 use Hyva\Admin\Model\GridSource\SearchCriteriaBindings;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
-use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
 use function array_combine as zip;
@@ -20,8 +19,6 @@ class GridSource implements HyvaGridSourceInterface
 {
     private GridSourceType\GridSourceTypeInterface $gridSourceType;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
-
     private RawGridSourceContainer $rawGridData;
 
     private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
@@ -33,13 +30,11 @@ class GridSource implements HyvaGridSourceInterface
     public function __construct(
         string $gridName,
         GridSourceType\GridSourceTypeInterface $gridSourceType,
-        ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher,
         SearchCriteriaBindings $searchCriteriaBindings
     ) {
         $this->gridName                          = $gridName;
         $this->gridSourceType                    = $gridSourceType;
-        $this->columnDefinitionFactory           = $columnDefinitionFactory;
         $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
         $this->defaultSearchCriteriaBindings     = $searchCriteriaBindings;
     }
@@ -84,9 +79,9 @@ class GridSource implements HyvaGridSourceInterface
         bool $isVisible
     ): ColumnDefinitionInterface {
         $configuredArray = $configured ? filter($configured->toArray()) : [];
-        $extractedArray  = $extracted->toArray();
         $isVisibleArray  = ['isVisible' => $isVisible];
-        return $this->columnDefinitionFactory->create(merge($extractedArray, $configuredArray, $isVisibleArray));
+
+        return $extracted->merge(merge($configuredArray, $isVisibleArray));
     }
 
     public function getRecords(SearchCriteriaInterface $searchCriteria): array
@@ -147,8 +142,8 @@ class GridSource implements HyvaGridSourceInterface
         $nextSortOrders       = range($currentMaxSortOrder + 1, $currentMaxSortOrder + count($columns));
         $columnsWithSortOrder = map(
             function (ColumnDefinitionInterface $column, int $nextSortOrder): ColumnDefinitionInterface {
-                $sortOrder = $column->getSortOrder() ? $column->getSortOrder() : (string) $nextSortOrder;
-                return $this->columnDefinitionFactory->create(merge($column->toArray(), ['sortOrder' => $sortOrder]));
+                $sortOrder = (string) ($column->getSortOrder() ? $column->getSortOrder() : $nextSortOrder);
+                return $column->merge(['sortOrder' => $sortOrder]);
             },
             $columns,
             slice($nextSortOrders, 0, count($columns))

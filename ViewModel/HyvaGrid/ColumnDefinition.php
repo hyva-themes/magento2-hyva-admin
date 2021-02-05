@@ -166,18 +166,9 @@ class ColumnDefinition implements ColumnDefinitionInterface
         return isset($this->initiallyHidden) && $this->initiallyHidden === 'true';
     }
 
-    public function mergeArray(array $definition): ColumnDefinitionInterface
+    public function merge($definition): ColumnDefinitionInterface
     {
-        return $this->objectManager->create(ColumnDefinitionInterface::class, merge($this->toArray(), $definition));
-    }
-
-    public function mergeColumnDefinition(ColumnDefinitionInterface ...$columnDefinitions): ColumnDefinitionInterface
-    {
-        return reduce($columnDefinitions, [$this, 'merge'], $this);
-    }
-
-    private function merge(ColumnDefinitionInterface $a, ColumnDefinitionInterface $b): ColumnDefinitionInterface
-    {
-        return $this->objectManager->create(ColumnDefinitionInterface::class, merge($a->toArray(), $b->toArray()));
+        $mergeArray = $definition instanceof ColumnDefinitionInterface ? $definition->toArray() : $definition;
+        return $this->objectManager->create(ColumnDefinitionInterface::class, merge($this->toArray(), $mergeArray));
     }
 }

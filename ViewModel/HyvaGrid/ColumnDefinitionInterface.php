@@ -18,6 +18,12 @@ interface ColumnDefinitionInterface
 
     public function toArray(): array;
 
+    /**
+     * @param array|ColumnDefinitionInterface $definition
+     * @return ColumnDefinitionInterface
+     */
+    public function merge($definition): ColumnDefinitionInterface;
+
     public function getOptionArray(): array;
 
     public function getSortOrder(): int;
