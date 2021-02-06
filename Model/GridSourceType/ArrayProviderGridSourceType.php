@@ -83,10 +83,7 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     public function extractValue($record, string $key)
     {
-        if (!array_key_exists($key, $record)) {
-            throw new \RuntimeException(sprintf('No column value "%s" on grid row.', $key));
-        }
-        return $record[$key];
+        return $record[$key] ?? null;
     }
 
     public function getColumnDefinition(string $key): ColumnDefinitionInterface

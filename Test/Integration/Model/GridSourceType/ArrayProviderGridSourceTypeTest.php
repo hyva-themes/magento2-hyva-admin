@@ -41,14 +41,11 @@ class ArrayProviderGridSourceTypeTest extends TestCase
         $this->assertSame($value, $sut->extractValue(['bar' => $value], 'bar'));
     }
 
-    public function testThrowsExceptionWhenUnableToExtractValue(): void
+    public function testReturnsNullWhenUnableToExtractValue(): void
     {
         $sut = $this->createArrayProviderGridSourceTypeWithArray([]);
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('No column value "bar"');
-
-        $sut->extractValue([], 'bar');
+        $this->assertNull($sut->extractValue([], 'bar'));
     }
 
     public function testExtractsBasicColumnDefinition(): void
