@@ -102,7 +102,7 @@ It's early in this modules life, so I will probably like to chime in on bigger c
 
 ## Copyright & License
 
-Copyright 2020 Vinai Kopp & Hyvä Themes BV
+Copyright 2021 Vinai Kopp & Hyvä Themes BV
 
 The module is released under the [BSD-3 Clause license](LICENSE.txt).
 
