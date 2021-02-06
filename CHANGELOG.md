@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Fixed example how to use `ColumnDefinition::merge()` in the docs.
+- Bugfix issue #33: With active filters the array grid source type page count still is calculated based on all grid
+  records, not the filtered grid entries, resulting in added blank pages at the end.
+
 
 ### Removed
 - No removals.
