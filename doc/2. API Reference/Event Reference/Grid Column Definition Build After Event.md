@@ -53,9 +53,11 @@ public function execute(Observer $observer)
     /** @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface[] $columnsMap */
     $container = $observer->getData('data_container');
     $columnsMap = $container->getContainerData(); // map of keys to column definitions
-    $columnsMap['example']->merge(['initiallyHidden' => 'true']);
+    $columnsMap['example'] = $columnsMap['example']->merge(['initiallyHidden' => 'true']);
     $container->replaceContainerData($columnsMap);
 }
 ```
 
+Note: the `ColumnDefinition::merge()` method does not change the existing instance, instead, it returns a new instance with the merged properties applied.
 
+The argument with the properties to merge can be an associative array, or it can be another `ColumnDefinitionInterface` instance.
