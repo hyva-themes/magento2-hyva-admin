@@ -6,6 +6,8 @@ use Hyva\Admin\Model\DataType\TextDataType;
 use Hyva\Admin\Model\DataType\ScalarAndNullDataType;
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Test\Integration\TestingGridDataProvider;
+use Magento\Framework\Api\Filter;
+use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteria;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
@@ -78,10 +80,26 @@ class ArrayProviderGridSourceTypeTest extends TestCase
             ['aaa' => 111, 'bbb' => 222, 'ccc' => 333],
         ];
 
-        $sut = $this->createArrayProviderGridSourceTypeWithArray($testGridData);
+        $sut              = $this->createArrayProviderGridSourceTypeWithArray($testGridData);
         $rawDataContainer = $sut->fetchData(new SearchCriteria());
-        $actualData = $sut->extractRecords($rawDataContainer);
+        $actualData       = $sut->extractRecords($rawDataContainer);
 
         $this->assertSame($testGridData, $actualData);
+    }
+
+    public function testCountsWithFiltersApplied(): void
+    {
+        $testGridData   = [
+            ['aaa' => 111, 'bbb' => 222, 'ccc' => 999],
+            ['aaa' => 111, 'bbb' => 222, 'ccc' => 333],
+        ];
+        $filter         = new Filter(['field' => 'ccc', 'value' => 999, 'condition_type' => 'eq']);
+        $filterGroup    = new FilterGroup(['filters' => [$filter]]);
+        $searchCriteria = new SearchCriteria(['filter_groups' => [$filterGroup]]);
+
+        $sut              = $this->createArrayProviderGridSourceTypeWithArray($testGridData);
+        $rawDataContainer = $sut->fetchData($searchCriteria);
+        $count            = $sut->extractTotalRowCount($rawDataContainer);
+        $this->assertSame(1, $count);
     }
 }

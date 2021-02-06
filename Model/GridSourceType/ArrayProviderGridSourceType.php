@@ -31,9 +31,9 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     private DataTypeGuesserInterface $dataTypeGuesser;
 
-    private array $memoizedGridData;
-
     private SearchCriteriaBuilder $searchCriteriaBuilder;
+
+    private array $memoizedGridData;
 
     private string $arrayProviderClass;
 
@@ -110,19 +110,18 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
     {
         if (!isset($this->memoizedGridData)) {
             $provider               = $this->arrayProviderFactory->create($this->arrayProviderClass);
-            $this->memoizedGridData = $provider->getHyvaGridData();
+            $filterGroups           = $searchCriteria->getFilterGroups() ?? [];
+            $this->memoizedGridData = $this->applyFilterGroups($provider->getHyvaGridData(), $filterGroups);
         }
 
-        $gridData = $this->applySearchCriteria($this->memoizedGridData, $searchCriteria);
+        $gridData = $this->applyPagination($this->memoizedGridData, $searchCriteria);
 
         return RawGridSourceContainer::forData($gridData);
     }
 
-    private function applySearchCriteria(array $gridData, SearchCriteriaInterface $searchCriteria): array
+    private function applyPagination(array $gridData, SearchCriteriaInterface $searchCriteria): array
     {
-        $filtered = $this->applyFilterGroups($gridData, $searchCriteria->getFilterGroups() ?? []);
-        $sorted   = $this->applySortOrders($filtered, $searchCriteria->getSortOrders() ?? []);
-
+        $sorted = $this->applySortOrders($gridData, $searchCriteria->getSortOrders() ?? []);
         return $this->selectPage($sorted, $searchCriteria);
     }
 
