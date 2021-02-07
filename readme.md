@@ -42,7 +42,7 @@ This module does not require using a Hyva-Theme for a store front. It is an inde
 It only shares three things with the Hyvä frontend theme:
 - the idea that development should be enjoyable
 - the framework should support developers instead of creating more work than necessary
-- it uses tailwind css and alpinejs under the hood, but you will probably never even notice when using Hyv#_Admin
+- it uses tailwind css and alpinejs under the hood, but you will probably never even notice when using Hyva_Admin
 
 You can install this module and enjoy it without having a Hyvä-Themes license.
 That said, I really recommend you get a store front Hyvä license, and make work there enjoyable and fast, too.
