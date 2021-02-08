@@ -1,5 +1,12 @@
 const colors = require("tailwindcss/colors");
-
+const magento = {
+    header: '#5f564f',
+    color: '#514943',
+    background: {
+        DEFAULT: '#f5f5f5',
+        hover: '#dbdbdb'
+    }
+}
 module.exports = {
     purge: ["../../../../../../hyva*/**/adminhtml/templates/**/*.phtml"],
     darkMode: false,
@@ -28,7 +35,7 @@ module.exports = {
             gray: colors.gray,
             primary: {
                 lighter: colors.gray["700"],
-                DEFAULT: colors.gray["800"],
+                DEFAULT: magento.color,
                 darker: colors.gray["900"],
             },
             secondary: {
@@ -41,33 +48,35 @@ module.exports = {
             white: colors.white,
             gray: colors.gray,
             primary: {
-                lighter: colors.blue["300"],
-                DEFAULT: colors.blue["500"],
-                darker: colors.blue["600"],
+                lighter: colors.gray["200"],
+                DEFAULT: magento.background.DEFAULT,
+                darker: magento.background.hover,
             },
             secondary: {
-                lighter: colors.blue["100"],
-                DEFAULT: colors.blue["200"],
-                darker: colors.blue["300"],
+                lighter: colors.gray["100"],
+                DEFAULT: colors.gray["200"],
+                darker: colors.gray["300"],
             },
             container: {
                 lighter: colors.white,
                 DEFAULT: colors.gray["100"],
                 darker: colors.gray["200"],
+                header: magento.color,
+                hover: magento.header
             },
         },
         borderColor: {
             gray: colors.gray,
             transparent: colors.transparent,
             primary: {
-                lighter: colors.blue["300"],
-                DEFAULT: colors.blue["500"],
-                darker: colors.blue["600"],
+                lighter: colors.gray["300"],
+                DEFAULT: colors.gray["500"],
+                darker: magento.header,
             },
             secondary: {
-                lighter: colors.blue["100"],
-                DEFAULT: colors.blue["200"],
-                darker: colors.blue["300"],
+                lighter: colors.gray["100"],
+                DEFAULT: colors.gray["200"],
+                darker: colors.gray["300"],
             },
             container: {
                 lighter: colors.gray["100"],

@@ -1,14 +1,11 @@
 
-.table-head th,
-.table-filters th{
-    @apply bg-container-darker;
+.table-head th, .table-filters th{
     @apply sticky;
     @apply top-0;
     @apply border;
     @apply border-container-darker;
     @apply px-6;
     @apply py-2;
-    @apply text-primary;
     @apply font-semibold;
     @apply tracking-wider;
     @apply uppercase;
@@ -20,6 +17,16 @@
         @apply pr-12;
     }
 }
+.table-head th {
+    @apply bg-container-header;
+    @apply hover:bg-container-hover;
+    @apply text-white;
+}
+.table-filters th{
+    @apply bg-container-darker;
+    @apply text-primary;
+}
+
 .table-content td {
     @apply border border-container px-3 align-middle whitespace-nowrap;
 }
