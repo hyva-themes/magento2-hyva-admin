@@ -208,6 +208,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
                     <?php foreach ($massActions as $massAction): ?>
                         <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
                         <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>"
+                                class="<?= $massAction->getId() ?>"
                                 value="<?= $escaper->escapeUrl($massActionUrl) ?>">
                             <?= $escaper->escapeHtml($massAction->getLabel()) ?>
                         </option>
