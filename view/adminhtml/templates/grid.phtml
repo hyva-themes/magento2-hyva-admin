@@ -221,7 +221,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
                     <?= $escaper->escapeHtml(__('Total selected:')) ?>
                 </span> <span x-text="selectedRows.length">
                 </span>
-                <a href="#" @click.prevent="selectedRows=[]" class="ml-4 inline-flex btn btn-primary">
+                <a href="#" @click.prevent="resetFormState()" class="ml-4 inline-flex btn btn-primary">
                     <?= $escaper->escapeHtml(__('reset selection')) ?></a>
             </div>
             <?php if ($navigation->hasFilters()): ?>
@@ -484,11 +484,11 @@ $uniqueId   = '_' . md5($grid->getGridName());
                 }
 
                 if (checked.length === 0) {
-                    alert('Please select the records to apply the mass action to.');
+                    alert('<?= __("Please select the records to apply the mass action to.")?>');
                     select.selectedIndex = 0;
                     return;
                 }
-                if (option.dataset.requireConfirm === 'true' && !confirm('Are you sure?')) {
+                if (option.dataset.requireConfirm === 'true' && !confirm('<?= __("Are you sure?")?>')) {
                     select.selectedIndex = 0;
                     return;
                 }
