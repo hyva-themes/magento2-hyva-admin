@@ -23,6 +23,7 @@ use Magento\Framework\Reflection\FieldNamer;
  * - Doesn't throw exceptions for missing return type phpdoc annotations
  * - Reads return types from method signatures
  * - attempts to return annotated type[] array return types when the signature return type is array
+ * - qualifies relative namespaces in return annotations
  */
 class MethodsMap
 {

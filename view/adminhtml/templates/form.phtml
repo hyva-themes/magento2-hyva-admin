@@ -1,0 +1,37 @@
+<?php declare(strict_types=1);
+
+/** @var \Hyva\Admin\Block\Adminhtml\HyvaForm $block */
+/** @var \Magento\Framework\Escaper $escaper */
+
+$form = $block->getForm();
+$uniqueId   = '_' . md5($form->getFormName());
+$navigation = $form->getNavigation();
+$buttons = $navigation->getButtons();
+?>
+<div class="hyva-admin-form">
+    <div class="max-w-full px-0 py-6 mx-auto">
+
+        <div>
+            <?php foreach ($navigation->getButtons() as $button): ?>
+            <?= $buttons->getHtml() ?>
+            <?php endforeach; ?>
+        </div>
+
+        <?php if (count($form->getSections()) > 1): ?>
+        <div>
+            <!-- One day this is supposed to render as tabs to click on -->
+            <?php foreach ($form->getSections() as $section): ?>
+                <?= $escaper->escapeHtml($section->getLabel()) ?>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+
+        <div>
+            <?php foreach ($form->getSections() as $section): ?>
+            <div class="section-<?= $section->getId() ?>">
+                <?= $section->getHtml() ?>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
