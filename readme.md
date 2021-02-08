@@ -35,6 +35,19 @@ Hyva_Admin exists to improve the developer experience while creating new grids.
 
 In future, Hyva_Admin will support creating forms, too.
 
+
+## Relationship with frontend Hyvä-Themes
+
+This module does not require using a Hyva-Theme for a store front. It is an independent module.
+It only shares three things with the Hyvä frontend theme:
+- the idea that development should be enjoyable
+- the framework should support developers instead of creating more work than necessary
+- it uses tailwind css and alpinejs under the hood, but you will probably never even notice when using Hyva_Admin
+
+You can install this module and enjoy it without having a Hyvä-Themes license.
+That said, I really recommend you get a store front Hyvä license, and make work there enjoyable and fast, too.
+
+
 ## Rationale
 
 When using the Magento 2 UI Components to create admin grids and forms, I always felt like I was dying a bit inside. From my point of view it's an awful system for a number of reasons that I don't want to go into more details about here.
@@ -65,6 +78,7 @@ composer require hyva-themes/module-magento2-admin-test
 
 It should work with pretty much any Magento 2 version, as long as the `$escaper` is assigned in templates.
 
+
 ## Quickstart
 
 **Note:** Both an overview with a step by step walkthrough and an API reference can be found in the [doc/](./doc/) folder.
@@ -89,10 +103,11 @@ Grid row actions, mass actions, paging and filtering can also be configured as n
 
 More information can be found in the [Hyva Admin documentation](./doc/).
 
+
 ## Stability
 
-The module isn’t feature complete or stable. It’s currently in a state comparable to a closed beta.
-The API will remain stable, unless some real flaw is discovered.  
+The module isn’t feature complete.
+However, the API will remain stable, unless some real flaw is discovered.  
 New features will be added in a backward compatible manner.  
 
 ## Contributions
