@@ -17,6 +17,8 @@
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\GridActionInterface" type="Hyva\Admin\ViewModel\HyvaGrid\GridAction"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\MassActionInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\MassAction"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface"
+                type="Hyva\Admin\ViewModel\HyvaGrid\GridExport"/>
     <preference for="Hyva\Admin\Api\DataTypeGuesserInterface"
                 type="Hyva\Admin\Model\DataType\DataTypeFacade"/>
     <preference for="Hyva\Admin\Model\DataType\DataTypeToStringConverterLocatorInterface"
@@ -30,6 +32,11 @@
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>
+            <argument name="children" xsi:type="array">
+                <item name="navigation" xsi:type="object">Hyva\Admin\Block\Grid\Navigation</item>
+                <item name="actions" xsi:type="object">Hyva\Admin\Block\Grid\Actions</item>
+                <item name="exports" xsi:type="object">Hyva\Admin\Block\Grid\Exports</item>
+            </argument>
         </arguments>
     </type>
     <type name="Hyva\Admin\Model\DataType\DataTypeFacade">

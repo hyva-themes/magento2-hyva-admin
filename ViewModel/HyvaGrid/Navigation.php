@@ -50,6 +50,10 @@ class Navigation implements NavigationInterface
      * @var GridButtonInterfaceFactory
      */
     private GridButtonInterfaceFactory $gridButtonFactory;
+    /**
+     * @var GridExportInterfaceFactory
+     */
+    private $gridExportFactory;
 
     public function __construct(
         string $gridName,
@@ -61,7 +65,8 @@ class Navigation implements NavigationInterface
         SortOrderBuilder $sortOrderBuilder,
         RequestInterface $request,
         UrlBuilder $urlBuilder,
-        GridButtonInterfaceFactory $gridButtonFactory
+        GridButtonInterfaceFactory $gridButtonFactory,
+        GridExportInterfaceFactory $gridExportFactory
     ) {
         $this->gridSource            = $gridSource;
         $this->navigationConfig      = $navigationConfig;
@@ -73,6 +78,7 @@ class Navigation implements NavigationInterface
         $this->gridName              = $gridName;
         $this->gridFilterFactory     = $gridFilterFactory;
         $this->gridButtonFactory     = $gridButtonFactory;
+        $this->gridExportFactory = $gridExportFactory;
     }
 
     public function getTotalRowsCount(): int
@@ -418,5 +424,29 @@ class Navigation implements NavigationInterface
         );
 
         return $buttonsConfig;
+    }
+
+    public function getExports(): array
+    {
+        return map([$this, 'buildExport'], $this->sortExportsConfig($this->navigationConfig['exports'] ?? []));
+    }
+
+    private function buildExport(array $config): GridExportInterface
+    {
+        return $this->gridExportFactory->create(merge([], $config));
+    }
+
+    private function sortExportsConfig(array $config): array
+    {
+        // sort all buttons with a sortOrder before the ones without a sortOrder
+        $maxSortOrder = empty($config)
+            ? 0
+            : max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $config)) + 1;
+        usort(
+            $config,
+            fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
+        );
+
+        return $config;
     }
 }

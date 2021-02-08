@@ -70,4 +70,9 @@ interface NavigationInterface
      * @return GridButtonInterface[]
      */
     public function getButtons(): array;
+
+    /**
+     * @return array
+     */
+    public function getExports(): array;
 }

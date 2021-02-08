@@ -171,6 +171,15 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="classType">
+        <xs:annotation>
+            <xs:documentation>A fully qualified class name in PSR-4 syntax</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="[A-Z][a-zA-Z0-9]*(\\[A-Z][a-zA-Z0-9]*)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="boolean">
         <xs:restriction base="xs:string">
             <xs:enumeration value="true"/>
@@ -207,6 +216,7 @@
             <xs:element name="sorting" type="sortingType" minOccurs="0"/>
             <xs:element name="filters" type="filtersType" minOccurs="0"/>
             <xs:element name="buttons" type="buttonsType" minOccurs="0"/>
+            <xs:element name="exports" type="exportType" minOccurs="0" />
         </xs:all>
         <xs:attribute name="useAjax" type="boolean"/>
     </xs:complexType>
@@ -279,6 +289,21 @@
                     <xs:attribute name="onclick" type="xs:string"/>
                     <xs:attribute name="enabled" type="boolean"/>
                     <xs:attribute name="template" type="templateType"/>
+                    <xs:attribute name="sortOrder" type="xs:int"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="exportType">
+        <xs:sequence>
+            <xs:element name="export" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="id" type="xs:normalizedString" use="required"/>
+                    <xs:attribute name="label" type="xs:string" use="required"/>
+                    <xs:attribute name="filename" type="xs:string"/>
+                    <xs:attribute name="enabled" type="boolean"/>
+                    <xs:attribute name="class" type="classType" use="required"/>
                     <xs:attribute name="sortOrder" type="xs:int"/>
                 </xs:complexType>
             </xs:element>

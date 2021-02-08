@@ -333,6 +333,10 @@ class GridXmlToArrayConverter
          *         <button id="add" label="Add" url="*\/*\/add"/>
          *         <button id="foo" label="Foo" onclick="doFoo"/>
          *     </buttons>
+         *     <exports>
+         *         <export id="csv" label="Export to CSV" class="Hyva\Admin\Model\Export\Csv" />
+         *         <export id="xml" label="Export to CSV" class="Hyva\Admin\Model\Export\Xml" />
+         *     </exports>
          * </navigation>
          */
         $navigationElement = $this->getChildByName($root, 'navigation');
@@ -343,6 +347,7 @@ class GridXmlToArrayConverter
                 'sorting'        => $this->getSortingConfig($navigationElement),
                 'filters'        => $this->getFiltersConfig($navigationElement),
                 'buttons'        => $this->getButtonsConfig($navigationElement),
+                'exports'        => $this->getExportsConfig($navigationElement),
             ])
             : [];
     }
@@ -476,6 +481,20 @@ class GridXmlToArrayConverter
             : null;
     }
 
+    private function getExportsConfig(\DOMElement $navigationElement): ?array
+    {
+        /*
+         *     <exports>
+         *         <export id="csv" label="Export to CSV" class="Hyva\Admin\Model\Export\Csv" />
+         *         <export id="xml" label="Export to CSV" class="Hyva\Admin\Model\Export\Xml" />
+         *     </exports>
+         */
+        $buttonsElement = $this->getChildByName($navigationElement, 'exports');
+        return $buttonsElement
+            ? map([$this, 'getExportConfig'], $this->getChildrenByName($buttonsElement, 'export'))
+            : null;
+    }
+
     private function getButtonConfig(\DOMElement $buttonsElement): ?array
     {
         return merge(
@@ -485,7 +504,19 @@ class GridXmlToArrayConverter
             $this->getAttributeConfig($buttonsElement, 'url'),
             $this->getAttributeConfig($buttonsElement, 'onclick'),
             $this->getAttributeConfig($buttonsElement, 'sortOrder'),
+            $this->getAttributeConfig($buttonsElement, 'enabled')
+        );
+    }
+
+    private function getExportConfig(\DOMElement $buttonsElement): ?array
+    {
+        return merge(
+            $this->getAttributeConfig($buttonsElement, 'id'),
+            $this->getAttributeConfig($buttonsElement, 'label'),
+            $this->getAttributeConfig($buttonsElement, 'filename'),
             $this->getAttributeConfig($buttonsElement, 'enabled'),
+            $this->getAttributeConfig($buttonsElement, 'class'),
+            $this->getAttributeConfig($buttonsElement, 'sortOrder')
         );
     }
 

@@ -21,106 +21,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
             </div>
             <div class="flex-1 pr-4">
                 <div class="relative flex flex-wrap md:w-3/4 gap-x-8">
-                    <?php if ($navigation->isPagerEnabled()): ?>
-                    <div class="self-center">
-                        <span class="font-medium text-md mr-4">
-                            <?= $escaper->escapeHtml(__('Current Page:')) ?>
-                        </span>
-                        <?= (int) $navigation->getCurrentPageNumber() ?>
-                    </div>
-
-                    <div class="self-center">
-                        <span class="font-medium text-md mr-4">
-                            <?= $escaper->escapeHtml(__('Total Pages:')) ?>
-                        </span>
-                        <?= (int) $navigation->getPageCount() ?>
-                    </div>
-
-                    <div>
-                        <label for="pageSize" class="font-medium text-md mr-4">
-                            <?= $escaper->escapeHtml(__('Rows Per Page:')) ?>
-                        </label>
-                        <select id="pageSize" @change="updateGrid($event.target.selectedOptions[0].value)"
-                                class="form-select">
-                            <?php foreach ($navigation->getPageSizes() as $pageSize): ?>
-                                <?php $currentPageSize = $navigation->getPageSize() === $pageSize ?>
-                                <option value="<?= $escaper->escapeUrl($navigation->getUrlForPageSize($pageSize)) ?>"
-                                    <?= $currentPageSize ? 'selected' : '' ?>>
-                                    <?= (int) $pageSize ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="relative z-0 inline-flex rounded-md shadow-sm">
-                        <?php if ($navigation->hasPreviousPage()): ?>
-                            <a href="<?= $escaper->escapeUrl($navigation->getFirstPageUrl()) ?>"
-                               @click.prevent="updateGrid($event.target.href)"
-                                class="relative inline-flex items-center px-4 py-2 font-medium text-gray-700 bg-white
-                                border border-gray-300 rounded-l-md hover:bg-gray-50 focus:z-10 focus:outline-none
-                                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <?= $escaper->escapeHtml(__('First Page')) ?>
-                            </a>
-                            <a href="<?= $escaper->escapeUrl($navigation->getPreviousPageUrl()) ?>"
-                               @click.prevent="updateGrid($event.target.href)"
-                            class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-700 bg-white
-                                border border-gray-300 hover:bg-gray-50 focus:z-10 focus:outline-none
-                                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <?= $escaper->escapeHtml(__('Previous Page')) ?>
-                            </a>
-                        <?php else: ?>
-                            <span class="relative inline-flex items-center px-4 py-2 font-medium text-gray-300 bg-white
-                                border border-gray-300 cursor-not-allowed rounded-l-md">
-                                <?= $escaper->escapeHtml(__('First Page')) ?>
-                            </span>
-                            <span class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-300
-                                bg-white border border-gray-300 cursor-not-allowed">
-                                <?= $escaper->escapeHtml(__('Previous Page')) ?>
-                            </span>
-                        <?php endif; ?>
-                        <?php if ($navigation->hasNextPage()): ?>
-                            <a href="<?= $escaper->escapeUrl($navigation->getNextPageUrl()) ?>"
-                               @click.prevent="updateGrid($event.target.href)"
-                               class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-700 bg-white
-                                border border-gray-300 rounded-r-md hover:bg-gray-50 focus:z-10 focus:outline-none
-                                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <?= $escaper->escapeHtml(__('Next Page')) ?>
-                            </a>
-                            <a href="<?= $escaper->escapeUrl($navigation->getLastPageUrl()) ?>"
-                               @click.prevent="updateGrid($event.target.href)"
-                            class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-700 bg-white
-                                border border-gray-300 rounded-r-md hover:bg-gray-50 focus:z-10 focus:outline-none
-                                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <?= $escaper->escapeHtml(__('Last Page')) ?>
-                            </a>
-                        <?php else: ?>
-                            <span class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-300
-                            bg-white border border-gray-300 cursor-not-allowed"
-                            >
-                                <?= $escaper->escapeHtml(__('Next Page')) ?>
-                            </span>
-                            <span class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-300
-                            bg-white border border-gray-300 cursor-not-allowed rounded-r-md"
-                            >
-                                <?= $escaper->escapeHtml(__('Last Page')) ?>
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                    <?php endif; ?>
-
-                    <?php if ($navigation->hasAppliedFilters()): ?>
-                        <div>
-                            <a href="<?= $escaper->escapeUrl($navigation->getResetFiltersUrl()) ?>"
-                               @click.prevent="updateGrid($event.target.href)"
-                               class="btn btn-primary">
-                                <?= $escaper->escapeHtml(__('Reset filters')) ?>
-                            </a>
-                        </div>
-                    <?php endif; ?>
+                    <?= $block->getChildDataHtml('navigation'); ?>
                 </div>
             </div>
             <div>
@@ -129,56 +30,8 @@ $uniqueId   = '_' . md5($grid->getGridName());
                         <?php foreach ($navigation->getButtons() as $button): ?>
                             <?= $button->getHtml() ?>
                         <?php endforeach; ?>
-
-                        <button @click.prevent="open = !open"
-                                class="inline-flex items-center px-2 py-2 font-semibold text-gray-500 bg-white
-                                    rounded-lg hover:text-blue-500 focus:outline-none focus:shadow-outline md:px-4"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 class="w-6 h-6 md:hidden md:visible"
-                                 viewBox="0 0 24 24"
-                                 stroke-width="2"
-                                 stroke="currentColor"
-                                 fill="none"
-                                 stroke-linecap="round"
-                                 stroke-linejoin="round"
-                            >
-                                <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
-                                <path
-                                    d="M5.5 5h13a1 1 0 0 1 0.5 1.5L14 12L14 19L10 16L10 12L5 6.5a1 1 0 0 1 0.5 -1.5"/>
-                            </svg>
-                            <span class="hidden md:block md:visible">
-                                <?= $escaper->escapeHtml(__('Display')) ?>
-                            </span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-1" width="24" height="24"
-                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                 stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-
-                        <div x-show="open"
-                             @click.away="open = false"
-                             class="absolute top-0 right-0 z-40 block p-4 mt-16 -mr-1 overflow-y-auto bg-white
-                                rounded-lg shadow-lg"
-                             style="max-height: 75vh;">
-                            <template x-for="heading in headings">
-                                <label
-                                    class="flex items-center justify-start px-4 py-2 text-truncate hover:bg-gray-100">
-                                    <div class="mr-3 text-teal-600">
-                                        <input type="checkbox"
-                                               class="form-checkbox focus:outline-none focus:shadow-outline"
-                                               :checked="isColumnVisible(heading.key)"
-                                               @click="toggleColumn(heading.key)"
-                                        >
-                                    </div>
-                                    <div class="text-gray-700 select-none"
-                                         x-text="heading.value">
-                                    </div>
-                                </label>
-                            </template>
-                        </div>
+                        <?= $block->getChildDataHtml('actions'); ?>
+                        <?= $block->getChildDataHtml('exports'); ?>
                     </div>
                 </div>
             </div>
