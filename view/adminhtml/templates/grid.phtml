@@ -269,7 +269,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
                                     <?php endif; ?>>
                                     <?= $escaper->escapeHtml($column->getLabel()) ?>
                                     <?php if ($isSortedByColumn && $navigation->isSortOrderAscending()): ?>
-                                        <span class="absolute right-0 w-6 h-6 my-1 mr-2 align-middle text-primary">
+                                        <span class="absolute right-0 w-6 h-6 my-1 mr-2 align-middle">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                              viewBox="0 0 24 24" stroke="currentColor"
                                         >
@@ -282,7 +282,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
                                     </span>
                                     <?php endif; ?>
                                     <?php if ($isSortedByColumn && !$navigation->isSortOrderAscending()): ?>
-                                        <span class="absolute right-0 w-6 h-6 mr-2 align-middle text-primary">
+                                        <span class="absolute right-0 w-6 h-6 mr-2 align-middle">
                                             <svg xmlns="http://www.w3.org/2000/svg"
                                                  fill="none"
                                                  viewBox="0 0 24 24"
