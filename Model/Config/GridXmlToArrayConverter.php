@@ -452,11 +452,12 @@ class GridXmlToArrayConverter
     private function convertMassActionConfig(\DOMElement $actionElement): array
     {
         return filter(merge(
+            $this->getAttributeConfig($actionElement, 'id'),
             $this->getAttributeConfig($actionElement, 'label'),
             $this->getAttributeConfig($actionElement, 'url'),
             map(function (string $v): bool {
                 return $v === 'true';
-            }, $this->getAttributeConfig($actionElement, 'requireConfirmation')),
+            }, $this->getAttributeConfig($actionElement, 'requireConfirmation'))
         ));
     }
 

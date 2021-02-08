@@ -9,4 +9,6 @@ interface MassActionInterface
     public function getLabel(): string;
 
     public function requireConfirmation(): bool;
+
+    public function getId(): string;
 }
