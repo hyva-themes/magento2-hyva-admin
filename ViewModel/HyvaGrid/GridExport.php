@@ -13,43 +13,61 @@ use Magento\Framework\View\LayoutInterface;
 
 class GridExport implements GridExportInterface
 {
-    private LayoutInterface $layout;
-
-    private string $id;
-
-    private ?string $label;
-
-    private ?string $url;
-
-    private ?string $onclick;
-
-    private ?string $enabled;
-
-    private ?string $template;
+    /**
+     * @var LayoutInterface
+     */
+    private $layout;
 
     /**
-     * @var UrlBuilder
+     * @var string
      */
-    private UrlBuilder $urlBuilder;
+    private $id;
+
+    /**
+     * @var string|null
+     */
+    private $label;
+
+    /**
+     * @var string|null
+     */
+    private $enabled;
+
+    /**
+     * @var string|null
+     */
+    private $template;
+    /**
+     * @var string|null
+     */
+    private $className;
+    /**
+     * @var string|null
+     */
+    private $fileName;
+    /**
+     * @var string|null
+     */
+    private $sortOrder;
 
     public function __construct(
         LayoutInterface $layout,
-        UrlBuilder $urlBuilder,
         string $id,
-        ?string $label = null,
-        ?string $url = null,
-        ?string $onclick = null,
+        ?string $label,
+        ?string $class,
+        ?string $fileName = null,
         ?string $enabled = null,
-        ?string $template = null
+        ?string $template = null,
+        ?string $sortOrder = null
     ) {
         $this->layout     = $layout;
-        $this->urlBuilder = $urlBuilder;
         $this->id         = $id;
         $this->label      = $label;
-        $this->url        = $url;
-        $this->onclick    = $onclick;
+        $this->className = $class;
         $this->enabled    = $enabled;
         $this->template   = $template;
+        $this->fileName = $fileName;
+        $this->sortOrder = $sortOrder;
     }
 
     public function getHtml(): string
@@ -84,13 +102,13 @@ class GridExport implements GridExportInterface
         return (string) $this->label;
     }
 
-    public function getUrl(): string
+    public function getClassName(): string
     {
-        return isset($this->url) ? $this->urlBuilder->getUrl($this->url) : '';
+        return (string)$this->className;
     }
 
-    public function getOnClick(): ?string
+    public function getFileName(): string
     {
-        return $this->onclick;
+        return (string)$this->fileName;
     }
 }

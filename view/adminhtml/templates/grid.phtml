@@ -433,7 +433,8 @@ $uniqueId   = '_' . md5($grid->getGridName());
                     .catch(console.error);
             },
             getExportUrl(exportItem){
-                return this.filterUri + (this.filterUri.includes('?') ? '&' : '?') + 'export=' + exportItem.id;
+                let exportUrl = '<?= $escaper ->escapeUrl($block->getUrl( "hyva_admin/export/download" )) ?>';
+                return  exportUrl + "exportType/" + exportItem.id + "/?" + this.filterUri.split('?')[1];
             },
         }
     }

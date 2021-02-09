@@ -301,9 +301,10 @@
                 <xs:complexType>
                     <xs:attribute name="id" type="xs:normalizedString" use="required"/>
                     <xs:attribute name="label" type="xs:string" use="required"/>
+                    <xs:attribute name="class" type="classType" use="required"/>
                     <xs:attribute name="filename" type="xs:string"/>
                     <xs:attribute name="enabled" type="boolean"/>
-                    <xs:attribute name="class" type="classType" use="required"/>
+                    <xs:attribute name="template" type="templateType"/>
                     <xs:attribute name="sortOrder" type="xs:int"/>
                 </xs:complexType>
             </xs:element>

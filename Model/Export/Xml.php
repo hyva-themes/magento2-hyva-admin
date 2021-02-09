@@ -7,9 +7,13 @@
 
 namespace Hyva\Admin\Model\Export;
 
-use Hyva\Admin\Model\ExportInterface;
-
-class Xml implements ExportInterface
+class Xml extends AbstractExport
 {
 
+    protected $fileName = "export.xml";
+
+    public function create(): bool
+    {
+        // TODO: Implement create() method.
+    }
 }
