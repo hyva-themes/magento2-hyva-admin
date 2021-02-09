@@ -3,8 +3,8 @@
 /** @var \Hyva\Admin\Block\Grid\Exports $block */
 $parent = $block->getParent();
 ?>
-<div class="exports">
-    <button @click.prevent="open = !open"
+<div class="exports inline-flex mx-2">
+    <button @click.prevent="openExport = !openExport"
             class="inline-flex items-center px-2 py-2 font-semibold text-gray-500 bg-white
                                     rounded-lg hover:text-blue-500 focus:outline-none focus:shadow-outline md:px-4"
     >
@@ -32,25 +32,15 @@ $parent = $block->getParent();
         </svg>
     </button>
 
-    <div x-show="open"
-         @click.away="open = false"
+    <div x-show="openExport"
+         @click.away="openExport = false"
          class="absolute top-0 right-0 z-40 block p-4 mt-16 -mr-1 overflow-y-auto bg-white
                                 rounded-lg shadow-lg"
          style="max-height: 75vh;">
-        <template x-for="export in exports">
-            <label
-                    class="flex items-center justify-start px-4 py-2 text-truncate hover:bg-gray-100">
-                <div class="mr-3 text-teal-600">
-                    <input type="checkbox"
-                           class="form-checkbox focus:outline-none focus:shadow-outline"
-                           :checked="isColumnVisible(export.key)"
-                           @click="toggleColumn(export.key)"
-                    >
-                </div>
-                <div class="text-gray-700 select-none"
-                     x-text="export.value">
-                </div>
-            </label>
+        <template x-for="exportItem in exports">
+            <a x-bind:href="getExportUrl(exportItem)" class="btn btn-primary inline-flex mx-2 cursor-pointer">
+                <span x-text="exportItem.value"/>
+            </a>
         </template>
     </div>
 </div>

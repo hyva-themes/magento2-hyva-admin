@@ -72,7 +72,7 @@ interface NavigationInterface
     public function getButtons(): array;
 
     /**
-     * @return array
+     * @return GridExportInterface[]
      */
     public function getExports(): array;
 }

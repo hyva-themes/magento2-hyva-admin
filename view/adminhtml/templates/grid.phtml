@@ -270,13 +270,24 @@ $uniqueId   = '_' . md5($grid->getGridName());
                 },
                 <?php endforeach; ?>
             ],
+            exports: [
+                <?php foreach ($grid->getNavigation()->getExports() as $export): ?>
+                {
+                    'id': '<?= $escaper->escapeHtml($export->getId()) ?>',
+                    'value': '<?= $escaper->escapeHtml($export->getLabel()) ?>'
+                },
+                <?php endforeach; ?>
+            ],
 
             open: false,
+            openExport: false,
+            filterUri : window.location.href,
 
             initState() {
                 this.$watch('selectedRows', this.storeSelectedRows.bind(this));
                 this.selectedRows = this.getSelectedRows();
                 this.hiddenCols = this.getHiddenCols();
+                this.filterUri = this.getFormUriEncoded(document.getElementById('<?= $navigation->getFilterFormId() ?>'));
             },
 
             getSelectedRows() {
@@ -383,11 +394,16 @@ $uniqueId   = '_' . md5($grid->getGridName());
             },
 
             formGridUpdate(form) {
+                this.filterUri = this.getFormUriEncoded(form);
+                this.updateGrid(this.filterUri);
+            },
+
+            getFormUriEncoded(form){
                 const url = form.action;
                 const encodedFields = Array.from(form.elements)
                     .map(input => encodeURIComponent(input.name) + '=' + encodeURIComponent(input.value))
                     .join('&');
-                this.updateGrid(url + (url.includes('?') ? '&' : '?') + encodedFields)
+                return url + (url.includes('?') ? '&' : '?') + encodedFields;
             },
 
             updateGrid(url) {
@@ -415,7 +431,10 @@ $uniqueId   = '_' . md5($grid->getGridName());
                         }
                     })
                     .catch(console.error);
-            }
+            },
+            getExportUrl(exportItem){
+                return this.filterUri + (this.filterUri.includes('?') ? '&' : '?') + 'export=' + exportItem.id;
+            },
         }
     }
 </script>
