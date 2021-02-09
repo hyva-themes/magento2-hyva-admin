@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
     <router id="admin">
-        <route id="hyva_admin" frontName="hyva-grid">
+        <route id="hyva_admin" frontName="hyva-admin">
             <module name="Hyva_Admin"/>
         </route>
     </router>

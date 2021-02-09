@@ -2,9 +2,9 @@
 
 namespace Hyva\Admin\Model\Config;
 
-class GridDefinitionConfigFiles extends DefinitionConfigFiles
+class FormDefinitionConfigFiles extends DefinitionConfigFiles
 {
-    public function __construct(HyvaGridDirs $hyvaConfigDirs)
+    public function __construct(HyvaFormDirs $hyvaConfigDirs)
     {
         parent::__construct($hyvaConfigDirs);
     }

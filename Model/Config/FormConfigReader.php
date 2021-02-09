@@ -9,64 +9,56 @@ use Magento\Framework\Module\Dir\Reader as ModuleDirReader;
 
 use function array_reduce as reduce;
 
-class GridConfigReader implements HyvaGridConfigReaderInterface
+class FormConfigReader implements HyvaFormConfigReaderInterface
 {
-    private GridDefinitionConfigFiles $definitionConfigFiles;
+    private FormDefinitionConfigFiles $formDefinitionConfigFiles;
 
-    private GridXmlToArrayConverter $gridXmlToArrayConverter;
+    private FormXmlToArrayConverter $formXmlToArrayConverter;
 
     private ValidationStateInterface $appValidationState;
 
     private ModuleDirReader $moduleDirReader;
 
-    private array $idAttributes = [
-        '/grid/source/defaultSearchCriteriaBindings/field' => 'name',
-        '/grid/massActions/action' => 'id',
-        '/grid/actions/action' => 'id',
-        '/grid/columns/include/column' => 'name',
-        '/grid/columns/include/column/option' => 'value',
-        '/grid/columns/exclude/column' => 'name',
-        '/grid/navigation/filters/filter' => 'column',
-        '/grid/navigation/buttons/button' => 'id',
-    ];
+    // todo: specify form xml id attributes
+    private array $idAttributes = [];
 
     private ?string $perFileSchema;
 
     private ?string $mergedSchema;
 
     public function __construct(
-        GridDefinitionConfigFiles $definitionConfigFiles,
-        GridXmlToArrayConverter $gridXmlToArrayConverter,
+        FormDefinitionConfigFiles $formDefinitionConfigFiles,
+        FormXmlToArrayConverter $formXmlToArrayConverter,
         ValidationStateInterface $appValidationState,
         ModuleDirReader $moduleDirReader
     ) {
-        $this->definitionConfigFiles   = $definitionConfigFiles;
-        $this->gridXmlToArrayConverter = $gridXmlToArrayConverter;
-        $this->appValidationState      = $appValidationState;
-        $this->moduleDirReader         = $moduleDirReader;
-        $this->perFileSchema           = 'hyva-grid.xsd';
-        $this->mergedSchema            = null;
+        $this->formDefinitionConfigFiles = $formDefinitionConfigFiles;
+        $this->formXmlToArrayConverter   = $formXmlToArrayConverter;
+        $this->appValidationState        = $appValidationState;
+        $this->moduleDirReader           = $moduleDirReader;
+        $this->perFileSchema             = 'hyva-form.xsd';
+        $this->mergedSchema              = null;
     }
 
-    public function getGridConfiguration(string $gridName): array
+    public function getFormConfiguration(string $formName): array
     {
-        return $this->readGridConfig($gridName);
+        return $this->readFormConfiguration($formName);
     }
 
-    private function readGridConfig(string $gridName): array
+    private function readFormConfiguration(string $formName): array
     {
-        $files = $this->definitionConfigFiles->getGridDefinitionFiles($gridName);
+        $files = $this->formDefinitionConfigFiles->getGridDefinitionFiles($formName);
         return $files
-            ? $this->mergeGridConfigs($files)
+            ? $this->mergeFormConfigs($files)
             : [];
     }
 
-    private function mergeGridConfigs(array $files): array
+    private function mergeFormConfigs(array $files): array
     {
         $first        = array_shift($files);
         $mergedConfig = reduce($files, [$this, 'mergeFile'], $this->createDom(file_get_contents($first)));
 
-        return $this->gridXmlToArrayConverter->convert($mergedConfig->getDom());
+        return $this->formXmlToArrayConverter->convert($mergedConfig->getDom());
     }
 
     private function mergeFile(XmlDom $merged, string $file): XmlDom
@@ -98,8 +90,10 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
         }
     }
 
-    public function getPerFileSchema(): string
+    public function getPerFileSchema(): ?string
     {
-        return $this->moduleDirReader->getModuleDir(Dir::MODULE_ETC_DIR, 'Hyva_Admin') . '/' . $this->perFileSchema;
+        return $this->perFileSchema
+            ? $this->moduleDirReader->getModuleDir(Dir::MODULE_ETC_DIR, 'Hyva_Admin') . '/' . $this->perFileSchema
+            : null;
     }
 }

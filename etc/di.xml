@@ -38,6 +38,9 @@
     <preference for="Hyva\Admin\ViewModel\HyvaForm\FormFieldInterface" type="Hyva\Admin\ViewModel\HyvaForm\FormField"/>
     <preference for="Hyva\Admin\ViewModel\HyvaForm\FormButtonInterface"
                 type="Hyva\Admin\ViewModel\HyvaForm\FormButton"/>
+    <preference for="Hyva\Admin\Model\HyvaFormDefinitionInterface" type="Hyva\Admin\Model\HyvaFormDefinition"/>
+    <preference for="Hyva\Admin\Model\Config\HyvaFormConfigReaderInterface"
+                type="Hyva\Admin\Model\Config\FormConfigReader"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>
