@@ -11,7 +11,7 @@ class GridXmlToArrayConverter
 {
     public function convert(\DOMDocument $dom): array
     {
-        $root = $this->getRootElement($dom);
+        $root = XmlToArray::getRootElement($dom);
 
         return filter([
             'source'      => $this->convertSourceConfig($root),
@@ -25,7 +25,7 @@ class GridXmlToArrayConverter
 
     private function convertSourceConfig(\DOMElement $root): array
     {
-        $sourceElement = $this->getChildByName($root, 'source');
+        $sourceElement = XmlToArray::getChildByName($root, 'source');
         return $sourceElement
             ? merge(
                 $this->getTypeAttribute($sourceElement),
@@ -46,66 +46,8 @@ class GridXmlToArrayConverter
 
     private function getSourceConfig(\DOMElement $source, string $name): array
     {
-        $repositoryElement = $this->getChildByName($source, $name);
+        $repositoryElement = XmlToArray::getChildByName($source, $name);
         return $repositoryElement ? [$name => $repositoryElement->nodeValue] : [];
-    }
-
-    private function getRootElement(\DOMDocument $document): \DOMElement
-    {
-        return $this->getAllChildElements($document)[0];
-    }
-
-    /**
-     * @param \DOMNode $parent
-     * @return \DOMElement[]
-     */
-    private function getAllChildElements(\DOMNode $parent): array
-    {
-        return values(filter(
-            iterator_to_array($parent->childNodes),
-            function (\DOMNode $childNode) {
-                return $childNode->nodeType === \XML_ELEMENT_NODE;
-            }
-        ));
-    }
-
-    /**
-     * @param \DOMElement $parent
-     * @param string $name
-     * @return \DOMElement[]
-     */
-    private function getChildrenByName(\DOMElement $parent, string $name): array
-    {
-        return values(filter($this->getAllChildElements($parent), function (\DOMElement $child) use ($name) {
-            return $child->nodeName === $name;
-        }));
-    }
-
-    /**
-     * @param \DOMElement $element
-     * @param string $name
-     * @return string[]
-     */
-    private function getAttributeConfig(\DOMElement $element, string $name, string $withIndexKey = null): array
-    {
-        $idx = $withIndexKey ?? $name;
-        $value = $element->getAttribute($name);
-        return $value !== ''
-            ? [$idx => $value]
-            : [];
-    }
-
-    private function getElementConfig(\DOMElement $element, string $name): array
-    {
-        $childElement = $this->getChildByName($element, $name);
-        return $childElement
-            ? filter([$name => trim($childElement->nodeValue)])
-            : [];
-    }
-
-    private function getChildByName(\DOMElement $parent, string $name): ?\DOMElement
-    {
-        return $this->getChildrenByName($parent, $name)[0] ?? null;
     }
 
     private function getArrayProviderSourceConfig(\DOMElement $source): array
@@ -163,9 +105,9 @@ class GridXmlToArrayConverter
          *     </bindParamenters>
          * </source>
          */
-        $query = $this->getChildByName($source, 'query');
+        $query = XmlToArray::getChildByName($source, 'query');
         if ($query) {
-            $bindParameters = $this->getChildByName($source, 'bindParameters');
+            $bindParameters = XmlToArray::getChildByName($source, 'bindParameters');
             // todo: unfinished business. Needs more thought and will be built out last.
             $queryConfig = ['query' => [], 'bindParams' => ($bindParameters ?? [])];
         }
@@ -174,7 +116,7 @@ class GridXmlToArrayConverter
 
     private function getDefaultSourceCriteriaBindingsConfig(\DOMElement $sourceElement): array
     {
-        $bindingsElement = $this->getChildByName($sourceElement, 'defaultSearchCriteriaBindings');
+        $bindingsElement = XmlToArray::getChildByName($sourceElement, 'defaultSearchCriteriaBindings');
         return $bindingsElement
             ? ['defaultSearchCriteriaBindings' => $this->getDefaultSourceCriteriaBindingFieldsConfig($bindingsElement)]
             : [];
@@ -192,19 +134,19 @@ class GridXmlToArrayConverter
          */
         return map(function (\DOMElement $fieldElement): array {
             return filter(merge(
-                $this->getAttributeConfig($fieldElement, 'name', 'field'),
-                $this->getAttributeConfig($fieldElement, 'requestParam'),
-                $this->getAttributeConfig($fieldElement, 'method'),
-                $this->getAttributeConfig($fieldElement, 'param'),
-                $this->getAttributeConfig($fieldElement, 'property'),
-                $this->getAttributeConfig($fieldElement, 'condition'),
+                XmlToArray::getAttributeConfig($fieldElement, 'name', 'field'),
+                XmlToArray::getAttributeConfig($fieldElement, 'requestParam'),
+                XmlToArray::getAttributeConfig($fieldElement, 'method'),
+                XmlToArray::getAttributeConfig($fieldElement, 'param'),
+                XmlToArray::getAttributeConfig($fieldElement, 'property'),
+                XmlToArray::getAttributeConfig($fieldElement, 'condition'),
             ));
-        }, $this->getChildrenByName($bindingsElement, 'field'));
+        }, XmlToArray::getChildrenByName($bindingsElement, 'field'));
     }
 
     private function convertColumnsConfig(\DOMElement $root): array
     {
-        $columnsElement = $this->getChildByName($root, 'columns');
+        $columnsElement = XmlToArray::getChildByName($root, 'columns');
         return $columnsElement
             ? $this->buildColumnsConfig($columnsElement)
             : [];
@@ -242,13 +184,13 @@ class GridXmlToArrayConverter
 
     private function getColumnsIncludeConfig(\DOMElement $columnsElement): array
     {
-        $includesElement = $this->getChildByName($columnsElement, 'include');
+        $includesElement = XmlToArray::getChildByName($columnsElement, 'include');
         return $includesElement
             ? [
                 '@keepAllSourceCols' => $includesElement->getAttribute('keepAllSourceColumns') ?? null,
                 'include'            => map(
                     [$this, 'buildIncludeColumnConfig'],
-                    $this->getChildrenByName($includesElement, 'column')
+                    XmlToArray::getChildrenByName($includesElement, 'column')
                 ),
             ]
             : [];
@@ -257,16 +199,16 @@ class GridXmlToArrayConverter
     private function buildIncludeColumnConfig(\DOMElement $columnElement): array
     {
         return filter(merge(
-            $this->getAttributeConfig($columnElement, 'name', 'key'),
-            $this->getAttributeConfig($columnElement, 'type'),
-            $this->getAttributeConfig($columnElement, 'sortOrder'),
-            $this->getAttributeConfig($columnElement, 'rendererBlockName'),
-            $this->getAttributeConfig($columnElement, 'label'),
-            $this->getAttributeConfig($columnElement, 'renderAsUnsecureHtml'),
-            $this->getAttributeConfig($columnElement, 'sortable'),
-            $this->getAttributeConfig($columnElement, 'source'),
-            $this->getAttributeConfig($columnElement, 'template'),
-            $this->getAttributeConfig($columnElement, 'initiallyHidden'),
+            XmlToArray::getAttributeConfig($columnElement, 'name', 'key'),
+            XmlToArray::getAttributeConfig($columnElement, 'type'),
+            XmlToArray::getAttributeConfig($columnElement, 'sortOrder'),
+            XmlToArray::getAttributeConfig($columnElement, 'rendererBlockName'),
+            XmlToArray::getAttributeConfig($columnElement, 'label'),
+            XmlToArray::getAttributeConfig($columnElement, 'renderAsUnsecureHtml'),
+            XmlToArray::getAttributeConfig($columnElement, 'sortable'),
+            XmlToArray::getAttributeConfig($columnElement, 'source'),
+            XmlToArray::getAttributeConfig($columnElement, 'template'),
+            XmlToArray::getAttributeConfig($columnElement, 'initiallyHidden'),
             $this->getColumnOptionsConfig($columnElement),
         ));
     }
@@ -282,7 +224,7 @@ class GridXmlToArrayConverter
          */
         $options = map(function (\DOMElement $optionElement): array {
             return ['value' => $optionElement->getAttribute('value'), 'label' => $optionElement->getAttribute('label')];
-        }, $this->getChildrenByName($columnElement, 'option'));
+        }, XmlToArray::getChildrenByName($columnElement, 'option'));
         return ['options' => $options];
     }
 
@@ -294,12 +236,10 @@ class GridXmlToArrayConverter
          *     <column name="internal_stuff"/>
          * </exclude>
          */
-        $excludeElement = $this->getChildByName($columnsElement, 'exclude');
-        $getName        = function (\DOMElement $col): string {
-            return $col->getAttribute('name');
-        };
+        $excludeElement = XmlToArray::getChildByName($columnsElement, 'exclude');
+        $getName        = fn(\DOMElement $col): string => $col->getAttribute('name');
         return $excludeElement
-            ? ['exclude' => values(filter(map($getName, $this->getChildrenByName($excludeElement, 'column'))))]
+            ? ['exclude' => values(filter(map($getName, XmlToArray::getChildrenByName($excludeElement, 'column'))))]
             : [];
     }
 
@@ -335,7 +275,7 @@ class GridXmlToArrayConverter
          *     </buttons>
          * </navigation>
          */
-        $navigationElement = $this->getChildByName($root, 'navigation');
+        $navigationElement = XmlToArray::getChildByName($root, 'navigation');
         return $navigationElement
             ? filter([
                 '@isAjaxEnabled' => $navigationElement->getAttribute('useAjax') ?? null,
@@ -349,30 +289,27 @@ class GridXmlToArrayConverter
 
     private function getPagerConfig(\DOMElement $navigationElement): array
     {
-        $pagerElement = $this->getChildByName($navigationElement, 'pager');
+        $pagerElement = XmlToArray::getChildByName($navigationElement, 'pager');
         return $pagerElement
             ? filter(merge(
                 ['@enabled' => $pagerElement->getAttribute('enabled')],
-                $this->getElementConfig($pagerElement, 'defaultPageSize'),
-                $this->getElementConfig($pagerElement, 'pageSizes')
+                XmlToArray::getElementConfig($pagerElement, 'defaultPageSize'),
+                XmlToArray::getElementConfig($pagerElement, 'pageSizes')
             ))
             : [];
     }
 
     private function getSortingConfig(\DOMElement $navigationElement): array
     {
-        $sortingElement = $this->getChildByName($navigationElement, 'sorting');
+        $sortingElement = XmlToArray::getChildByName($navigationElement, 'sorting');
         return $sortingElement
             ? filter(merge(
-                $this->getElementConfig($sortingElement, 'defaultSortByColumn'),
-                $this->getElementConfig($sortingElement, 'defaultSortDirection')
+                XmlToArray::getElementConfig($sortingElement, 'defaultSortByColumn'),
+                XmlToArray::getElementConfig($sortingElement, 'defaultSortDirection')
             ))
             : [];
     }
 
-    /**
-     * todo: build this when the entity config is used
-     */
     private function convertEntityConfig(\DOMElement $root): array
     {
         /*
@@ -383,7 +320,7 @@ class GridXmlToArrayConverter
          *     </label>
          * </entityConfig>
          */
-        $entityConfigElement = $this->getChildByName($root, 'entityConfig');
+        $entityConfigElement = XmlToArray::getChildByName($root, 'entityConfig');
         return $entityConfigElement
             ? filter(['label' => $this->convertEntityLabelConfig($entityConfigElement)])
             : [];
@@ -392,11 +329,11 @@ class GridXmlToArrayConverter
 
     private function convertEntityLabelConfig(\DOMElement $entityConfigElement): array
     {
-        $labelElement = $this->getChildByName($entityConfigElement, 'label');
+        $labelElement = XmlToArray::getChildByName($entityConfigElement, 'label');
         return $labelElement
             ? filter(merge(
-                $this->getElementConfig($labelElement, 'singular'),
-                $this->getElementConfig($labelElement, 'plural'),
+                XmlToArray::getElementConfig($labelElement, 'singular'),
+                XmlToArray::getElementConfig($labelElement, 'plural'),
             ))
             : [];
     }
@@ -410,8 +347,9 @@ class GridXmlToArrayConverter
          *     <action label="Validate" url="admin/dashboard"/>
          * </actions>
          */
-        if ($actionsElement = $this->getChildByName($root, 'actions')) {
-            $actions = filter(map([$this, 'convertActionConfig'], $this->getChildrenByName($actionsElement, 'action')));
+        if ($actionsElement = XmlToArray::getChildByName($root, 'actions')) {
+            $actionElements = XmlToArray::getChildrenByName($actionsElement, 'action');
+            $actions        = filter(map([$this, 'convertActionConfig'], $actionElements));
             return merge(filter(['@idColumn' => $actionsElement->getAttribute('idColumn')]), ['actions' => $actions]);
         } else {
             return [];
@@ -421,10 +359,10 @@ class GridXmlToArrayConverter
     private function convertActionConfig(\DOMElement $actionElement): array
     {
         return filter(merge(
-            $this->getAttributeConfig($actionElement, 'id'),
-            $this->getAttributeConfig($actionElement, 'label'),
-            $this->getAttributeConfig($actionElement, 'url'),
-            $this->getAttributeConfig($actionElement, 'idParam'),
+            XmlToArray::getAttributeConfig($actionElement, 'id'),
+            XmlToArray::getAttributeConfig($actionElement, 'label'),
+            XmlToArray::getAttributeConfig($actionElement, 'url'),
+            XmlToArray::getAttributeConfig($actionElement, 'idParam'),
         ));
     }
 
@@ -436,8 +374,8 @@ class GridXmlToArrayConverter
          *     <action label="Delete All" url="*\/massActions/delete" requireConfirmation="true"/>
          * </massActions>
          */
-        if ($massActionsElement = $this->getChildByName($root, 'massActions')) {
-            $massActionElements = $this->getChildrenByName($massActionsElement, 'action');
+        if ($massActionsElement = XmlToArray::getChildByName($root, 'massActions')) {
+            $massActionElements = XmlToArray::getChildrenByName($massActionsElement, 'action');
             $actions            = filter(map([$this, 'convertMassActionConfig'], $massActionElements));
             return filter([
                 '@idColumn' => $massActionsElement->getAttribute('idColumn'),
@@ -452,11 +390,11 @@ class GridXmlToArrayConverter
     private function convertMassActionConfig(\DOMElement $actionElement): array
     {
         return filter(merge(
-            $this->getAttributeConfig($actionElement, 'label'),
-            $this->getAttributeConfig($actionElement, 'url'),
+            XmlToArray::getAttributeConfig($actionElement, 'label'),
+            XmlToArray::getAttributeConfig($actionElement, 'url'),
             map(function (string $v): bool {
                 return $v === 'true';
-            }, $this->getAttributeConfig($actionElement, 'requireConfirmation')),
+            }, XmlToArray::getAttributeConfig($actionElement, 'requireConfirmation')),
         ));
     }
 
@@ -469,22 +407,22 @@ class GridXmlToArrayConverter
          *     <button id="bar" template="Module_Name::button.phtml"/>
          * </buttons>
          */
-        $buttonsElement = $this->getChildByName($navigationElement, 'buttons');
+        $buttonsElement = XmlToArray::getChildByName($navigationElement, 'buttons');
         return $buttonsElement
-            ? map([$this, 'getButtonConfig'], $this->getChildrenByName($buttonsElement, 'button'))
+            ? map([$this, 'getButtonConfig'], XmlToArray::getChildrenByName($buttonsElement, 'button'))
             : null;
     }
 
     private function getButtonConfig(\DOMElement $buttonsElement): ?array
     {
         return merge(
-            $this->getAttributeConfig($buttonsElement, 'id'),
-            $this->getAttributeConfig($buttonsElement, 'label'),
-            $this->getAttributeConfig($buttonsElement, 'template'),
-            $this->getAttributeConfig($buttonsElement, 'url'),
-            $this->getAttributeConfig($buttonsElement, 'onclick'),
-            $this->getAttributeConfig($buttonsElement, 'sortOrder'),
-            $this->getAttributeConfig($buttonsElement, 'enabled'),
+            XmlToArray::getAttributeConfig($buttonsElement, 'id'),
+            XmlToArray::getAttributeConfig($buttonsElement, 'label'),
+            XmlToArray::getAttributeConfig($buttonsElement, 'template'),
+            XmlToArray::getAttributeConfig($buttonsElement, 'url'),
+            XmlToArray::getAttributeConfig($buttonsElement, 'onclick'),
+            XmlToArray::getAttributeConfig($buttonsElement, 'sortOrder'),
+            XmlToArray::getAttributeConfig($buttonsElement, 'enabled'),
         );
     }
 
@@ -506,20 +444,20 @@ class GridXmlToArrayConverter
          *     <filter column="store_id" source="\Magento\Config\Model\Config\Source\Store"/>
          * </filters>
          */
-        $filtersElement = $this->getChildByName($navigationElement, 'filters');
+        $filtersElement = XmlToArray::getChildByName($navigationElement, 'filters');
         return $filtersElement
-            ? map([$this, 'getFilterConfig'], $this->getChildrenByName($filtersElement, 'filter'))
+            ? map([$this, 'getFilterConfig'], XmlToArray::getChildrenByName($filtersElement, 'filter'))
             : null;
     }
 
     private function getFilterConfig(\DOMElement $filterElement): ?array
     {
         return merge(
-            ['key' => $this->getAttributeConfig($filterElement, 'column')['column'] ?? null],
-            $this->getAttributeConfig($filterElement, 'enabled'),
-            $this->getAttributeConfig($filterElement, 'template'),
-            $this->getAttributeConfig($filterElement, 'filterType'),
-            $this->getAttributeConfig($filterElement, 'source'),
+            ['key' => XmlToArray::getAttributeConfig($filterElement, 'column')['column'] ?? null],
+            XmlToArray::getAttributeConfig($filterElement, 'enabled'),
+            XmlToArray::getAttributeConfig($filterElement, 'template'),
+            XmlToArray::getAttributeConfig($filterElement, 'filterType'),
+            XmlToArray::getAttributeConfig($filterElement, 'source'),
             $this->getFilterOptionsConfig($filterElement)
         );
     }
@@ -540,7 +478,7 @@ class GridXmlToArrayConverter
             return $values
                 ? ['label' => $optionElement->getAttribute('label'), 'values' => $values]
                 : null;
-        }, $this->getChildrenByName($filterElement, 'option')));
+        }, XmlToArray::getChildrenByName($filterElement, 'option')));
         return $options
             ? ['options' => $options]
             : [];
@@ -550,6 +488,6 @@ class GridXmlToArrayConverter
     {
         return map(function (\DOMElement $valueElement): string {
             return trim($valueElement->nodeValue);
-        }, $this->getChildrenByName($optionElement, 'value'));
+        }, XmlToArray::getChildrenByName($optionElement, 'value'));
     }
 }
