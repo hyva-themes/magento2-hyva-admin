@@ -8,15 +8,15 @@
 namespace Hyva\Admin\Model\Export;
 
 use Hyva\Admin\Model\ExportInterface;
-use Magento\Framework\Api\SearchCriteria;
+use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
 
 abstract class AbstractExport implements ExportInterface
 {
     /**
-     * @var SearchCriteria
+     * @var HyvaGridInterface
      */
-    protected $searchCriteria;
+    protected $grid;
     protected $fileName;
     protected $metaType = 'application/octet-stream';
 
@@ -32,18 +32,18 @@ abstract class AbstractExport implements ExportInterface
 
     public function getRootDir() :string
     {
-        return DirectoryList::VAR_DIR;
+        return DirectoryList::VAR_DIR . DIRECTORY_SEPARATOR . "export";
     }
 
-    public function setSearchCriteria(SearchCriteria $searchCriteria) : ExportInterface
+    public function setGrid(HyvaGridInterface $grid) : ExportInterface
     {
-        $this->searchCriteria = $searchCriteria;
+        $this->grid = $grid;
         return $this;
     }
 
-    public function getSearchCriteria() : SearchCriteria
+    public function getGrid() : HyvaGridInterface
     {
-       return $this->searchCriteria;
+       return $this->grid;
     }
 
     public function setFileName($fileName) : ExportInterface

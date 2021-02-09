@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\Model;
 
-use Magento\Framework\Api\SearchCriteriaInterface;
+use Hyva\Admin\ViewModel\HyvaGridInterface;
 
 interface ExportInterface
 {
@@ -29,9 +29,6 @@ interface ExportInterface
      */
     public function setMetaType($metaType): ExportInterface;
 
-    /**
-     * @return bool
-     */
     public function create();
 
     /**
@@ -40,14 +37,14 @@ interface ExportInterface
     public function getRootDir(): string;
 
     /**
-     * @param SearchCriteriaInterface $searchCriteria
+     * @param HyvaGridInterface $grid
      * @return ExportInterface
      */
-    public function setSearchCriteria(SearchCriteriaInterface $searchCriteria): ExportInterface;
+    public function setGrid(HyvaGridInterface $grid): ExportInterface;
 
     /**
-     * @return SearchCriteriaInterface
+     * @return HyvaGridInterface
      */
-    public function getSearchCriteria(): SearchCriteriaInterface;
+    public function getGrid(): HyvaGridInterface;
 
 }
