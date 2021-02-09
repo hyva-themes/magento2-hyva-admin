@@ -8,8 +8,6 @@ use Magento\Framework\View\Element\Template;
 
 class BaseHyvaForm extends Template
 {
-    private string $formTemplate;
-
     private HyvaFormInterfaceFactory $hyvaFormFactory;
 
     public function __construct(
@@ -19,7 +17,7 @@ class BaseHyvaForm extends Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->formTemplate = $formTemplate;
+        $this->setTemplate($formTemplate);
         $this->hyvaFormFactory = $hyvaFormFactory;
     }
 
