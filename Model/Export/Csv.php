@@ -7,9 +7,13 @@
 
 namespace Hyva\Admin\Model\Export;
 
-use Hyva\Admin\Model\ExportInterface;
-
-class Csv implements ExportInterface
+class Csv extends AbstractExport
 {
 
+    protected $fileName = "export.csv";
+
+    public function create()
+    {
+        // TODO: Implement create() method.
+    }
 }
