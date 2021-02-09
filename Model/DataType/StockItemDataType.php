@@ -10,9 +10,15 @@ class StockItemDataType implements DataTypeInterface
 {
     const TYPE_MAGENTO_STOCK_ITEM = 'magento_stock_item';
 
-    private DataObjectProcessor $dataObjectProcessor;
+    /**
+     * @var \Magento\Framework\Reflection\DataObjectProcessor
+     */
+    private $dataObjectProcessor;
 
-    private DataTypeToStringConverterLocatorInterface $toStringConverterLocator;
+    /**
+     * @var \Hyva\Admin\Model\DataType\DataTypeToStringConverterLocatorInterface
+     */
+    private $toStringConverterLocator;
 
     public function __construct(
         DataObjectProcessor $dataObjectProcessor,

@@ -23,21 +23,45 @@ use function array_values as values;
 
 class ArrayProviderGridSourceType implements GridSourceTypeInterface
 {
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private ArrayProviderSourceType\ArrayProviderFactory $arrayProviderFactory;
+    /**
+     * @var \Hyva\Admin\Model\GridSourceType\ArrayProviderSourceType\ArrayProviderFactory
+     */
+    private $arrayProviderFactory;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private DataTypeGuesserInterface $dataTypeGuesser;
+    /**
+     * @var \Hyva\Admin\Api\DataTypeGuesserInterface
+     */
+    private $dataTypeGuesser;
 
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
+    /**
+     * @var mixed[]
+     */
+    private $memoizedGridData;
 
-    private array $memoizedGridData;
+    /**
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
 
-    private string $arrayProviderClass;
+    /**
+     * @var string
+     */
+    private $arrayProviderClass;
 
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
     public function __construct(
         string $gridName,
@@ -83,7 +107,10 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     public function extractValue($record, string $key)
     {
-        return $record[$key] ?? null;
+        if (!array_key_exists($key, $record)) {
+            throw new \RuntimeException(sprintf('No column value "%s" on grid row.', $key));
+        }
+        return $record[$key];
     }
 
     public function getColumnDefinition(string $key): ColumnDefinitionInterface
@@ -110,18 +137,19 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
     {
         if (!isset($this->memoizedGridData)) {
             $provider               = $this->arrayProviderFactory->create($this->arrayProviderClass);
-            $filterGroups           = $searchCriteria->getFilterGroups() ?? [];
-            $this->memoizedGridData = $this->applyFilterGroups($provider->getHyvaGridData(), $filterGroups);
+            $this->memoizedGridData = $provider->getHyvaGridData();
         }
 
-        $gridData = $this->applyPagination($this->memoizedGridData, $searchCriteria);
+        $gridData = $this->applySearchCriteria($this->memoizedGridData, $searchCriteria);
 
         return RawGridSourceContainer::forData($gridData);
     }
 
-    private function applyPagination(array $gridData, SearchCriteriaInterface $searchCriteria): array
+    private function applySearchCriteria(array $gridData, SearchCriteriaInterface $searchCriteria): array
     {
-        $sorted = $this->applySortOrders($gridData, $searchCriteria->getSortOrders() ?? []);
+        $filtered = $this->applyFilterGroups($gridData, $searchCriteria->getFilterGroups() ?? []);
+        $sorted   = $this->applySortOrders($filtered, $searchCriteria->getSortOrders() ?? []);
+
         return $this->selectPage($sorted, $searchCriteria);
     }
 

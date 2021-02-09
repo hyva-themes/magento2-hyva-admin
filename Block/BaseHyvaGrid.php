@@ -9,10 +9,11 @@ use Magento\Framework\View\Element\Template;
 
 abstract class BaseHyvaGrid extends Template
 {
-    private HyvaGridInterfaceFactory $gridFactory;
     /**
-     * @var array
+     * @var \Hyva\Admin\ViewModel\HyvaGridInterfaceFactory
      */
+    private $gridFactory;
+
     private $children;
 
     private $grid;

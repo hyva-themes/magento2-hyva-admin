@@ -13,13 +13,25 @@ use Magento\Framework\ObjectManagerInterface;
 
 class SearchCriteriaBindings
 {
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    private $objectManager;
 
-    private FilterBuilder $filterBuilder;
+    /**
+     * @var \Magento\Framework\Api\FilterBuilder
+     */
+    private $filterBuilder;
 
-    private FilterGroupBuilder $filterGroupBuilder;
+    /**
+     * @var \Magento\Framework\Api\Search\FilterGroupBuilder
+     */
+    private $filterGroupBuilder;
 
-    private array $bindingsConfig;
+    /**
+     * @var mixed[]
+     */
+    private $bindingsConfig;
 
     public function __construct(
         ObjectManagerInterface $objectManager,

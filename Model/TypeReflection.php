@@ -11,25 +11,55 @@ use function array_unique as unique;
 
 class TypeReflection
 {
-    private TypeReflection\CustomAttributesExtractor $customAttributesExtractor;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection\CustomAttributesExtractor
+     */
+    private $customAttributesExtractor;
 
-    private TypeReflection\ExtensionAttributeTypeExtractor $extensionAttributeTypeExtractor;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection\ExtensionAttributeTypeExtractor
+     */
+    private $extensionAttributeTypeExtractor;
 
-    private TypeReflection\GetterMethodsExtractor $getterMethodsExtractor;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection\GetterMethodsExtractor
+     */
+    private $getterMethodsExtractor;
 
-    private DataTypeGuesserInterface $dataTypeGuesser;
+    /**
+     * @var \Hyva\Admin\Api\DataTypeGuesserInterface
+     */
+    private $dataTypeGuesser;
 
-    private MagentoOrmReflection $magentoOrmReflection;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection\MagentoOrmReflection
+     */
+    private $magentoOrmReflection;
 
-    private TypeReflection\TableColumnExtractor $tableColumnExtractor;
+    /**
+     * @var \Hyva\Admin\Model\TypeReflection\TableColumnExtractor
+     */
+    private $tableColumnExtractor;
 
-    private array $customAttributeKeys = [];
+    /**
+     * @var mixed[]
+     */
+    private $customAttributeKeys = [];
 
-    private array $extensionAttributeKeys = [];
+    /**
+     * @var mixed[]
+     */
+    private $extensionAttributeKeys = [];
 
-    private array $getMethodKeys = [];
+    /**
+     * @var mixed[]
+     */
+    private $getMethodKeys = [];
 
-    private array $memoizedColumnTypes = [];
+    /**
+     * @var mixed[]
+     */
+    private $memoizedColumnTypes = [];
 
     public function __construct(
         TypeReflection\CustomAttributesExtractor $customAttributesExtractor,

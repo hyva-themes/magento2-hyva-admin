@@ -9,9 +9,15 @@ use Magento\Framework\View\DesignInterface;
 
 class ProductMediaInBackend
 {
-    private ImageUrlBuilder $imageUrlBuilder;
+    /**
+     * @var ImageUrlBuilder
+     */
+    private $imageUrlBuilder;
 
-    private Escaper $escaper;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     public function __construct(
         ImageUrlBuilder $imageUrlBuilder,

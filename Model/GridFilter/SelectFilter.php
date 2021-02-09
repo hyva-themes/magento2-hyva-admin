@@ -16,7 +16,10 @@ use function array_values as values;
 
 class SelectFilter implements ColumnDefinitionMatchingFilterInterface
 {
-    private LayoutInterface $layout;
+    /**
+     * @var \Magento\Framework\View\LayoutInterface
+     */
+    private $layout;
 
     public function __construct(LayoutInterface $layout)
     {

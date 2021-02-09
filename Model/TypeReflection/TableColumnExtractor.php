@@ -8,9 +8,15 @@ use function array_keys as keys;
 
 class TableColumnExtractor
 {
-    private ResourceConnection $resourceConnection;
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
+    private $resourceConnection;
 
-    private array $memoizedTableDescriptions = [];
+    /**
+     * @var mixed[]
+     */
+    private $memoizedTableDescriptions = [];
 
     public function __construct(ResourceConnection $resourceConnection)
     {

@@ -22,34 +22,56 @@ class Navigation implements NavigationInterface
     const DEFAULT_PAGE_SIZE = 20;
     const DEFAULT_PAGE_SIZES = '10,20,50';
 
-    private HyvaGridSourceInterface $gridSource;
-
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
-
-    private RequestInterface $request;
-
-    private UrlBuilder $urlBuilder;
-
-    private GridFilterInterfaceFactory $gridFilterFactory;
-
-    private array $navigationConfig;
+    /**
+     * @var \Hyva\Admin\Model\HyvaGridSourceInterface
+     */
+    private $gridSource;
 
     /**
-     * @var ColumnDefinitionInterface[]
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
      */
-    private array $columnDefinitions;
+    private $searchCriteriaBuilder;
+
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    private $request;
+
+    /**
+     * @var UrlBuilder
+     */
+    private $urlBuilder;
+
+    /**
+     * @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterfaceFactory
+     */
+    private $gridFilterFactory;
+
+    /**
+     * @var mixed[]
+     */
+    private $navigationConfig;
+
+    /**
+     * @var mixed[]
+     */
+    private $columnDefinitions;
 
     /**
      * @var SortOrderBuilder
      */
-    private SortOrderBuilder $sortOrderBuilder;
+    private $sortOrderBuilder;
 
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
     /**
      * @var GridButtonInterfaceFactory
      */
-    private GridButtonInterfaceFactory $gridButtonFactory;
+    private $gridButtonFactory;
+
     /**
      * @var GridExportInterfaceFactory
      */
@@ -158,7 +180,9 @@ class Navigation implements NavigationInterface
         // initializes the renderer block will not be loaded during the processing of the ajax request.
         return reduce(
             $this->columnDefinitions,
-            fn(bool $isEnabled, ColumnDefinitionInterface $c): bool => $isEnabled && !$c->getRendererBlockName(),
+            function (bool $isEnabled, ColumnDefinitionInterface $c) : bool {
+                return $isEnabled && !$c->getRendererBlockName();
+            },
             ($this->navigationConfig['@isAjaxEnabled'] ?? '') !== 'false'
         );
     }
@@ -417,10 +441,14 @@ class Navigation implements NavigationInterface
         // sort all buttons with a sortOrder before the ones without a sortOrder
         $maxSortOrder = empty($buttonsConfig)
             ? 0
-            : max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig)) + 1;
+            : max(map(function (array $buttonConfig) {
+                return $buttonConfig['sortOrder'] ?? 0;
+            }, $buttonsConfig)) + 1;
         usort(
             $buttonsConfig,
-            fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
+            function (array $a, array $b) use ($maxSortOrder) {
+                return ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder);
+            }
         );
 
         return $buttonsConfig;
@@ -441,10 +469,12 @@ class Navigation implements NavigationInterface
         // sort all buttons with a sortOrder before the ones without a sortOrder
         $maxSortOrder = empty($config)
             ? 0
-            : max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $config)) + 1;
+            : max(map(function(array $buttonConfig) { return $buttonConfig['sortOrder'] ?? 0; }, $config)) + 1;
         usort(
             $config,
-            fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
+            function(array $a, array $b)  use ($maxSortOrder)  {
+                return ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder);
+            }
         );
 
         return $config;
