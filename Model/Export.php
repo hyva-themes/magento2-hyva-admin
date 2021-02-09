@@ -52,7 +52,7 @@ class Export
             throw new \InvalidArgumentException("Export type " . $type . " not defined");
         }
         $exportModel = $this->exportInterfaceFactory->create($export->getClassName());
-        $exportModel->setSearchCriteria($grid->getNavigation()->getSearchCriteria())
+        $exportModel->setGrid($grid)
             ->setFileName($export->getFileName() ?: $grid->getGridName());
         return $exportModel;
     }

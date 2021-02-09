@@ -12,7 +12,7 @@ class Xml extends AbstractExport
 
     protected $fileName = "export.xml";
 
-    public function create(): bool
+    public function create()
     {
         // TODO: Implement create() method.
     }

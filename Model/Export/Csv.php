@@ -7,6 +7,8 @@
 
 namespace Hyva\Admin\Model\Export;
 
+use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
+
 class Csv extends AbstractExport
 {
 
@@ -14,6 +16,17 @@ class Csv extends AbstractExport
 
     public function create()
     {
-        // TODO: Implement create() method.
+        $navigation = $this->getGrid()->getNavigation();
+        $pageCount = $navigation->getPageCount();
+        for ($i = 1; $i <= $pageCount; $i++) {
+            $navigation->getSearchCriteria()->setCurrentPage($i);
+            $rows = $this->getGrid()->getRows();
+            foreach ($rows as $row) {
+                $line = array_map(function (CellInterface $cell) {
+                    return $cell->getTextValue();
+                }, $row->getCells());
+                @file_put_contents($this->fileName, implode(",", $line), FILE_APPEND);
+            }
+        }
     }
 }
