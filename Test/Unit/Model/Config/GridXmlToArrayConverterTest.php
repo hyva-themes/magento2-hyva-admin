@@ -78,6 +78,10 @@ class GridXmlToArrayConverterTest extends TestCase
                 $this->getMassActionXml(),
                 $this->getMassActionExpected(),
             ],
+            'exports'                   => [
+                $this->getExportXml(),
+                $this->getExportExpected()
+            ],
             'keep-columns-from-source' => [
                 $this->getIncludeWithKeepColumnsFromSourceXml(),
                 $this->getIncludeWithKeepColumnsFromSourceExpected(),
@@ -420,11 +424,35 @@ EOXML;
     private function getMassActionExpected(): array
     {
         $actions = [
-            ['label' => 'Update', 'url' => '*/massActions/update'],
-            ['label' => 'Delete All', 'url' => '*/massActions/delete', 'requireConfirmation' => true],
-            ['label' => 'Reindex', 'url' => '*/massActions/reindex'],
+            ['id' => 'update', 'label' => 'Update', 'url' => '*/massActions/update'],
+            ['id' => 'delete','label' => 'Delete All', 'url' => '*/massActions/delete', 'requireConfirmation' => true],
+            ['id' => 'reindex','label' => 'Reindex', 'url' => '*/massActions/reindex'],
         ];
         return ['massActions' => ['@idColumn' => 'id', '@idsParam' => 'ids', 'actions' => $actions]];
+    }
+
+    private function getExportXml(): string
+    {
+        return <<<EOXML
+    <navigation>
+        <exports>
+            <export id="csv" label="Export to CSV" class="Hyva\Admin\Model\Export\Csv" />
+            <export id="xml" label="Export to XML"  class="Hyva\Admin\Model\Export\Xml" />
+        </exports>
+    </navigation>
+EOXML;
+    }
+
+    private function getExportExpected(): array
+    {
+        return [
+            'navigation' => [
+                'exports' => [
+                    ['id' => 'csv', 'label' => 'Export to CSV', 'class' => 'Hyva\Admin\Model\Export\Csv'],
+                    ['id' => 'xml','label' => 'Export to XML', 'class' => 'Hyva\Admin\Model\Export\Xml']
+                ],
+            ],
+        ];
     }
 
     private function getFiltersXml(): string
