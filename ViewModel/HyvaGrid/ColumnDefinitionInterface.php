@@ -16,14 +16,6 @@ interface ColumnDefinitionInterface
 
     public function getTemplate(): ?string;
 
-    public function toArray(): array;
-
-    /**
-     * @param array|ColumnDefinitionInterface $definition
-     * @return ColumnDefinitionInterface
-     */
-    public function merge($definition): ColumnDefinitionInterface;
-
     public function getOptionArray(): array;
 
     public function getSortOrder(): int;
@@ -33,4 +25,12 @@ interface ColumnDefinitionInterface
     public function isVisible(): bool;
 
     public function isInitiallyHidden(): bool;
+
+    public function toArray(): array;
+
+    /**
+     * @param array|ColumnDefinitionInterface $definition
+     * @return ColumnDefinitionInterface
+     */
+    public function merge($definition): ColumnDefinitionInterface;
 }
