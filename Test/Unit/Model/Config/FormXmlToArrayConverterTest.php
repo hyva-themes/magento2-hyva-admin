@@ -42,11 +42,11 @@ class FormXmlToArrayConverterTest extends TestCase
                 $this->getExcludeFieldsXml(),
                 $this->getExcludeFieldsExpected(),
             ],
-            'sections' => [
+            'sections'           => [
                 $this->getSectionsXml(),
                 $this->getSectionsExpected(),
             ],
-            'navigation' => [
+            'navigation'         => [
                 $this->getNavigationXml(),
                 $this->getNavigationExpected(),
             ],
@@ -58,7 +58,7 @@ class FormXmlToArrayConverterTest extends TestCase
         return <<<EOXML
 <load method="\Magento\Customer\Api\CustomerRepositoryInterface::getById">
     <bindArguments>
-        <argument name="customer_id" requestParam="id"/>
+        <argument name="customerId" requestParam="id"/>
     </bindArguments>
 </load>
 EOXML;
@@ -70,7 +70,7 @@ EOXML;
             'load' => [
                 'method'        => '\Magento\Customer\Api\CustomerRepositoryInterface::getById',
                 'bindArguments' => [
-                    ['name' => 'customer_id', 'requestParam' => 'id'],
+                    'customerId' => ['requestParam' => 'id'],
                 ],
             ],
         ];
@@ -94,8 +94,8 @@ EOXML;
             'save' => [
                 'method'        => '\Magento\Customer\Api\CustomerRepositoryInterface::save',
                 'bindArguments' => [
-                    ['name' => 'customer', 'formData' => 'true'],
-                    ['name' => 'passwordHash', 'method' => '\My\Module\Model\CustomerPassword::hash'],
+                    'customer'     => ['formData' => 'true'],
+                    'passwordHash' => ['method' => '\My\Module\Model\CustomerPassword::hash'],
                 ],
             ],
         ];
@@ -116,7 +116,7 @@ EOXML;
         return <<<EOXML
 <fields>
     <include keepAllSourceFields="true">
-        <field name="identifier"/>
+        <field name="identifier" group="important-things"/>
         <field name="title" template="My_Module::form/title-field.phtml"/>
         <field name="content" type="wysiwyg"/>
         <field name="creation_time" type="datetime"/>
@@ -134,14 +134,18 @@ EOXML;
         return [
             'fields' => [
                 '@keepAllSourceFields' => 'true',
-                'include' => [
-                    ['name' => 'identifier'],
+                'include'              => [
+                    ['name' => 'identifier', 'group' => 'important-things'],
                     ['name' => 'title', 'template' => 'My_Module::form/title-field.phtml'],
                     ['name' => 'content', 'type' => 'wysiwyg'],
                     ['name' => 'creation_time', 'type' => 'datetime'],
                     ['name' => 'is_active', 'type' => 'boolean'],
                     ['name' => 'comment', 'enabled' => 'false'],
-                    ['name' => 'store_ids', 'type' => 'select', 'source' => '\Magento\Eav\Model\Entity\Attribute\Source\Store'],
+                    [
+                        'name'   => 'store_ids',
+                        'type'   => 'select',
+                        'source' => '\Magento\Eav\Model\Entity\Attribute\Source\Store',
+                    ],
                     ['name' => 'admin', 'valueProcessor' => '\My\Module\Form\AdminLinkProcessor'],
                 ],
             ],
@@ -150,7 +154,7 @@ EOXML;
 
     private function getExcludeFieldsXml(): string
     {
-return <<<EOXML
+        return <<<EOXML
 <fields>
     <exclude>
         <field name="created_at"/>
@@ -164,8 +168,8 @@ EOXML;
     {
         return [
             'fields' => [
-                'exclude' => ['created_at', 'updated_at']
-            ]
+                'exclude' => ['created_at', 'updated_at'],
+            ],
         ];
     }
 
@@ -187,25 +191,27 @@ EOXML;
 
     private function getSectionsExpected(): array
     {
-        return ['sections' => [
-            [
-                'id'        => 'foo',
-                'label'     => 'Foos',
-                'sortOrder' => '10',
-                'groups'    => [
-                    ['id' => 'important-things', 'sortOrder' => '10'],
-                    ['id' => 'details', 'label' => 'Details', 'sortOrder' => '20'],
+        return [
+            'sections' => [
+                [
+                    'id'        => 'foo',
+                    'label'     => 'Foos',
+                    'sortOrder' => '10',
+                    'groups'    => [
+                        ['id' => 'important-things', 'sortOrder' => '10'],
+                        ['id' => 'details', 'label' => 'Details', 'sortOrder' => '20'],
+                    ],
+                ],
+                [
+                    'id'        => 'bar',
+                    'label'     => 'Bars',
+                    'sortOrder' => '20',
+                    'groups'    => [
+                        ['id' => 'whatever', 'sortOrder' => '10'],
+                    ],
                 ],
             ],
-            [
-                'id'        => 'bar',
-                'label'     => 'Bars',
-                'sortOrder' => '20',
-                'groups'    => [
-                    ['id' => 'whatever', 'sortOrder' => '10'],
-                ],
-            ],
-        ]];
+        ];
     }
 
     private function getNavigationXml(): string
@@ -226,11 +232,11 @@ EOXML;
         return [
             'navigation' => [
                 'buttons' => [
-                    ['id'=> 'save', 'label' => 'Save', 'url' => 'hyva_admin/form/save', 'enabled' => 'false'],
-                    ['id'=> 'only-visible-when-entity-loaded', 'label' => 'Example', 'hiddenForNewEntity' => 'true'],
-                    ['id'=> 'reset', 'label' => 'Reset', 'url' => '*/*/*'],
-                ]
-            ]
+                    ['id' => 'save', 'label' => 'Save', 'url' => 'hyva_admin/form/save', 'enabled' => 'false'],
+                    ['id' => 'only-visible-when-entity-loaded', 'label' => 'Example', 'hiddenForNewEntity' => 'true'],
+                    ['id' => 'reset', 'label' => 'Reset', 'url' => '*/*/*'],
+                ],
+            ],
         ];
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Hyva_Admin:etc/hyva-form.xsd">
+    <load method="\Some\Repo::getById">
+        <bindArguments>
+            <argument name="fooId" requestParam="id"/>
+        </bindArguments>
+    </load>
+    <save method="\Some\Repo::save">
+        <bindArguments>
+            <argument name="foo" formData="true"/>
+            <argument name="passwordHash" method="\My\Module\Model\CustomerPassword::hash"/>
+        </bindArguments>
+    </save>
+    <fields>
+        <include keepAllSourceFields="true">
+            <field name="aaa"/>
+            <field name="bbb" group="important-things"/>
+        </include>
+        <exclude>
+            <field name="ccc"/>
+        </exclude>
+    </fields>
+</form>

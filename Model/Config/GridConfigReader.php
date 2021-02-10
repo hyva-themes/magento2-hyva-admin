@@ -35,12 +35,12 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
     private ?string $mergedSchema;
 
     public function __construct(
-        GridDefinitionConfigFiles $definitionConfigFiles,
+        GridDefinitionConfigFiles $gridDefinitionConfigFiles,
         GridXmlToArrayConverter $gridXmlToArrayConverter,
         ValidationStateInterface $appValidationState,
         ModuleDirReader $moduleDirReader
     ) {
-        $this->definitionConfigFiles   = $definitionConfigFiles;
+        $this->definitionConfigFiles   = $gridDefinitionConfigFiles;
         $this->gridXmlToArrayConverter = $gridXmlToArrayConverter;
         $this->appValidationState      = $appValidationState;
         $this->moduleDirReader         = $moduleDirReader;
@@ -55,7 +55,7 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
 
     private function readGridConfig(string $gridName): array
     {
-        $files = $this->definitionConfigFiles->getGridDefinitionFiles($gridName);
+        $files = $this->definitionConfigFiles->getConfigDefinitionFiles($gridName);
         return $files
             ? $this->mergeGridConfigs($files)
             : [];

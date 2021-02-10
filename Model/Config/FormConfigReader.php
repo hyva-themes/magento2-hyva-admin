@@ -19,8 +19,15 @@ class FormConfigReader implements HyvaFormConfigReaderInterface
 
     private ModuleDirReader $moduleDirReader;
 
-    // todo: specify form xml id attributes
-    private array $idAttributes = [];
+    private array $idAttributes = [
+        '/form/load/bindArguments/argument' => 'name',
+        '/form/save/bindArguments/argument' => 'name',
+        '/form/tabs/tab'                    => 'id',
+        '/form/tabs/tab/group'              => 'id',
+        '/form/fields/include/field'        => 'name',
+        '/form/fields/exclude/field'        => 'name',
+        '/form/navigation/buttons/button'   => 'id',
+    ];
 
     private ?string $perFileSchema;
 
@@ -36,7 +43,7 @@ class FormConfigReader implements HyvaFormConfigReaderInterface
         $this->formXmlToArrayConverter   = $formXmlToArrayConverter;
         $this->appValidationState        = $appValidationState;
         $this->moduleDirReader           = $moduleDirReader;
-        $this->perFileSchema             = 'hyva-form.xsd';
+        $this->perFileSchema             = null;//'hyva-form.xsd';
         $this->mergedSchema              = null;
     }
 
@@ -47,7 +54,7 @@ class FormConfigReader implements HyvaFormConfigReaderInterface
 
     private function readFormConfiguration(string $formName): array
     {
-        $files = $this->formDefinitionConfigFiles->getGridDefinitionFiles($formName);
+        $files = $this->formDefinitionConfigFiles->getConfigDefinitionFiles($formName);
         return $files
             ? $this->mergeFormConfigs($files)
             : [];

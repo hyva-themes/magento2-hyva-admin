@@ -21,10 +21,10 @@ class GridConfigReaderTest extends TestCase
     public function testLoadsSingleFile(): void
     {
         $stubConfigFileList = $this->createMock(\Hyva\Admin\Model\Config\GridDefinitionConfigFiles::class);
-        $stubConfigFileList->method('getGridDefinitionFiles')->willReturn([
+        $stubConfigFileList->method('getConfigDefinitionFiles')->willReturn([
             __DIR__ . '/test-grid-files/test-grid-a.xml',
         ]);
-        $arguments = ['definitionConfigFiles' => $stubConfigFileList];
+        $arguments = ['gridDefinitionConfigFiles' => $stubConfigFileList];
 
         /** @var GridConfigReader $reader */
         $reader = ObjectManager::getInstance()->create(GridConfigReader::class, $arguments);
@@ -35,11 +35,11 @@ class GridConfigReaderTest extends TestCase
     public function testMergesFiles(): void
     {
         $stubConfigFileList = $this->createMock(\Hyva\Admin\Model\Config\GridDefinitionConfigFiles::class);
-        $stubConfigFileList->method('getGridDefinitionFiles')->willReturn([
+        $stubConfigFileList->method('getConfigDefinitionFiles')->willReturn([
             __DIR__ . '/test-grid-files/test-grid-a.xml',
             __DIR__ . '/test-grid-files/test-grid-b.xml',
         ]);
-        $arguments = ['definitionConfigFiles' => $stubConfigFileList];
+        $arguments = ['gridDefinitionConfigFiles' => $stubConfigFileList];
 
         /** @var GridConfigReader $reader */
         $reader = ObjectManager::getInstance()->create(GridConfigReader::class, $arguments);

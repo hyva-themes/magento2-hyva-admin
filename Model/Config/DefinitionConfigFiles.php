@@ -25,7 +25,7 @@ abstract class DefinitionConfigFiles
      * @param string $configFileName
      * @return string[]
      */
-    public function getGridDefinitionFiles(string $configFileName): array
+    public function getConfigDefinitionFiles(string $configFileName): array
     {
         $potentialGridConfigFiles = map(function (string $dir) use ($configFileName): string {
             return $this->buildDefinitionFileName($configFileName, $dir);

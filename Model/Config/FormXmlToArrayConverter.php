@@ -49,25 +49,25 @@ class FormXmlToArrayConverter
 
     private function convertBindArguments(\DOMElement $parent): ?array
     {
+        $callback = function (\DOMElement $argumentElement): array {
+            return [
+                $argumentElement->getAttribute('name') => filter(merge(
+                    XmlToArray::getAttributeConfig($argumentElement, 'requestParam'),
+                    XmlToArray::getAttributeConfig($argumentElement, 'formData'),
+                    XmlToArray::getAttributeConfig($argumentElement, 'method'),
+                )),
+            ];
+        };
+
         $bindArgumentsElement = XmlToArray::getChildByName($parent, 'bindArguments');
         return $bindArgumentsElement
-            ? map([$this, 'convertBindArgument'], XmlToArray::getChildrenByName($bindArgumentsElement, 'argument'))
+            ? merge([], ...map($callback, XmlToArray::getChildrenByName($bindArgumentsElement, 'argument')))
             : null;
-    }
-
-    private function convertBindArgument(\DOMElement $argumentElement): array
-    {
-        return filter(merge(
-            XmlToArray::getAttributeConfig($argumentElement, 'name'),
-            XmlToArray::getAttributeConfig($argumentElement, 'requestParam'),
-            XmlToArray::getAttributeConfig($argumentElement, 'formData'),
-            XmlToArray::getAttributeConfig($argumentElement, 'method'),
-        ));
     }
 
     private function convertFields(?\DOMElement $fieldsElement): array
     {
-        $includeElement = $fieldsElement ? XmlToArray::getChildByName($fieldsElement, 'include') : null;
+        $includeElement      = $fieldsElement ? XmlToArray::getChildByName($fieldsElement, 'include') : null;
         $keepAllSourceFields = $includeElement ?
             XmlToArray::getAttributeConfig($includeElement, 'keepAllSourceFields', '@keepAllSourceFields') :
             [];
@@ -85,7 +85,7 @@ class FormXmlToArrayConverter
         /*
          * <fields>
          *     <include keepAllSourceFields="true">
-         *         <field name="identifier"/>
+         *         <field name="identifier" group="important-things"/>
          *         <field name="title" template="My_Module::form/title-field.phtml"/>
          *         <field name="content" type="wysiwyg"/>
          *         <field name="creation_time" type="datetime"/>
@@ -105,6 +105,7 @@ class FormXmlToArrayConverter
     {
         return filter(merge(
             XmlToArray::getAttributeConfig($fieldElement, 'name'),
+            XmlToArray::getAttributeConfig($fieldElement, 'group'),
             XmlToArray::getAttributeConfig($fieldElement, 'template'),
             XmlToArray::getAttributeConfig($fieldElement, 'type'),
             XmlToArray::getAttributeConfig($fieldElement, 'enabled'),
