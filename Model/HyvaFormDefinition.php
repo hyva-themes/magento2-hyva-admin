@@ -47,13 +47,13 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
 
     public function getFieldDefinitions(): array
     {
-        $includeFields = $this->getFormConfig()['fields']['include'] ?? [];
-        return map(function (string $fieldName) use ($includeFields): FormFieldDefinitionInterface {
+        return map(function (string $fieldName): FormFieldDefinitionInterface {
             return $this->formFieldDefinitionFactory->create(merge([
-                'name'     => $fieldName,
-                'formName' => $this->getFormName(),
-            ], $includeFields[$fieldName]));
-        }, keys($includeFields));
+                'name'       => $fieldName,
+                'formName'   => $this->getFormName(),
+                'isExcluded' => in_array($fieldName, $this->getExcludeFieldsConfig(), true),
+            ], $this->getIncludeFieldsConfig()[$fieldName]));
+        }, keys($this->getIncludeFieldsConfig()));
     }
 
     public function getSectionsConfig(): array
@@ -68,9 +68,19 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
 
     private function getFormConfig(): array
     {
-        if (! isset($this->memoizedGridConfig)) {
+        if (!isset($this->memoizedGridConfig)) {
             $this->memoizedGridConfig = $this->formConfigReader->getFormConfiguration($this->getFormName());
         }
         return $this->memoizedGridConfig;
+    }
+
+    private function getExcludeFieldsConfig(): array
+    {
+        return $this->getFormConfig()['fields']['exclude'] ?? [];
+    }
+
+    private function getIncludeFieldsConfig(): array
+    {
+        return $this->getFormConfig()['fields']['include'] ?? [];
     }
 }
