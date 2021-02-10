@@ -8,6 +8,7 @@
 namespace Hyva\Admin\Model\Export;
 
 use Hyva\Admin\Model\ExportInterface;
+use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
 
@@ -33,7 +34,7 @@ abstract class AbstractExport implements ExportInterface
 
     public function getRootDir() :string
     {
-        return DirectoryList::VAR_DIR . DIRECTORY_SEPARATOR . "export";
+        return DirectoryList::VAR_DIR;
     }
 
     public function setGrid(HyvaGridInterface $grid) : ExportInterface
@@ -61,8 +62,9 @@ abstract class AbstractExport implements ExportInterface
        return $this;
     }
 
-    public function getAbsoluteFileName() : string
-    {
-        return $this->getRootDir() . DIRECTORY_SEPARATOR . $this->getFileName();
+    protected function getHeaderData(){
+        return array_map(function (ColumnDefinitionInterface $column) {
+            return $column->getLabel();
+        }, $this->getGrid()->getColumnDefinitions());
     }
 }

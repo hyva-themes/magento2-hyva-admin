@@ -15,7 +15,7 @@ interface HyvaGridSourceInterface
      */
     public function extractColumnDefinitions(array $configuredColumns, array $hiddenKeys, bool $keepAll): array;
 
-    public function getRecords(SearchCriteriaInterface $searchCriteria): array;
+    public function getRecords(SearchCriteriaInterface $searchCriteria, bool $forceReload = false): array;
 
     public function extractValue($record, string $key);
 

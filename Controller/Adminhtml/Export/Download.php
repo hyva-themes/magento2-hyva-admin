@@ -64,7 +64,7 @@ class Download extends Action implements HttpGetActionInterface
         $this->prepareRequest();
         $export->create();
         $this->response = $this->fileFactory->create(
-            $export->getFileName(),
+            basename($export->getFileName()),
             [
                 "type"  => "filename",
                 "value" => $export->getFileName(),
