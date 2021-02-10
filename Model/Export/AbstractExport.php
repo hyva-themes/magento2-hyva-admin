@@ -20,6 +20,7 @@ abstract class AbstractExport implements ExportInterface
     protected $fileName;
     protected $metaType = 'application/octet-stream';
 
+
     public function getFileName() :string
     {
         return $this->fileName;
@@ -58,5 +59,10 @@ abstract class AbstractExport implements ExportInterface
     {
         $this->metaType = $metaType;
        return $this;
+    }
+
+    public function getAbsoluteFileName() : string
+    {
+        return $this->getRootDir() . DIRECTORY_SEPARATOR . $this->getFileName();
     }
 }

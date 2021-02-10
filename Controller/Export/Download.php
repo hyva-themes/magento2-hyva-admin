@@ -78,6 +78,7 @@ class Download implements ActionInterface
     private function prepareRequest()
     {
         $params = array_diff_key($this->request->getParams(), array_flip(['p', 'key', 'exportType', 'ajax']));
+        $params['pageSize'] = 200;
         $this->request->clearParams()->setParams($params);
     }
 }
