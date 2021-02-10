@@ -2,7 +2,8 @@
 
 namespace Hyva\Admin\Model;
 
-class FormDataTypes
+// TODO: find a better name...
+class FormInputOutput
 {
     private string $formName;
 
