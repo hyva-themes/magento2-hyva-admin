@@ -8,5 +8,4 @@ class FormDefinitionConfigFiles extends DefinitionConfigFiles
     {
         parent::__construct($hyvaConfigDirs);
     }
-
 }

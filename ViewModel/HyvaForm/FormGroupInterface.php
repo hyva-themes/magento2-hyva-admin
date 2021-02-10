@@ -11,7 +11,7 @@ interface FormGroupInterface
     public function hasLabel(): bool;
 
     /**
-     * @return FormFieldInterface[]
+     * @return FormFieldDefinitionInterface[]
      */
     public function getFields(): array;
 

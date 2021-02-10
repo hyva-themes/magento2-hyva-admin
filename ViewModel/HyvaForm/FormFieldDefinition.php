@@ -2,14 +2,14 @@
 
 namespace Hyva\Admin\ViewModel\HyvaForm;
 
-class FormField implements FormFieldInterface
+class FormFieldDefinition implements FormFieldDefinitionInterface
 {
-    public function getId(): string
+    public function getName(): string
     {
 
     }
 
-    public function getFormId(): string
+    public function getFormName(): string
     {
 
     }

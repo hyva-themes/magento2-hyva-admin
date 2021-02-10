@@ -8,7 +8,7 @@
 <div>
     <?php foreach ($group->getFields() as $field): ?>
     <div>
-        <label for="<?= $escaper->escapeHtmlAttr($field->getId()) ?>">
+        <label for="<?= $escaper->escapeHtmlAttr($field->getName()) ?>">
             <?= $escaper->escapeHtml($field->getLabel()) ?>:
         </label>
     </div>

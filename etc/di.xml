@@ -35,7 +35,8 @@
     <preference for="Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface" type="Hyva\Admin\ViewModel\HyvaForm\FormGroup"/>
     <preference for="Hyva\Admin\ViewModel\HyvaForm\FormFieldOptionInterface"
                 type="Hyva\Admin\ViewModel\HyvaForm\FormFieldOption"/>
-    <preference for="Hyva\Admin\ViewModel\HyvaForm\FormFieldInterface" type="Hyva\Admin\ViewModel\HyvaForm\FormField"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface"
+                type="Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinition"/>
     <preference for="Hyva\Admin\ViewModel\HyvaForm\FormButtonInterface"
                 type="Hyva\Admin\ViewModel\HyvaForm\FormButton"/>
     <preference for="Hyva\Admin\Model\HyvaFormDefinitionInterface" type="Hyva\Admin\Model\HyvaFormDefinition"/>

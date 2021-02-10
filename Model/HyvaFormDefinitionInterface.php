@@ -2,11 +2,11 @@
 
 namespace Hyva\Admin\Model;
 
-use Hyva\Admin\ViewModel\HyvaForm\FormFieldInterface;
+use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 
 interface HyvaFormDefinitionInterface
 {
-    public function getName(): string;
+    public function getFormName(): string;
 
     /**
      * @return mixed[]
@@ -19,7 +19,7 @@ interface HyvaFormDefinitionInterface
     public function getSaveConfig(): array;
 
     /**
-     * @return FormFieldInterface[]
+     * @return FormFieldDefinitionInterface[]
      */
     public function getFieldDefinitions(): array;
 

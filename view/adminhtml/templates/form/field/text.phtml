@@ -2,7 +2,7 @@
 
 /** @var \Magento\Framework\View\Element\Template $block */
 /** @var \Magento\Framework\Escaper $escaper */
-/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldInterface $field */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
 
 ?>
-<input id="<?= $escaper->escapeHtmlAttr($field->getId()) ?>" type="text" value="" form="<?= $field->getFormId() ?>"/>
+<input id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>" type="text" value="" form="<?= $field->getFormName() ?>"/>

@@ -2,11 +2,11 @@
 
 namespace Hyva\Admin\ViewModel\HyvaForm;
 
-interface FormFieldInterface
+interface FormFieldDefinitionInterface
 {
-    public function getId(): string;
+    public function getName(): string;
 
-    public function getFormId(): string;
+    public function getFormName(): string;
 
     public function getHtml(): string;
 
