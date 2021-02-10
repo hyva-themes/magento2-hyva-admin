@@ -8,9 +8,7 @@
 namespace Hyva\Admin\Controller\Export;
 
 use Hyva\Admin\Model\Export;
-use Hyva\Admin\Model\ExportInterface;
-use Hyva\Admin\Model\ExportInterfaceFactory;
-use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
+use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseInterface;
@@ -19,28 +17,16 @@ use Magento\Framework\App\Response\Http\FileFactory;
 class Download implements ActionInterface
 {
     const GRID_NAME = 'gridName';
-    /**
-     * @var \Hyva\Admin\ViewModel\HyvaGridInterface
-     */
-    protected $grid;
-    /**
-     * @var Export
-     */
-    protected $export;
-    /**
-     * @var \Magento\Framework\App\RequestInterface
-     */
-    private $request;
-    /**
-     * @var FileFactory
-     */
-    private $fileFactory;
-    /**
-     * @var ResponseInterface
-     */
-    private $response;
 
+    protected HyvaGridInterface $grid;
 
+    protected Export $export;
+
+    private RequestInterface $request;
+
+    private FileFactory $fileFactory;
+
+    private ResponseInterface $response;
 
     public function __construct(
         RequestInterface $request,

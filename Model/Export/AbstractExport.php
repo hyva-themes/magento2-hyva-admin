@@ -14,12 +14,9 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 
 abstract class AbstractExport implements ExportInterface
 {
-    /**
-     * @var HyvaGridInterface
-     */
-    protected $grid;
-    protected $fileName;
-    protected $metaType = 'application/octet-stream';
+    protected HyvaGridInterface $grid;
+    protected string $fileName;
+    protected string $metaType = 'application/octet-stream';
 
 
     public function getFileName() :string

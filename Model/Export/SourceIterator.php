@@ -7,27 +7,21 @@
 
 namespace Hyva\Admin\Model\Export;
 
+use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
+use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
 
 class SourceIterator implements \Iterator
 {
-    /**
-     * @var \Magento\Framework\Api\SearchCriteriaInterface
-     */
-    protected $searchCriteria;
-    protected $total;
-    /**
-     * @var \Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface
-     */
-    protected $navigation;
+    protected SearchCriteriaInterface $searchCriteria;
+    protected int $total;
+    protected NavigationInterface $navigation;
 
-    /**
-     * @var HyvaGridInterface
-     */
-    private $grid;
+    private HyvaGridInterface $grid;
 
-    private $currentBatch=0;
-    private $currentCounter=0;
+    private array $currentBatch = [];
+    private int $currentCounter=0;
 
     public function __construct(HyvaGridInterface $grid)
     {
@@ -38,7 +32,7 @@ class SourceIterator implements \Iterator
         $this->total = $this->navigation->getTotalRowsCount();
     }
 
-    public function current()
+    public function current(): RowInterface
     {
         if(!isset($this->currentBatch[$this->currentCounter])){
             $this->currentBatch = [];

@@ -8,6 +8,7 @@
 namespace Hyva\Admin\Model;
 
 use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
+use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
 
 class Export
@@ -15,17 +16,11 @@ class Export
 
     const GRID_NAME = 'gridName';
 
-    protected $grid;
+    protected array $grid = [];
 
-    /**
-     * @var ExportInterfaceFactory
-     */
-    private $exportInterfaceFactory;
+    private ExportInterfaceFactory $exportInterfaceFactory;
 
-    /**
-     * @var HyvaGridInterfaceFactory
-     */
-    private $gridFactory;
+    private HyvaGridInterfaceFactory $gridFactory;
 
     public function __construct(HyvaGridInterfaceFactory $gridFactory, ExportInterfaceFactory $exportInterfaceFactory)
     {
@@ -57,9 +52,9 @@ class Export
         return $exportModel;
     }
 
-    public function getGrid($name): \Hyva\Admin\ViewModel\HyvaGridInterface
+    public function getGrid($name): HyvaGridInterface
     {
-        if (!$this->grid[$name] ?? false) {
+        if (!isset($this->grid[$name])) {
             $this->grid[$name] = $this->gridFactory->create([self::GRID_NAME => $name]);
         }
         return $this->grid[$name];

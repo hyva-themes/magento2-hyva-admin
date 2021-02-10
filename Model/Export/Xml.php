@@ -12,26 +12,20 @@ use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Magento\Framework\Convert\Excel;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Convert\ExcelFactory;
+use Magento\Framework\Filesystem\Directory\WriteInterface;
 
 class Xml extends AbstractExport
 {
 
-    protected $fileName = "export/export.xlsx";
+    protected string $fileName = "export/export.xlsx";
 
-    protected $directory;
+    protected WriteInterface $directory;
 
-    /**
-     * @var Filesystem
-     */
-    private $filesystem;
-    /**
-     * @var ExcelFactory
-     */
-    private $excelFactory;
-    /**
-     * @var SourceIteratorFactory
-     */
-    private $sourceIteratorFactory;
+    private Filesystem $filesystem;
+
+    private ExcelFactory $excelFactory;
+
+    private SourceIteratorFactory $sourceIteratorFactory;
 
     public function __construct(
         Filesystem $filesystem,

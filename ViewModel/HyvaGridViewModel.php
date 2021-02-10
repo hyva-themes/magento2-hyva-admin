@@ -21,8 +21,7 @@ use function array_values as values;
 
 class HyvaGridViewModel implements HyvaGridInterface
 {
-
-    protected HyvaGrid\NavigationInterface $memorizedNaviagtion;
+    protected HyvaGrid\NavigationInterface $memorizedNavigation;
 
     private HyvaGridDefinitionInterfaceFactory $gridDefinitionFactory;
 
@@ -191,15 +190,15 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getNavigation(): HyvaGrid\NavigationInterface
     {
-        if (!$this->memorizedNaviagtion) {
-            $this->memorizedNaviagtion = $this->navigationFactory->create([
+        if (!isset($this->memorizedNavigation)) {
+            $this->memorizedNavigation = $this->navigationFactory->create([
                 'gridName'          => $this->getGridName(),
                 'gridSource'        => $this->getGridSourceModel(),
                 'columnDefinitions' => $this->getColumnDefinitions(),
                 'navigationConfig'  => $this->getGridDefinition()->getNavigationConfig(),
             ]);
         }
-        return $this->memorizedNaviagtion;
+        return $this->memorizedNavigation;
     }
 
     public function getEntityDefinition(): EntityDefinitionInterface

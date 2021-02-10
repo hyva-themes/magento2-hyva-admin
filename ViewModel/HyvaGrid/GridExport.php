@@ -13,42 +13,21 @@ use Magento\Framework\View\LayoutInterface;
 
 class GridExport implements GridExportInterface
 {
-    /**
-     * @var LayoutInterface
-     */
-    private $layout;
+    private LayoutInterface $layout;
 
-    /**
-     * @var string
-     */
-    private $id;
+    private string $id;
 
-    /**
-     * @var string|null
-     */
-    private $label;
+    private ?string $label;
 
-    /**
-     * @var string|null
-     */
-    private $enabled;
+    private ?string $enabled;
 
-    /**
-     * @var string|null
-     */
-    private $template;
-    /**
-     * @var string|null
-     */
-    private $className;
-    /**
-     * @var string|null
-     */
-    private $fileName;
-    /**
-     * @var string|null
-     */
-    private $sortOrder;
+    private ?string $template;
+
+    private ?string $className;
+
+    private ?string $fileName;
+
+    private ?string $sortOrder;
 
     public function __construct(
         LayoutInterface $layout,

@@ -8,6 +8,7 @@
 namespace Hyva\Admin\Controller\Adminhtml\Export;
 
 use Hyva\Admin\Model\Export;
+use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
@@ -18,28 +19,16 @@ use Magento\Framework\App\Response\Http\FileFactory;
 class Download extends Action implements HttpGetActionInterface
 {
     const GRID_NAME = 'gridName';
-    /**
-     * @var \Hyva\Admin\ViewModel\HyvaGridInterface
-     */
-    protected $grid;
-    /**
-     * @var Export
-     */
-    protected $export;
-    /**
-     * @var \Magento\Framework\App\RequestInterface
-     */
-    private $request;
-    /**
-     * @var FileFactory
-     */
-    private $fileFactory;
-    /**
-     * @var ResponseInterface
-     */
-    private $response;
 
+    protected HyvaGridInterface $grid;
 
+    protected Export $export;
+
+    private RequestInterface $request;
+
+    private FileFactory $fileFactory;
+
+    private ResponseInterface $response;
 
     public function __construct(
         Context $context,
@@ -79,7 +68,6 @@ class Download extends Action implements HttpGetActionInterface
     private function prepareRequest()
     {
         $params = array_diff_key($this->request->getParams(), array_flip(['p', 'key', 'exportType', 'ajax']));
-        $params['pageSize'] = 200;
         $this->request->clearParams()->setParams($params);
     }
 }
