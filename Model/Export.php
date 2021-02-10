@@ -53,7 +53,7 @@ class Export
         }
         $exportModel = $this->exportInterfaceFactory->create($export->getClassName());
         $exportModel->setGrid($grid)
-            ->setFileName($export->getFileName() ?: $grid->getGridName());
+            ->setFileName($export->getFileName() ?: $exportModel->getFileName() ?: $grid->getGridName());
         return $exportModel;
     }
 

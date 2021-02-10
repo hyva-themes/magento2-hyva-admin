@@ -21,6 +21,9 @@ use function array_values as values;
 
 class HyvaGridViewModel implements HyvaGridInterface
 {
+
+    protected HyvaGrid\NavigationInterface $memorizedNaviagtion;
+
     private HyvaGridDefinitionInterfaceFactory $gridDefinitionFactory;
 
     private HyvaGrid\CellInterfaceFactory $cellFactory;
@@ -45,7 +48,7 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private string $gridName;
 
-    private array $memoizedColumnDefinitions;
+    private array $memorizedColumnDefinitions;
 
     public function __construct(
         string $gridName,
@@ -81,10 +84,10 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getAllColumnDefinitions(): array
     {
-        if (!isset($this->memoizedColumnDefinitions)) {
-            $this->memoizedColumnDefinitions = $this->buildColumnDefinitions();
+        if (!isset($this->memorizedColumnDefinitions)) {
+            $this->memorizedColumnDefinitions = $this->buildColumnDefinitions();
         }
-        return $this->memoizedColumnDefinitions;
+        return $this->memorizedColumnDefinitions;
     }
 
     private function buildColumnDefinitions(): array
@@ -140,12 +143,13 @@ class HyvaGridViewModel implements HyvaGridInterface
     }
 
     /**
+     * @param bool $forceReload
      * @return HyvaGrid\RowInterface[]
      */
-    public function getRows(): array
+    public function getRows(bool $forceReload = false): array
     {
         $searchCriteria = $this->getNavigation()->getSearchCriteria();
-        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
+        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria, $forceReload));
     }
 
     private function buildRow($record): HyvaGrid\RowInterface
@@ -187,12 +191,15 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getNavigation(): HyvaGrid\NavigationInterface
     {
-        return $this->navigationFactory->create([
-            'gridName'          => $this->getGridName(),
-            'gridSource'        => $this->getGridSourceModel(),
-            'columnDefinitions' => $this->getColumnDefinitions(),
-            'navigationConfig'  => $this->getGridDefinition()->getNavigationConfig(),
-        ]);
+        if (!$this->memorizedNaviagtion) {
+            $this->memorizedNaviagtion = $this->navigationFactory->create([
+                'gridName'          => $this->getGridName(),
+                'gridSource'        => $this->getGridSourceModel(),
+                'columnDefinitions' => $this->getColumnDefinitions(),
+                'navigationConfig'  => $this->getGridDefinition()->getNavigationConfig(),
+            ]);
+        }
+        return $this->memorizedNaviagtion;
     }
 
     public function getEntityDefinition(): EntityDefinitionInterface

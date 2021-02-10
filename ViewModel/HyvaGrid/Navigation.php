@@ -21,6 +21,7 @@ class Navigation implements NavigationInterface
 {
     const DEFAULT_PAGE_SIZE = 20;
     const DEFAULT_PAGE_SIZES = '10,20,50';
+    protected $memorizedSearchCriteria;
 
     private HyvaGridSourceInterface $gridSource;
 
@@ -213,21 +214,24 @@ class Navigation implements NavigationInterface
 
     public function getSearchCriteria(): SearchCriteriaInterface
     {
-        if ($this->isPagerEnabled()) {
-            $this->searchCriteriaBuilder->setPageSize($this->getPageSize());
-            // The requested page number has to be used here instead of the current page number,
-            // because the current page number requires the search criteria to load the records from the source,
-            // which creates a circular dependency. This means the grid source has to deal with the case
-            // when the page number on the search criteria is larger than the available pages.
-            // However, all page links returned by this class will never go beyond the last page.
-            $this->searchCriteriaBuilder->setCurrentPage($this->getRequestedPageNumber());
-        }
-        $this->searchCriteriaBuilder->addSortOrder($this->createSortOrder());
-        map(function (GridFilterInterface $filter): void {
-            $filter->apply($this->searchCriteriaBuilder);
-        }, filter(map([$this, 'getFilter'], keys($this->columnDefinitions))));
+        if (!$this->memorizedSearchCriteria) {
+            if ($this->isPagerEnabled()) {
+                $this->searchCriteriaBuilder->setPageSize($this->getPageSize());
+                // The requested page number has to be used here instead of the current page number,
+                // because the current page number requires the search criteria to load the records from the source,
+                // which creates a circular dependency. This means the grid source has to deal with the case
+                // when the page number on the search criteria is larger than the available pages.
+                // However, all page links returned by this class will never go beyond the last page.
+                $this->searchCriteriaBuilder->setCurrentPage($this->getRequestedPageNumber());
+            }
+            $this->searchCriteriaBuilder->addSortOrder($this->createSortOrder());
+            map(function (GridFilterInterface $filter): void {
+                $filter->apply($this->searchCriteriaBuilder);
+            }, filter(map([$this, 'getFilter'], keys($this->columnDefinitions))));
 
-        return $this->searchCriteriaBuilder->create();
+            $this->memorizedSearchCriteria = $this->searchCriteriaBuilder->create();
+        }
+        return $this->memorizedSearchCriteria;
     }
 
     private function createSortOrder(): SortOrder

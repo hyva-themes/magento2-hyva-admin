@@ -84,9 +84,9 @@ class GridSource implements HyvaGridSourceInterface
         return $extracted->merge(merge($configuredArray, $isVisibleArray));
     }
 
-    public function getRecords(SearchCriteriaInterface $searchCriteria): array
+    public function getRecords(SearchCriteriaInterface $searchCriteria, bool $forceReload = false): array
     {
-        return $this->gridSourceType->extractRecords($this->getRawGridData($searchCriteria));
+        return $this->gridSourceType->extractRecords($this->getRawGridData($searchCriteria, $forceReload));
     }
 
     public function extractValue($record, string $key)
@@ -94,9 +94,9 @@ class GridSource implements HyvaGridSourceInterface
         return $this->gridSourceType->extractValue($record, $key);
     }
 
-    private function getRawGridData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
+    private function getRawGridData(SearchCriteriaInterface $searchCriteria, bool $forceReload = false): RawGridSourceContainer
     {
-        if (!isset($this->rawGridData)) {
+        if (!isset($this->rawGridData) || $forceReload) {
             $preprocessedSearchCriteria = $this->preprocessSearchCriteria($searchCriteria);
             $this->rawGridData          = $this->gridSourceType->fetchData($preprocessedSearchCriteria);
         }

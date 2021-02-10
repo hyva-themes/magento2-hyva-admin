@@ -63,7 +63,7 @@ class Download implements ActionInterface
         $this->prepareRequest();
         $export->create();
         $this->response = $this->fileFactory->create(
-            $export->getFileName(),
+            basename($export->getFileName()),
             [
                 "type"  => "filename",
                 "value" => $export->getFileName(),
