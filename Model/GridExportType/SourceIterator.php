@@ -1,6 +1,6 @@
 <?php
 
-namespace Hyva\Admin\Model\Export;
+namespace Hyva\Admin\Model\GridExportType;
 
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;

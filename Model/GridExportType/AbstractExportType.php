@@ -1,13 +1,13 @@
 <?php
 
-namespace Hyva\Admin\Model\Export;
+namespace Hyva\Admin\Model\GridExportType;
 
 use Hyva\Admin\Model\ExportInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
 
-abstract class AbstractExport implements ExportInterface
+abstract class AbstractExportType implements ExportInterface
 {
     protected HyvaGridInterface $grid;
     protected string $fileName;

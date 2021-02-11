@@ -462,7 +462,7 @@ class GridXmlToArrayConverter
             $this->getAttributeConfig($actionElement, 'url'),
             map(function (string $v): bool {
                 return $v === 'true';
-            }, $this->getAttributeConfig($actionElement, 'requireConfirmation'))
+            }, $this->getAttributeConfig($actionElement, 'requireConfirmation')),
         ));
     }
 

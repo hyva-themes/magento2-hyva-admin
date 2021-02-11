@@ -24,11 +24,8 @@ interface ExportInterface
     public function getMetaType(): string;
 
     /**
-     * @param $metaType
-     * @return ExportInterface
+     * @return void
      */
-    public function setMetaType($metaType): ExportInterface;
-
     public function create();
 
     /**

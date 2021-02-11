@@ -6,12 +6,10 @@ use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
 
-class Export
+class GridExport
 {
 
     const GRID_NAME = 'gridName';
-
-    protected array $grid = [];
 
     private ExportInterfaceFactory $exportInterfaceFactory;
 
@@ -24,11 +22,11 @@ class Export
     }
 
     /**
-     * @param $gridName
-     * @param $type
+     * @param string $gridName
+     * @param string $type
      * @return ExportInterface
      */
-    public function getExport($gridName, $type): ExportInterface
+    public function getExportType(string $gridName, string $type): ExportInterface
     {
         $grid = $this->getGrid($gridName);
         $exports = $grid->getNavigation()->getExports();
@@ -41,18 +39,15 @@ class Export
         if (!$export) {
             throw new \InvalidArgumentException("Export type " . $type . " not defined");
         }
-        $exportModel = $this->exportInterfaceFactory->create($export->getClassName());
-        $exportModel->setGrid($grid)
-            ->setFileName($export->getFileName() ?: $exportModel->getFileName() ?: $grid->getGridName());
-        return $exportModel;
+        return $this->exportInterfaceFactory->create($export->getClassName(), [
+            'gird' => $grid,
+            'fileName' => $export->getFileName() ?? $gridName
+        ]);
     }
 
-    public function getGrid($name): HyvaGridInterface
+    private function getGrid(string $name): HyvaGridInterface
     {
-        if (!isset($this->grid[$name])) {
-            $this->grid[$name] = $this->gridFactory->create([self::GRID_NAME => $name]);
-        }
-        return $this->grid[$name];
+        return $this->gridFactory->create([self::GRID_NAME => $name]);
     }
 
 }

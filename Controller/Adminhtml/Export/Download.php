@@ -2,65 +2,56 @@
 
 namespace Hyva\Admin\Controller\Adminhtml\Export;
 
-use Hyva\Admin\Model\Export;
-use Hyva\Admin\ViewModel\HyvaGridInterface;
+use Hyva\Admin\Model\GridExport;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\Response\Http\FileFactory;
 
 class Download extends Action implements HttpGetActionInterface
 {
-    const GRID_NAME = 'gridName';
 
-    protected HyvaGridInterface $grid;
-
-    protected Export $export;
+    private GridExport $export;
 
     private RequestInterface $request;
 
     private FileFactory $fileFactory;
 
-    private ResponseInterface $response;
-
     public function __construct(
         Context $context,
         RequestInterface $request,
-        ResponseInterface $response,
         FileFactory $fileFactory,
-        Export $export
+        GridExport $export
     ) {
         parent::__construct($context);
         $this->request = $request;
         $this->fileFactory = $fileFactory;
-        $this->response = $response;
         $this->export = $export;
     }
 
     public function execute()
     {
-        $export = $this->export->getExport(
-            $this->request->getParam(self::GRID_NAME, ''),
+        $exportType = $this->export->getExportType(
+            $this->request->getParam('gridName', ''),
             $this->request->getParam('exportType', '')
         );
-        $this->prepareRequest();
-        $export->create();
-        $this->response = $this->fileFactory->create(
-            basename($export->getFileName()),
+        $this->prepareRequestForNavigationSearchCriteriaConstruction();
+        $exportType->create();
+        $response = $this->fileFactory->create(
+            basename($exportType->getFileName()),
             [
                 "type"  => "filename",
-                "value" => $export->getFileName(),
+                "value" => $exportType->getFileName(),
                 "rm"    => true,
             ],
-            $export->getRootDir(),
-            $export->getMetaType()
+            $exportType->getRootDir(),
+            $exportType->getMetaType()
         );
-        $this->response->sendResponse();
+        $response->sendResponse();
     }
 
-    private function prepareRequest()
+    private function prepareRequestForNavigationSearchCriteriaConstruction()
     {
         $params = array_diff_key($this->request->getParams(), array_flip(['p', 'key', 'exportType', 'ajax']));
         $this->request->clearParams()->setParams($params);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Hyva\Admin\Model\Export;
+namespace Hyva\Admin\Model\GridExportType;
 
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
@@ -9,7 +9,7 @@ use Magento\Framework\Filesystem;
 use Magento\Framework\Convert\ExcelFactory;
 use Magento\Framework\Filesystem\Directory\WriteInterface;
 
-class Xml extends AbstractExport
+class Xml extends AbstractExportType
 {
 
     protected string $fileName = "export/export.xlsx";
@@ -25,7 +25,8 @@ class Xml extends AbstractExport
     public function __construct(
         Filesystem $filesystem,
         SourceIteratorFactory $sourceIteratorFactory,
-        ExcelFactory $excelFactory
+        ExcelFactory $excelFactory,
+        $data = []
     ) {
         $this->filesystem = $filesystem;
         $this->excelFactory = $excelFactory;
