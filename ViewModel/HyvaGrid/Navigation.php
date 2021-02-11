@@ -21,11 +21,12 @@ class Navigation implements NavigationInterface
 {
     const DEFAULT_PAGE_SIZE = 20;
     const DEFAULT_PAGE_SIZES = '10,20,50';
-    protected $memorizedSearchCriteria;
 
     private HyvaGridSourceInterface $gridSource;
 
     private SearchCriteriaBuilder $searchCriteriaBuilder;
+
+    protected SearchCriteriaInterface $memorizedSearchCriteria;
 
     private RequestInterface $request;
 
@@ -40,21 +41,13 @@ class Navigation implements NavigationInterface
      */
     private array $columnDefinitions;
 
-    /**
-     * @var SortOrderBuilder
-     */
     private SortOrderBuilder $sortOrderBuilder;
 
     private string $gridName;
 
-    /**
-     * @var GridButtonInterfaceFactory
-     */
     private GridButtonInterfaceFactory $gridButtonFactory;
-    /**
-     * @var GridExportInterfaceFactory
-     */
-    private $gridExportFactory;
+
+    private GridExportInterfaceFactory $gridExportFactory;
 
     public function __construct(
         string $gridName,
@@ -79,7 +72,7 @@ class Navigation implements NavigationInterface
         $this->gridName              = $gridName;
         $this->gridFilterFactory     = $gridFilterFactory;
         $this->gridButtonFactory     = $gridButtonFactory;
-        $this->gridExportFactory = $gridExportFactory;
+        $this->gridExportFactory     = $gridExportFactory;
     }
 
     public function getTotalRowsCount(): int
