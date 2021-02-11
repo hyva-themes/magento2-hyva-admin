@@ -20,7 +20,7 @@ interface HyvaGridInterface
      * @param bool $forceReload
      * @return HyvaGrid\RowInterface[]
      */
-    public function getRows(bool $forceReload = false): array;
+    public function getRows(): array;
 
     public function getNavigation(): HyvaGrid\NavigationInterface;
 

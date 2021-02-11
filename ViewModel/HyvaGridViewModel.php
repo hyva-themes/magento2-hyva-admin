@@ -145,10 +145,10 @@ class HyvaGridViewModel implements HyvaGridInterface
      * @param bool $forceReload
      * @return HyvaGrid\RowInterface[]
      */
-    public function getRows(bool $forceReload = false): array
+    public function getRows(): array
     {
         $searchCriteria = $this->getNavigation()->getSearchCriteria();
-        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria, $forceReload));
+        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
     }
 
     private function buildRow($record): HyvaGrid\RowInterface

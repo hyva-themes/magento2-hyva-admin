@@ -34,7 +34,7 @@ class SourceIterator implements \Iterator
             $page =  (int) ceil($this->currentCounter / $this->searchCriteria->getPageSize());
             $this->searchCriteria->setCurrentPage($page + 1);
             $inBatchCounter = 0;
-            foreach( $this->grid->getRows(true) as $row){
+            foreach( $this->grid->getRows() as $row){
                 $this->currentBatch[$this->currentCounter + $inBatchCounter] = $row;
                 ++$inBatchCounter;
             }

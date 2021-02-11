@@ -6,6 +6,7 @@
 $grid       = $block->getGrid();
 $navigation = $grid->getNavigation();
 $uniqueId   = '_' . md5($grid->getGridName());
+$rows = $grid->getRows();
 ?>
 <div class="hyva-admin-grid"
      x-data="initDataTable<?= /** @noEscape */
@@ -181,7 +182,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
                         <?php endif; ?>
                         </thead>
                         <tbody>
-                        <?php foreach ($grid->getRows() as $row): ?>
+                        <?php foreach ($rows as $row): ?>
                             <?php if ($rowAction = $actions[$grid->getRowActionId()] ?? false) {
                                 $rowActionUrl       = $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row));
                                 $rowActionAttribute = sprintf(
@@ -440,7 +441,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
     }
 </script>
 <div class="container px-4 py-6 mx-auto">
-    <?php if (!$grid->getRows()) { ?>
+    <?php if (!$rows) { ?>
         <div>
             <?= $escaper->escapeHtml(__('No %1 found.', $grid->getEntityDefinition()->getLabelPlural())) ?>
         </div>

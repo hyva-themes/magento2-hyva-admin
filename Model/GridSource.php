@@ -19,8 +19,6 @@ class GridSource implements HyvaGridSourceInterface
 {
     private GridSourceType\GridSourceTypeInterface $gridSourceType;
 
-    private RawGridSourceContainer $rawGridData;
-
     private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
 
     private SearchCriteriaBindings $defaultSearchCriteriaBindings;
@@ -84,9 +82,9 @@ class GridSource implements HyvaGridSourceInterface
         return $extracted->merge(merge($configuredArray, $isVisibleArray));
     }
 
-    public function getRecords(SearchCriteriaInterface $searchCriteria, bool $forceReload = false): array
+    public function getRecords(SearchCriteriaInterface $searchCriteria): array
     {
-        return $this->gridSourceType->extractRecords($this->getRawGridData($searchCriteria, $forceReload));
+        return $this->gridSourceType->extractRecords($this->getRawGridData($searchCriteria));
     }
 
     public function extractValue($record, string $key)
@@ -94,13 +92,10 @@ class GridSource implements HyvaGridSourceInterface
         return $this->gridSourceType->extractValue($record, $key);
     }
 
-    private function getRawGridData(SearchCriteriaInterface $searchCriteria, bool $forceReload = false): RawGridSourceContainer
+    private function getRawGridData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
-        if (!isset($this->rawGridData) || $forceReload) {
-            $preprocessedSearchCriteria = $this->preprocessSearchCriteria($searchCriteria);
-            $this->rawGridData          = $this->gridSourceType->fetchData($preprocessedSearchCriteria);
-        }
-        return $this->rawGridData;
+        $preprocessedSearchCriteria = $this->preprocessSearchCriteria($searchCriteria);
+        return $this->gridSourceType->fetchData($preprocessedSearchCriteria);
     }
 
     private function preprocessSearchCriteria(SearchCriteriaInterface $searchCriteria): SearchCriteriaInterface
