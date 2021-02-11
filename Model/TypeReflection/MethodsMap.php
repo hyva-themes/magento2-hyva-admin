@@ -30,10 +30,9 @@ class MethodsMap
 {
     private FieldNamer $fieldNamer;
 
-    /**
-     * @var array[]
-     */
     private $memoizedMethodMaps = [];
+
+    private $memoizedParameterTypes = [];
 
     private NamespaceMapper $namespaceMapper;
 
@@ -192,17 +191,43 @@ class MethodsMap
 
     public function getRealMethodParameters(string $type, string $method): array
     {
+        if (! isset($this->memoizedParameterTypes[$type][$method])) {
+            $this->memoizedParameterTypes[$type][$method] = $this->buildRealMethodParametersMap($type, $method);
+        }
+        return $this->memoizedParameterTypes[$type][$method];
+    }
+
+    private function buildRealMethodParametersMap(string $type, string $method): array
+    {
         $class      = new ClassReflection($type);
-        $method     = $class->getMethod($method);
-        $parameters = $method->getParameters();
-        return reduce($parameters, function (array $map, ParameterReflection $p): array {
-            $map[$p->getName()] = $p->detectType();
+        $parameters = $class->getMethod($method)->getParameters();
+        return reduce($parameters, function (array $map, ParameterReflection $p) use ($class, $method): array {
+            $paramType = $p->detectType()
+                ?? $this->reflectParamType($class->getParentClass() ?: null, $method, $p->getName());
+
+            $map[$p->getName()] = $paramType ? $this->qualifyNamespace($paramType, $class) : null;
             return $map;
         }, []);
     }
 
+    private function reflectParamType(?ClassReflection $class, string $methodName, string $paramName): ?string
+    {
+        if (!$class || !$class->hasMethod($methodName)) {
+            return null;
+        }
+        $method              = $class->getMethod($methodName);
+        $parent              = $class->getParentClass();
+        $isMatchingParameter = fn(ParameterReflection $p): bool => $p->getName() === $paramName;
+        /** @var ParameterReflection $parameter */
+        $parameter = values(filter($method->getParameters(), $isMatchingParameter))[0] ?? null;
+        return $parameter
+            ? ($parameter->detectType() ?? $this->reflectParamType($parent ?: null, $methodName, $paramName))
+            : null;
+    }
+
     public function getParameterType($type, $method, string $parameterName): ?string
     {
-        return $this->getRealMethodParameters($type, $method)[$parameterName] ?? null;
+        $parameters = $this->getRealMethodParameters($type, $method);
+        return $parameters[$parameterName] ?? null;
     }
 }

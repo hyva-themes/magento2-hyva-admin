@@ -4,7 +4,6 @@ namespace Hyva\Admin\Model;
 
 use Hyva\Admin\Model\TypeReflection\MethodsMap;
 
-use function array_column as pick;
 use function array_keys as keys;
 use function array_filter as filter;
 
@@ -28,9 +27,8 @@ class FormSource
 
     public function getLoadMethod(): string
     {
-        if (!$this->loadConfig['method']) {
-            throw new \RuntimeException(sprintf('No load method specified on form "%s"', $this->formName));
-        }
+        $this->validateMethodExists($this->loadConfig['method'] ?? null, 'load');
+
         return $this->loadConfig['method'];
     }
 
@@ -49,6 +47,7 @@ class FormSource
          */
         return $this->loadConfig['type']
             ?? $this->getReturnType($this->getLoadMethod(), 'load')
+            ?? $this->saveConfig['type']
             ?? $this->getSaveParameterType()
             ?? $this->getReturnType($this->getSaveMethod(), 'save')
             ?? 'array';
@@ -56,9 +55,8 @@ class FormSource
 
     public function getSaveMethod(): string
     {
-        if (!$this->saveConfig['method']) {
-            throw new \RuntimeException(sprintf('No save method specified on form "%s"', $this->formName));
-        }
+        $this->validateMethodExists($this->saveConfig['method'] ?? null, 'save');
+        
         return $this->saveConfig['method'];
     }
 
@@ -90,14 +88,17 @@ class FormSource
         [$type, $method] = $this->splitTypeAndMethod($typeAndMethod, $methodPurpose);
         $methodsReturnTypeMap = $this->methodsMap->getMethodsMap($type);
 
-        return $methodsReturnTypeMap[$method] ?? null;
+        $returnType = $methodsReturnTypeMap[$method] ?? null;
+
+        // Return null instead of mixed because of better ?? chaining capabilities.
+        return $returnType !== 'mixed' ? $returnType : null;
     }
 
     private function splitTypeAndMethod(?string $typeAndMethod, string $methodPurpose): array
     {
         if (!$typeAndMethod || !preg_match('/^.+::.+$/', $typeAndMethod)) {
             $msg = sprintf(
-                'Invalid form "%s" type specified on form "%s": method="%s"',
+                'Invalid form "%s" type specified on form "%s": method="%s", Type::method syntax required',
                 $methodPurpose,
                 $this->formName,
                 $typeAndMethod
@@ -146,5 +147,24 @@ class FormSource
         [$type, $method] = $this->splitTypeAndMethod($typeAndMethod, $methodPurpose);
 
         return $this->methodsMap->getParameterType($type, $method, $parameterName);
+    }
+
+    private function validateMethodExists(?string $typeAndMethod, string $methodPurpose): void
+    {
+        if (! $typeAndMethod) {
+            throw new \RuntimeException(sprintf(
+                'No %s method specified on form "%s"',
+                $methodPurpose,
+                $this->formName));
+        }
+        [$type, $method] = $this->splitTypeAndMethod($typeAndMethod, $methodPurpose);
+        if (!method_exists($type, $method)) {
+            throw new \RuntimeException(sprintf(
+                '%s method "%s" for form "%s" not found',
+                ucfirst($methodPurpose),
+                $typeAndMethod,
+                $this->formName
+            ));
+        }
     }
 }
