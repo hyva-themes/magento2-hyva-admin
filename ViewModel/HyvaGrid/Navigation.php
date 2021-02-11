@@ -207,7 +207,7 @@ class Navigation implements NavigationInterface
 
     public function getSearchCriteria(): SearchCriteriaInterface
     {
-        if (!$this->memorizedSearchCriteria) {
+        if (!isset($this->memorizedSearchCriteria)) {
             if ($this->isPagerEnabled()) {
                 $this->searchCriteriaBuilder->setPageSize($this->getPageSize());
                 // The requested page number has to be used here instead of the current page number,
