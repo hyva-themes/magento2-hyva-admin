@@ -25,7 +25,8 @@ class FormXmlToArrayConverter
     private function convertMethod(?\DOMElement $methodElement): array
     {
         /*
-         * <load method="\Magento\Customer\Api\CustomerRepositoryInterface::getById">
+         * <load method="\Magento\Customer\Api\CustomerRepositoryInterface::getById"
+         *       type="\Magento\Customer\Api\Data\CustomerInterface">
          *     <bindArguments>
          *         <argument name="customer_id" requestParam="id"/>
          *     </bindArguments>
@@ -42,6 +43,7 @@ class FormXmlToArrayConverter
         return $methodElement
             ? filter(merge(
                 XmlToArray::getAttributeConfig($methodElement, 'method'),
+                XmlToArray::getAttributeConfig($methodElement, 'type'),
                 ['bindArguments' => $this->convertBindArguments($methodElement)]
             ))
             : [];

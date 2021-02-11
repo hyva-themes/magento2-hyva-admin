@@ -95,4 +95,10 @@ class MethodsMapTest extends TestCase
         $class = Stub\StubReflectionTargetGrandchild::class;
         $this->assertSame('string[]', $sut->getMethodReturnType($class, 'getMethodWithAnnotatedArrayReturnType'));
     }
+
+    public function testReturnsParameterTypes(): void
+    {
+        $sut = new MethodsMap(new FieldNamer(), new NamespaceMapper());
+        
+    }
 }

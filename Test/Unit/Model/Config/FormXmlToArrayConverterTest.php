@@ -56,7 +56,8 @@ class FormXmlToArrayConverterTest extends TestCase
     private function getLoadXml(): string
     {
         return <<<EOXML
-<load method="\Magento\Customer\Api\CustomerRepositoryInterface::getById">
+<load method="\Magento\Customer\Api\CustomerRepositoryInterface::getById"
+      type="\Magento\Customer\Api\Data\CustomerInterface">
     <bindArguments>
         <argument name="customerId" requestParam="id"/>
     </bindArguments>
@@ -69,6 +70,7 @@ EOXML;
         return [
             'load' => [
                 'method'        => '\Magento\Customer\Api\CustomerRepositoryInterface::getById',
+                'type'          => '\Magento\Customer\Api\Data\CustomerInterface',
                 'bindArguments' => [
                     'customerId' => ['requestParam' => 'id'],
                 ],

@@ -9,7 +9,7 @@ use function array_filter as filter;
 use function array_merge as merge;
 use function array_unique as unique;
 
-class TypeReflection
+class GridTypeReflection
 {
     private TypeReflection\CustomAttributesExtractor $customAttributesExtractor;
 

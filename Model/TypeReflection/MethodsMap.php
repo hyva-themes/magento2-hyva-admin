@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\TypeReflection;
 
+use Laminas\Code\Reflection\ParameterReflection;
 use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
@@ -187,5 +188,21 @@ class MethodsMap
         return $this->isQualifiedTypeName($type)
             ? $type
             : $this->namespaceMapper->forFile($class->getFileName())->qualify($type);
+    }
+
+    public function getRealMethodParameters(string $type, string $method): array
+    {
+        $class      = new ClassReflection($type);
+        $method     = $class->getMethod($method);
+        $parameters = $method->getParameters();
+        return reduce($parameters, function (array $map, ParameterReflection $p): array {
+            $map[$p->getName()] = $p->detectType();
+            return $map;
+        }, []);
+    }
+
+    public function getParameterType($type, $method, string $parameterName): ?string
+    {
+        return $this->getRealMethodParameters($type, $method)[$parameterName] ?? null;
     }
 }
