@@ -481,7 +481,7 @@ class GridXmlToArrayConverter
             : null;
     }
 
-    private function getExportsConfig(\DOMElement $navigationElement): ?array
+    private function getExportsConfig(\DOMElement $exportsElement): ?array
     {
         /*
          *     <exports>
@@ -489,7 +489,7 @@ class GridXmlToArrayConverter
          *         <export id="xml" label="Export to CSV" class="Hyva\Admin\Model\Export\Xml" />
          *     </exports>
          */
-        $buttonsElement = $this->getChildByName($navigationElement, 'exports');
+        $buttonsElement = $this->getChildByName($exportsElement, 'exports');
         return $buttonsElement
             ? map([$this, 'getExportConfig'], $this->getChildrenByName($buttonsElement, 'export'))
             : null;
@@ -508,15 +508,15 @@ class GridXmlToArrayConverter
         );
     }
 
-    private function getExportConfig(\DOMElement $buttonsElement): ?array
+    private function getExportConfig(\DOMElement $exportsElement): ?array
     {
         return merge(
-            $this->getAttributeConfig($buttonsElement, 'id'),
-            $this->getAttributeConfig($buttonsElement, 'label'),
-            $this->getAttributeConfig($buttonsElement, 'filename'),
-            $this->getAttributeConfig($buttonsElement, 'enabled'),
-            $this->getAttributeConfig($buttonsElement, 'class'),
-            $this->getAttributeConfig($buttonsElement, 'sortOrder')
+            $this->getAttributeConfig($exportsElement, 'id'),
+            $this->getAttributeConfig($exportsElement, 'label'),
+            $this->getAttributeConfig($exportsElement, 'filename'),
+            $this->getAttributeConfig($exportsElement, 'enabled'),
+            $this->getAttributeConfig($exportsElement, 'class'),
+            $this->getAttributeConfig($exportsElement, 'sortOrder')
         );
     }
 
