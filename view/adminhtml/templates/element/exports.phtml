@@ -1,8 +1,8 @@
 <?php
 /** @var \Magento\Framework\Escaper $escaper */
-/** @var \Hyva\Admin\Block\Grid\Exports $block */
-$parent = $block->getParent();
-if($parent->getGrid()->getNavigation()->getExports()) :
+/** @var \Hyva\Admin\ViewModel\HyvaGridInterface $grid */
+
+if( $grid->getNavigation()->getExports()) :
 ?>
 <div class="exports inline-flex mx-2">
     <button @click.prevent="openExport = !openExport"

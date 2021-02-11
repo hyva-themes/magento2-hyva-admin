@@ -1,8 +1,8 @@
 <?php
 /** @var \Magento\Framework\Escaper $escaper */
-/** @var \Hyva\Admin\Block\Grid\Actions $block */
-$parent = $block->getParent();
-if( $parent->getGrid()->getActions() ) :
+/** @var \Hyva\Admin\ViewModel\HyvaGridInterface $grid */
+
+if( $grid->getActions() ) :
 ?>
 <div class="actions inline-flex mx-2">
 <button @click.prevent="open = !open"

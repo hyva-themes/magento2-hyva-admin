@@ -1,8 +1,6 @@
 <?php
 /** @var \Magento\Framework\Escaper $escaper */
-/** @var \Hyva\Admin\Block\Grid\Navigation $block */
-$parent = $block->getParent();
-$grid = $parent->getGrid();
+/** @var \Hyva\Admin\ViewModel\HyvaGridInterface $grid */
 $navigation = $grid->getNavigation();
 ?>
 <?php if ($navigation->isPagerEnabled()): ?>

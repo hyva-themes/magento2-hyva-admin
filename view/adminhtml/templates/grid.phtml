@@ -22,7 +22,7 @@ $rows = $grid->getRows();
             </div>
             <div class="flex-1 pr-4">
                 <div class="relative flex flex-wrap md:w-3/4 gap-x-8">
-                    <?= $block->getChildDataHtml('navigation'); ?>
+                    <?= $block->getChildHtml('navigation'); ?>
                 </div>
             </div>
             <div>
@@ -31,8 +31,8 @@ $rows = $grid->getRows();
                         <?php foreach ($navigation->getButtons() as $button): ?>
                             <?= $button->getHtml() ?>
                         <?php endforeach; ?>
-                        <?= $block->getChildDataHtml('actions'); ?>
-                        <?= $block->getChildDataHtml('exports'); ?>
+                        <?= $block->getChildHtml('actions'); ?>
+                        <?= $block->getChildHtml('exports'); ?>
                     </div>
                 </div>
             </div>

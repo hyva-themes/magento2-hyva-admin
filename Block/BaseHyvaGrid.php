@@ -4,18 +4,16 @@ namespace Hyva\Admin\Block;
 
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
-use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Element\Template;
 
 abstract class BaseHyvaGrid extends Template
 {
     private HyvaGridInterfaceFactory $gridFactory;
-    /**
-     * @var array
-     */
-    private $children;
 
-    private $grid;
+    private array $children;
+
+    private HyvaGridInterface $grid;
 
     public function __construct(
         Template\Context $context,
@@ -32,26 +30,36 @@ abstract class BaseHyvaGrid extends Template
 
     public function getGrid(): HyvaGridInterface
     {
-        if (!$this->grid) {
+        if (!isset($this->grid)) {
             if (!$this->getData('grid_name')) {
                 $msg = 'The name of the hyvä grid needs to be set on the block instance.';
                 throw new \LogicException($msg);
             }
 
-            $this->grid =  $this->gridFactory->create(['gridName' => $this->_getData('grid_name')]);
+            $this->grid = $this->gridFactory->create(['gridName' => $this->_getData('grid_name')]);
         }
         return $this->grid;
     }
 
-    public function getChildDataHtml($identifier): string
+    public function getChildHtml($alias = "", $useCache = false): string
     {
-        if ($block = $this->children[$identifier] ?? false) {
-            if( ! $block instanceof BlockInterface ){
-                throw new \InvalidArgumentException('Child should be instance of BlockInterface');
+        if ($blockDefinition = $this->children[$alias] ?? false) {
+            /** @var Template $child */
+            $child = $this->_layout->createBlock(Template::class);
+            $child->setTemplate($blockDefinition['template']);
+            if(!isset($blockDefinition['template'])){
+                throw new \InvalidArgumentException('Child template missing');
             }
-            $block->setParent($this);
-            return $block->toHtml();
+            if( isset($blockDefinition['view_model']) ){
+                if (!$blockDefinition['view_model'] instanceof ArgumentInterface) {
+                    throw new \InvalidArgumentException('ViewModel should be instance of ArgumentInterface');
+                }
+                $child->assign('view_model', $blockDefinition['view_model']);
+            }
+
+            $child->assign('grid', $this->getGrid());
+            return $child->toHtml();
         }
-        return "";
+        return parent::getChildHtml($alias, $useCache);
     }
 }
