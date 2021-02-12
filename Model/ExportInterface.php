@@ -21,7 +21,7 @@ interface ExportInterface
     /**
      * @return string
      */
-    public function getMetaType(): string;
+    public function getContentType(): string;
 
     /**
      * @return void

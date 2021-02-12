@@ -42,7 +42,7 @@ class Download implements ActionInterface
                 "rm"    => true,
             ],
             $exportType->getRootDir(),
-            $exportType->getMetaType()
+            $exportType->getContentType()
         );
         $response->sendResponse();
     }

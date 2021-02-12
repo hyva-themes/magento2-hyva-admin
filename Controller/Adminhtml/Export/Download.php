@@ -46,7 +46,7 @@ class Download extends Action implements HttpGetActionInterface
                 "rm"    => true,
             ],
             $exportType->getRootDir(),
-            $exportType->getMetaType()
+            $exportType->getContentType()
         );
         $response->sendResponse();
     }

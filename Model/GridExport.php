@@ -40,8 +40,8 @@ class GridExport
             throw new \InvalidArgumentException("Export type " . $type . " not defined");
         }
         return $this->exportInterfaceFactory->create($export->getClassName(), [
-            'gird' => $grid,
-            'fileName' => $export->getFileName() ?? $gridName
+            'grid' => $grid,
+            'fileName' => $export->getFileName() ?: $gridName
         ]);
     }
 

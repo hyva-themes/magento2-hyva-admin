@@ -9,19 +9,25 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 
 abstract class AbstractExportType implements ExportInterface
 {
-    protected HyvaGridInterface $grid;
-    protected string $fileName;
-    protected string $metaType = 'application/octet-stream';
+    private HyvaGridInterface $grid;
+    private string $fileName;
+    private string $contentType = 'application/octet-stream';
 
+    public function __construct(HyvaGridInterface $grid, string $fileName) {
+        $this->grid = $grid;
+        if ($fileName) {
+            $this->fileName = $fileName;
+        }
+    }
 
     public function getFileName() :string
     {
         return $this->fileName;
     }
 
-    public function getMetaType() : string
+    public function getContentType() : string
     {
-        return $this->metaType;
+        return $this->contentType;
     }
 
     public function getRootDir() :string
@@ -46,12 +52,6 @@ abstract class AbstractExportType implements ExportInterface
             $this->fileName = $fileName;
         }
         return $this;
-    }
-
-    public function setMetaType($metaType) : ExportInterface
-    {
-        $this->metaType = $metaType;
-       return $this;
     }
 
     protected function getHeaderData(){

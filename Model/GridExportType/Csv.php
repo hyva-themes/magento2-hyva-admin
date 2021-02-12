@@ -3,23 +3,23 @@
 namespace Hyva\Admin\Model\GridExportType;
 
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
+use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Directory\WriteInterface;
 
 class Csv extends AbstractExportType
 {
 
-    protected string $fileName = "export/export.csv";
-
-    protected WriteInterface $directory;
+    private string $fileName = "export/export.csv";
 
     private Filesystem $filesystem;
 
     private SourceIteratorFactory $sourceIteratorFactory;
 
 
-    public function __construct( Filesystem $filesystem, SourceIteratorFactory $sourceIteratorFactory, $data = [])
+    public function __construct( Filesystem $filesystem, SourceIteratorFactory $sourceIteratorFactory, HyvaGridInterface $grid, string $fileName = "")
     {
+        parent::__construct($grid, $fileName ?: $this->fileName);
         $this->filesystem = $filesystem;
         $this->sourceIteratorFactory = $sourceIteratorFactory;
     }
@@ -27,8 +27,8 @@ class Csv extends AbstractExportType
     public function create()
     {
         $file = $this->getFileName();
-        $this->directory = $this->filesystem->getDirectoryWrite($this->getRootDir());
-        $stream = $this->directory->openFile($file, 'w+');
+        $directory = $this->filesystem->getDirectoryWrite($this->getRootDir());
+        $stream = $directory->openFile($file, 'w+');
         $iterator = $this->sourceIteratorFactory->create(['grid' => $this->getGrid()]);
         $stream->lock();
         $addHeader = true;
