@@ -46,10 +46,11 @@ abstract class BaseHyvaGrid extends Template
         if ($blockDefinition = $this->children[$alias] ?? false) {
             /** @var Template $child */
             $child = $this->_layout->createBlock(Template::class);
-            $child->setTemplate($blockDefinition['template']);
             if(!isset($blockDefinition['template'])){
                 throw new \InvalidArgumentException('Child template missing');
             }
+            $child->setTemplate($blockDefinition['template']);
+
             if( isset($blockDefinition['view_model']) ){
                 if (!$blockDefinition['view_model'] instanceof ArgumentInterface) {
                     throw new \InvalidArgumentException('ViewModel should be instance of ArgumentInterface');
