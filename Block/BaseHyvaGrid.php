@@ -23,7 +23,7 @@ abstract class BaseHyvaGrid extends Template
 
     public function getGrid(): HyvaGridInterface
     {
-        if (!$this->getData('grid_name')) {
+        if (!$this->_getData('grid_name')) {
             $msg = 'The name of the hyvä grid needs to be set on the block instance.';
             throw new \LogicException($msg);
         }
