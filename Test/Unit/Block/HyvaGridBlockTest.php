@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class HyvaGridBlockTest extends TestCase
 {
-    public function testThrowsMeaningfullExceptionIfGridNameIsNotSet(): void
+    public function testThrowsMeaningfulExceptionIfGridNameIsNotSet(): void
     {
         $stubGridFactory = $this->createMock(HyvaGridInterfaceFactory::class);
         $stubContext     = $this->createMock(TemplateBlockContext::class);
@@ -22,6 +22,39 @@ class HyvaGridBlockTest extends TestCase
             'The name of the hyvä grid needs ' .
             'to be set on the block instance.'
         );
+
+        $sut->getGrid();
+    }
+
+    public function testUsesGivenGridNameArgument(): void
+    {
+        $testGridName    = 'qux';
+        $stubGridFactory = $this->createMock(HyvaGridInterfaceFactory::class);
+        $stubGridFactory->expects($this->once())
+                        ->method('create')
+                        ->with(['gridName' => $testGridName])
+                        ->willReturn($this->createMock(HyvaGridInterface::class));
+
+        $stubContext = $this->createMock(TemplateBlockContext::class);
+        $blockData   = ['grid_name' => $testGridName];
+        $sut         = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory, $blockData);
+        $sut->setNameInLayout('bar');
+
+        $sut->getGrid();
+    }
+
+    public function testFallsBackToBlockNameIfNoGridNameIsSet(): void
+    {
+        $testGridName    = 'foo';
+        $stubGridFactory = $this->createMock(HyvaGridInterfaceFactory::class);
+        $stubGridFactory->expects($this->once())
+                        ->method('create')
+                        ->with(['gridName' => $testGridName])
+                        ->willReturn($this->createMock(HyvaGridInterface::class));
+
+        $stubContext = $this->createMock(TemplateBlockContext::class);
+        $sut         = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory);
+        $sut->setNameInLayout($testGridName);
 
         $sut->getGrid();
     }
