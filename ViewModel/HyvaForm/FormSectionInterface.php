@@ -13,5 +13,5 @@ interface FormSectionInterface
 
     public function getHtml(): string;
 
-    public function getLabel(): string;
+    public function getLabel(): ?string;
 }

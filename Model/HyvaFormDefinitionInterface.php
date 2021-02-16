@@ -29,6 +29,11 @@ interface HyvaFormDefinitionInterface
     public function getSectionsConfig(): array;
 
     /**
+     * @return array[]
+     */
+    public function getAllGroups(): array;
+
+    /**
      * @return mixed[]
      */
     public function getNavigationConfig(): array;

@@ -2,10 +2,11 @@
 
 namespace Hyva\Admin\Model;
 
+use Hyva\Admin\Model\FormSource\LoadFormSource;
 use Hyva\Admin\Model\TypeReflection\MethodsMap;
 
-use function array_keys as keys;
 use function array_filter as filter;
+use function array_keys as keys;
 
 class FormSource
 {
@@ -17,22 +18,43 @@ class FormSource
 
     private MethodsMap $methodsMap;
 
-    public function __construct(string $formName, array $loadConfig, array $saveConfig, MethodsMap $methodsMap)
-    {
-        $this->formName   = $formName;
-        $this->loadConfig = $loadConfig;
-        $this->saveConfig = $saveConfig;
-        $this->methodsMap = $methodsMap;
+    private LoadFormSource $loadFormSource;
+
+    public function __construct(
+        string $formName,
+        array $loadConfig,
+        array $saveConfig,
+        MethodsMap $methodsMap,
+        LoadFormSource $loadFormSource
+    ) {
+        $this->formName       = $formName;
+        $this->loadConfig     = $loadConfig;
+        $this->saveConfig     = $saveConfig;
+        $this->methodsMap     = $methodsMap;
+        $this->loadFormSource = $loadFormSource;
     }
 
-    public function getLoadMethod(): string
+    public function getLoadMethodName(): string
     {
         $this->validateMethodExists($this->loadConfig['method'] ?? null, 'load');
 
         return $this->loadConfig['method'];
     }
 
-    public function getLoadBindArguments(): array
+    /**
+     * Return the return value from the configured load method if the load was successful or null
+     *
+     * @return mixed
+     */
+    public function getLoadMethodValue()
+    {
+        [$type, $method] = $this->splitTypeAndMethod($this->getLoadMethodName(), 'load');
+        $arguments = $this->getLoadBindArgumentConfig();
+
+        return $this->loadFormSource->invoke($type, $method, $arguments);
+    }
+
+    public function getLoadBindArgumentConfig(): array
     {
         return $this->loadConfig['bindArguments'] ?? [];
     }
@@ -46,21 +68,21 @@ class FormSource
          * 4. Default to 'array' type
          */
         return $this->loadConfig['type']
-            ?? $this->getReturnType($this->getLoadMethod(), 'load')
+            ?? $this->getReturnType($this->getLoadMethodName(), 'load')
             ?? $this->saveConfig['type']
             ?? $this->getSaveParameterType()
-            ?? $this->getReturnType($this->getSaveMethod(), 'save')
+            ?? $this->getReturnType($this->getSaveMethodName(), 'save')
             ?? 'array';
     }
 
-    public function getSaveMethod(): string
+    public function getSaveMethodName(): string
     {
         $this->validateMethodExists($this->saveConfig['method'] ?? null, 'save');
-        
+
         return $this->saveConfig['method'];
     }
 
-    public function getSaveBindArguments(): array
+    public function getSaveBindArgumentConfig(): array
     {
         return $this->saveConfig['bindArguments'] ?? [];
     }
@@ -77,9 +99,9 @@ class FormSource
          */
         return $this->saveConfig['type']
             ?? $this->getSaveParameterType()
-            ?? $this->getReturnType($this->getSaveMethod(), 'save')
+            ?? $this->getReturnType($this->getSaveMethodName(), 'save')
             ?? $this->loadConfig['type']
-            ?? $this->getReturnType($this->getLoadMethod(), 'load')
+            ?? $this->getReturnType($this->getLoadMethodName(), 'load')
             ?? 'array';
     }
 
@@ -112,7 +134,7 @@ class FormSource
     private function getSaveFormDataArgument(): ?string
     {
         $isFormDataArgument    = fn(array $arg): bool => ($arg['formData'] ?? false) === 'true';
-        $formDataArguments     = filter($this->getSaveBindArguments(), $isFormDataArgument);
+        $formDataArguments     = filter($this->getSaveBindArgumentConfig(), $isFormDataArgument);
         $formDataArgumentNames = keys($formDataArguments);
         if (count($formDataArguments) > 1) {
             $msg = sprintf(
@@ -123,7 +145,7 @@ class FormSource
             throw new \RuntimeException($msg);
         }
 
-        return $formDataArgumentNames[0] ?? $this->getFirstParameterName($this->getSaveMethod(), 'save') ?? null;
+        return $formDataArgumentNames[0] ?? $this->getFirstParameterName($this->getSaveMethodName(), 'save') ?? null;
     }
 
     private function getFirstParameterName(string $typeAndMethod, string $methodPurpose): ?string
@@ -138,7 +160,7 @@ class FormSource
     {
         $saveFormDataArgumentName = $this->getSaveFormDataArgument();
         return $saveFormDataArgumentName
-            ? $this->getParameterType($this->getSaveMethod(), $saveFormDataArgumentName, 'save')
+            ? $this->getParameterType($this->getSaveMethodName(), $saveFormDataArgumentName, 'save')
             : null;
     }
 
@@ -151,7 +173,7 @@ class FormSource
 
     private function validateMethodExists(?string $typeAndMethod, string $methodPurpose): void
     {
-        if (! $typeAndMethod) {
+        if (!$typeAndMethod) {
             throw new \RuntimeException(sprintf(
                 'No %s method specified on form "%s"',
                 $methodPurpose,

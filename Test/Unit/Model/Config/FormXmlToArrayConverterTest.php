@@ -60,6 +60,7 @@ class FormXmlToArrayConverterTest extends TestCase
       type="\Magento\Customer\Api\Data\CustomerInterface">
     <bindArguments>
         <argument name="customerId" requestParam="id"/>
+        <argument name="foo" method="\My\Module\Model\Bar::getBaz" param="qux" property="quux"/>
     </bindArguments>
 </load>
 EOXML;
@@ -73,6 +74,11 @@ EOXML;
                 'type'          => '\Magento\Customer\Api\Data\CustomerInterface',
                 'bindArguments' => [
                     'customerId' => ['requestParam' => 'id'],
+                    'foo'        => [
+                        'method'   => '\My\Module\Model\Bar::getBaz',
+                        'param'    => 'qux',
+                        'property' => 'quux',
+                    ],
                 ],
             ],
         ];

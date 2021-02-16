@@ -23,4 +23,19 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     {
 
     }
+
+    public function getGroupId(): string
+    {
+
+    }
+
+    public function getInputType(): string
+    {
+
+    }
+
+    public function isEnabled(): bool
+    {
+
+    }
 }

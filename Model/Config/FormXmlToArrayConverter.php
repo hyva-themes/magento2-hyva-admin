@@ -29,6 +29,7 @@ class FormXmlToArrayConverter
          *       type="\Magento\Customer\Api\Data\CustomerInterface">
          *     <bindArguments>
          *         <argument name="customer_id" requestParam="id"/>
+         *         <argument name="foo" method="\My\Module\Model\Bar::getBaz" param="qux" property="quux"/>
          *     </bindArguments>
          * </load>
          * <save method="\Magento\Customer\Api\CustomerRepositoryInterface::save">
@@ -57,6 +58,8 @@ class FormXmlToArrayConverter
                     XmlToArray::getAttributeConfig($argumentElement, 'requestParam'),
                     XmlToArray::getAttributeConfig($argumentElement, 'formData'),
                     XmlToArray::getAttributeConfig($argumentElement, 'method'),
+                    XmlToArray::getAttributeConfig($argumentElement, 'param'),
+                    XmlToArray::getAttributeConfig($argumentElement, 'property'),
                 )),
             ];
         };

@@ -14,4 +14,10 @@ interface FormFieldDefinitionInterface
      * @return FormFieldOptionInterface[]
      */
     public function getOptions(): array;
+
+    public function getGroupId(): string;
+
+    public function getInputType(): string;
+
+    public function isEnabled(): bool;
 }
