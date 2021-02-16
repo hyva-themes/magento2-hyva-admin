@@ -42,29 +42,44 @@ abstract class BaseHyvaGrid extends Template
         return $this->grid;
     }
 
-    public function getChildHtml($alias = "", $useCache = false): string
+    public function getNavigationHtml(): string
     {
-        if( $this->getChildBlock($alias) ){
-            parent::getChildHtml($alias, $useCache);
-        }
-        if ($blockDefinition = $this->children[$alias] ?? false) {
-            /** @var Template $child */
-            $child = $this->_layout->createBlock(Template::class);
-            if(!isset($blockDefinition['template'])){
+        $renderer = $this->createRenderer("navigation");
+        $renderer->assign('navigation', $this->getGrid()->getNavigation());
+        return $renderer->toHtml();
+    }
+
+    public function getActionsHtml(): string
+    {
+        $renderer = $this->createRenderer("actions");
+        $renderer->assign('actions', $this->getGrid()->getActions());
+        return $renderer->toHtml();
+    }
+
+    public function getExportsHtml(): string
+    {
+        $renderer = $this->createRenderer("exports");
+        $renderer->assign('exports', $this->getGrid()->getNavigation()->getExports());
+        return $renderer->toHtml();
+    }
+
+    private function createRenderer($name): Template {
+        if ($blockDefinition = $this->children[$name] ?? false) {
+            /** @var Template $renderer */
+            $renderer = $this->_layout->createBlock(Template::class);
+            if (!isset($blockDefinition['template'])) {
                 throw new \InvalidArgumentException('Child template missing');
             }
-            $child->setTemplate($blockDefinition['template']);
+            $renderer->setTemplate($blockDefinition['template']);
 
-            if( isset($blockDefinition['view_model']) ){
+            if (isset($blockDefinition['view_model'])) {
                 if (!$blockDefinition['view_model'] instanceof ArgumentInterface) {
                     throw new \InvalidArgumentException('ViewModel should be instance of ArgumentInterface');
                 }
-                $child->assign('view_model', $blockDefinition['view_model']);
+                $renderer->assign('view_model', $blockDefinition['view_model']);
             }
-
-            $child->assign('grid', $this->getGrid());
-            return $child->toHtml();
+            return $renderer;
         }
-        return "";
+        throw new \InvalidArgumentException(sprintf("Block %s not found", $name));
     }
 }

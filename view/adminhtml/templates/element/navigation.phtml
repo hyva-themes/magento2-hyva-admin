@@ -1,7 +1,6 @@
 <?php
 /** @var \Magento\Framework\Escaper $escaper */
-/** @var \Hyva\Admin\ViewModel\HyvaGridInterface $grid */
-$navigation = $grid->getNavigation();
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface $navigation */
 ?>
 <?php if ($navigation->isPagerEnabled()): ?>
     <div class="self-center">
