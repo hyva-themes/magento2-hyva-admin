@@ -112,7 +112,9 @@ New features will be added in a backward compatible manner.
 
 ## Contributions
 
-PR's are very welcome.
+PR's are very welcome.  
+Please submit contributions based on the main branch, as the php73 branch is backported automatically whenever a release is made.
+
 It's early in this modules life, so I will probably like to chime in on bigger changes.
 
 ## Copyright & License
