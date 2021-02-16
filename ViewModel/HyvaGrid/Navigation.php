@@ -26,7 +26,7 @@ class Navigation implements NavigationInterface
 
     private SearchCriteriaBuilder $searchCriteriaBuilder;
 
-    protected SearchCriteriaInterface $memorizedSearchCriteria;
+    private SearchCriteriaInterface $memoizedSearchCriteria;
 
     private RequestInterface $request;
 
@@ -185,7 +185,7 @@ class Navigation implements NavigationInterface
         return $this->buildUrl($route, $params, $nonNsQueryParams);
     }
 
-    private function buildUrl(string $route, array $params, array $nonNsParams = []): string
+    public function buildUrl(string $route, array $params, array $nonNsParams = []): string
     {
         $namespacedQuery = merge($this->qualifyQueryParamsWithGridNamespace($params['_query'] ?? []), $nonNsParams);
         return $this->urlBuilder->getUrl($route, merge($params, ['_query' => $namespacedQuery]));
@@ -207,7 +207,7 @@ class Navigation implements NavigationInterface
 
     public function getSearchCriteria(): SearchCriteriaInterface
     {
-        if (!isset($this->memorizedSearchCriteria)) {
+        if (!isset($this->memoizedSearchCriteria)) {
             if ($this->isPagerEnabled()) {
                 $this->searchCriteriaBuilder->setPageSize($this->getPageSize());
                 // The requested page number has to be used here instead of the current page number,
@@ -222,9 +222,9 @@ class Navigation implements NavigationInterface
                 $filter->apply($this->searchCriteriaBuilder);
             }, filter(map([$this, 'getFilter'], keys($this->columnDefinitions))));
 
-            $this->memorizedSearchCriteria = $this->searchCriteriaBuilder->create();
+            $this->memoizedSearchCriteria = $this->searchCriteriaBuilder->create();
         }
-        return $this->memorizedSearchCriteria;
+        return $this->memoizedSearchCriteria;
     }
 
     private function createSortOrder(): SortOrder
@@ -401,7 +401,7 @@ class Navigation implements NavigationInterface
 
     public function getButtons(): array
     {
-        return map([$this, 'buildButton'], $this->sortButtonConfig($this->navigationConfig['buttons'] ?? []));
+        return map([$this, 'buildButton'], $this->sortElements($this->navigationConfig['buttons'] ?? []));
     }
 
     private function buildButton(array $buttonConfig): GridButtonInterface
@@ -409,41 +409,27 @@ class Navigation implements NavigationInterface
         return $this->gridButtonFactory->create(merge([], $buttonConfig));
     }
 
-    private function sortButtonConfig(array $buttonsConfig): array
+    private function sortElements(array $elementsConfig): array
     {
         // sort all buttons with a sortOrder before the ones without a sortOrder
-        $maxSortOrder = empty($buttonsConfig)
+        $maxSortOrder = empty($elementsConfig)
             ? 0
-            : max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $buttonsConfig)) + 1;
+            : max(map(fn(array $elementConfig) => $elementConfig['sortOrder'] ?? 0, $elementsConfig)) + 1;
         usort(
-            $buttonsConfig,
+            $elementsConfig,
             fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
         );
 
-        return $buttonsConfig;
+        return $elementsConfig;
     }
 
     public function getExports(): array
     {
-        return map([$this, 'buildExport'], $this->sortExportsConfig($this->navigationConfig['exports'] ?? []));
+        return map([$this, 'buildExport'], $this->sortElements($this->navigationConfig['exports'] ?? []));
     }
 
     private function buildExport(array $config): GridExportInterface
     {
         return $this->gridExportFactory->create(merge([], $config));
-    }
-
-    private function sortExportsConfig(array $config): array
-    {
-        // sort all buttons with a sortOrder before the ones without a sortOrder
-        $maxSortOrder = empty($config)
-            ? 0
-            : max(map(fn(array $buttonConfig) => $buttonConfig['sortOrder'] ?? 0, $config)) + 1;
-        usort(
-            $config,
-            fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
-        );
-
-        return $config;
     }
 }

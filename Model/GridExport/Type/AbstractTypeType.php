@@ -1,13 +1,13 @@
 <?php
 
-namespace Hyva\Admin\Model\GridExportType;
+namespace Hyva\Admin\Model\GridExport\Type;
 
-use Hyva\Admin\Model\ExportInterface;
+use Hyva\Admin\Model\GridExport\TypeInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
 
-abstract class AbstractExportType implements ExportInterface
+abstract class AbstractTypeType implements TypeInterface
 {
     private HyvaGridInterface $grid;
     private string $fileName;
@@ -35,23 +35,9 @@ abstract class AbstractExportType implements ExportInterface
         return DirectoryList::VAR_DIR;
     }
 
-    public function setGrid(HyvaGridInterface $grid) : ExportInterface
-    {
-        $this->grid = $grid;
-        return $this;
-    }
-
     public function getGrid() : HyvaGridInterface
     {
        return $this->grid;
-    }
-
-    public function setFileName($fileName) : ExportInterface
-    {
-        if ($fileName) {
-            $this->fileName = $fileName;
-        }
-        return $this;
     }
 
     protected function getHeaderData(){
@@ -59,4 +45,6 @@ abstract class AbstractExportType implements ExportInterface
             return $column->getLabel();
         }, $this->getGrid()->getColumnDefinitions());
     }
+
+    abstract public function createFileToDownload();
 }

@@ -43,6 +43,9 @@ abstract class BaseHyvaGrid extends Template
 
     public function getChildHtml($alias = "", $useCache = false): string
     {
+        if( $this->getChildBlock($alias) ){
+            parent::getChildHtml($alias, $useCache);
+        }
         if ($blockDefinition = $this->children[$alias] ?? false) {
             /** @var Template $child */
             $child = $this->_layout->createBlock(Template::class);
@@ -61,6 +64,6 @@ abstract class BaseHyvaGrid extends Template
             $child->assign('grid', $this->getGrid());
             return $child->toHtml();
         }
-        return parent::getChildHtml($alias, $useCache);
+        return "";
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\Controller\Adminhtml\Export;
 
-use Hyva\Admin\Model\GridExport;
+use Hyva\Admin\Model\GridExport\Export;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
@@ -12,7 +12,7 @@ use Magento\Framework\App\Response\Http\FileFactory;
 class Download extends Action implements HttpGetActionInterface
 {
 
-    private GridExport $export;
+    private Export $export;
 
     private RequestInterface $request;
 
@@ -22,7 +22,7 @@ class Download extends Action implements HttpGetActionInterface
         Context $context,
         RequestInterface $request,
         FileFactory $fileFactory,
-        GridExport $export
+        Export $export
     ) {
         parent::__construct($context);
         $this->request = $request;
@@ -36,8 +36,7 @@ class Download extends Action implements HttpGetActionInterface
             $this->request->getParam('gridName', ''),
             $this->request->getParam('exportType', '')
         );
-        $this->prepareRequestForNavigationSearchCriteriaConstruction();
-        $exportType->create();
+        $exportType->createFileToDownload();
         $response = $this->fileFactory->create(
             basename($exportType->getFileName()),
             [
@@ -51,9 +50,4 @@ class Download extends Action implements HttpGetActionInterface
         $response->sendResponse();
     }
 
-    private function prepareRequestForNavigationSearchCriteriaConstruction()
-    {
-        $params = array_diff_key($this->request->getParams(), array_flip(['p', 'key', 'exportType', 'ajax']));
-        $this->request->clearParams()->setParams($params);
-    }
 }

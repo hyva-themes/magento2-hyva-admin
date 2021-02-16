@@ -39,7 +39,7 @@ if( $grid->getNavigation()->getExports()) :
                                 rounded-lg shadow-lg"
          style="max-height: 75vh;">
         <template x-for="exportItem in exports">
-            <a x-bind:href="getExportUrl(exportItem)" class="btn btn-primary inline-flex mx-2 cursor-pointer">
+            <a x-bind:href="exportItem.url" class="btn btn-primary inline-flex mx-2 cursor-pointer">
                 <span x-text="exportItem.value"/>
             </a>
         </template>

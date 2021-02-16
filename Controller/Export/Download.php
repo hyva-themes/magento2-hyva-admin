@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\Controller\Export;
 
-use Hyva\Admin\Model\GridExport;
+use Hyva\Admin\Model\GridExport\Export;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\Http\FileFactory;
@@ -10,7 +10,7 @@ use Magento\Framework\App\Response\Http\FileFactory;
 class Download implements ActionInterface
 {
 
-    private GridExport $export;
+    private Export $export;
 
     private RequestInterface $request;
 
@@ -19,7 +19,7 @@ class Download implements ActionInterface
     public function __construct(
         RequestInterface $request,
         FileFactory $fileFactory,
-        GridExport $export)
+        Export $export)
     {
         $this->request = $request;
         $this->fileFactory = $fileFactory;
@@ -33,7 +33,7 @@ class Download implements ActionInterface
             $this->request->getParam('exportType', '')
         );
         $this->prepareRequestForNavigationSearchCriteriaConstruction();
-        $exportType->create();
+        $exportType->createFileToDownload();
         $response = $this->fileFactory->create(
             basename($exportType->getFileName()),
             [

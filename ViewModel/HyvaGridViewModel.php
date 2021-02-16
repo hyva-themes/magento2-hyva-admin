@@ -11,6 +11,7 @@ use Hyva\Admin\ViewModel\HyvaGrid;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 
+use Magento\Framework\Api\SearchCriteriaInterface;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_keys as keys;
@@ -21,7 +22,7 @@ use function array_values as values;
 
 class HyvaGridViewModel implements HyvaGridInterface
 {
-    protected HyvaGrid\NavigationInterface $memorizedNavigation;
+    private HyvaGrid\NavigationInterface $memoizedNavigation;
 
     private HyvaGridDefinitionInterfaceFactory $gridDefinitionFactory;
 
@@ -47,7 +48,8 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private string $gridName;
 
-    private array $memorizedColumnDefinitions;
+    private array $memoizedColumnDefinitions;
+    private array $currentData;
 
     public function __construct(
         string $gridName,
@@ -83,10 +85,10 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getAllColumnDefinitions(): array
     {
-        if (!isset($this->memorizedColumnDefinitions)) {
-            $this->memorizedColumnDefinitions = $this->buildColumnDefinitions();
+        if (!isset($this->memoizedColumnDefinitions)) {
+            $this->memoizedColumnDefinitions = $this->buildColumnDefinitions();
         }
-        return $this->memorizedColumnDefinitions;
+        return $this->memoizedColumnDefinitions;
     }
 
     private function buildColumnDefinitions(): array
@@ -141,14 +143,15 @@ class HyvaGridViewModel implements HyvaGridInterface
         return $this->memoizedGridSource;
     }
 
-    /**
-     * @param bool $forceReload
-     * @return HyvaGrid\RowInterface[]
-     */
-    public function getRows(): array
+    public function getRows(SearchCriteriaInterface $searchCriteria = null): array
     {
-        $searchCriteria = $this->getNavigation()->getSearchCriteria();
-        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
+        if( is_null($searchCriteria) ) {
+            $searchCriteria = $this->getNavigation()->getSearchCriteria();
+        }
+        if (!isset($this->currentData)) {
+            $this->currentData = map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
+        }
+        return $this->currentData;
     }
 
     private function buildRow($record): HyvaGrid\RowInterface
@@ -190,15 +193,15 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getNavigation(): HyvaGrid\NavigationInterface
     {
-        if (!isset($this->memorizedNavigation)) {
-            $this->memorizedNavigation = $this->navigationFactory->create([
+        if (!isset($this->memoizedNavigation)) {
+            $this->memoizedNavigation = $this->navigationFactory->create([
                 'gridName'          => $this->getGridName(),
                 'gridSource'        => $this->getGridSourceModel(),
                 'columnDefinitions' => $this->getColumnDefinitions(),
                 'navigationConfig'  => $this->getGridDefinition()->getNavigationConfig(),
             ]);
         }
-        return $this->memorizedNavigation;
+        return $this->memoizedNavigation;
     }
 
     public function getEntityDefinition(): EntityDefinitionInterface

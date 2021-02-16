@@ -1,32 +1,30 @@
 <?php
 
-namespace Hyva\Admin\Model;
+namespace Hyva\Admin\Model\GridExport;
 
 use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
 
-class GridExport
+class Export
 {
-
-    const GRID_NAME = 'gridName';
-
-    private ExportInterfaceFactory $exportInterfaceFactory;
 
     private HyvaGridInterfaceFactory $gridFactory;
 
-    public function __construct(HyvaGridInterfaceFactory $gridFactory, ExportInterfaceFactory $exportInterfaceFactory)
+    private TypeDefinition $exportTypeDefinition;
+
+    public function __construct(HyvaGridInterfaceFactory $gridFactory, TypeDefinition $exportTypeDefinition)
     {
         $this->gridFactory = $gridFactory;
-        $this->exportInterfaceFactory = $exportInterfaceFactory;
+        $this->exportTypeDefinition = $exportTypeDefinition;
     }
 
     /**
      * @param string $gridName
      * @param string $type
-     * @return ExportInterface
+     * @return TypeInterface
      */
-    public function getExportType(string $gridName, string $type): ExportInterface
+    public function getExportType(string $gridName, string $type): TypeInterface
     {
         $grid = $this->getGrid($gridName);
         $exports = $grid->getNavigation()->getExports();
@@ -37,9 +35,9 @@ class GridExport
             return $value->getId() == $type;
         }));
         if (!$export) {
-            throw new \InvalidArgumentException("Export type " . $type . " not defined");
+            throw new \InvalidArgumentException(sprintf('Export type "%s" not defined', $type));
         }
-        return $this->exportInterfaceFactory->create($export->getClassName(), [
+        return $this->exportTypeDefinition->get($export->getId(), [
             'grid' => $grid,
             'fileName' => $export->getFileName() ?: $gridName
         ]);
@@ -47,7 +45,7 @@ class GridExport
 
     private function getGrid(string $name): HyvaGridInterface
     {
-        return $this->gridFactory->create([self::GRID_NAME => $name]);
+        return $this->gridFactory->create(['gridName' => $name]);
     }
 
 }

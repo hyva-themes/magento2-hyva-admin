@@ -1,6 +1,6 @@
 <?php
 
-namespace Hyva\Admin\Model\GridExportType;
+namespace Hyva\Admin\Model\GridExport\Type;
 
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
@@ -34,7 +34,7 @@ class SourceIterator implements \Iterator
             $page =  (int) ceil($this->currentCounter / $this->searchCriteria->getPageSize());
             $this->searchCriteria->setCurrentPage($page + 1);
             $inBatchCounter = 0;
-            foreach( $this->grid->getRows() as $row){
+            foreach( $this->grid->getRows($this->searchCriteria) as $row){
                 $this->currentBatch[$this->currentCounter + $inBatchCounter] = $row;
                 ++$inBatchCounter;
             }

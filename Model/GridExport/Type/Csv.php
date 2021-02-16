@@ -1,13 +1,13 @@
 <?php
 
-namespace Hyva\Admin\Model\GridExportType;
+namespace Hyva\Admin\Model\GridExport\Type;
 
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Directory\WriteInterface;
 
-class Csv extends AbstractExportType
+class Csv extends AbstractTypeType
 {
 
     private string $fileName = "export/export.csv";
@@ -24,7 +24,7 @@ class Csv extends AbstractExportType
         $this->sourceIteratorFactory = $sourceIteratorFactory;
     }
 
-    public function create()
+    public function createFileToDownload()
     {
         $file = $this->getFileName();
         $directory = $this->filesystem->getDirectoryWrite($this->getRootDir());

@@ -50,8 +50,6 @@ $rows = $grid->getRows();
                 </label>
                 <select @change="doMassAction($event.target.selectedOptions[0])"
                         @keydown.enter="doMassAction($event.target.selectedOptions[0])"
-                        id="massAction<?= /** @noEscape */
-                        $uniqueId ?>"
                         name="massAction"
                         x-ref="massaction-select"
                         class="form-select"
@@ -275,7 +273,8 @@ $rows = $grid->getRows();
                 <?php foreach ($grid->getNavigation()->getExports() as $export): ?>
                 {
                     'id': '<?= $escaper->escapeHtml($export->getId()) ?>',
-                    'value': '<?= $escaper->escapeHtml($export->getLabel()) ?>'
+                    'value': '<?= $escaper->escapeHtml($export->getLabel()) ?>',
+                    'url': '<?= $escaper->escapeHtml($grid->getNavigation()->buildUrl('hyva_admin/export/download', ['_current' => true, 'gridName' => $grid->getGridName(), 'exportType' => $export->getId(), '_query' => [ 'p' => 1, 'pageSize' => 100]])) ?>',
                 },
                 <?php endforeach; ?>
             ],
@@ -432,11 +431,7 @@ $rows = $grid->getRows();
                         }
                     })
                     .catch(console.error);
-            },
-            getExportUrl(exportItem){
-                let exportUrl = '<?= $escaper ->escapeUrl($block->getUrl( "hyva_admin/export/download" )) ?>';
-                return  exportUrl + "exportType/" + exportItem.id + "/?" + this.filterUri.split('?')[1];
-            },
+            }
         }
     }
 </script>

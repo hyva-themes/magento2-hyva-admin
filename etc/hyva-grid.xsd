@@ -171,15 +171,6 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="classType">
-        <xs:annotation>
-            <xs:documentation>A fully qualified class name in PSR-4 syntax</xs:documentation>
-        </xs:annotation>
-        <xs:restriction base="xs:normalizedString">
-            <xs:pattern value="[A-Z][a-zA-Z0-9]*(\\[A-Z][a-zA-Z0-9]*)*"/>
-        </xs:restriction>
-    </xs:simpleType>
-
     <xs:simpleType name="boolean">
         <xs:restriction base="xs:string">
             <xs:enumeration value="true"/>
@@ -301,7 +292,6 @@
                 <xs:complexType>
                     <xs:attribute name="id" type="xs:normalizedString" use="required"/>
                     <xs:attribute name="label" type="xs:string" use="required"/>
-                    <xs:attribute name="class" type="classType" use="required"/>
                     <xs:attribute name="filename" type="xs:string"/>
                     <xs:attribute name="enabled" type="boolean"/>
                     <xs:attribute name="template" type="templateType"/>

@@ -18,8 +18,6 @@ class GridExport implements GridExportInterface
 
     private ?string $template;
 
-    private ?string $className;
-
     private ?string $fileName;
 
     private ?string $sortOrder;
@@ -28,7 +26,6 @@ class GridExport implements GridExportInterface
         LayoutInterface $layout,
         string $id,
         ?string $label,
-        ?string $class,
         ?string $fileName = null,
         ?string $enabled = null,
         ?string $template = null,
@@ -37,7 +34,6 @@ class GridExport implements GridExportInterface
         $this->layout     = $layout;
         $this->id         = $id;
         $this->label      = $label;
-        $this->className = $class;
         $this->enabled    = $enabled;
         $this->template   = $template;
         $this->fileName = $fileName;
@@ -74,11 +70,6 @@ class GridExport implements GridExportInterface
     public function getLabel(): string
     {
         return (string) $this->label;
-    }
-
-    public function getClassName(): string
-    {
-        return (string)$this->className;
     }
 
     public function getFileName(): string

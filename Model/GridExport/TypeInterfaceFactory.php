@@ -1,14 +1,14 @@
 <?php
-namespace Hyva\Admin\Model;
+namespace Hyva\Admin\Model\GridExport;
 
 use Magento\Framework\ObjectManagerInterface;
 
 /**
- * Factory class for @see \Hyva\Admin\Model\ExportInterface
+ * Factory class for @see \Hyva\Admin\Model\TypeInterface
  */
-class ExportInterfaceFactory
+class TypeInterfaceFactory
 {
-    protected ObjectManagerInterface $_objectManager;
+    private ObjectManagerInterface $_objectManager;
 
     /**
      * Factory constructor
@@ -25,9 +25,9 @@ class ExportInterfaceFactory
      * Create class instance with specified parameters
      * @param string $instanceName
      * @param array  $data
-     * @return ExportInterface
+     * @return TypeInterface
      */
-    public function create(string $instanceName, array $data = []) : ExportInterface
+    public function create(string $instanceName, array $data = []) : TypeInterface
     {
         return $this->_objectManager->create($instanceName, $data);
     }

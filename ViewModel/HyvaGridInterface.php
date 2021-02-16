@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel;
 
+use Magento\Framework\Api\SearchCriteriaInterface;
+
 interface HyvaGridInterface
 {
     public function getGridName(): string;
@@ -17,10 +19,10 @@ interface HyvaGridInterface
     public function getAllColumnDefinitions(): array;
 
     /**
-     * @param bool $forceReload
+     * @param SearchCriteriaInterface|null $searchCriteria
      * @return HyvaGrid\RowInterface[]
      */
-    public function getRows(): array;
+    public function getRows(?SearchCriteriaInterface $searchCriteria): array;
 
     public function getNavigation(): HyvaGrid\NavigationInterface;
 

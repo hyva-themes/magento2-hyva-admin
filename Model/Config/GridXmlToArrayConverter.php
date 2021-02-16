@@ -497,7 +497,7 @@ class GridXmlToArrayConverter
 
     private function getButtonConfig(\DOMElement $buttonsElement): ?array
     {
-        return merge(
+        return filter(merge(
             $this->getAttributeConfig($buttonsElement, 'id'),
             $this->getAttributeConfig($buttonsElement, 'label'),
             $this->getAttributeConfig($buttonsElement, 'template'),
@@ -505,19 +505,19 @@ class GridXmlToArrayConverter
             $this->getAttributeConfig($buttonsElement, 'onclick'),
             $this->getAttributeConfig($buttonsElement, 'sortOrder'),
             $this->getAttributeConfig($buttonsElement, 'enabled')
-        );
+        ));
     }
 
     private function getExportConfig(\DOMElement $exportsElement): ?array
     {
-        return merge(
+        return filter(merge(
             $this->getAttributeConfig($exportsElement, 'id'),
             $this->getAttributeConfig($exportsElement, 'label'),
             $this->getAttributeConfig($exportsElement, 'filename'),
             $this->getAttributeConfig($exportsElement, 'enabled'),
             $this->getAttributeConfig($exportsElement, 'class'),
             $this->getAttributeConfig($exportsElement, 'sortOrder')
-        );
+        ));
     }
 
     private function getFiltersConfig(\DOMElement $navigationElement): ?array
