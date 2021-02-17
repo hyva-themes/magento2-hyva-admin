@@ -32,17 +32,6 @@
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>
-            <argument name="children" xsi:type="array">
-                <item name="navigation" xsi:type="array">
-                    <item name="template" xsi:type="string">Hyva_Admin::element/navigation.phtml</item>
-                </item>
-                <item name="actions" xsi:type="array">
-                    <item name="template" xsi:type="string">Hyva_Admin::element/actions.phtml</item>
-                </item>
-                <item name="exports" xsi:type="array">
-                    <item name="template" xsi:type="string">Hyva_Admin::element/exports.phtml</item>
-                </item>
-            </argument>
         </arguments>
     </type>
     <type name="Hyva\Admin\Model\DataType\DataTypeFacade">
