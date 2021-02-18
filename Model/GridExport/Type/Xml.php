@@ -5,6 +5,7 @@ namespace Hyva\Admin\Model\GridExport\Type;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
+use Hyva\Admin\Model\GridExport\Source\IteratorFactory;
 use Magento\Framework\Convert\Excel;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Convert\ExcelFactory;
@@ -18,11 +19,11 @@ class Xml extends AbstractTypeType
 
     private ExcelFactory $excelFactory;
 
-    private SourceIteratorFactory $sourceIteratorFactory;
+    private IteratorFactory $sourceIteratorFactory;
 
     public function __construct(
         Filesystem $filesystem,
-        SourceIteratorFactory $sourceIteratorFactory,
+        IteratorFactory $sourceIteratorFactory,
         ExcelFactory $excelFactory,
         HyvaGridInterface $grid,
         string $fileName = ""

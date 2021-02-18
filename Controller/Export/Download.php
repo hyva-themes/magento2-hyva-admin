@@ -32,7 +32,6 @@ class Download implements ActionInterface
             $this->request->getParam('gridName', ''),
             $this->request->getParam('exportType', '')
         );
-        $this->prepareRequestForNavigationSearchCriteriaConstruction();
         $exportType->createFileToDownload();
         $response = $this->fileFactory->create(
             basename($exportType->getFileName()),
@@ -47,10 +46,4 @@ class Download implements ActionInterface
         $response->sendResponse();
     }
 
-    private function prepareRequestForNavigationSearchCriteriaConstruction()
-    {
-        $params = array_diff_key($this->request->getParams(), array_flip(['p', 'key', 'exportType', 'ajax']));
-        $params['pageSize'] = 200;
-        $this->request->clearParams()->setParams($params);
-    }
 }

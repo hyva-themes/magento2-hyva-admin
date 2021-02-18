@@ -2,10 +2,10 @@
 
 namespace Hyva\Admin\Model\GridExport\Type;
 
+use Hyva\Admin\Model\GridExport\Source\IteratorFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Filesystem;
-use Magento\Framework\Filesystem\Directory\WriteInterface;
 
 class Csv extends AbstractTypeType
 {
@@ -14,10 +14,10 @@ class Csv extends AbstractTypeType
 
     private Filesystem $filesystem;
 
-    private SourceIteratorFactory $sourceIteratorFactory;
+    private IteratorFactory $sourceIteratorFactory;
 
 
-    public function __construct( Filesystem $filesystem, SourceIteratorFactory $sourceIteratorFactory, HyvaGridInterface $grid, string $fileName = "")
+    public function __construct( Filesystem $filesystem, IteratorFactory $sourceIteratorFactory, HyvaGridInterface $grid, string $fileName = "")
     {
         parent::__construct($grid, $fileName ?: $this->fileName);
         $this->filesystem = $filesystem;

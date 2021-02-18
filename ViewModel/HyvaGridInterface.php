@@ -19,10 +19,11 @@ interface HyvaGridInterface
     public function getAllColumnDefinitions(): array;
 
     /**
-     * @param SearchCriteriaInterface|null $searchCriteria
      * @return HyvaGrid\RowInterface[]
      */
-    public function getRows(?SearchCriteriaInterface $searchCriteria): array;
+    public function getRows(): array;
+
+    public function getRowsForSearchCriteria(SearchCriteriaInterface $searchCriteria): array;
 
     public function getNavigation(): HyvaGrid\NavigationInterface;
 

@@ -143,15 +143,17 @@ class HyvaGridViewModel implements HyvaGridInterface
         return $this->memoizedGridSource;
     }
 
-    public function getRows(SearchCriteriaInterface $searchCriteria = null): array
+    public function getRows(): array
     {
-        if( is_null($searchCriteria) ) {
-            $searchCriteria = $this->getNavigation()->getSearchCriteria();
-        }
         if (!isset($this->currentData)) {
-            $this->currentData = map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
+            $this->currentData = $this->getRowsForSearchCriteria($this->getNavigation()->getSearchCriteria());
         }
         return $this->currentData;
+    }
+
+    public function getRowsForSearchCriteria(SearchCriteriaInterface $searchCriteria): array
+    {
+        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
     }
 
     private function buildRow($record): HyvaGrid\RowInterface

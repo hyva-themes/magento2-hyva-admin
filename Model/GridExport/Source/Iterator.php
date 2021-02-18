@@ -1,21 +1,24 @@
 <?php
 
-namespace Hyva\Admin\Model\GridExport\Type;
+namespace Hyva\Admin\Model\GridExport\Source;
 
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
-class SourceIterator implements \Iterator
+class Iterator implements \Iterator
 {
     protected SearchCriteriaInterface $searchCriteria;
+
     protected int $total;
+
     protected NavigationInterface $navigation;
 
     private HyvaGridInterface $grid;
 
     private array $currentBatch = [];
+
     private int $currentCounter=0;
 
     public function __construct(HyvaGridInterface $grid)
@@ -34,7 +37,7 @@ class SourceIterator implements \Iterator
             $page =  (int) ceil($this->currentCounter / $this->searchCriteria->getPageSize());
             $this->searchCriteria->setCurrentPage($page + 1);
             $inBatchCounter = 0;
-            foreach( $this->grid->getRows($this->searchCriteria) as $row){
+            foreach( $this->grid->getRowsForSearchCriteria($this->searchCriteria) as $row){
                 $this->currentBatch[$this->currentCounter + $inBatchCounter] = $row;
                 ++$inBatchCounter;
             }
