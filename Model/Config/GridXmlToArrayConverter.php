@@ -513,7 +513,7 @@ class GridXmlToArrayConverter
         return filter(merge(
             $this->getAttributeConfig($exportsElement, 'id'),
             $this->getAttributeConfig($exportsElement, 'label'),
-            $this->getAttributeConfig($exportsElement, 'filename'),
+            $this->getAttributeConfig($exportsElement, 'fileName'),
             $this->getAttributeConfig($exportsElement, 'enabled'),
             $this->getAttributeConfig($exportsElement, 'class'),
             $this->getAttributeConfig($exportsElement, 'sortOrder')

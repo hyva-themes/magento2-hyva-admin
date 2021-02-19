@@ -438,7 +438,7 @@ EOXML;
         <exports>
             <export id="csv" label="Export to CSV"/>
             <export id="xml" label="Export to XML"  />
-            <export id="csv2" label="Export to CSV2" filename="file.csv" enabled="true" template="" sortOrder="1"/>
+            <export id="csv2" label="Export to CSV2" fileName="file.csv" enabled="true" template="" sortOrder="1"/>
         </exports>
     </navigation>
 EOXML;
@@ -451,7 +451,7 @@ EOXML;
                 'exports' => [
                     ['id' => 'csv', 'label' => 'Export to CSV'],
                     ['id' => 'xml','label' => 'Export to XML'],
-                    ['id' => 'csv2','label' => 'Export to CSV2','filename' => 'file.csv', 'enabled' => 'true', 'sortOrder' => '1'],
+                    ['id' => 'csv2','label' => 'Export to CSV2','fileName' => 'file.csv', 'enabled' => 'true', 'sortOrder' => '1'],
                 ],
             ],
         ];
