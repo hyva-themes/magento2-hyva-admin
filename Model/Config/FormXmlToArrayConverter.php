@@ -30,6 +30,7 @@ class FormXmlToArrayConverter
          *     <bindArguments>
          *         <argument name="customer_id" requestParam="id"/>
          *         <argument name="foo" method="\My\Module\Model\Bar::getBaz" param="qux" property="quux"/>
+         *         <argument name="bar" value="BAR"/>
          *     </bindArguments>
          * </load>
          * <save method="\Magento\Customer\Api\CustomerRepositoryInterface::save">
@@ -60,6 +61,7 @@ class FormXmlToArrayConverter
                     XmlToArray::getAttributeConfig($argumentElement, 'method'),
                     XmlToArray::getAttributeConfig($argumentElement, 'param'),
                     XmlToArray::getAttributeConfig($argumentElement, 'property'),
+                    XmlToArray::getAttributeConfig($argumentElement, 'value'),
                 )),
             ];
         };

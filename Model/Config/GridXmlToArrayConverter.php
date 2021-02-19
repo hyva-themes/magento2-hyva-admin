@@ -130,6 +130,7 @@ class GridXmlToArrayConverter
          *     <field name="entity_id" method="Magento\Framework\App\RequestInterface::getParam" param="id"/>
          *     <field name="store_id" method="Magento\Store\Model\StoreManagerInterface::getStore" property="id"/>
          *     <field name="customer_ids" condition="finset" method="Magento\Customer\Model\Session::getCustomerId"/>
+         *     <field name="foo" value="FOO" condition="neq"/>
          * </defaultSearchCriteriaBindings>
          */
         return map(function (\DOMElement $fieldElement): array {
@@ -140,6 +141,7 @@ class GridXmlToArrayConverter
                 XmlToArray::getAttributeConfig($fieldElement, 'param'),
                 XmlToArray::getAttributeConfig($fieldElement, 'property'),
                 XmlToArray::getAttributeConfig($fieldElement, 'condition'),
+                XmlToArray::getAttributeConfig($fieldElement, 'value'),
             ));
         }, XmlToArray::getChildrenByName($bindingsElement, 'field'));
     }

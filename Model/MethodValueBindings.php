@@ -20,10 +20,17 @@ class MethodValueBindings
 
     public function resolveAll(array $bindingsConfig): array
     {
-        return map([$this, 'resoolveBindValue'], $bindingsConfig);
+        return map([$this, 'resolveBindValue'], $bindingsConfig);
     }
 
     public function resolveBindValue(array $binding)
+    {
+        return array_key_exists('value', $binding)
+            ? $binding['value']
+            : $this->resolveBindMethod($binding);
+    }
+
+    private function resolveBindMethod(array $binding)
     {
         $typeAndMethod = $binding['method'] ?? (isset($binding['requestParam']) ? RequestInterface::class . '::getParam' : null);
 

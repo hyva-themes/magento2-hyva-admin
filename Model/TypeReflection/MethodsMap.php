@@ -7,6 +7,7 @@ use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_keys as keys;
+use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_slice as slice;
@@ -191,7 +192,12 @@ class MethodsMap
 
     public function getRealMethodParameters(string $type, string $method): array
     {
-        if (! isset($this->memoizedParameterTypes[$type][$method])) {
+        return map(fn(array $p): ?string => $p['type'], $this->getRealMethodParametersMap($type, $method));
+    }
+
+    private function getRealMethodParametersMap(string $type, string $method): array
+    {
+        if (!isset($this->memoizedParameterTypes[$type][$method])) {
             $this->memoizedParameterTypes[$type][$method] = $this->buildRealMethodParametersMap($type, $method);
         }
         return $this->memoizedParameterTypes[$type][$method];
@@ -205,7 +211,11 @@ class MethodsMap
             $paramType = $p->detectType()
                 ?? $this->reflectParamType($class->getParentClass() ?: null, $method, $p->getName());
 
-            $map[$p->getName()] = $paramType ? $this->qualifyNamespace($paramType, $class) : null;
+            $map[$p->getName()] = [
+                'type'       => $paramType ? $this->qualifyNamespace($paramType, $class) : null,
+                'default'    => $p->isDefaultValueAvailable() ? $p->getDefaultValue() : null,
+                'hasDefault' => $p->isDefaultValueAvailable(),
+            ];
             return $map;
         }, []);
     }
@@ -229,5 +239,16 @@ class MethodsMap
     {
         $parameters = $this->getRealMethodParameters($type, $method);
         return $parameters[$parameterName] ?? null;
+    }
+
+    public function parameterHasDefaultValue(string $type, string $method, string $parameter): bool
+    {
+        return $this->getRealMethodParametersMap($type, $method)[$parameter]['hasDefault'] ?? false;
+    }
+
+    public function getParameterDefaultValue(string $type, string $method, string $parameter)
+    {
+        $map = $this->getRealMethodParametersMap($type, $method);
+        return isset($map[$parameter]) ? $map[$parameter]['default'] : null;
     }
 }
