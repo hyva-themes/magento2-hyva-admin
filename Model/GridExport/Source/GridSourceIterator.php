@@ -2,12 +2,12 @@
 
 namespace Hyva\Admin\Model\GridExport\Source;
 
+use Hyva\Admin\Model\GridExport\HyvaGridExportInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
-use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
-class Iterator implements \Iterator
+class GridSourceIterator implements \Iterator
 {
     protected SearchCriteriaInterface $searchCriteria;
 
@@ -15,19 +15,18 @@ class Iterator implements \Iterator
 
     protected NavigationInterface $navigation;
 
-    private HyvaGridInterface $grid;
+    private HyvaGridExportInterface $grid;
 
     private array $currentBatch = [];
 
     private int $currentCounter=0;
 
-    public function __construct(HyvaGridInterface $grid)
+    public function __construct(HyvaGridExportInterface $grid)
     {
         $this->grid = $grid;
-        $this->navigation = $grid->getNavigation();
-        $this->searchCriteria = $this->navigation->getSearchCriteria();
+        $this->searchCriteria = $grid->getSearchCriteria();
         $this->searchCriteria->setPageSize(200);
-        $this->total = $this->navigation->getTotalRowsCount();
+        $this->total = $grid->getTotalRowsCount();
     }
 
     public function current(): RowInterface

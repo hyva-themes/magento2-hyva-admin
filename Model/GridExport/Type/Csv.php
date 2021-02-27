@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\Model\GridExport\Type;
 
-use Hyva\Admin\Model\GridExport\Source\IteratorFactory;
+use Hyva\Admin\Model\GridExport\Source\GridSourceIteratorFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Filesystem;
@@ -14,14 +14,14 @@ class Csv extends AbstractTypeType
 
     private Filesystem $filesystem;
 
-    private IteratorFactory $sourceIteratorFactory;
+    private GridSourceIteratorFactory $gridSourceIteratorFactory;
 
 
-    public function __construct( Filesystem $filesystem, IteratorFactory $sourceIteratorFactory, HyvaGridInterface $grid, string $fileName = "")
+    public function __construct( Filesystem $filesystem, GridSourceIteratorFactory $gridSourceIteratorFactory, HyvaGridInterface $grid, string $fileName = "")
     {
         parent::__construct($grid, $fileName ?: $this->fileName);
         $this->filesystem = $filesystem;
-        $this->sourceIteratorFactory = $sourceIteratorFactory;
+        $this->gridSourceIteratorFactory = $gridSourceIteratorFactory;
     }
 
     public function createFileToDownload()
@@ -29,7 +29,7 @@ class Csv extends AbstractTypeType
         $file = $this->getFileName();
         $directory = $this->filesystem->getDirectoryWrite($this->getRootDir());
         $stream = $directory->openFile($file, 'w+');
-        $iterator = $this->sourceIteratorFactory->create(['grid' => $this->getGrid()]);
+        $iterator = $this->gridSourceIteratorFactory->create(['grid' => $this->getGrid()]);
         $stream->lock();
         $addHeader = true;
         foreach($iterator as $row){

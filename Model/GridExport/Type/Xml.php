@@ -5,7 +5,7 @@ namespace Hyva\Admin\Model\GridExport\Type;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
-use Hyva\Admin\Model\GridExport\Source\IteratorFactory;
+use Hyva\Admin\Model\GridExport\Source\GridSourceIteratorFactory;
 use Magento\Framework\Convert\Excel;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Convert\ExcelFactory;
@@ -19,11 +19,11 @@ class Xml extends AbstractTypeType
 
     private ExcelFactory $excelFactory;
 
-    private IteratorFactory $sourceIteratorFactory;
+    private GridSourceIteratorFactory $gridSourceIteratorFactory;
 
     public function __construct(
         Filesystem $filesystem,
-        IteratorFactory $sourceIteratorFactory,
+        GridSourceIteratorFactory $gridSourceIteratorFactory,
         ExcelFactory $excelFactory,
         HyvaGridInterface $grid,
         string $fileName = ""
@@ -31,14 +31,14 @@ class Xml extends AbstractTypeType
         parent::__construct($grid, $fileName ?: $this->fileName);
         $this->filesystem = $filesystem;
         $this->excelFactory = $excelFactory;
-        $this->sourceIteratorFactory = $sourceIteratorFactory;
+        $this->gridSourceIteratorFactory = $gridSourceIteratorFactory;
     }
 
     public function createFileToDownload()
     {
         $file = $this->getFileName();
         $directory = $this->filesystem->getDirectoryWrite($this->getRootDir());
-        $iterator = $this->sourceIteratorFactory->create(['grid' => $this->getGrid()]);
+        $iterator = $this->gridSourceIteratorFactory->create(['grid' => $this->getGrid()]);
 
         /** @var Excel $excel */
         $excel = $this->excelFactory->create(

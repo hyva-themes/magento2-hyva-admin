@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\ViewModel;
 
+use Hyva\Admin\Model\GridExport\HyvaGridExportInterface;
 use Hyva\Admin\Model\HyvaGridDefinitionInterface;
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
@@ -12,6 +13,8 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\LayoutInterface;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_keys as keys;
@@ -20,7 +23,7 @@ use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_values as values;
 
-class HyvaGridViewModel implements HyvaGridInterface
+class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
 {
     private HyvaGrid\NavigationInterface $memoizedNavigation;
 
@@ -46,10 +49,10 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     private HyvaGridEventDispatcher $hyvaEventDispatcher;
 
-    private string $gridName;
+    private LayoutInterface $layout;
 
+    private string $gridName;
     private array $memoizedColumnDefinitions;
-    private array $currentData;
 
     public function __construct(
         string $gridName,
@@ -61,7 +64,8 @@ class HyvaGridViewModel implements HyvaGridInterface
         HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory,
         HyvaGrid\GridActionInterfaceFactory $actionFactory,
         HyvaGrid\MassActionInterfaceFactory $massActionFactory,
-        HyvaGridEventDispatcher $hyvaPrefetchEventDispatcher
+        HyvaGridEventDispatcher $hyvaPrefetchEventDispatcher,
+        LayoutInterface $layout
     ) {
         $this->gridName                = $gridName;
         $this->gridSourceFactory       = $gridSourceFactory;
@@ -73,6 +77,7 @@ class HyvaGridViewModel implements HyvaGridInterface
         $this->actionFactory           = $actionFactory;
         $this->massActionFactory       = $massActionFactory;
         $this->hyvaEventDispatcher     = $hyvaPrefetchEventDispatcher;
+        $this->layout                  = $layout;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -145,15 +150,22 @@ class HyvaGridViewModel implements HyvaGridInterface
 
     public function getRows(): array
     {
-        if (!isset($this->currentData)) {
-            $this->currentData = $this->getRowsForSearchCriteria($this->getNavigation()->getSearchCriteria());
-        }
-        return $this->currentData;
+      return $this->getRowsForSearchCriteria($this->getNavigation()->getSearchCriteria());
     }
 
     public function getRowsForSearchCriteria(SearchCriteriaInterface $searchCriteria): array
     {
         return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
+    }
+
+    public function getSearchCriteria(): SearchCriteriaInterface
+    {
+        return $this->getNavigation()->getSearchCriteria();
+    }
+
+    public function getTotalRowsCount(): int
+    {
+        return $this->getNavigation()->getTotalRowsCount();
     }
 
     private function buildRow($record): HyvaGrid\RowInterface
@@ -271,5 +283,33 @@ class HyvaGridViewModel implements HyvaGridInterface
     public function getMassActionIdsParam(): ?string
     {
         return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? $this->getMassActionIdColumn();
+    }
+
+    public function getNavigationHtml(): string
+    {
+        $renderer = $this->createRenderer();
+        $renderer->setTemplate('Hyva_Admin::element/navigation.phtml');
+        $renderer->assign('navigation', $this->getNavigation());
+        return $renderer->toHtml();
+    }
+
+    public function getActionsHtml(): string
+    {
+        $renderer = $this->createRenderer();
+        $renderer->setTemplate('Hyva_Admin::element/actions.phtml');
+        $renderer->assign('actions', $this->getActions());
+        return $renderer->toHtml();
+    }
+
+    public function getExportsHtml(): string
+    {
+        $renderer = $this->createRenderer();
+        $renderer->setTemplate('Hyva_Admin::element/exports.phtml');
+        $renderer->assign('exports', $this->getNavigation()->getExports());
+        return $renderer->toHtml();
+    }
+
+    private function createRenderer(): Template {
+        return $this->layout->createBlock(Template::class);
     }
 }

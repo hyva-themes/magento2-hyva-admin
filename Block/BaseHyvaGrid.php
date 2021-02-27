@@ -36,32 +36,4 @@ abstract class BaseHyvaGrid extends Template
         }
         return $this->grid;
     }
-
-    public function getNavigationHtml(): string
-    {
-        $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::element/navigation.phtml');
-        $renderer->assign('navigation', $this->getGrid()->getNavigation());
-        return $renderer->toHtml();
-    }
-
-    public function getActionsHtml(): string
-    {
-        $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::element/actions.phtml');
-        $renderer->assign('actions', $this->getGrid()->getActions());
-        return $renderer->toHtml();
-    }
-
-    public function getExportsHtml(): string
-    {
-        $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::element/exports.phtml');
-        $renderer->assign('exports', $this->getGrid()->getNavigation()->getExports());
-        return $renderer->toHtml();
-    }
-
-    private function createRenderer(): Template {
-        return $this->_layout->createBlock(Template::class);
-    }
 }
