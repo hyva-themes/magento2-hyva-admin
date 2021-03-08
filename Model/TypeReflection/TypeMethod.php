@@ -1,22 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Model\FormSource;
+namespace Hyva\Admin\Model\TypeReflection;
 
 use Hyva\Admin\Model\MethodValueBindings;
-use Hyva\Admin\Model\TypeReflection\MagentoOrmReflection;
-use Hyva\Admin\Model\TypeReflection\MethodsMap;
-use Magento\Eav\Model\Entity\AbstractEntity as AbstractEavResourceModel;
-use Magento\Framework\DataObject;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Model\AbstractModel;
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb as AbstractFlatTableResourceModel;
 use Magento\Framework\ObjectManagerInterface;
 
 use function array_keys as keys;
 use function array_map as map;
 use function array_values as values;
 
-class LoadFormSource
+class TypeMethod
 {
     private MethodValueBindings $methodValueBindings;
 
@@ -39,7 +34,7 @@ class LoadFormSource
     }
 
     /**
-     * Return the return value from the configured load method if the load was successful or null
+     * Return the return value from the configured method
      *
      * @param string $type
      * @param string $method
@@ -93,5 +88,14 @@ class LoadFormSource
         return class_exists($modelClass) && is_subclass_of($modelClass, AbstractModel::class)
             ? $this->objectManager->create($modelClass)
             : null;
+    }
+
+    public static function split(string $typeAndMethod): array
+    {
+        if (!$typeAndMethod || !preg_match('/^.+::.+$/', $typeAndMethod)) {
+            $msg = sprintf('Invalid method specified: "%s"', $typeAndMethod);
+            throw new \RuntimeException($msg);
+        }
+        return explode('::', $typeAndMethod);
     }
 }

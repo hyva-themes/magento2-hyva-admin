@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Model;
 
 use Hyva\Admin\Model\Exception\UnableToFetchPropertyFromValueException;
+use Hyva\Admin\Model\TypeReflection\TypeMethod;
 use Magento\Framework\Api\SimpleDataObjectConverter;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\ObjectManagerInterface;
@@ -79,10 +80,11 @@ class MethodValueBindings
 
     private function splitTypeAndMethod(?string $typeAndMethod, string $field): array
     {
-        if (!$typeAndMethod || !preg_match('/^.+::.+$/', $typeAndMethod)) {
+        try {
+            return TypeMethod::split($typeAndMethod);
+        } catch (\RuntimeException $exception) {
             $msg = sprintf('Invalid method value binding "%s" specified: method="%s"', $field, $typeAndMethod);
-            throw new \RuntimeException($msg);
+            throw new \RuntimeException($msg, ['exception' => $exception]);
         }
-        return explode('::', $typeAndMethod);
     }
 }

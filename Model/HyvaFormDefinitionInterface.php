@@ -31,7 +31,7 @@ interface HyvaFormDefinitionInterface
     /**
      * @return array[]
      */
-    public function getAllGroups(): array;
+    public function getGroupsFromSections(): array;
 
     /**
      * @return mixed[]

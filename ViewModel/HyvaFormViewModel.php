@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel;
 
+use Hyva\Admin\Model\FormLoadEntity;
+use Hyva\Admin\Model\FormEntity\FormLoadEntityRepository;
 use Hyva\Admin\Model\FormSource;
 use Hyva\Admin\Model\FormSourceFactory;
 use Hyva\Admin\Model\HyvaFormDefinitionInterface;
@@ -9,6 +11,7 @@ use Hyva\Admin\Model\HyvaFormDefinitionInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaForm\FormNavigationInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterfaceFactory;
 
+use function array_column as pick;
 use function array_filter as filter;
 use function array_map as map;
 use function array_merge as merge;
@@ -22,25 +25,27 @@ class HyvaFormViewModel implements HyvaFormInterface
 
     private HyvaFormDefinitionInterfaceFactory $formDefinitionFactory;
 
-    private FormSectionInterfaceFactory $formSectionFactory;
+    private FormSourceFactory $formSourceFactory;
+
+    private ?FormLoadEntity $loadedEntity;
 
     /**
-     * @var FormSourceFactory
+     * @var FormLoadEntityRepository
      */
-    private FormSourceFactory $formSourceFactory;
+    private FormLoadEntityRepository $formEntityRepository;
 
     public function __construct(
         string $formName,
         HyvaFormDefinitionInterfaceFactory $formDefinitionFactory,
         FormNavigationInterfaceFactory $formNavigationFactory,
-        FormSectionInterfaceFactory $formSectionFactory,
-        FormSourceFactory $formSourceFactory
+        FormSourceFactory $formSourceFactory,
+        FormLoadEntityRepository $formEntityRepository
     ) {
         $this->formName              = $formName;
         $this->formNavigationFactory = $formNavigationFactory;
         $this->formDefinitionFactory = $formDefinitionFactory;
-        $this->formSectionFactory    = $formSectionFactory;
         $this->formSourceFactory     = $formSourceFactory;
+        $this->formEntityRepository  = $formEntityRepository;
     }
 
     public function getFormName(): string
@@ -58,17 +63,17 @@ class HyvaFormViewModel implements HyvaFormInterface
 
     public function getSections(): array
     {
-        $groupDeclarations = $this->getFormDefinition()->getAllGroups();
-        $entityType        = $this->getFormSource()->getLoadType();
-        $entity            = $this->getLoadedEntity();
-        $entityGroups      = $entity ? $this->getLoadedEntityGroups($entity) : $this->getFormEntityGroups();
         return [];
     }
 
-    private function getLoadedEntity()
+    private function getLoadedEntity(): FormLoadEntity
     {
         if (!isset($this->loadedEntity)) {
-            $this->loadedEntity = $this->getFormSource()->getLoadMethodValue();
+            $this->loadedEntity = $this->formEntityRepository->fetchTypeAndMethod(
+                $this->getFormSource()->getLoadMethodName(),
+                $this->getFormSource()->getLoadBindArgumentConfig(),
+                $this->getFormSource()->getLoadType()
+            );
         }
         return $this->loadedEntity;
     }
@@ -76,11 +81,6 @@ class HyvaFormViewModel implements HyvaFormInterface
     private function getFormDefinition(): HyvaFormDefinitionInterface
     {
         return $this->formDefinitionFactory->create(['formName' => $this->formName]);
-    }
-
-    private function declaredGroupConfigsAsFlatArray(array $sectionsConfig): array
-    {
-        return values(filter(merge([], ...map(fn(array $s): array => $s['groups'] ?? [], $sectionsConfig))));
     }
 
     private function getFormSource(): FormSource

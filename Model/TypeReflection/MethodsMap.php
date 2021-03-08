@@ -49,7 +49,7 @@ class MethodsMap
      * The map includes annotated methods from the types PHPDoc block.
      * If a methods return type is unspecified, the map value is null.
      */
-    public function getMethodsMap(string $type): array
+    public function getMethodsReturnTypeMap(string $type): array
     {
         $this->initMethodMapForType($type);
         return zip(keys($this->memoizedMethodMaps[$type]), pick($this->memoizedMethodMaps[$type], 'return'));
@@ -64,10 +64,10 @@ class MethodsMap
 
     public function getMethodReturnType(string $type, string $methodName): ?string
     {
-        return $this->getMethodsMap($type)[$methodName] ?? null;
+        return $this->getMethodsReturnTypeMap($type)[$methodName] ?? null;
     }
 
-    public function isMethodValidForDataField(string $type, string $methodName): bool
+    public function isMethodValidGetter(string $type, string $methodName): bool
     {
         $this->initMethodMapForType($type);
         $methodInfo = $this->memoizedMethodMaps[$type][$methodName] ?? false;
@@ -75,6 +75,17 @@ class MethodsMap
             $methodInfo['return'] !== 'void' &&
             $methodInfo['parameterCount'] === 0 &&
             $this->fieldNamer->getFieldNameForMethodName($methodName);
+    }
+
+    public function isMethodValidSetter(string $type, string $methodName): bool
+    {
+        $this->initMethodMapForType($type);
+        $methodInfo = $this->memoizedMethodMaps[$type][$methodName] ?? false;
+        // TODO: ignore optional parameters in parameter count validation
+        return $methodInfo &&
+            $methodInfo['parameterCount'] === 1 &&
+            substr($methodName, 0, 3) === 'set' &&
+            strlen($methodName) > 4;
     }
 
     private function buildMethodMap(string $type): array

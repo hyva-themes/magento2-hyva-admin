@@ -95,10 +95,10 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
         }, []);
     }
 
-    public function getAllGroups(): array
+    public function getGroupsFromSections(): array
     {
-        $config       = $this->getSectionsConfig();
-        $groupsConfig = values(filter(merge([], ...map(fn(array $s): array => $s['groups'] ?? [], $config))));
+        $sectionConfig = $this->getSectionsConfig();
+        $groupsConfig  = values(filter(merge([], ...map(fn(array $s): array => $s['groups'] ?? [], $sectionConfig))));
 
         $this->validateGroupIdsAreUniquePerSection($groupsConfig);
 
@@ -117,8 +117,8 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
     private function throwGroupIdInMultipleSectionsException(array $dupeGroupIds): void
     {
         $idPaths = reduce($this->getSectionsConfig(), function (array $acc, array $section) use ($dupeGroupIds): array {
-            $sectionGroups  = $section['groups'] ?? [];
-            $dupesInSection = filter($sectionGroups, fn(array $group): bool => in_array($group['id'], $dupeGroupIds));
+            $sectionGroups    = $section['groups'] ?? [];
+            $dupesInSection   = filter($sectionGroups, fn(array $group): bool => in_array($group['id'], $dupeGroupIds));
             $dupeGroupIdPaths = map(fn(array $group): string => $section['id'] . '/' . $group['id'], $dupesInSection);
             return merge($acc, $dupeGroupIdPaths);
         }, []);

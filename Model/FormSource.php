@@ -2,9 +2,10 @@
 
 namespace Hyva\Admin\Model;
 
-use Hyva\Admin\Model\FormSource\LoadFormSource;
+use Hyva\Admin\Model\FormEntity\FormLoadEntityRepository;
 use Hyva\Admin\Model\TypeReflection\MethodsMap;
 
+use Hyva\Admin\Model\TypeReflection\TypeMethod;
 use function array_filter as filter;
 use function array_keys as keys;
 
@@ -18,20 +19,16 @@ class FormSource
 
     private MethodsMap $methodsMap;
 
-    private LoadFormSource $loadFormSource;
-
     public function __construct(
         string $formName,
         array $loadConfig,
         array $saveConfig,
-        MethodsMap $methodsMap,
-        LoadFormSource $loadFormSource
+        MethodsMap $methodsMap
     ) {
-        $this->formName       = $formName;
-        $this->loadConfig     = $loadConfig;
-        $this->saveConfig     = $saveConfig;
-        $this->methodsMap     = $methodsMap;
-        $this->loadFormSource = $loadFormSource;
+        $this->formName   = $formName;
+        $this->loadConfig = $loadConfig;
+        $this->saveConfig = $saveConfig;
+        $this->methodsMap = $methodsMap;
     }
 
     public function getLoadMethodName(): string
@@ -39,19 +36,6 @@ class FormSource
         $this->validateMethodExists($this->loadConfig['method'] ?? null, 'load');
 
         return $this->loadConfig['method'];
-    }
-
-    /**
-     * Return the return value from the configured load method if the load was successful or null
-     *
-     * @return mixed
-     */
-    public function getLoadMethodValue()
-    {
-        [$type, $method] = $this->splitTypeAndMethod($this->getLoadMethodName(), 'load');
-        $arguments = $this->getLoadBindArgumentConfig();
-
-        return $this->loadFormSource->invoke($type, $method, $arguments);
     }
 
     public function getLoadBindArgumentConfig(): array
@@ -108,7 +92,7 @@ class FormSource
     private function getReturnType(string $typeAndMethod, string $methodPurpose): ?string
     {
         [$type, $method] = $this->splitTypeAndMethod($typeAndMethod, $methodPurpose);
-        $methodsReturnTypeMap = $this->methodsMap->getMethodsMap($type);
+        $methodsReturnTypeMap = $this->methodsMap->getMethodsReturnTypeMap($type);
 
         $returnType = $methodsReturnTypeMap[$method] ?? null;
 
@@ -118,17 +102,17 @@ class FormSource
 
     private function splitTypeAndMethod(?string $typeAndMethod, string $methodPurpose): array
     {
-        if (!$typeAndMethod || !preg_match('/^.+::.+$/', $typeAndMethod)) {
+        try {
+            return TypeMethod::split($typeAndMethod);
+        } catch (\RuntimeException $exception) {
             $msg = sprintf(
                 'Invalid form "%s" type specified on form "%s": method="%s", Type::method syntax required',
                 $methodPurpose,
                 $this->formName,
                 $typeAndMethod
             );
-            throw new \RuntimeException($msg);
+            throw new \RuntimeException($msg, ['exception' => $exception]);
         }
-
-        return explode('::', $typeAndMethod);
     }
 
     private function getSaveFormDataArgument(): ?string
@@ -136,6 +120,7 @@ class FormSource
         $isFormDataArgument    = fn(array $arg): bool => ($arg['formData'] ?? false) === 'true';
         $formDataArguments     = filter($this->getSaveBindArgumentConfig(), $isFormDataArgument);
         $formDataArgumentNames = keys($formDataArguments);
+        // TODO: ignore optional arguments, see \Hyva\Admin\Model\TypeReflection\MethodsMap::isMethodValidSetter
         if (count($formDataArguments) > 1) {
             $msg = sprintf(
                 'Error on form "%s": only one formData save argument allowed but found: %s',
@@ -173,6 +158,7 @@ class FormSource
 
     private function validateMethodExists(?string $typeAndMethod, string $methodPurpose): void
     {
+
         if (!$typeAndMethod) {
             throw new \RuntimeException(sprintf(
                 'No %s method specified on form "%s"',

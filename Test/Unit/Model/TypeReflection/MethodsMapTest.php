@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
  * @method getTestMethodAnnotationWithNoReturnType()
  * @method null getTestMethodAnnotationWithOnlyNullReturn()
  * @method void getTestMethodAnnotationWithVoidReturn()
+ * @method void setTestMethod($x)
  * @see The above method annotations are used in tests
  * @author Someone called Vinai
  */
@@ -26,15 +27,22 @@ class MethodsMapTest extends TestCase
     public function testIncludesPublicMethods(): void
     {
         $sut     = new MethodsMap(new FieldNamer(), new NamespaceMapper());
-        $methods = $sut->getMethodsMap(__CLASS__);
+        $methods = $sut->getMethodsReturnTypeMap(__CLASS__);
         $this->assertArrayHasKey(__FUNCTION__, $methods);
     }
 
     public function testIncludesAnnotatedMethods(): void
     {
         $sut     = new MethodsMap(new FieldNamer(), new NamespaceMapper());
-        $methods = $sut->getMethodsMap(Stub\StubReflectionTargetGrandchild::class);
+        $methods = $sut->getMethodsReturnTypeMap(Stub\StubReflectionTargetGrandchild::class);
         $this->assertArrayHasKey('getMethodAnnotationWithType', $methods);
+    }
+
+    public function testIncludesAnnotatedSetterMethod(): void
+    {
+        $sut     = new MethodsMap(new FieldNamer(), new NamespaceMapper());
+        $methods = $sut->getMethodsReturnTypeMap(__CLASS__);
+        $this->assertArrayHasKey('setTestMethod', $methods);
     }
 
     public function testReturnsReturnTypeOfRealMethods(): void
@@ -63,12 +71,12 @@ class MethodsMapTest extends TestCase
     public function testIsValidForDataField(): void
     {
         $sut = new MethodsMap(new FieldNamer(), new NamespaceMapper());
-        $this->assertFalse($sut->isMethodValidForDataField(__CLASS__, 'nonExistentMethod'));
-        $this->assertFalse($sut->isMethodValidForDataField(__CLASS__, 'testIsValidForDataField'));
-        $this->assertFalse($sut->isMethodValidForDataField(__CLASS__, 'getMockBuilder'));
-        $this->assertFalse($sut->isMethodValidForDataField(__CLASS__, 'getTestMethodAnnotationWithOnlyNullReturn'));
-        $this->assertFalse($sut->isMethodValidForDataField(__CLASS__, 'getTestMethodAnnotationWithVoidReturn'));
-        $this->assertTrue($sut->isMethodValidForDataField(__CLASS__, 'getTestMethodAnnotation'));
+        $this->assertFalse($sut->isMethodValidGetter(__CLASS__, 'nonExistentMethod'));
+        $this->assertFalse($sut->isMethodValidGetter(__CLASS__, 'testIsValidForDataField'));
+        $this->assertFalse($sut->isMethodValidGetter(__CLASS__, 'getMockBuilder'));
+        $this->assertFalse($sut->isMethodValidGetter(__CLASS__, 'getTestMethodAnnotationWithOnlyNullReturn'));
+        $this->assertFalse($sut->isMethodValidGetter(__CLASS__, 'getTestMethodAnnotationWithVoidReturn'));
+        $this->assertTrue($sut->isMethodValidGetter(__CLASS__, 'getTestMethodAnnotation'));
     }
 
     public function testUsedDefaultReturnTypeMixed(): void

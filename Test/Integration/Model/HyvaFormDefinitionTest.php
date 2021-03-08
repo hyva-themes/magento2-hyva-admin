@@ -58,7 +58,7 @@ class HyvaFormDefinitionTest extends TestCase
         $arguments = ['formName' => 'test', 'formConfigReader' => $stubFormConfigReader];
         /** @var HyvaFormDefinition $sut */
         $sut = ObjectManager::getInstance()->create(HyvaFormDefinitionInterface::class, $arguments);
-        $this->assertSame([], $sut->getAllGroups());
+        $this->assertSame([], $sut->getGroupsFromSections());
     }
 
     public function testReturnsEmptyArrayIfEmptySectionsAreDeclared(): void
@@ -78,7 +78,7 @@ class HyvaFormDefinitionTest extends TestCase
         $arguments = ['formName' => 'test', 'formConfigReader' => $stubFormConfigReader];
         /** @var HyvaFormDefinition $sut */
         $sut = ObjectManager::getInstance()->create(HyvaFormDefinitionInterface::class, $arguments);
-        $this->assertSame([], $sut->getAllGroups());
+        $this->assertSame([], $sut->getGroupsFromSections());
     }
 
     public function testReturnsFlatArrayOfGroups(): void
@@ -113,7 +113,7 @@ class HyvaFormDefinitionTest extends TestCase
         /** @var HyvaFormDefinition $sut */
         $sut = ObjectManager::getInstance()->create(HyvaFormDefinitionInterface::class, $arguments);
 
-        $this->assertSame([$group1, $group2, $group3, $group4], $sut->getAllGroups());
+        $this->assertSame([$group1, $group2, $group3, $group4], $sut->getGroupsFromSections());
     }
 
     public function testThrowsExceptionWhenGroupIdsConflict(): void
@@ -141,6 +141,6 @@ class HyvaFormDefinitionTest extends TestCase
             'foo/a, bar/a, bar/d, baz/d'
         );
 
-        $sut->getAllGroups();
+        $sut->getGroupsFromSections();
     }
 }

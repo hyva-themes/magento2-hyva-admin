@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\Test\Integration\Model\FormSource;
+namespace Hyva\Admin\Test\Integration\Model\TypeReflection;
 
-use Hyva\Admin\Model\FormSource\LoadFormSource;
+use Hyva\Admin\Model\TypeReflection\TypeMethod;
 use Hyva\Admin\Test\Integration\TestingGridDataProvider;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -20,12 +20,12 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
-class LoadFormSourceTest extends TestCase
+class TypeMethodTest extends TestCase
 {
-    private function createSut(): LoadFormSource
+    private function createSut(): TypeMethod
     {
-        /** @var LoadFormSource $sut */
-        $sut = ObjectManager::getInstance()->create(LoadFormSource::class);
+        /** @var TypeMethod $sut */
+        $sut = ObjectManager::getInstance()->create(TypeMethod::class);
         return $sut;
     }
 
