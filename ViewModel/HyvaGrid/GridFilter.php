@@ -123,7 +123,7 @@ class GridFilter implements GridFilterInterface
     {
         $arguments = [
             'label'  => (string) __($optionConfig['label']),
-            'values' => $optionConfig['values'] ?? ($optionConfig['value'] ? [$optionConfig['value']] : []),
+            'values' => $optionConfig['values'] ?? (isset($optionConfig['value']) ? [$optionConfig['value']] : []),
         ];
         return $this->filterOptionFactory->create($arguments);
     }
