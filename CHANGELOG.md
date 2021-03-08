@@ -8,11 +8,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Nothing currently.
 
 ### Changed
+- Nothing currently.
+
+### Removed
+- No removals.
+
+
+## [1.1.4] - 2021-03-08
+### Added
+- Nothing currently.
+
+### Changed
+- Bugfix: grid column filters with a zero value are now possible
+- Bugfix issue #42: array grid providers returning an empty array no longer produce a stack trace.
 - Fixed example how to use `ColumnDefinition::merge()` in the docs.
 - Bugfix issue #33: With active filters the array grid source type page count still is calculated based on all grid
   records, not the filtered grid entries, resulting in added blank pages at the end.
-
-
+  
 ### Removed
 - No removals.
 
