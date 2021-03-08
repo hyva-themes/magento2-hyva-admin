@@ -44,4 +44,19 @@ class HyvaGridViewModelTest extends TestCase
         $columns = $grid->getColumnDefinitions();
         $this->assertCount(3, $columns);
     }
+
+    public function testDoesNotChokeOnEmptyColumnList(): void
+    {
+        $testGridDefinition = [
+            'source' => [
+                'arrayProvider' => TestingGridDataProvider::withArray([]),
+            ],
+        ];
+
+        $grid    = ObjectManager::getInstance()->create(HyvaGridViewModel::class, [
+            'gridName'              => 'test-name',
+            'gridDefinitionFactory' => $this->makeFactoryForGridDefinition($testGridDefinition),
+        ]);
+        $this->assertNull($grid->getMassActionIdColumn());
+    }
 }

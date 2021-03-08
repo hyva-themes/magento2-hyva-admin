@@ -250,11 +250,18 @@ class HyvaGridViewModel implements HyvaGridInterface
     public function getMassActionIdColumn(): ?string
     {
         $idColumn = $this->getGridDefinition()->getMassActionConfig()['@idColumn']
-            ?? (string) keys($this->getColumnDefinitions())[0]
+            ?? $this->getFirstColumnKey()
             ?? null;
         $this->validateActionIdColumnExists($idColumn, 'MassActionAction');
 
         return $idColumn;
+    }
+
+    public function getFirstColumnKey(): ?string
+    {
+        return isset($this->getColumnDefinitions()[0])
+            ? (string) $this->getColumnDefinitions()[0]
+            : null;
     }
 
     public function getMassActionIdsParam(): ?string
