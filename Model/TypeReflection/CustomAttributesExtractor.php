@@ -68,7 +68,7 @@ class CustomAttributesExtractor
     {
         $entityTypeCode = $this->getEntityTypeCodeForType($type);
         return $entityTypeCode
-            ? $this->eavConfig->getEntityAttributes($entityTypeCode, $eavObject)
+            ? keys($this->eavConfig->getEntityAttributes($entityTypeCode, $eavObject))
             : [];
     }
 
@@ -191,10 +191,30 @@ class CustomAttributesExtractor
     {
         if (method_exists($object, 'getAttributeSetId')) {
             $attributeSetId = $object->getAttributeSetId();
-        }
-        if ($object instanceof DataObject) {
+        } elseif ($object instanceof DataObject) {
             $attributeSetId = $object->getData('attribute_set_id');
         }
+        if (! isset($attributeSetId)) {
+            $entityType = $this->getEntityTypeCodeForType(get_class($object));
+            $attributeSetId = $this->eavConfig->getEntityType($entityType)->getDefaultAttributeSetId();
+        }
         return isset($attributeSetId) ? (int) $attributeSetId : null;
+    }
+
+    public function getAttributeInputType(string $valueType, string $code): ?string
+    {
+        $entityTypeCode = $this->getEntityTypeCodeForType($valueType);
+        return $entityTypeCode
+            ? $this->eavConfig->getAttribute($entityTypeCode, $code)->getFrontendInput()
+            : null;
+    }
+
+    public function getAttributeGroup($value, string $code): ?string
+    {
+        $attributeSetId = $this->extractAttributeSetId($value);
+        $groups = $attributeSetId ? $this->eavAttributeGroups->getAttributeToGroupCodeMapForSet($attributeSetId): null;
+        return $attributeSetId
+            ? $this->eavAttributeGroups->getAttributeToGroupCodeMapForSet($attributeSetId)[$code] ?? null
+            : null;
     }
 }

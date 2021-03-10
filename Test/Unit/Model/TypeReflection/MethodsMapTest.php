@@ -18,7 +18,6 @@ use PHPUnit\Framework\TestCase;
  * @method getTestMethodAnnotationWithNoReturnType()
  * @method null getTestMethodAnnotationWithOnlyNullReturn()
  * @method void getTestMethodAnnotationWithVoidReturn()
- * @method void setTestMethod($x)
  * @see The above method annotations are used in tests
  * @author Someone called Vinai
  */
@@ -36,13 +35,6 @@ class MethodsMapTest extends TestCase
         $sut     = new MethodsMap(new FieldNamer(), new NamespaceMapper());
         $methods = $sut->getMethodsReturnTypeMap(Stub\StubReflectionTargetGrandchild::class);
         $this->assertArrayHasKey('getMethodAnnotationWithType', $methods);
-    }
-
-    public function testIncludesAnnotatedSetterMethod(): void
-    {
-        $sut     = new MethodsMap(new FieldNamer(), new NamespaceMapper());
-        $methods = $sut->getMethodsReturnTypeMap(__CLASS__);
-        $this->assertArrayHasKey('setTestMethod', $methods);
     }
 
     public function testReturnsReturnTypeOfRealMethods(): void

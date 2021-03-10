@@ -2,8 +2,8 @@
 
 namespace Hyva\Admin\Model\FormStructure;
 
-use Hyva\Admin\Model\FormLoadEntity;
-use Hyva\Admin\Model\HyvaFormDefinition;
+use Hyva\Admin\Model\FormEntity\FormLoadEntity;
+use Hyva\Admin\Model\HyvaFormDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
 
@@ -18,7 +18,7 @@ class FormStructureBuilder
         $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
     }
 
-    public function buildStructure(HyvaFormDefinition $formDefinition, FormLoadEntity $formEntity): array
+    public function buildStructure(HyvaFormDefinitionInterface $formDefinition, FormLoadEntity $formEntity): FormStructure
     {
         // This is the outline for algorithm to build the form structure of sections, groups and fields.
         // It is likely this might be moved to a different location once it's done.

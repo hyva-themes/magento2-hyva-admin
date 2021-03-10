@@ -6,8 +6,6 @@ interface FormFieldDefinitionInterface
 {
     public function getName(): string;
 
-    public function getFormName(): string;
-
     public function getHtml(): string;
 
     /**

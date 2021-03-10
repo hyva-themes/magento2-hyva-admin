@@ -6,7 +6,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 {
     private string $name;
 
-    private ?string $source;
+    private ?array $options;
 
     private ?string $inputType;
 
@@ -20,30 +20,25 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function __construct(
         string $name,
-        ?string $source,
-        ?string $inputType,
-        ?string $groupId,
-        ?string $template,
-        ?bool $isEnabled,
-        ?string $valueProcessor
+        ?array $options = [],
+        ?string $inputType = null,
+        ?string $groupId = null,
+        ?string $template = null,
+        ?bool $isEnabled = null,
+        ?string $valueProcessor = null
     ) {
-        $this->name = $name;
-        $this->source = $source;
-        $this->inputType = $inputType;
-        $this->groupId = $groupId;
-        $this->template = $template;
-        $this->enabled = $isEnabled;
+        $this->name           = $name;
+        $this->options        = $options;
+        $this->inputType      = $inputType;
+        $this->groupId        = $groupId;
+        $this->template       = $template;
+        $this->enabled        = $isEnabled;
         $this->valueProcessor = $valueProcessor;
     }
 
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function getFormName(): string
-    {
-
     }
 
     public function getHtml(): string
@@ -53,7 +48,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getOptions(): array
     {
-
+        return $this->options;
     }
 
     public function getGroupId(): string

@@ -2,10 +2,12 @@
 
 namespace Hyva\Admin\ViewModel;
 
-use Hyva\Admin\Model\FormLoadEntity;
+use Hyva\Admin\Model\FormEntity\FormLoadEntity;
 use Hyva\Admin\Model\FormEntity\FormLoadEntityRepository;
 use Hyva\Admin\Model\FormSource;
 use Hyva\Admin\Model\FormSourceFactory;
+use Hyva\Admin\Model\FormStructure\FormStructure;
+use Hyva\Admin\Model\FormStructure\FormStructureBuilder;
 use Hyva\Admin\Model\HyvaFormDefinitionInterface;
 use Hyva\Admin\Model\HyvaFormDefinitionInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaForm\FormNavigationInterfaceFactory;
@@ -34,19 +36,22 @@ class HyvaFormViewModel implements HyvaFormInterface
      */
     private FormLoadEntityRepository $formEntityRepository;
 
+    private FormStructureBuilder $formStructureBuilder;
+
     public function __construct(
         string $formName,
         HyvaFormDefinitionInterfaceFactory $formDefinitionFactory,
         FormNavigationInterfaceFactory $formNavigationFactory,
         FormSourceFactory $formSourceFactory,
-        FormLoadEntityRepository $formEntityRepository
+        FormLoadEntityRepository $formEntityRepository,
+        FormStructureBuilder $formStructureBuilder
     ) {
-        $this->formName              = $formName;
-        $this->formNavigationFactory = $formNavigationFactory;
-        $this->formDefinitionFactory = $formDefinitionFactory;
-        $this->formSourceFactory     = $formSourceFactory;
-        $this->formEntityRepository  = $formEntityRepository;
-    }
+        $this->formName                    = $formName;
+        $this->formNavigationFactory       = $formNavigationFactory;
+        $this->formDefinitionFactory       = $formDefinitionFactory;
+        $this->formSourceFactory           = $formSourceFactory;
+        $this->formEntityRepository        = $formEntityRepository;
+    $this->formStructureBuilder = $formStructureBuilder;}
 
     public function getFormName(): string
     {
@@ -63,7 +68,12 @@ class HyvaFormViewModel implements HyvaFormInterface
 
     public function getSections(): array
     {
-        return [];
+        $this->getFormStructure()->getSections();
+    }
+
+    private function getFormStructure(): FormStructure
+    {
+        return $this->formStructureBuilder->buildStructure($this->getFormDefinition(), $this->getLoadedEntity());
     }
 
     private function getLoadedEntity(): FormLoadEntity

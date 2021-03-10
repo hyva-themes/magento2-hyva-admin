@@ -5,6 +5,7 @@ namespace Hyva\Admin\Model\TypeReflection;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 
+use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
 
@@ -20,7 +21,7 @@ class EavAttributeGroups
     public function getAttributeToGroupCodeMapForSet(int $attributeSetId): array
     {
         $attributeToGroupMap = $this->buildAttributeToGroupConfigMapForSet($attributeSetId);
-        return reduce($attributeToGroupMap, [$this, 'getGroupCode']);
+        return map([$this, 'getGroupCode'], $attributeToGroupMap);
     }
 
     public function getGroupsForAttributeSet(int $attributeSetId): array
