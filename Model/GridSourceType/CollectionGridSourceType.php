@@ -18,21 +18,45 @@ use function array_values as values;
 
 class CollectionGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private array $sourceConfiguration;
+    /**
+     * @var array[]
+     */
+    private $sourceConfiguration;
 
-    private GridTypeReflection $typeReflection;
+    /**
+     * @var GridTypeReflection
+     */
+    private $typeReflection;
 
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private GridSourceCollectionFactory $gridSourceCollectionFactory;
+    /**
+     * @var GridSourceCollectionFactory
+     */
+    private $gridSourceCollectionFactory;
 
-    private CollectionProcessorInterface $defaultCollectionProcessor;
+    /**
+     * @var CollectionProcessorInterface
+     */
+    private $defaultCollectionProcessor;
 
-    private CollectionProcessorInterface $eavCollectionProcessor;
+    /**
+     * @var CollectionProcessorInterface
+     */
+    private $eavCollectionProcessor;
 
     public function __construct(
         string $gridName,

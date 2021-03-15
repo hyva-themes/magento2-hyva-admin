@@ -6,23 +6,50 @@ use function array_merge as merge;
 
 class FormFieldDefinition implements FormFieldDefinitionInterface
 {
-    private string $name;
+    /**
+     * @var string
+     */
+    private $name;
 
-    private ?array $options;
+    /**
+     * @var array|null
+     */
+    private $options;
 
-    private ?string $inputType;
+    /**
+     * @var string|null
+     */
+    private $inputType;
 
-    private ?string $groupId;
+    /**
+     * @var string|null
+     */
+    private $groupId;
 
-    private ?string $template;
+    /**
+     * @var string|null
+     */
+    private $template;
 
-    private ?bool $enabled;
+    /**
+     * @var bool|null
+     */
+    private $enabled;
 
-    private ?bool $excluded;
+    /**
+     * @var bool|null
+     */
+    private $excluded;
 
-    private ?string $valueProcessor;
+    /**
+     * @var string|null
+     */
+    private $valueProcessor;
 
-    private FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory;
+    /**
+     * @var FormFieldDefinitionInterfaceFactory
+     */
+    private $formFieldDefinitionFactory;
 
     public function __construct(
         FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,

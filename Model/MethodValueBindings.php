@@ -12,7 +12,10 @@ use function array_map as map;
 
 class MethodValueBindings
 {
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
     public function __construct(ObjectManagerInterface $objectManager)
     {

@@ -10,9 +10,15 @@ use Magento\Framework\ObjectManagerInterface;
 
 class HyvaGridSourceFactory
 {
-    private SourceTypeLocator $sourceTypeLocator;
+    /**
+     * @var SourceTypeLocator
+     */
+    private $sourceTypeLocator;
 
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
     public function __construct(ObjectManagerInterface $objectManager, SourceTypeLocator $sourceTypeLocator)
     {

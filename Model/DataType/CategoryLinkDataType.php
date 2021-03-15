@@ -7,7 +7,7 @@ use Magento\Catalog\Api\Data\CategoryLinkInterface;
 
 class CategoryLinkDataType implements DataTypeInterface
 {
-    const TYPE_MAGENTO_CATEGORY_LINK = 'magento_category_link';
+    public const TYPE_MAGENTO_CATEGORY_LINK = 'magento_category_link';
 
     public function valueToTypeCode($value): ?string
     {

@@ -12,9 +12,15 @@ class StoreIdDataType implements DataTypeValueToStringConverterInterface
 {
     public const TYPE_STORE_ID = 'store_id';
 
-    private SystemStore $systemStore;
+    /**
+     * @var SystemStore
+     */
+    private $systemStore;
 
-    private Escaper $escaper;
+    /**
+     * @var Escaper
+     */
+    private $escaper;
 
     public function __construct(SystemStore $systemStore, Escaper $escaper)
     {
@@ -28,7 +34,9 @@ class StoreIdDataType implements DataTypeValueToStringConverterInterface
 
         return in_array(0, $storeIds) && count($storeIds) === 1
             ? $this->getAllStoreViewsLabel()
-            : implode(', ', map(fn ($storeId): string => $this->systemStore->getStoreNamePath($storeId), $storeIds));
+            : implode(', ', map(function ($storeId): string {
+                return $this->systemStore->getStoreNamePath($storeId);
+            }, $storeIds));
     }
 
     public function toHtmlRecursive($value, $maxRecursionDepth = self::UNLIMITED_RECURSION): ?string

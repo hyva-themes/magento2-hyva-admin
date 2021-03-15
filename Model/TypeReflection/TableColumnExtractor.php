@@ -8,9 +8,15 @@ use function array_keys as keys;
 
 class TableColumnExtractor
 {
-    private ResourceConnection $resourceConnection;
+    /**
+     * @var ResourceConnection
+     */
+    private $resourceConnection;
 
-    private array $memoizedTableDescriptions = [];
+    /**
+     * @var array[]
+     */
+    private $memoizedTableDescriptions = [];
 
     public function __construct(ResourceConnection $resourceConnection)
     {

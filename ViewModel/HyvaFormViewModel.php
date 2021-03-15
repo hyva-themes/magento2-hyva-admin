@@ -21,22 +21,40 @@ use function array_values as values;
 
 class HyvaFormViewModel implements HyvaFormInterface
 {
-    private string $formName;
+    /**
+     * @var string
+     */
+    private $formName;
 
-    private FormNavigationInterfaceFactory $formNavigationFactory;
+    /**
+     * @var FormNavigationInterfaceFactory
+     */
+    private $formNavigationFactory;
 
-    private HyvaFormDefinitionInterfaceFactory $formDefinitionFactory;
+    /**
+     * @var HyvaFormDefinitionInterfaceFactory
+     */
+    private $formDefinitionFactory;
 
-    private FormSourceFactory $formSourceFactory;
+    /**
+     * @var FormSourceFactory
+     */
+    private $formSourceFactory;
 
-    private ?FormLoadEntity $loadedEntity;
+    /**
+     * @var FormLoadEntity|null
+     */
+    private $loadedEntity;
 
     /**
      * @var FormLoadEntityRepository
      */
-    private FormLoadEntityRepository $formEntityRepository;
+    private $formEntityRepository;
 
-    private FormStructureBuilder $formStructureBuilder;
+    /**
+     * @var FormStructureBuilder
+     */
+    private $formStructureBuilder;
 
     public function __construct(
         string $formName,
@@ -46,12 +64,13 @@ class HyvaFormViewModel implements HyvaFormInterface
         FormLoadEntityRepository $formEntityRepository,
         FormStructureBuilder $formStructureBuilder
     ) {
-        $this->formName                    = $formName;
-        $this->formNavigationFactory       = $formNavigationFactory;
-        $this->formDefinitionFactory       = $formDefinitionFactory;
-        $this->formSourceFactory           = $formSourceFactory;
-        $this->formEntityRepository        = $formEntityRepository;
-    $this->formStructureBuilder = $formStructureBuilder;}
+        $this->formName              = $formName;
+        $this->formNavigationFactory = $formNavigationFactory;
+        $this->formDefinitionFactory = $formDefinitionFactory;
+        $this->formSourceFactory     = $formSourceFactory;
+        $this->formEntityRepository  = $formEntityRepository;
+        $this->formStructureBuilder  = $formStructureBuilder;
+    }
 
     public function getFormName(): string
     {

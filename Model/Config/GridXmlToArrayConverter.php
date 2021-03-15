@@ -239,7 +239,9 @@ class GridXmlToArrayConverter
          * </exclude>
          */
         $excludeElement = XmlToArray::getChildByName($columnsElement, 'exclude');
-        $getName        = fn(\DOMElement $col): string => $col->getAttribute('name');
+        $getName = function (\DOMElement $col): string {
+            return $col->getAttribute('name');
+        };
         return $excludeElement
             ? ['exclude' => values(filter(map($getName, XmlToArray::getChildrenByName($excludeElement, 'column'))))]
             : [];

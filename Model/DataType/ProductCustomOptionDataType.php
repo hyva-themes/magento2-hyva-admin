@@ -7,9 +7,12 @@ use Magento\Catalog\Api\Data\ProductCustomOptionInterface;
 
 class ProductCustomOptionDataType implements DataTypeInterface
 {
-    const TYPE_MAGENTO_PRODUCT_CUSTOM_OPTION = 'magento_product_custom_option';
+    public const TYPE_MAGENTO_PRODUCT_CUSTOM_OPTION = 'magento_product_custom_option';
 
-    private DataTypeToStringConverterLocatorInterface $dataTypeToStringConverterLocator;
+    /**
+     * @var DataTypeToStringConverterLocatorInterface
+     */
+    private $dataTypeToStringConverterLocator;
 
     public function __construct(DataTypeToStringConverterLocatorInterface $dataTypeToStringConverterLocator)
     {

@@ -11,11 +11,20 @@ use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 
 class Paging extends Action implements HttpGetActionInterface
 {
-    private RequestInterface $request;
+    /**
+     * @var RequestInterface
+     */
+    private $request;
 
-    private GridBlockRenderer $gridBlockRenderer;
+    /**
+     * @var GridBlockRenderer
+     */
+    private $gridBlockRenderer;
 
-    private JsonResultFactory $jsonResultFactory;
+    /**
+     * @var JsonResultFactory
+     */
+    private $jsonResultFactory;
 
     public function __construct(
         Context $context,

@@ -4,11 +4,20 @@ namespace Hyva\Admin\ViewModel\HyvaForm;
 
 class FormSection implements FormSectionInterface
 {
-    private string $formName;
+    /**
+     * @var string
+     */
+    private $formName;
 
-    private array $groups;
+    /**
+     * @var array
+     */
+    private $groups;
 
-    private ?string $label;
+    /**
+     * @var string|null
+     */
+    private $label;
 
     public function __construct(string $formName, array $groups, ?string $label)
     {

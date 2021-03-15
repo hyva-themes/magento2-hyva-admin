@@ -23,21 +23,45 @@ use function array_values as values;
 
 class ArrayProviderGridSourceType implements GridSourceTypeInterface
 {
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private ArrayProviderSourceType\ArrayProviderFactory $arrayProviderFactory;
+    /**
+     * @var ArrayProviderSourceType\ArrayProviderFactory
+     */
+    private $arrayProviderFactory;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private DataTypeGuesserInterface $dataTypeGuesser;
+    /**
+     * @var DataTypeGuesserInterface
+     */
+    private $dataTypeGuesser;
 
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
+    /**
+     * @var SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
 
-    private array $memoizedGridData;
+    /**
+     * @var array[]
+     */
+    private $memoizedGridData;
 
-    private string $arrayProviderClass;
+    /**
+     * @var string
+     */
+    private $arrayProviderClass;
 
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
     public function __construct(
         string $gridName,

@@ -7,9 +7,15 @@ use Magento\Framework\ObjectManagerInterface;
 
 class FormLoadEntityRepository
 {
-    private TypeMethod $typeMethod;
+    /**
+     * @var TypeMethod
+     */
+    private $typeMethod;
 
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
     public function __construct(TypeMethod $typeMethod, ObjectManagerInterface $objectManager)
     {

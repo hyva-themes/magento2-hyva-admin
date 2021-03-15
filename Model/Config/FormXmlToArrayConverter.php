@@ -130,7 +130,9 @@ class FormXmlToArrayConverter
          *     </exclude>
          * </fields>
          */
-        $getFieldName = fn(\DOMElement $field): string => $field->getAttribute('name');
+        $getFieldName = function (\DOMElement $field): string {
+            return $field->getAttribute('name');
+        };
         return $excludeElement
             ? values(filter(map($getFieldName, XmlToArray::getChildrenByName($excludeElement, 'field'))))
             : [];

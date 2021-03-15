@@ -8,17 +8,23 @@ use Magento\Framework\Reflection\DataObjectProcessor;
 
 class StockItemDataType implements DataTypeInterface
 {
-    const TYPE_MAGENTO_STOCK_ITEM = 'magento_stock_item';
+    public const TYPE_MAGENTO_STOCK_ITEM = 'magento_stock_item';
 
-    private DataObjectProcessor $dataObjectProcessor;
+    /**
+     * @var DataObjectProcessor
+     */
+    private $dataObjectProcessor;
 
-    private DataTypeToStringConverterLocatorInterface $toStringConverterLocator;
+    /**
+     * @var DataTypeToStringConverterLocatorInterface
+     */
+    private $toStringConverterLocator;
 
     public function __construct(
         DataObjectProcessor $dataObjectProcessor,
         DataTypeToStringConverterLocatorInterface $toStringConverterLocator
     ) {
-        $this->dataObjectProcessor = $dataObjectProcessor;
+        $this->dataObjectProcessor      = $dataObjectProcessor;
         $this->toStringConverterLocator = $toStringConverterLocator;
     }
 

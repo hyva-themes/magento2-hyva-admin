@@ -27,7 +27,9 @@ class HyvaConfigDirsTest extends TestCase
 
         $stubComponentRegistrar = $this->createMock(ComponentRegistrarInterface::class);
         $stubComponentRegistrar->method('getPath')->willReturnCallback(
-            fn(string $_, string $module) => __DIR__ . '/test-dirs/' . $module
+            function (string $_, string $module): string {
+                return __DIR__ . '/test-dirs/' . $module;
+            }
         );
 
         return new $class($stubModuleList, $stubComponentRegistrar, $stubAppState);

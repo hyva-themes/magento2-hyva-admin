@@ -8,9 +8,12 @@ use Magento\Catalog\Api\Data\ProductAttributeMediaGalleryEntryInterface;
 
 class ProductGalleryEntryDataType implements DataTypeInterface
 {
-    const TYPE_MAGENTO_PRODUCT_GALLERY_ENTRY = 'magento_product_gallery_entry';
+    public const TYPE_MAGENTO_PRODUCT_GALLERY_ENTRY = 'magento_product_gallery_entry';
 
-    private ProductMediaInBackend $productMedia;
+    /**
+     * @var ProductMediaInBackend
+     */
+    private $productMedia;
 
     public function __construct(ProductMediaInBackend $productMedia)
     {

@@ -19,17 +19,35 @@ use function array_keys as keys;
 
 class CustomAttributesExtractor
 {
-    private ResourceConnection $dbResource;
+    /**
+     * @var ResourceConnection
+     */
+    private $dbResource;
 
-    private EavConfig $eavConfig;
+    /**
+     * @var EavConfig
+     */
+    private $eavConfig;
 
-    private DiConfigInterface $diConfig;
+    /**
+     * @var DiConfigInterface
+     */
+    private $diConfig;
 
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
-    private MagentoOrmReflection $magentoOrmReflection;
+    /**
+     * @var MagentoOrmReflection
+     */
+    private $magentoOrmReflection;
 
-    private EavAttributeGroups $eavAttributeGroups;
+    /**
+     * @var EavAttributeGroups
+     */
+    private $eavAttributeGroups;
 
     public function __construct(
         DiConfigInterface $diConfig,
@@ -71,7 +89,6 @@ class CustomAttributesExtractor
             ? keys($this->eavConfig->getEntityAttributes($entityTypeCode, $eavObject))
             : [];
     }
-
 
     private function selectEntityTypeCode(string $resourceModelClass): ?string
     {
@@ -194,8 +211,8 @@ class CustomAttributesExtractor
         } elseif ($object instanceof DataObject) {
             $attributeSetId = $object->getData('attribute_set_id');
         }
-        if (! isset($attributeSetId)) {
-            $entityType = $this->getEntityTypeCodeForType(get_class($object));
+        if (!isset($attributeSetId)) {
+            $entityType     = $this->getEntityTypeCodeForType(get_class($object));
             $attributeSetId = $this->eavConfig->getEntityType($entityType)->getDefaultAttributeSetId();
         }
         return isset($attributeSetId) ? (int) $attributeSetId : null;
@@ -212,7 +229,7 @@ class CustomAttributesExtractor
     public function getAttributeGroup($value, string $code): ?string
     {
         $attributeSetId = $this->extractAttributeSetId($value);
-        $groups = $attributeSetId ? $this->eavAttributeGroups->getAttributeToGroupCodeMapForSet($attributeSetId): null;
+        $groups         = $attributeSetId ? $this->eavAttributeGroups->getAttributeToGroupCodeMapForSet($attributeSetId) : null;
         return $attributeSetId
             ? $this->eavAttributeGroups->getAttributeToGroupCodeMapForSet($attributeSetId)[$code] ?? null
             : null;

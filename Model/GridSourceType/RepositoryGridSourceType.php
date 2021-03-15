@@ -16,24 +16,45 @@ use function array_filter as filter;
 
 class RepositoryGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private array $sourceConfiguration;
+    /**
+     * @var array[]
+     */
+    private $sourceConfiguration;
 
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private RepositorySourceFactory $repositorySourceFactory;
+    /**
+     * @var RepositorySourceFactory
+     */
+    private $repositorySourceFactory;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private GridTypeReflection $typeReflection;
+    /**
+     * @var GridTypeReflection
+     */
+    private $typeReflection;
 
     /**
      * @var ColumnDefinitionInterface[]
      */
-    private array $memoizedColumnDefinitions = [];
+    private $memoizedColumnDefinitions = [];
 
-    private string $memoizedRecordType;
+    /**
+     * @var string
+     */
+    private $memoizedRecordType;
 
     public function __construct(
         string $gridName,

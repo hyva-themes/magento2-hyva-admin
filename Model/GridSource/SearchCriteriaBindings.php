@@ -12,15 +12,30 @@ use function array_reduce as reduce;
 
 class SearchCriteriaBindings
 {
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
-    private FilterBuilder $filterBuilder;
+    /**
+     * @var FilterBuilder
+     */
+    private $filterBuilder;
 
-    private FilterGroupBuilder $filterGroupBuilder;
+    /**
+     * @var FilterGroupBuilder
+     */
+    private $filterGroupBuilder;
 
-    private MethodValueBindings $methodValueBindings;
+    /**
+     * @var MethodValueBindings
+     */
+    private $methodValueBindings;
 
-    private array $bindingsConfig;
+    /**
+     * @var array[]
+     */
+    private $bindingsConfig;
 
     public function __construct(
         ObjectManagerInterface $objectManager,

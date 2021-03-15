@@ -4,7 +4,10 @@ namespace Hyva\Admin\ViewModel\HyvaForm;
 
 class FormNavigation implements FormNavigationInterface
 {
-    private string $formName;
+    /**
+     * @var string
+     */
+    private $formName;
 
     public function __construct(string $formName)
     {

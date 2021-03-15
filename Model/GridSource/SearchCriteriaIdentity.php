@@ -30,14 +30,18 @@ class SearchCriteriaIdentity
 
     private function serializeSortOrders(?array $sortOrders): string
     {
-        $a = map(fn(SortOrder $order): string => $order->getField() . $order->getDirection(), $sortOrders ?? []);
+        $a = map(function (SortOrder $order): string {
+            return $order->getField() . $order->getDirection();
+        }, $sortOrders ?? []);
 
         return implode(',', $a);
     }
 
     private function serializeFilterGroups(array $filterGroups): string
     {
-        $a = map(fn(FilterGroup $g): string => $this->serializeFilters($g->getFilters()), $filterGroups);
+        $a = map(function(FilterGroup $g): string {
+            return $this->serializeFilters($g->getFilters());
+        }, $filterGroups);
 
         return implode(';', $a);
     }

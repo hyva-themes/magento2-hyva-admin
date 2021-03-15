@@ -623,7 +623,10 @@ class NavigationTest extends TestCase
             ],
         ];
         $sut              = $this->createNavigation($gridData, $navigationConfig);
-        $this->assertSame(['B', 'C', 'A', 'D'], map(fn(GridButton $b) => $b->getId(), $sut->getButtons()));
+        $getIds           = function (GridButton $b): string {
+            return $b->getId();
+        };
+        $this->assertSame(['B', 'C', 'A', 'D'], map($getIds, $sut->getButtons()));
     }
 
     public function testAjaxNavigationBaseUrl()

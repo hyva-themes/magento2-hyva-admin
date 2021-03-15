@@ -9,11 +9,20 @@ use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 
 class Paging implements ActionInterface
 {
-    private RequestInterface $request;
+    /**
+     * @var RequestInterface
+     */
+    private $request;
 
-    private GridBlockRenderer $gridBlockRenderer;
+    /**
+     * @var GridBlockRenderer
+     */
+    private $gridBlockRenderer;
 
-    private JsonResultFactory $jsonResultFactory;
+    /**
+     * @var JsonResultFactory
+     */
+    private $jsonResultFactory;
 
     public function __construct(RequestInterface $request, GridBlockRenderer $gridBlockRenderer, JsonResultFactory $jsonResultFactory)
     {

@@ -18,27 +18,60 @@ class FormLoadEntity
 {
     private $value;
 
-    private string $valueType;
+    /**
+     * @var string
+     */
+    private $valueType;
 
-    private array $customAttributes;
+    /**
+     * @var array
+     */
+    private $customAttributes;
 
-    private array $extensionAttributes;
+    /**
+     * @var array
+     */
+    private $extensionAttributes;
 
-    private array $getterMethodAttributes;
+    /**
+     * @var array
+     */
+    private $getterMethodAttributes;
 
-    private array $arrayKeyAttributes;
+    /**
+     * @var array
+     */
+    private $arrayKeyAttributes;
 
-    private CustomAttributesExtractor $customAttributesExtractor;
+    /**
+     * @var CustomAttributesExtractor
+     */
+    private $customAttributesExtractor;
 
-    private ExtensionAttributeTypeExtractor $extensionAttributeTypeExtractor;
+    /**
+     * @var ExtensionAttributeTypeExtractor
+     */
+    private $extensionAttributeTypeExtractor;
 
-    private GetterMethodsExtractor $getterMethodsExtractor;
+    /**
+     * @var GetterMethodsExtractor
+     */
+    private $getterMethodsExtractor;
 
-    private ArrayValueExtractor $arrayValueExtractor;
+    /**
+     * @var ArrayValueExtractor
+     */
+    private $arrayValueExtractor;
 
-    private EavAttributeGroups $eavAttributeGroups;
+    /**
+     * @var EavAttributeGroups
+     */
+    private $eavAttributeGroups;
 
-    private FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory;
+    /**
+     * @var FormFieldDefinitionInterfaceFactory
+     */
+    private $formFieldDefinitionFactory;
 
     public function __construct(
         $value,
@@ -147,7 +180,6 @@ class FormLoadEntity
                 ? $this->arrayValueExtractor->forArray($this->value)
                 : [];
         }
-        $debug = 1;
     }
 
     private function isCustomAttribute(string $code): bool

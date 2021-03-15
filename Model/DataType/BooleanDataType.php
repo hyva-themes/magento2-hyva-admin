@@ -6,7 +6,7 @@ use Hyva\Admin\Api\DataTypeInterface;
 
 class BooleanDataType implements DataTypeInterface
 {
-    const TYPE_BOOL = 'bool';
+    public const TYPE_BOOL = 'bool';
 
     public function valueToTypeCode($value): ?string
     {

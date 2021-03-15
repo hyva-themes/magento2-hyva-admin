@@ -10,7 +10,10 @@ use Magento\Framework\Event\ObserverInterface;
 
 class IdFieldMappingObserver implements ObserverInterface
 {
-    private GridTypeReflection $typeReflection;
+    /**
+     * @var GridTypeReflection
+     */
+    private $typeReflection;
 
     public function __construct(GridTypeReflection $typeReflection)
     {

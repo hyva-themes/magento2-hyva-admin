@@ -44,7 +44,9 @@ class FormLoadEntityRepositoryTest extends TestCase
 
     private function assertContainsField(string $expected, array $fields): void
     {
-        $matches = filter($fields, fn (FormFieldDefinitionInterface $f): bool => $f->getName() === $expected);
+        $matches = filter($fields, function (FormFieldDefinitionInterface $f) use ($expected): bool {
+            return $f->getName() === $expected;
+        });
         $this->assertTrue(count($matches) > 0, sprintf('Expected field "%s" was not present', $expected));
     }
 

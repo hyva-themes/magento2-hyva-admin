@@ -11,13 +11,25 @@ use function array_keys as keys;
 
 class FormSource
 {
-    private string $formName;
+    /**
+     * @var string
+     */
+    private $formName;
 
-    private array $loadConfig;
+    /**
+     * @var array
+     */
+    private $loadConfig;
 
-    private array $saveConfig;
+    /**
+     * @var array
+     */
+    private $saveConfig;
 
-    private MethodsMap $methodsMap;
+    /**
+     * @var MethodsMap
+     */
+    private $methodsMap;
 
     public function __construct(
         string $formName,
@@ -117,7 +129,7 @@ class FormSource
 
     private function getSaveFormDataArgument(): ?string
     {
-        $isFormDataArgument    = fn(array $arg): bool => ($arg['formData'] ?? false) === 'true';
+        $isFormDataArgument    = function(array $arg): bool { return ($arg['formData'] ?? false) === 'true'; };
         $formDataArguments     = filter($this->getSaveBindArgumentConfig(), $isFormDataArgument);
         $formDataArgumentNames = keys($formDataArguments);
         // TODO: ignore optional arguments, see \Hyva\Admin\Model\TypeReflection\MethodsMap::isMethodValidSetter

@@ -38,11 +38,17 @@ class SearchCriteriaBindingsTest extends TestCase
 
     private function assertHasFilter($field, $value, $condition, SearchCriteriaInterface $searchCriteria): void
     {
-        $groups  = $searchCriteria->getFilterGroups();
-        $filters = merge([], ...values(map(fn(FilterGroup $group): array => $group->getFilters(), $groups)));
+        $groups     = $searchCriteria->getFilterGroups();
+        $getFilters = function (FilterGroup $group): array {
+            return $group->getFilters();
+        };
+        $filters    = merge([], ...values(map($getFilters, $groups)));
 
         /** @var Filter[] $filtersForField */
-        $filtersForField = values(filter($filters, fn(Filter $filter): bool => $filter->getField() === $field));
+        $isField         = function (Filter $filter) use ($field): bool {
+            return $filter->getField() === $field;
+        };
+        $filtersForField = values(filter($filters, $isField));
         if (!$filtersForField) {
             $this->fail(sprintf('No filter found for field: "%s"', $field));
         }

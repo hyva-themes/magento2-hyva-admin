@@ -94,7 +94,7 @@ class HyvaFormDefinitionTest extends TestCase
 
         $stubFormConfigReader = new class($sectionsConfig) implements HyvaFormConfigReaderInterface {
 
-            private array $sectionsConfig;
+            private $sectionsConfig;
 
             public function __construct(array $sectionsConfig)
             {

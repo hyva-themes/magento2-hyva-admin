@@ -8,7 +8,10 @@ use Magento\Framework\View\Element\Template;
 
 class BaseHyvaForm extends Template
 {
-    private HyvaFormInterfaceFactory $hyvaFormFactory;
+    /**
+     * @var HyvaFormInterfaceFactory
+     */
+    private $hyvaFormFactory;
 
     public function __construct(
         Template\Context $context,

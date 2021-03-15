@@ -7,8 +7,7 @@ use Magento\Catalog\Model\Product\Type\AbstractType as AbstractProductType;
 
 class ProductTypeInstanceDataType implements DataTypeInterface
 {
-
-    const TYPE_MAGENTO_PRODUCT_TYPE = 'magento_product_type';
+    public const TYPE_MAGENTO_PRODUCT_TYPE = 'magento_product_type';
 
     public function valueToTypeCode($value): ?string
     {

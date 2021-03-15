@@ -20,15 +20,30 @@ class Cell implements CellInterface
      */
     private $value;
 
-    private ColumnDefinitionInterface $columnDefinition;
+    /**
+     * @var ColumnDefinitionInterface
+     */
+    private $columnDefinition;
 
-    private DataTypeToStringConverterLocatorInterface $dataTypeToStringConverterLocator;
+    /**
+     * @var DataTypeToStringConverterLocatorInterface
+     */
+    private $dataTypeToStringConverterLocator;
 
-    private ?RowInterface $row;
+    /**
+     * @var RowInterface|null
+     */
+    private $row;
 
-    private LayoutInterface $layout;
+    /**
+     * @var LayoutInterface
+     */
+    private $layout;
 
-    private Escaper $escaper;
+    /**
+     * @var Escaper
+     */
+    private $escaper;
 
     public function __construct(
         $value,

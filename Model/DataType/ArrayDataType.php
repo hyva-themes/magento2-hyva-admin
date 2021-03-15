@@ -11,12 +11,18 @@ use function array_slice as slice;
 
 class ArrayDataType implements DataTypeInterface
 {
-    const TYPE_ARRAY = 'array';
-    const LIMIT = 5;
+    public const TYPE_ARRAY = 'array';
+    public const LIMIT = 5;
 
-    private DataTypeToStringConverterLocatorInterface $toStringConverterLocator;
+    /**
+     * @var DataTypeToStringConverterLocatorInterface
+     */
+    private $toStringConverterLocator;
 
-    private DataTypeGuesserInterface $dataTypeGuesser;
+    /**
+     * @var DataTypeGuesserInterface
+     */
+    private $dataTypeGuesser;
 
     public function __construct(
         DataTypeToStringConverterLocatorInterface $toStringConverterLocator,

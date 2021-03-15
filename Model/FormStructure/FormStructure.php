@@ -6,9 +6,15 @@ use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface;
 
 class FormStructure
 {
-    private string $formName;
+    /**
+     * @var string
+     */
+    private $formName;
 
-    private array $sections;
+    /**
+     * @var FormSectionInterface[]
+     */
+    private $sections;
 
     /**
      * @param string $formName

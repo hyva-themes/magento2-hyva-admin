@@ -11,25 +11,55 @@ use function array_unique as unique;
 
 class GridTypeReflection
 {
-    private TypeReflection\CustomAttributesExtractor $customAttributesExtractor;
+    /**
+     * @var TypeReflection\CustomAttributesExtractor
+     */
+    private $customAttributesExtractor;
 
-    private TypeReflection\ExtensionAttributeTypeExtractor $extensionAttributeTypeExtractor;
+    /**
+     * @var TypeReflection\ExtensionAttributeTypeExtractor
+     */
+    private $extensionAttributeTypeExtractor;
 
-    private TypeReflection\GetterMethodsExtractor $getterMethodsExtractor;
+    /**
+     * @var TypeReflection\GetterMethodsExtractor
+     */
+    private $getterMethodsExtractor;
 
-    private DataTypeGuesserInterface $dataTypeGuesser;
+    /**
+     * @var DataTypeGuesserInterface
+     */
+    private $dataTypeGuesser;
 
-    private MagentoOrmReflection $magentoOrmReflection;
+    /**
+     * @var MagentoOrmReflection
+     */
+    private $magentoOrmReflection;
 
-    private TypeReflection\TableColumnExtractor $tableColumnExtractor;
+    /**
+     * @var TypeReflection\TableColumnExtractor
+     */
+    private $tableColumnExtractor;
 
-    private array $customAttributeKeys = [];
+    /**
+     * @var string[]
+     */
+    private $customAttributeKeys = [];
 
-    private array $extensionAttributeKeys = [];
+    /**
+     * @var string[]
+     */
+    private $extensionAttributeKeys = [];
 
-    private array $getMethodKeys = [];
+    /**
+     * @var string[]
+     */
+    private $getMethodKeys = [];
 
-    private array $memoizedColumnTypes = [];
+    /**
+     * @var string[]
+     */
+    private $memoizedColumnTypes = [];
 
     public function __construct(
         TypeReflection\CustomAttributesExtractor $customAttributesExtractor,

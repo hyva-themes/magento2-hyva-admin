@@ -11,15 +11,27 @@ use function array_reduce as reduce;
 
 class FormConfigReader implements HyvaFormConfigReaderInterface
 {
-    private FormDefinitionConfigFiles $formDefinitionConfigFiles;
+    /**
+     * @var FormDefinitionConfigFiles
+     */
+    private $formDefinitionConfigFiles;
 
-    private FormXmlToArrayConverter $formXmlToArrayConverter;
+    /**
+     * @var FormXmlToArrayConverter
+     */
+    private $formXmlToArrayConverter;
 
-    private ValidationStateInterface $appValidationState;
+    /**
+     * @var ValidationStateInterface
+     */
+    private $appValidationState;
 
-    private ModuleDirReader $moduleDirReader;
+    /**
+     * @var ModuleDirReader
+     */
+    private $moduleDirReader;
 
-    private array $idAttributes = [
+    private $idAttributes = [
         '/form/load/bindArguments/argument' => 'name',
         '/form/save/bindArguments/argument' => 'name',
         '/form/tabs/tab'                    => 'id',
@@ -29,9 +41,12 @@ class FormConfigReader implements HyvaFormConfigReaderInterface
         '/form/navigation/buttons/button'   => 'id',
     ];
 
-    private ?string $perFileSchema;
+    /**
+     * @var string|null
+     */
+    private $perFileSchema;
 
-    private ?string $mergedSchema;
+    private $mergedSchema;
 
     public function __construct(
         FormDefinitionConfigFiles $formDefinitionConfigFiles,

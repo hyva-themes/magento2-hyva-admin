@@ -7,7 +7,10 @@ use function array_map as map;
 
 abstract class DefinitionConfigFiles
 {
-    private HyvaConfigDirs $hyvaConfigDirs;
+    /**
+     * @var HyvaConfigDirs
+     */
+    private $hyvaConfigDirs;
 
     public function __construct(HyvaConfigDirs $hyvaConfigDirs)
     {

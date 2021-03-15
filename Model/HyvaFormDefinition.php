@@ -16,13 +16,25 @@ use function array_values as values;
 
 class HyvaFormDefinition implements HyvaFormDefinitionInterface
 {
-    private string $formName;
+    /**
+     * @var string
+     */
+    private $formName;
 
-    private HyvaFormConfigReaderInterface $formConfigReader;
+    /**
+     * @var HyvaFormConfigReaderInterface
+     */
+    private $formConfigReader;
 
-    private FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory;
+    /**
+     * @var FormFieldDefinitionInterfaceFactory
+     */
+    private $formFieldDefinitionFactory;
 
-    private ?array $memoizedGridConfig;
+    /**
+     * @var array|null
+     */
+    private $memoizedGridConfig;
 
     public function __construct(
         string $formName,
@@ -101,7 +113,9 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
     public function getGroupsFromSections(): array
     {
         $sectionConfig = $this->getSectionsConfig();
-        $groupsConfig  = values(filter(merge([], ...map(fn(array $s): array => $s['groups'] ?? [], $sectionConfig))));
+        $groupsConfig  = values(filter(merge([], ...map(function (array $s): array {
+            return $s['groups'] ?? [];
+        }, $sectionConfig))));
 
         $this->validateGroupIdsAreUniquePerSection($groupsConfig);
 
@@ -110,8 +124,10 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
 
     private function validateGroupIdsAreUniquePerSection(array $groupsConfig): void
     {
-        $groupIds     = map(fn(array $groupConfig): string => $groupConfig['id'], $groupsConfig);
-        $dupeGroupIds = keys(filter($this->frequencies($groupIds), fn(int $n) => $n > 1));
+        $groupIds     = map(function (array $groupConfig): string {
+            return $groupConfig['id'];
+        }, $groupsConfig);
+        $dupeGroupIds = keys(filter($this->frequencies($groupIds), function(int $n): bool { return $n > 1; }));
         if (count($dupeGroupIds) > 0) {
             $this->throwGroupIdInMultipleSectionsException($dupeGroupIds);
         }
@@ -121,8 +137,12 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
     {
         $idPaths = reduce($this->getSectionsConfig(), function (array $acc, array $section) use ($dupeGroupIds): array {
             $sectionGroups    = $section['groups'] ?? [];
-            $dupesInSection   = filter($sectionGroups, fn(array $group): bool => in_array($group['id'], $dupeGroupIds));
-            $dupeGroupIdPaths = map(fn(array $group): string => $section['id'] . '/' . $group['id'], $dupesInSection);
+            $dupesInSection   = filter($sectionGroups, function (array $group) use ($dupeGroupIds): bool {
+                return in_array($group['id'], $dupeGroupIds);
+            });
+            $dupeGroupIdPaths = map(function (array $group) use ($section): string {
+                return $section['id'] . '/' . $group['id'];
+            }, $dupesInSection);
             return merge($acc, $dupeGroupIdPaths);
         }, []);
         throw new \RuntimeException(

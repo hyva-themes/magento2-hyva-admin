@@ -13,13 +13,25 @@ use function array_values as values;
 
 class TypeMethod
 {
-    private MethodValueBindings $methodValueBindings;
+    /**
+     * @var MethodValueBindings
+     */
+    private $methodValueBindings;
 
-    private MethodsMap $methodsMap;
+    /**
+     * @var MethodsMap
+     */
+    private $methodsMap;
 
-    private MagentoOrmReflection $magentoOrmReflection;
+    /**
+     * @var MagentoOrmReflection
+     */
+    private $magentoOrmReflection;
 
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
     public function __construct(
         MethodValueBindings $methodValueBindings,

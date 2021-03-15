@@ -17,9 +17,15 @@ use Magento\Framework\Reflection\FieldNamer;
 
 class GetterMethodsExtractor
 {
-    private MethodsMap $methodsMap;
+    /**
+     * @var MethodsMap
+     */
+    private $methodsMap;
 
-    private FieldNamer $fieldNamer;
+    /**
+     * @var FieldNamer
+     */
+    private $fieldNamer;
 
     public function __construct(MethodsMap $methodsMap, FieldNamer $fieldNamer)
     {
@@ -31,9 +37,11 @@ class GetterMethodsExtractor
     {
         return reduce(
             [AbstractModel::class, DataObject::class],
-            fn(array $methods, string $parent): array => is_subclass_of($type, $parent)
-                ? diff($methods, $this->getGenericParentClassMethods($parent))
-                : $methods,
+            function (array $methods, string $parent) use ($type): array {
+                return is_subclass_of($type, $parent)
+                    ? diff($methods, $this->getGenericParentClassMethods($parent))
+                    : $methods;
+            },
             $methods
         );
     }
@@ -42,7 +50,9 @@ class GetterMethodsExtractor
     {
         $methods = keys($this->methodsMap->getMethodsReturnTypeMap($class));
         // exclude getId since it needs to be inherited as a field on child classes
-        return filter($methods, fn(string $method): bool => $method !== 'getId');
+        return filter($methods, function (string $method): bool {
+            return $method !== 'getId';
+        });
     }
 
     private function isMethodValidGetter(string $type, string $method): bool
@@ -61,7 +71,9 @@ class GetterMethodsExtractor
     {
         $allMethods       = keys($this->methodsMap->getMethodsReturnTypeMap($type));
         $methods          = $this->removeGenericParentClassMethods($type, $allMethods);
-        $potentialGetters = filter($methods, fn(string $method) => $this->isMethodValidGetter($type, $method));
+        $potentialGetters = filter($methods, function (string $method) use ($type) {
+            return $this->isMethodValidGetter($type, $method);
+        });
 
         return values(filter($potentialGetters, function (string $method) use ($type): bool {
             $returnType = $this->methodsMap->getMethodReturnType($type, $method);

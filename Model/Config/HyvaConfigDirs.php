@@ -14,13 +14,25 @@ use function array_values as values;
 
 abstract class HyvaConfigDirs
 {
-    private ModuleListInterface $moduleList;
+    /**
+     * @var ModuleListInterface
+     */
+    private $moduleList;
 
-    private ComponentRegistrarInterface $componentRegistrar;
+    /**
+     * @var ComponentRegistrarInterface
+     */
+    private $componentRegistrar;
 
-    private AppState $appState;
+    /**
+     * @var AppState
+     */
+    private $appState;
 
-    private string $configDirName;
+    /**
+     * @var string
+     */
+    private $configDirName;
 
     public function __construct(
         ModuleListInterface $moduleList,
@@ -55,6 +67,8 @@ abstract class HyvaConfigDirs
     {
         $areaDirs              = ['base', $this->appState->getAreaCode()];
         $viewDirStringTemplate = $this->moduleDir($module) . '/view/%s/' . $this->configDirName;
-        return map(fn(string $area): string => sprintf($viewDirStringTemplate, $area), $areaDirs);
+        return map(function (string $area) use ($viewDirStringTemplate): string {
+            return sprintf($viewDirStringTemplate, $area);
+        }, $areaDirs);
     }
 }

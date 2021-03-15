@@ -11,15 +11,27 @@ use function array_reduce as reduce;
 
 class GridConfigReader implements HyvaGridConfigReaderInterface
 {
-    private GridDefinitionConfigFiles $definitionConfigFiles;
+    /**
+     * @var GridDefinitionConfigFiles
+     */
+    private $definitionConfigFiles;
 
-    private GridXmlToArrayConverter $gridXmlToArrayConverter;
+    /**
+     * @var GridXmlToArrayConverter
+     */
+    private $gridXmlToArrayConverter;
 
-    private ValidationStateInterface $appValidationState;
+    /**
+     * @var ValidationStateInterface
+     */
+    private $appValidationState;
 
-    private ModuleDirReader $moduleDirReader;
+    /**
+     * @var ModuleDirReader
+     */
+    private $moduleDirReader;
 
-    private array $idAttributes = [
+    private $idAttributes = [
         '/grid/source/defaultSearchCriteriaBindings/field' => 'name',
         '/grid/massActions/action' => 'id',
         '/grid/actions/action' => 'id',
@@ -30,9 +42,15 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
         '/grid/navigation/buttons/button' => 'id',
     ];
 
-    private ?string $perFileSchema;
+    /**
+     * @var string|null
+     */
+    private $perFileSchema;
 
-    private ?string $mergedSchema;
+    /**
+     * @var string|null
+     */
+    private $mergedSchema;
 
     public function __construct(
         GridDefinitionConfigFiles $gridDefinitionConfigFiles,

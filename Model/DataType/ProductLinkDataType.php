@@ -8,7 +8,7 @@ use Magento\Framework\Reflection\DataObjectProcessor;
 
 class ProductLinkDataType implements DataTypeInterface
 {
-    const TYPE_MAGENTO_PRODUCT_LINK = 'magento_product_link';
+    public const TYPE_MAGENTO_PRODUCT_LINK = 'magento_product_link';
 
     public function valueToTypeCode($value): ?string
     {

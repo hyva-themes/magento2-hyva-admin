@@ -11,7 +11,10 @@ use function array_reduce as reduce;
 
 class EavAttributeGroups
 {
-    private AdapterInterface $db;
+    /**
+     * @var AdapterInterface
+     */
+    private $db;
 
     public function __construct(ResourceConnection $resourceConnection)
     {

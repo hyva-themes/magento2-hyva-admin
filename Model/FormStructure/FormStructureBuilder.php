@@ -16,15 +16,20 @@ use function array_values as values;
 
 class FormStructureBuilder
 {
-    private FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory;
+    /**
+     * @var FormFieldDefinitionInterfaceFactory
+     */
+    private $formFieldDefinitionFactory;
 
     public function __construct(FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory)
     {
         $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
     }
 
-    public function buildStructure(HyvaFormDefinitionInterface $formDefinition, FormLoadEntity $formEntity): FormStructure
-    {
+    public function buildStructure(
+        HyvaFormDefinitionInterface $formDefinition,
+        FormLoadEntity $formEntity
+    ): FormStructure {
         // This is the outline for algorithm to build the form structure of sections, groups and fields.
         // It is likely this might be moved to a different location once it's done.
         $fieldsFromEntity = $formEntity->getFieldDefinitions();
@@ -32,7 +37,9 @@ class FormStructureBuilder
 
         $fields = $this->mergeFieldDefinitions($fieldsFromEntity, $fieldsFromConfig);
 
-        $groupIdsFromFields   = map(fn (FieldDefinition $f): ?string => $f->getGroupId(), $fields);
+        $groupIdsFromFields   = map(function (FieldDefinition $f): ?string {
+            return $f->getGroupId();
+        }, $fields);
         $groupIdsFromSections = $this->getGroupIdsFromSections($formDefinition->getSectionsConfig());
 
         $fieldToGroupMap  = $this->buildFieldToGroupMap($fields);
@@ -55,14 +62,18 @@ class FormStructureBuilder
     {
         $fieldsOnlyInEntity = array_diff_key($fieldsFromEntity, $fieldsFromConfig);
         $fieldsOnlyInConfig = array_diff_key($fieldsFromConfig, $fieldsFromEntity);
-        $fieldsInBoth = array_intersect(keys($fieldsFromEntity), keys($fieldsFromConfig));
+        $fieldsInBoth       = array_intersect(keys($fieldsFromEntity), keys($fieldsFromConfig));
 
         return merge(
             $fieldsOnlyInConfig,
             map(
                 [$this, 'mergeFieldDefinition'],
-                filter($fieldsOnlyInEntity, fn (FieldDefinition $f) => in_array($f->getName(), $fieldsInBoth)),
-                filter($fieldsOnlyInConfig, fn (FieldDefinition $f) => in_array($f->getName(), $fieldsInBoth))
+                filter($fieldsOnlyInEntity, function (FieldDefinition $f) use ($fieldsInBoth) {
+                    return in_array($f->getName(), $fieldsInBoth);
+                }),
+                filter($fieldsOnlyInConfig, function (FieldDefinition $f) use ($fieldsInBoth) {
+                    return in_array($f->getName(), $fieldsInBoth);
+                })
             ),
             $fieldsOnlyInEntity
         );

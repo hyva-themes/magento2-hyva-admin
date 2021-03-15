@@ -9,10 +9,10 @@ use Hyva\Admin\Api\DataTypeInterface;
  */
 class TextDataType implements DataTypeInterface
 {
-    const TYPE_TRUNCATED_TEXT = 'truncated_text';
-    const MAX_LENGTH = 30;
+    public const TYPE_TRUNCATED_TEXT = 'truncated_text';
+    public const MAX_LENGTH = 30;
 
-    const TEXT_TYPES = [
+    private const TEXT_TYPES = [
         self::TYPE_TRUNCATED_TEXT,
         'text',
         'string',
