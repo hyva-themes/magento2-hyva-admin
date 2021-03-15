@@ -4,12 +4,20 @@ namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 class MassAction implements MassActionInterface
 {
+    /**
+     * @var string
+     */
+    private $url;
 
-    private string $url;
+    /**
+     * @var string
+     */
+    private $label;
 
-    private string $label;
-
-    private bool $requireConfirmation;
+    /**
+     * @var bool
+     */
+    private $requireConfirmation;
 
     public function __construct(string $url, string $label, bool $requireConfirmation = false)
     {

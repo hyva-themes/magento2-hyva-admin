@@ -9,9 +9,15 @@ use Magento\Framework\ObjectManagerInterface;
 
 class GridFilterTypeLocator
 {
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
-    private array $columnTypeMatchingFilterTypeMap;
+    /**
+     * @var array
+     */
+    private $columnTypeMatchingFilterTypeMap;
 
     public function __construct(ObjectManagerInterface $objectManager, array $columnTypeMatchingFilterMap)
     {

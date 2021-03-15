@@ -7,7 +7,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 
 class ProductDataType implements DataTypeInterface
 {
-    const MAGENTO_PRODUCT = 'magento_product';
+    public const MAGENTO_PRODUCT = 'magento_product';
 
     public function valueToTypeCode($value): ?string
     {

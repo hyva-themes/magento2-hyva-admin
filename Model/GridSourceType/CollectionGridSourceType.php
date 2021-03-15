@@ -6,7 +6,7 @@ use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
 use Hyva\Admin\Model\GridSourceType\CollectionSourceType\GridSourceCollectionFactory;
 use Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
-use Hyva\Admin\Model\TypeReflection;
+use Hyva\Admin\Model\GridTypeReflection;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Eav\Model\Entity\Collection\AbstractCollection as AbstractEavCollection;
@@ -18,26 +18,50 @@ use function array_values as values;
 
 class CollectionGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private array $sourceConfiguration;
+    /**
+     * @var array[]
+     */
+    private $sourceConfiguration;
 
-    private TypeReflection $typeReflection;
+    /**
+     * @var GridTypeReflection
+     */
+    private $typeReflection;
 
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private GridSourceCollectionFactory $gridSourceCollectionFactory;
+    /**
+     * @var GridSourceCollectionFactory
+     */
+    private $gridSourceCollectionFactory;
 
-    private CollectionProcessorInterface $defaultCollectionProcessor;
+    /**
+     * @var CollectionProcessorInterface
+     */
+    private $defaultCollectionProcessor;
 
-    private CollectionProcessorInterface $eavCollectionProcessor;
+    /**
+     * @var CollectionProcessorInterface
+     */
+    private $eavCollectionProcessor;
 
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
-        TypeReflection $typeReflection,
+        GridTypeReflection $typeReflection,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         GridSourceCollectionFactory $gridSourceCollectionFactory,

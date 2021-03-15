@@ -6,7 +6,10 @@ use function array_filter as filter;
 
 class Row implements RowInterface
 {
-    private array $cells;
+    /**
+     * @var CellInterface[]
+     */
+    private $cells;
 
     /**
      * @param CellInterface[]

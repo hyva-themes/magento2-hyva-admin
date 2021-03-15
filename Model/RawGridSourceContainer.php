@@ -7,6 +7,9 @@ namespace Hyva\Admin\Model;
  */
 class RawGridSourceContainer
 {
+    /**
+     * @var mixed
+     */
     private $rawGridSourceData;
 
     public static function forData($rawGridSourceData): self

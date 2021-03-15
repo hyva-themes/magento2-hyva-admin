@@ -6,9 +6,9 @@ use Hyva\Admin\Api\DataTypeInterface;
 
 class ScalarAndNullDataType implements DataTypeInterface
 {
-    const TYPE_SCALAR_NULL = 'scalar_null';
+    public const TYPE_SCALAR_NULL = 'scalar_null';
 
-    const SCALAR_TYPES = [
+    private const SCALAR_TYPES = [
         'int',
         'float',
         'decimal',

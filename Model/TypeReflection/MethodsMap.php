@@ -2,10 +2,12 @@
 
 namespace Hyva\Admin\Model\TypeReflection;
 
+use Laminas\Code\Reflection\ParameterReflection;
 use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_keys as keys;
+use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_slice as slice;
@@ -23,17 +25,23 @@ use Magento\Framework\Reflection\FieldNamer;
  * - Doesn't throw exceptions for missing return type phpdoc annotations
  * - Reads return types from method signatures
  * - attempts to return annotated type[] array return types when the signature return type is array
+ * - qualifies relative namespaces in return annotations
  */
 class MethodsMap
 {
-    private FieldNamer $fieldNamer;
-
     /**
-     * @var array[]
+     * @var FieldNamer
      */
+    private $fieldNamer;
+
     private $memoizedMethodMaps = [];
 
-    private NamespaceMapper $namespaceMapper;
+    private $memoizedParameterTypes = [];
+
+    /**
+     * @var NamespaceMapper
+     */
+    private $namespaceMapper;
 
     public function __construct(FieldNamer $fieldNamer, NamespaceMapper $namespaceMapper)
     {
@@ -47,7 +55,7 @@ class MethodsMap
      * The map includes annotated methods from the types PHPDoc block.
      * If a methods return type is unspecified, the map value is null.
      */
-    public function getMethodsMap(string $type): array
+    public function getMethodsReturnTypeMap(string $type): array
     {
         $this->initMethodMapForType($type);
         return zip(keys($this->memoizedMethodMaps[$type]), pick($this->memoizedMethodMaps[$type], 'return'));
@@ -62,10 +70,10 @@ class MethodsMap
 
     public function getMethodReturnType(string $type, string $methodName): ?string
     {
-        return $this->getMethodsMap($type)[$methodName] ?? null;
+        return $this->getMethodsReturnTypeMap($type)[$methodName] ?? null;
     }
 
-    public function isMethodValidForDataField(string $type, string $methodName): bool
+    public function isMethodValidGetter(string $type, string $methodName): bool
     {
         $this->initMethodMapForType($type);
         $methodInfo = $this->memoizedMethodMaps[$type][$methodName] ?? false;
@@ -73,6 +81,17 @@ class MethodsMap
             $methodInfo['return'] !== 'void' &&
             $methodInfo['parameterCount'] === 0 &&
             $this->fieldNamer->getFieldNameForMethodName($methodName);
+    }
+
+    public function isMethodValidSetter(string $type, string $methodName): bool
+    {
+        $this->initMethodMapForType($type);
+        $methodInfo = $this->memoizedMethodMaps[$type][$methodName] ?? false;
+        // TODO: ignore optional parameters in parameter count validation
+        return $methodInfo &&
+            $methodInfo['parameterCount'] === 1 &&
+            substr($methodName, 0, 3) === 'set' &&
+            strlen($methodName) > 4;
     }
 
     private function buildMethodMap(string $type): array
@@ -89,7 +108,9 @@ class MethodsMap
         $methodAnnotations = $class->getDocBlock() ? $class->getDocBlock()->getTags('method') : [];
         // Methods annotations with params are returned as instances with a null method name, which we can ignore
         // because in the end we are only interested in getters without parameters.
-        $methodsWithName = filter($methodAnnotations, fn(MethodTag $method): bool => (bool) $method->getMethodName());
+        $methodsWithName = filter($methodAnnotations, function (MethodTag $method): bool {
+            return (bool) $method->getMethodName();
+        });
 
         return reduce($methodsWithName, function (array $map, MethodTag $tag) use ($class): array {
             $type = $this->reduceToSingleType($tag->getTypes());
@@ -103,7 +124,9 @@ class MethodsMap
     {
         return count($returnTypes) === 1 && $returnTypes[0] === 'null'
             ? 'void'
-            : values(filter($returnTypes, fn(string $type): bool => $type !== 'null'))[0] ?? $default;
+            : values(filter($returnTypes, function (string $type): bool {
+                return $type !== 'null';
+            }))[0] ?? $default;
     }
 
     private function getRealMethods(ClassReflection $class): array
@@ -186,5 +209,71 @@ class MethodsMap
         return $this->isQualifiedTypeName($type)
             ? $type
             : $this->namespaceMapper->forFile($class->getFileName())->qualify($type);
+    }
+
+    public function getRealMethodParameters(string $type, string $method): array
+    {
+        return map(function (array $p): ?string {
+            return $p['type'];
+        }, $this->getRealMethodParametersMap($type, $method));
+    }
+
+    private function getRealMethodParametersMap(string $type, string $method): array
+    {
+        if (!isset($this->memoizedParameterTypes[$type][$method])) {
+            $this->memoizedParameterTypes[$type][$method] = $this->buildRealMethodParametersMap($type, $method);
+        }
+        return $this->memoizedParameterTypes[$type][$method];
+    }
+
+    private function buildRealMethodParametersMap(string $type, string $method): array
+    {
+        $class      = new ClassReflection($type);
+        $parameters = $class->getMethod($method)->getParameters();
+        return reduce($parameters, function (array $map, ParameterReflection $p) use ($class, $method): array {
+            $paramType = $p->detectType()
+                ?? $this->reflectParamType($class->getParentClass() ?: null, $method, $p->getName());
+
+            $map[$p->getName()] = [
+                'type'       => $paramType ? $this->qualifyNamespace($paramType, $class) : null,
+                'default'    => $p->isDefaultValueAvailable() ? $p->getDefaultValue() : null,
+                'hasDefault' => $p->isDefaultValueAvailable(),
+            ];
+            return $map;
+        }, []);
+    }
+
+    private function reflectParamType(?ClassReflection $class, string $methodName, string $paramName): ?string
+    {
+        if (!$class || !$class->hasMethod($methodName)) {
+            return null;
+        }
+        $method              = $class->getMethod($methodName);
+        $parent              = $class->getParentClass();
+        $isMatchingParameter = function (ParameterReflection $p) use ($paramName): bool {
+            return $p->getName() === $paramName;
+        };
+        /** @var ParameterReflection $parameter */
+        $parameter = values(filter($method->getParameters(), $isMatchingParameter))[0] ?? null;
+        return $parameter
+            ? ($parameter->detectType() ?? $this->reflectParamType($parent ?: null, $methodName, $paramName))
+            : null;
+    }
+
+    public function getParameterType($type, $method, string $parameterName): ?string
+    {
+        $parameters = $this->getRealMethodParameters($type, $method);
+        return $parameters[$parameterName] ?? null;
+    }
+
+    public function parameterHasDefaultValue(string $type, string $method, string $parameter): bool
+    {
+        return $this->getRealMethodParametersMap($type, $method)[$parameter]['hasDefault'] ?? false;
+    }
+
+    public function getParameterDefaultValue(string $type, string $method, string $parameter)
+    {
+        $map = $this->getRealMethodParametersMap($type, $method);
+        return isset($map[$parameter]) ? $map[$parameter]['default'] : null;
     }
 }

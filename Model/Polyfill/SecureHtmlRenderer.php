@@ -15,7 +15,6 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
  */
 class SecureHtmlRenderer implements ArgumentInterface
 {
-
     /**
      * @var Escaper
      */

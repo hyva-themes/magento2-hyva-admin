@@ -6,7 +6,7 @@ use Hyva\Admin\Api\DataTypeInterface;
 
 class GenericObjectDataType implements DataTypeInterface
 {
-    const TYPE_GENERIC_OBJECT = 'object';
+    public const TYPE_GENERIC_OBJECT = 'object';
 
     public function valueToTypeCode($value): ?string
     {

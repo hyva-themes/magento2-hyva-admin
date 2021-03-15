@@ -5,7 +5,7 @@ namespace Hyva\Admin\Model\GridSourceType;
 use Hyva\Admin\Model\DataType\ProductGalleryDataType;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory;
 use Hyva\Admin\Model\RawGridSourceContainer;
-use Hyva\Admin\Model\TypeReflection;
+use Hyva\Admin\Model\GridTypeReflection;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Catalog\Api\Data\ProductInterface;
@@ -16,24 +16,45 @@ use function array_filter as filter;
 
 class RepositoryGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private array $sourceConfiguration;
+    /**
+     * @var array[]
+     */
+    private $sourceConfiguration;
 
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private RepositorySourceFactory $repositorySourceFactory;
+    /**
+     * @var RepositorySourceFactory
+     */
+    private $repositorySourceFactory;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private TypeReflection $typeReflection;
+    /**
+     * @var GridTypeReflection
+     */
+    private $typeReflection;
 
     /**
      * @var ColumnDefinitionInterface[]
      */
-    private array $memoizedColumnDefinitions = [];
+    private $memoizedColumnDefinitions = [];
 
-    private string $memoizedRecordType;
+    /**
+     * @var string
+     */
+    private $memoizedRecordType;
 
     public function __construct(
         string $gridName,
@@ -41,7 +62,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         RepositorySourceFactory $repositorySourceFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
-        TypeReflection $typeReflection
+        GridTypeReflection $typeReflection
     ) {
         $this->gridName                = $gridName;
         $this->sourceConfiguration     = $sourceConfiguration;

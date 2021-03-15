@@ -7,17 +7,17 @@ use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
 
 class TestingGridDefinition implements HyvaGridDefinitionInterface
 {
-    private array $gridDefinition;
+    private $gridDefinition;
 
-    private string $gridName;
+    private $gridName;
 
     public static function makeFactory(string $name, array $testingGridDefinition): HyvaGridDefinitionInterfaceFactory
     {
         return new class($name, $testingGridDefinition) extends HyvaGridDefinitionInterfaceFactory
         {
-            private array $gridDefinition;
+            private $gridDefinition;
 
-            private string $gridName;
+            private $gridName;
 
             public function __construct(string $gridName, array $gridDefinition)
             {

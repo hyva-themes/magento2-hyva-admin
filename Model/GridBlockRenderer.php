@@ -7,9 +7,15 @@ use Magento\Framework\View\LayoutInterface;
 
 class GridBlockRenderer
 {
-    private LayoutInterface $layout;
+    /**
+     * @var LayoutInterface
+     */
+    private $layout;
 
-    private string $gridClass;
+    /**
+     * @var string
+     */
+    private $gridClass;
 
     public function __construct(LayoutInterface $layout, string $gridClass = HyvaGrid::class)
     {
@@ -23,7 +29,7 @@ class GridBlockRenderer
         $this->layout->generateElements();
         $arguments = ['data' => ['grid_name' => $gridName]];
         $block     = $this->layout->createBlock($this->gridClass, 'hyva_grid_block', $arguments);
-        
+
         return $block->toHtml();
     }
 }

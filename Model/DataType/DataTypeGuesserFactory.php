@@ -7,7 +7,10 @@ use Magento\Framework\ObjectManagerInterface;
 
 class DataTypeGuesserFactory
 {
-    private ObjectManagerInterface $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
     public function __construct(ObjectManagerInterface $objectManager)
     {

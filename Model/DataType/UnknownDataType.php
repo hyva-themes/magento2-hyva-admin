@@ -7,7 +7,7 @@ use Hyva\Admin\Exception\UnableToCastToStringException;
 
 class UnknownDataType implements DataTypeInterface
 {
-    const TYPE_UNKNOWN = 'unknown';
+    public const TYPE_UNKNOWN = 'unknown';
 
     public function valueToTypeCode($value): ?string
     {

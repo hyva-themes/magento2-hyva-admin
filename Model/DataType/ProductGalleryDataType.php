@@ -9,9 +9,12 @@ use function array_map as map;
 
 class ProductGalleryDataType implements DataTypeInterface
 {
-    const TYPE_MAGENTO_PRODUCT_GALLERY = 'magento_product_gallery';
+    public const TYPE_MAGENTO_PRODUCT_GALLERY = 'magento_product_gallery';
 
-    private ProductMediaInBackend $productMedia;
+    /**
+     * @var ProductMediaInBackend
+     */
+    private $productMedia;
 
     public function __construct(ProductMediaInBackend $productMedia)
     {

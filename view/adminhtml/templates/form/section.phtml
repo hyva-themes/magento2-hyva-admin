@@ -1,0 +1,18 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface $section */
+
+?>
+<div>
+    <?php foreach ($section->getGroups() as $group): ?>
+        <?php if ($group->hasLabel()): ?>
+            <!-- When it grows this up is supposed to render as a collapsable field group -->
+            <div class="group-<?= $group->getId() ?>">
+                <?= $escaper->escapeHtml($group->getLabel()) ?>
+            </div>
+        <?php endif; ?>
+        <?= $group->getHtml() ?>
+    <?php endforeach; ?>
+</div>

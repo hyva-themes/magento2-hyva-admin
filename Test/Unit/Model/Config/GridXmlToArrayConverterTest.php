@@ -472,7 +472,7 @@ EOXML;
                             ['label' => 'rose', 'values' => ['100']],
                         ],
                     ],
-                    ['key' => 'store_id', 'source' => '\Magento\Config\Model\Config\Source\Store']
+                    ['key' => 'store_id', 'source' => '\Magento\Config\Model\Config\Source\Store'],
                 ],
             ],
         ];
@@ -488,6 +488,7 @@ EOXML;
             <field name="entity_id" method="Magento\Framework\App\RequestInterface::getParam" param="id"/>
             <field name="store_id" method="Magento\Store\Model\StoreManagerInterface::getStore" property="id"/>
             <field name="customer_ids" condition="finset" method="Magento\Customer\Model\Session::getCustomerId"/>
+            <field name="foo" condition="neq" value="FOO"/>
         </defaultSearchCriteriaBindings>
     </source>
 EOXML;
@@ -502,20 +503,21 @@ EOXML;
                 'defaultSearchCriteriaBindings' => [
                     ['field' => 'my_id', 'requestParam' => 'id'],
                     [
-                        'field'   => 'entity_id',
-                        'method'  => 'Magento\Framework\App\RequestInterface::getParam',
+                        'field'  => 'entity_id',
+                        'method' => 'Magento\Framework\App\RequestInterface::getParam',
                         'param'  => 'id',
                     ],
                     [
-                        'field'   => 'store_id',
-                        'method'  => 'Magento\Store\Model\StoreManagerInterface::getStore',
-                        'property'  => 'id',
+                        'field'    => 'store_id',
+                        'method'   => 'Magento\Store\Model\StoreManagerInterface::getStore',
+                        'property' => 'id',
                     ],
                     [
-                        'field'   => 'customer_ids',
-                        'method'  => 'Magento\Customer\Model\Session::getCustomerId',
-                        'condition'  => 'finset',
+                        'field'     => 'customer_ids',
+                        'method'    => 'Magento\Customer\Model\Session::getCustomerId',
+                        'condition' => 'finset',
                     ],
+                    ['field' => 'foo', 'condition' => 'neq', 'value' => 'FOO'],
                 ],
             ],
         ];

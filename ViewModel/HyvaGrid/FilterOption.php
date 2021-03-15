@@ -4,9 +4,15 @@ namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 class FilterOption implements FilterOptionInterface
 {
-    private string $label;
+    /**
+     * @var string
+     */
+    private $label;
 
-    private array $values;
+    /**
+     * @var string[]
+     */
+    private $values;
 
     public function __construct(string $label, array $values)
     {
