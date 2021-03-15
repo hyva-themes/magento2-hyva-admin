@@ -18,4 +18,8 @@ interface FormFieldDefinitionInterface
     public function getInputType(): string;
 
     public function isEnabled(): bool;
+
+    public function toArray(): array;
+
+    public function merge(FormFieldDefinitionInterface $field): FormFieldDefinitionInterface;
 }

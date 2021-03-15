@@ -10,6 +10,7 @@ use Hyva\Admin\Model\TypeReflection\GetterMethodsExtractor;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
 
+use function array_combine as zip;
 use function array_map as map;
 use function array_merge as merge;
 
@@ -71,7 +72,7 @@ class FormLoadEntity
     {
         $this->initFields();
         $fieldCodes = $this->getFieldCodes();
-        return map([$this, 'buildFieldDefinitionForAttribute'], $fieldCodes);
+        return zip($fieldCodes, map([$this, 'buildFieldDefinitionForAttribute'], $fieldCodes));
     }
 
     private function buildFieldDefinitionForAttribute(string $code): FormFieldDefinitionInterface
@@ -83,6 +84,7 @@ class FormLoadEntity
             'groupId'        => $this->getFieldGroup($code),
             'template'       => null,
             'isEnabled'      => true,
+            'isExcluded'     => false,
             'valueProcessor' => null,
         ]);
     }
@@ -140,7 +142,7 @@ class FormLoadEntity
         if (!isset($this->getterMethodAttributes)) {
             $this->getterMethodAttributes = $this->getterMethodsExtractor->fromTypeAsFieldNames($this->valueType);
         }
-        if (! isset($this->arrayKeyAttributes)) {
+        if (!isset($this->arrayKeyAttributes)) {
             $this->arrayKeyAttributes = is_array($this->value)
                 ? $this->arrayValueExtractor->forArray($this->value)
                 : [];

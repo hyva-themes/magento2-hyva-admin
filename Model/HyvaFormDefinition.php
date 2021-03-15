@@ -6,6 +6,7 @@ use Hyva\Admin\Model\Config\HyvaFormConfigReaderInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
 
+use function array_combine as zip;
 use function array_filter as filter;
 use function array_keys as keys;
 use function array_merge as merge;
@@ -50,13 +51,15 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
 
     public function getFieldDefinitions(): array
     {
-        return map(function (string $fieldName): FormFieldDefinitionInterface {
+        $fieldCodes = keys($this->getIncludeFieldsConfig());
+        $fields     = map(function (string $fieldName): FormFieldDefinitionInterface {
             return $this->formFieldDefinitionFactory->create(merge([
                 'name'       => $fieldName,
                 'formName'   => $this->getFormName(),
                 'isExcluded' => in_array($fieldName, $this->getExcludeFieldsConfig(), true),
             ], $this->getIncludeFieldsConfig()[$fieldName]));
-        }, keys($this->getIncludeFieldsConfig()));
+        }, $fieldCodes);
+        return zip($fieldCodes, $fields);
     }
 
     public function getSectionsConfig(): array
