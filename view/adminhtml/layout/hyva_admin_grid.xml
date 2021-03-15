@@ -5,6 +5,10 @@
     </head>
     <body>
         <!-- overridden to add AlpineJs before requireJs loads -->
-        <referenceBlock name="require.js" template="Hyva_Admin::page/js/require_js.phtml"/>
+        <referenceBlock name="require.js" template="Hyva_Admin::page/js/require_js.phtml">
+            <arguments>
+                <argument name="secure_html_renderer_polyfill" xsi:type="object">\Hyva\Admin\Model\Polyfill\SecureHtmlRenderer</argument>
+            </arguments>
+        </referenceBlock>
     </body>
 </page>
