@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - No removals.
 
 
-## [1.1.4] - in preparation for release
+## [1.1.4] - 2021-03-15
 ### Added
 - Add polyfill for `\Magento\Framework\View\Helper\SecureHtmlRenderer` for
   `view/adminhtml/templates/page/js/require_js.phtml` Magento 2.3 compatibility.
