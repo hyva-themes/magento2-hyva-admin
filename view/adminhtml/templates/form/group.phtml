@@ -1,0 +1,17 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface $group */
+
+?>
+<div>
+    <?php foreach ($group->getFields() as $field): ?>
+    <div>
+        <label for="<?= $escaper->escapeHtmlAttr($field->getName()) ?>">
+            <?= $escaper->escapeHtml($field->getLabel()) ?>:
+        </label>
+    </div>
+    <div><?= $field->getHtml() ?></div>
+    <?php endforeach; ?>
+</div>

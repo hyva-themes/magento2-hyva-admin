@@ -2,8 +2,8 @@
 
 namespace Hyva\Admin\Test\Integration\Model\GridSource;
 
+use Hyva\Admin\Model\Exception\UnableToFetchPropertyFromValueException;
 use Hyva\Admin\Model\GridSource\SearchCriteriaBindings;
-use Hyva\Admin\Model\GridSource\UnableToFetchPropertyFromValueException;
 use Magento\Framework\Api\Filter;
 use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteria;

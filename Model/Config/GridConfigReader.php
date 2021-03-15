@@ -4,9 +4,9 @@ namespace Hyva\Admin\Model\Config;
 
 use Magento\Framework\Config\Dom as XmlDom;
 use Magento\Framework\Config\ValidationStateInterface;
-
 use Magento\Framework\Module\Dir;
 use Magento\Framework\Module\Dir\Reader as ModuleDirReader;
+
 use function array_reduce as reduce;
 
 class GridConfigReader implements HyvaGridConfigReaderInterface
@@ -16,6 +16,8 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
     private GridXmlToArrayConverter $gridXmlToArrayConverter;
 
     private ValidationStateInterface $appValidationState;
+
+    private ModuleDirReader $moduleDirReader;
 
     private array $idAttributes = [
         '/grid/source/defaultSearchCriteriaBindings/field' => 'name',
@@ -32,18 +34,13 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
 
     private ?string $mergedSchema;
 
-    /**
-     * @var ModuleDirReader
-     */
-    private ModuleDirReader $moduleDirReader;
-
     public function __construct(
-        GridDefinitionConfigFiles $definitionConfigFiles,
+        GridDefinitionConfigFiles $gridDefinitionConfigFiles,
         GridXmlToArrayConverter $gridXmlToArrayConverter,
         ValidationStateInterface $appValidationState,
         ModuleDirReader $moduleDirReader
     ) {
-        $this->definitionConfigFiles   = $definitionConfigFiles;
+        $this->definitionConfigFiles   = $gridDefinitionConfigFiles;
         $this->gridXmlToArrayConverter = $gridXmlToArrayConverter;
         $this->appValidationState      = $appValidationState;
         $this->moduleDirReader         = $moduleDirReader;
@@ -53,15 +50,12 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
 
     public function getGridConfiguration(string $gridName): array
     {
-        // todo: add caching
-        $gridConfig = $this->readGridConfig($gridName);
-
-        return $gridConfig;
+        return $this->readGridConfig($gridName);
     }
 
     private function readGridConfig(string $gridName): array
     {
-        $files = $this->definitionConfigFiles->getGridDefinitionFiles($gridName);
+        $files = $this->definitionConfigFiles->getConfigDefinitionFiles($gridName);
         return $files
             ? $this->mergeGridConfigs($files)
             : [];
@@ -108,5 +102,4 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
     {
         return $this->moduleDirReader->getModuleDir(Dir::MODULE_ETC_DIR, 'Hyva_Admin') . '/' . $this->perFileSchema;
     }
-
 }

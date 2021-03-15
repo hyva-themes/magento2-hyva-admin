@@ -31,7 +31,7 @@ class ExtensionAttributeTypeExtractor
 
     private function getGetterExtensionAttributesGetterMethod(string $type): ?string
     {
-        $methods = keys($this->methodsMap->getMethodsMap($type));
+        $methods = keys($this->methodsMap->getMethodsReturnTypeMap($type));
         return values(filter($methods, function (string $method) use ($type): bool {
                 $returnType = $this->getMethodReturnType($type, $method);
                 return $this->isExtensionAttributesType($returnType);

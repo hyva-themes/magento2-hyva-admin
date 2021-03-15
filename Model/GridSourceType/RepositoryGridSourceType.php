@@ -5,7 +5,7 @@ namespace Hyva\Admin\Model\GridSourceType;
 use Hyva\Admin\Model\DataType\ProductGalleryDataType;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory;
 use Hyva\Admin\Model\RawGridSourceContainer;
-use Hyva\Admin\Model\TypeReflection;
+use Hyva\Admin\Model\GridTypeReflection;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Catalog\Api\Data\ProductInterface;
@@ -26,7 +26,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
 
     private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
 
-    private TypeReflection $typeReflection;
+    private GridTypeReflection $typeReflection;
 
     /**
      * @var ColumnDefinitionInterface[]
@@ -41,7 +41,7 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         RepositorySourceFactory $repositorySourceFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
-        TypeReflection $typeReflection
+        GridTypeReflection $typeReflection
     ) {
         $this->gridName                = $gridName;
         $this->sourceConfiguration     = $sourceConfiguration;

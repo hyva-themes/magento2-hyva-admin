@@ -295,6 +295,7 @@
                     <xs:attribute name="param" type="paramName"/>
                     <xs:attribute name="property" type="paramName"/>
                     <xs:attribute name="condition" type="conditionType"/>
+                    <xs:attribute name="value" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>

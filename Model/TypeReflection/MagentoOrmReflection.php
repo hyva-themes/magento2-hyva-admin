@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Model\TypeReflection;
 
 use Magento\Eav\Model\Entity\AbstractEntity as AbstractEavResourceModel;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb as AbstractFlatTableResourceModel;
 use Magento\Framework\ObjectManager\ConfigInterface as DiConfigInterface;
 use Magento\Framework\ObjectManagerInterface;
@@ -89,9 +90,8 @@ class MagentoOrmReflection
         return $resourceModel->getIdFieldName();
     }
 
-    private function extendsAbstractResourceModel(string $class): bool
+    public function extendsAbstractResourceModel(string $class): bool
     {
-        return is_subclass_of($class, AbstractEavResourceModel::class)
-            || is_subclass_of($class, AbstractFlatTableResourceModel::class);
+        return is_subclass_of($class, AbstractResource::class);
     }
 }

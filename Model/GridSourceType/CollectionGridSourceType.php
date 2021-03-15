@@ -6,7 +6,7 @@ use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
 use Hyva\Admin\Model\GridSourceType\CollectionSourceType\GridSourceCollectionFactory;
 use Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
-use Hyva\Admin\Model\TypeReflection;
+use Hyva\Admin\Model\GridTypeReflection;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Eav\Model\Entity\Collection\AbstractCollection as AbstractEavCollection;
@@ -22,7 +22,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     private array $sourceConfiguration;
 
-    private TypeReflection $typeReflection;
+    private GridTypeReflection $typeReflection;
 
     private RawGridSourceDataAccessor $gridSourceDataAccessor;
 
@@ -37,7 +37,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
-        TypeReflection $typeReflection,
+        GridTypeReflection $typeReflection,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         GridSourceCollectionFactory $gridSourceCollectionFactory,

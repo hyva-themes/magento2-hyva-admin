@@ -1,0 +1,8 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+?>
+<input id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>" type="text" value="" form="<?= $field->getFormName() ?>"/>
