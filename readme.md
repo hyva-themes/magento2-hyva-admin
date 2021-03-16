@@ -1,12 +1,7 @@
 # Hyvä Admin
 
 This module aims to make creating grids and forms in the Magento 2 adminhtml area joyful and fast.    
-It does not use any UI components.
-
-
-|branch|status|
-|---|---|
-|main|![main branch tests](https://github.com/hyva-themes/magento2-hyva-admin/workflows/Hyv%C3%A4%20Admin%20Tests/badge.svg)|
+It does not use any UI components. Status: ![main branch tests](https://github.com/hyva-themes/magento2-hyva-admin/workflows/Hyv%C3%A4%20Admin%20Tests/badge.svg)
 
 > They  came  round  the  corner,  and there was Eeyore's
   house, looking as comfy as anything.  
