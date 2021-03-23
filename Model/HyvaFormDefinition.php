@@ -6,6 +6,7 @@ use Hyva\Admin\Model\Config\HyvaFormConfigReaderInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
 
+use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_keys as keys;
@@ -76,7 +77,9 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
 
     public function getSectionsConfig(): array
     {
-        return $this->getFormConfig()['sections'] ?? [];
+        $sectionConfig = $this->getFormConfig()['sections'] ?? [];
+        $sectionIds = pick($sectionConfig, 'id');
+        return zip($sectionIds, $sectionConfig);
     }
 
     public function getNavigationConfig(): array
@@ -110,24 +113,43 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
         }, []);
     }
 
+    /**
+     * Return map of group id => group config.
+     *
+     * @return array[]
+     */
     public function getGroupsFromSections(): array
     {
-        $sectionConfig = $this->getSectionsConfig();
         $groupsConfig  = values(filter(merge([], ...map(function (array $s): array {
-            return $s['groups'] ?? [];
-        }, $sectionConfig))));
+            $groups = $s['groups'] ?? [];
+            return $this->addSectionIdToGroups($groups, $s['id']);
+        }, values($this->getSectionsConfig())))));
 
-        $this->validateGroupIdsAreUniquePerSection($groupsConfig);
+        $groupIds = pick($groupsConfig, 'id');
 
-        return $groupsConfig;
+        $this->validateGroupIdsAreUniquePerSection($groupIds);
+
+        return reduce($groupsConfig, function (array $map, array $groupConfig): array {
+            $map[$groupConfig['id']] = $groupConfig;
+            return $map;
+        }, []);
     }
 
-    private function validateGroupIdsAreUniquePerSection(array $groupsConfig): void
+    private function addSectionIdToGroups(array $groupConfigs, string $sectionId): array
     {
-        $groupIds     = map(function (array $groupConfig): string {
-            return $groupConfig['id'];
-        }, $groupsConfig);
-        $dupeGroupIds = keys(filter($this->frequencies($groupIds), function(int $n): bool { return $n > 1; }));
+        return map(function (array $groupConfig) use ($sectionId): array {
+            if (! empty($groupConfig)) {
+                $groupConfig['sectionId'] = $sectionId;
+            }
+            return $groupConfig;
+        }, $groupConfigs);
+    }
+
+    private function validateGroupIdsAreUniquePerSection($groupIds): void
+    {
+        $dupeGroupIds = keys(filter($this->frequencies($groupIds), function (int $n): bool {
+            return $n > 1;
+        }));
         if (count($dupeGroupIds) > 0) {
             $this->throwGroupIdInMultipleSectionsException($dupeGroupIds);
         }

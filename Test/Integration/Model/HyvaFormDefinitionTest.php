@@ -3,12 +3,13 @@
 namespace Hyva\Admin\Test\Integration\Model;
 
 use Hyva\Admin\Model\Config\HyvaFormConfigReaderInterface;
-use Hyva\Admin\Model\Config\HyvaFormSectionsConfig;
 use Hyva\Admin\Model\HyvaFormDefinition;
 use Hyva\Admin\Model\HyvaFormDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
+
+use function array_merge as merge;
 
 class HyvaFormDefinitionTest extends TestCase
 {
@@ -24,7 +25,7 @@ class HyvaFormDefinitionTest extends TestCase
 
     public function testReturnsFieldDefinitions(): void
     {
-        $stubFormConfigReader = new class implements HyvaFormConfigReaderInterface {
+        $stubFormConfigReader = new class() implements HyvaFormConfigReaderInterface {
             public function getFormConfiguration(string $formName): array
             {
                 return [
@@ -48,7 +49,7 @@ class HyvaFormDefinitionTest extends TestCase
 
     public function testReturnsEmptyArrayIfNotSectionsAreDeclared(): void
     {
-        $stubFormConfigReader = new class implements HyvaFormConfigReaderInterface {
+        $stubFormConfigReader = new class() implements HyvaFormConfigReaderInterface {
             public function getFormConfiguration(string $formName): array
             {
                 return ['sections' => []];
@@ -63,7 +64,7 @@ class HyvaFormDefinitionTest extends TestCase
 
     public function testReturnsEmptyArrayIfEmptySectionsAreDeclared(): void
     {
-        $stubFormConfigReader = new class implements HyvaFormConfigReaderInterface {
+        $stubFormConfigReader = new class() implements HyvaFormConfigReaderInterface {
             public function getFormConfiguration(string $formName): array
             {
                 return [
@@ -81,7 +82,7 @@ class HyvaFormDefinitionTest extends TestCase
         $this->assertSame([], $sut->getGroupsFromSections());
     }
 
-    public function testReturnsFlatArrayOfGroups(): void
+    public function testReturnsFlatMapOfGroups(): void
     {
         $group1         = ['id' => 'important-things', 'sortOrder' => '10'];
         $group2         = ['id' => 'details1', 'label' => 'Details', 'sortOrder' => '20'];
@@ -93,7 +94,6 @@ class HyvaFormDefinitionTest extends TestCase
         ];
 
         $stubFormConfigReader = new class($sectionsConfig) implements HyvaFormConfigReaderInterface {
-
             private $sectionsConfig;
 
             public function __construct(array $sectionsConfig)
@@ -113,12 +113,17 @@ class HyvaFormDefinitionTest extends TestCase
         /** @var HyvaFormDefinition $sut */
         $sut = ObjectManager::getInstance()->create(HyvaFormDefinitionInterface::class, $arguments);
 
-        $this->assertSame([$group1, $group2, $group3, $group4], $sut->getGroupsFromSections());
+        $this->assertSame([
+            'important-things' => merge($group1, ['sectionId' => 'foo']),
+            'details1'         => merge($group2, ['sectionId' => 'foo']),
+            'whatever'         => merge($group3, ['sectionId' => 'bar']),
+            'details2'         => merge($group4, ['sectionId' => 'bar']),
+        ], $sut->getGroupsFromSections());
     }
 
     public function testThrowsExceptionWhenGroupIdsConflict(): void
     {
-        $stubFormConfigReader = new class implements HyvaFormConfigReaderInterface {
+        $stubFormConfigReader = new class() implements HyvaFormConfigReaderInterface {
             public function getFormConfiguration(string $formName): array
             {
                 return [
@@ -142,5 +147,42 @@ class HyvaFormDefinitionTest extends TestCase
         );
 
         $sut->getGroupsFromSections();
+    }
+
+    public function testReturnsMapOfSections()
+    {
+        $group1         = ['id' => 'important-things', 'sortOrder' => '10'];
+        $group2         = ['id' => 'details2', 'sortOrder' => '20'];
+        $sectionsConfig = [
+            ['id' => 'foo', 'groups' => [$group1]],
+            ['id' => 'bar', 'groups' => [$group2]],
+            ['id' => 'baz', 'groups' => []],
+        ];
+
+        $stubFormConfigReader = new class($sectionsConfig) implements HyvaFormConfigReaderInterface {
+            private $sectionsConfig;
+
+            public function __construct(array $sectionsConfig)
+            {
+                $this->sectionsConfig = $sectionsConfig;
+            }
+
+            public function getFormConfiguration(string $formName): array
+            {
+                return [
+                    'sections' => $this->sectionsConfig,
+                ];
+            }
+        };
+
+        $arguments = ['formName' => 'test', 'formConfigReader' => $stubFormConfigReader];
+        /** @var HyvaFormDefinition $sut */
+        $sut = ObjectManager::getInstance()->create(HyvaFormDefinitionInterface::class, $arguments);
+
+        $this->assertSame([
+            'foo' => ['id' => 'foo', 'groups' => [$group1]],
+            'bar' => ['id' => 'bar', 'groups' => [$group2]],
+            'baz' => ['id' => 'baz', 'groups' => []],
+        ], $sut->getSectionsConfig());
     }
 }

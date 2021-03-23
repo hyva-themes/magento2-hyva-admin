@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\ViewModel\HyvaForm;
 
+use function array_filter as filter;
 use function array_merge as merge;
 
 class FormFieldDefinition implements FormFieldDefinitionInterface
@@ -75,7 +76,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function toArray(): array
     {
-        return [
+        return filter([
             'name'           => $this->name,
             'options'        => $this->options,
             'inputType'      => $this->inputType,
@@ -84,7 +85,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
             'isEnabled'      => $this->enabled,
             'isExcluded'     => $this->excluded,
             'valueProcessor' => $this->valueProcessor,
-        ];
+        ]);
     }
 
     public function merge(FormFieldDefinitionInterface $field): FormFieldDefinitionInterface
@@ -114,7 +115,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getInputType(): string
     {
-        return $this->inputType;
+        return (string) $this->inputType;
     }
 
     public function isEnabled(): bool

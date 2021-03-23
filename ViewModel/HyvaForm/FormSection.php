@@ -22,8 +22,8 @@ class FormSection implements FormSectionInterface
     public function __construct(string $formName, array $groups, ?string $label)
     {
         $this->formName = $formName;
-        $this->groups = $groups;
-        $this->label = $label;
+        $this->groups   = $groups;
+        $this->label    = $label;
     }
 
     public function getId(): string

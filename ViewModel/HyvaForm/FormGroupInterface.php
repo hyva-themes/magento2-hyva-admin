@@ -16,4 +16,6 @@ interface FormGroupInterface
     public function getFields(): array;
 
     public function getHtml(): string;
+
+    public function getSectionId(): string;
 }
