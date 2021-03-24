@@ -18,4 +18,6 @@ interface FormGroupInterface
     public function getHtml(): string;
 
     public function getSectionId(): string;
+
+    public function getSortOrder(): int;
 }
