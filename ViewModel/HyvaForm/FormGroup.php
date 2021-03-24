@@ -24,12 +24,18 @@ class FormGroup implements FormGroupInterface
      */
     private $sectionId;
 
-    public function __construct(string $id, array $fields, string $sectionId, ?string $label = null)
+    /**
+     * @var int
+     */
+    private $sortOrder;
+
+    public function __construct(string $id, array $fields, string $sectionId, int $sortOrder, ?string $label = null)
     {
         $this->id        = $id;
         $this->fields    = $fields;
         $this->label     = $label;
         $this->sectionId = $sectionId;
+        $this->sortOrder = $sortOrder;
     }
 
     public function getId(): string
@@ -61,5 +67,10 @@ class FormGroup implements FormGroupInterface
     public function getSectionId(): string
     {
         return $this->sectionId;
+    }
+
+    public function getSortOrder(): int
+    {
+        return $this->sortOrder;
     }
 }
