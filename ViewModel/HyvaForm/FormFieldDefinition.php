@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel\HyvaForm;
 
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\LayoutInterface;
 use function array_filter as filter;
 use function array_merge as merge;
 
@@ -52,7 +54,13 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
      */
     private $formFieldDefinitionFactory;
 
+    /**
+     * @var LayoutInterface
+     */
+    private $layout;
+
     public function __construct(
+        LayoutInterface $layout,
         FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
         string $name,
         ?array $options = [],
@@ -63,6 +71,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         ?bool $isExcluded = null,
         ?string $valueProcessor = null
     ) {
+        $this->layout                     = $layout;
         $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
         $this->name                       = $name;
         $this->options                    = $options;
@@ -100,7 +109,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getHtml(): string
     {
+        $block = $this->layout->createBlock(Template::class);
+        $block->setTemplate($this->template ?? $this->determineTemplate());
+        $block->assign('field', $this);
 
+        return $block->toHtml();
     }
 
     public function getOptions(): array
@@ -110,7 +123,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getGroupId(): string
     {
-        return $this->groupId;
+        return $this->groupId ?? '';
     }
 
     public function getInputType(): string
@@ -121,5 +134,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     public function isEnabled(): bool
     {
         return (bool) $this->enabled;
+    }
+
+    private function determineTemplate(): string
+    {
+        // todo: use input type to determine template to use
+        return 'Hyva_Admin::form/field/text.phtml';
     }
 }

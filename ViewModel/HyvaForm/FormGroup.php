@@ -2,6 +2,9 @@
 
 namespace Hyva\Admin\ViewModel\HyvaForm;
 
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\LayoutInterface;
+
 class FormGroup implements FormGroupInterface
 {
     /**
@@ -29,8 +32,20 @@ class FormGroup implements FormGroupInterface
      */
     private $sortOrder;
 
-    public function __construct(string $id, array $fields, string $sectionId, int $sortOrder, ?string $label = null)
-    {
+    /**
+     * @var LayoutInterface
+     */
+    private $layout;
+
+    public function __construct(
+        LayoutInterface $layout,
+        string $id,
+        array $fields,
+        string $sectionId,
+        int $sortOrder,
+        ?string $label = null
+    ) {
+        $this->layout    = $layout;
         $this->id        = $id;
         $this->fields    = $fields;
         $this->label     = $label;
@@ -61,7 +76,11 @@ class FormGroup implements FormGroupInterface
 
     public function getHtml(): string
     {
+        $block = $this->layout->createBlock(Template::class);
+        $block->setTemplate('Hyva_Admin::form/group.phtml');
+        $block->assign('group', $this);
 
+        return $block->toHtml();
     }
 
     public function getSectionId(): string

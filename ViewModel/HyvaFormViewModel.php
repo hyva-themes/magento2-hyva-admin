@@ -56,6 +56,11 @@ class HyvaFormViewModel implements HyvaFormInterface
      */
     private $formStructureBuilder;
 
+    /**
+     * @var FormStructure
+     */
+    private $memoizedFormStructure;
+
     public function __construct(
         string $formName,
         HyvaFormDefinitionInterfaceFactory $formDefinitionFactory,
@@ -92,11 +97,14 @@ class HyvaFormViewModel implements HyvaFormInterface
 
     private function getFormStructure(): FormStructure
     {
-        return $this->formStructureBuilder->buildStructure(
-            $this->formName,
-            $this->getFormDefinition(),
-            $this->getLoadedEntity()
-        );
+        if (! isset($this->memoizedFormStructure)) {
+            $this->memoizedFormStructure = $this->formStructureBuilder->buildStructure(
+                $this->formName,
+                $this->getFormDefinition(),
+                $this->getLoadedEntity()
+            );
+        }
+        return $this->memoizedFormStructure;
     }
 
     private function getLoadedEntity(): FormLoadEntity
