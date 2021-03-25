@@ -75,6 +75,6 @@ class FormStructureBuilder
         $groups   = $this->formGroupsBuilder->buildGroups($fields, $formDefinition->getGroupsFromSections());
         $sections = $this->formSectionsBuilder->buildSections($formName, $groups, $formDefinition->getSectionsConfig());
 
-        return $this->formStructureFactory->create($formName, $sections);
+        return $this->formStructureFactory->create(['formName' => $formName, 'sections' => $sections]);
     }
 }
