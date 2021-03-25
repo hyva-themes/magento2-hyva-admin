@@ -6,6 +6,7 @@ use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterfaceFactory;
 
+use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_keys as keys;
@@ -121,10 +122,9 @@ class FormGroupsBuilder
 
     private function addSortOrderToGroups(array $allGroupsConfig, callable $filter): array
     {
-        $maxSortOrder = reduce($allGroupsConfig, function (int $max, array $groupConfig): int {
-            $sortOrder = $groupConfig['sortOrder'] ?? 0;
-            return $sortOrder > $max ? $sortOrder : $max;
-        }, 0);
+        $sortOrders = pick($allGroupsConfig, 'sortOrder');
+        $maxSortOrder = max($sortOrders ?: [0]);
+
         return map(function (array $groupConfig) use ($filter, &$maxSortOrder): array {
             if ($filter($groupConfig)) {
                 $groupConfig['sortOrder'] = (int) ($groupConfig['sortOrder'] ?? ++$maxSortOrder);

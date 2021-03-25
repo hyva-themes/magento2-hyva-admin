@@ -3,11 +3,11 @@
 namespace Hyva\Admin\Model\FormStructure;
 
 use function array_combine as zip;
-
 use function array_filter as filter;
 use function array_keys as keys;
 use function array_map as map;
 use function array_merge as merge;
+
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface as FieldDefinition;
 
 class MergeFormFieldDefinitionMaps
