@@ -28,18 +28,14 @@ class MergeFormFieldDefinitionMaps
             $this->filterFieldsByKey($fieldsFromEntity, $keysInBoth),
             $this->filterFieldsByKey($fieldsFromConfig, $keysInBoth),
         );
-        return merge($fieldsOnlyInConfig, zip($keysInBoth, $fieldsInBoth), $fieldsOnlyInEntity
-        );
+        return merge($fieldsOnlyInConfig, zip($keysInBoth, $fieldsInBoth), $fieldsOnlyInEntity);
     }
 
     private function filterFieldsByKey(array $fields, array $keys): array
     {
-        return $this->sortFieldsMap(filter(
-            $fields,
-            function (FieldDefinition $f) use ($keys) {
-                return in_array($f->getName(), $keys);
-            }
-        ));
+        return $this->sortFieldsMap(filter($fields, function (FieldDefinition $f) use ($keys) {
+            return in_array($f->getName(), $keys);
+        }));
     }
 
     private function fieldKeysInBoth(array $fieldsFromEntity, array $fieldsFromConfig): array

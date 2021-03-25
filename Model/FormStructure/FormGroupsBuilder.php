@@ -2,10 +2,6 @@
 
 namespace Hyva\Admin\Model\FormStructure;
 
-use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
-use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface;
-use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterfaceFactory;
-
 use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
@@ -13,6 +9,10 @@ use function array_keys as keys;
 use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
+
+use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
+use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface;
+use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterfaceFactory;
 
 class FormGroupsBuilder
 {

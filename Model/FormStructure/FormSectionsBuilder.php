@@ -2,15 +2,15 @@
 
 namespace Hyva\Admin\Model\FormStructure;
 
-use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface;
-use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface;
-use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterfaceFactory;
-
 use function array_column as pick;
 use function array_combine as zip;
 use function array_keys as keys;
 use function array_map as map;
 use function array_reduce as reduce;
+
+use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface;
+use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface;
+use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterfaceFactory;
 
 class FormSectionsBuilder
 {
@@ -43,14 +43,9 @@ class FormSectionsBuilder
         }, []);
     }
 
-    private function buildSectionInstances(
-        string $formName,
-        array $sectionIdToGroupsMap
-    ): array {
-        return map(function (string $sectionId) use (
-            $sectionIdToGroupsMap,
-            $formName
-        ): FormSectionInterface {
+    private function buildSectionInstances(string $formName, array $sectionIdToGroupsMap): array
+    {
+        return map(function (string $sectionId) use ($sectionIdToGroupsMap, $formName): FormSectionInterface {
             return $this->formSectionFactory->create([
                 'id'       => $sectionId,
                 'groups'   => $sectionIdToGroupsMap[$sectionId],
@@ -80,6 +75,22 @@ class FormSectionsBuilder
         $sortOrders   = pick($sectionIdToConfigMap, 'sortOrder');
         $maxSortOrder = max($sortOrders ?: [0]);
 
+        $sectionsConfigsWithSortOrder = $this->addSortOrderToConfigs(
+            $sectionIdToConfigMap,
+            $sectionIdOrderFromConfig,
+            $maxSortOrder
+        );
+
+        uasort($sectionsConfigsWithSortOrder, function (array $s1, array $s2): int {
+            return $s1['sortOrder'] <=> $s2['sortOrder'];
+        });
+
+        return $sectionsConfigsWithSortOrder;
+    }
+
+    private function addSortOrderToConfigs($sectionIdToConfigMap, $sectionIdOrderFromConfig, $maxSortOrder): array
+    {
+        // Add missing sortOrder to sections in the order they are defined in the configuration.
         $sectionsFromConfigWithSortOrder = reduce(
             $sectionIdOrderFromConfig,
             function (array $sectionIdToConfigMap, string $sectionId) use (&$maxSortOrder): array {
@@ -91,15 +102,13 @@ class FormSectionsBuilder
             $sectionIdToConfigMap
         );
 
-        $sllSectionsWithSortOrder = map(function (array $sectionConfig) use (&$maxSortOrder): array {
+        // Add sort order to any sections that where not defined in the config so they are sorted last.
+        // Note: at the time or writing this only applies to the default section ''.
+        $allSectionsWithSortOrder = map(function (array $sectionConfig) use (&$maxSortOrder): array {
             $sectionConfig['sortOrder'] = (int) ($sectionConfig['sortOrder'] ?? ++$maxSortOrder);
             return $sectionConfig;
         }, $sectionsFromConfigWithSortOrder);
 
-        uasort($sllSectionsWithSortOrder, function (array $s1, array $s2): int {
-            return $s1['sortOrder'] <=> $s2['sortOrder'];
-        });
-
-        return $sllSectionsWithSortOrder;
+        return $allSectionsWithSortOrder;
     }
 }
