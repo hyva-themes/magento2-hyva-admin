@@ -7,6 +7,11 @@ class FormSection implements FormSectionInterface
     /**
      * @var string
      */
+    private $id;
+
+    /**
+     * @var string
+     */
     private $formName;
 
     /**
@@ -19,8 +24,9 @@ class FormSection implements FormSectionInterface
      */
     private $label;
 
-    public function __construct(string $formName, array $groups, ?string $label)
+    public function __construct(string $id, string $formName, array $groups, ?string $label)
     {
+        $this->id       = $id;
         $this->formName = $formName;
         $this->groups   = $groups;
         $this->label    = $label;
@@ -28,7 +34,7 @@ class FormSection implements FormSectionInterface
 
     public function getId(): string
     {
-
+        return $this->id;
     }
 
     public function getGroups(): array

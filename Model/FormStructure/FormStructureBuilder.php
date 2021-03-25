@@ -2,16 +2,7 @@
 
 namespace Hyva\Admin\Model\FormStructure;
 
-use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
-
-use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface;
-use function array_keys as keys;
-use function array_map as map;
-use function array_reduce as reduce;
-
 use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterfaceFactory;
-use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface;
-use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterfaceFactory;
 use Hyva\Admin\Model\FormEntity\FormLoadEntity;
 use Hyva\Admin\Model\HyvaFormDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
@@ -43,16 +34,23 @@ class FormStructureBuilder
      */
     private $formGroupsBuilder;
 
+    /**
+     * @var FormSectionsBuilder
+     */
+    private $formSectionsBuilder;
+
     public function __construct(
         FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
         MergeFormFieldDefinitionMaps $mergeFormFieldDefinitionMaps,
         FormGroupsBuilder $formGroupsBuilder,
+        FormSectionsBuilder $formSectionsBuilder,
         FormSectionInterfaceFactory $formSectionFactory,
         FormStructureFactory $formStructureFactory
     ) {
         $this->formFieldDefinitionFactory   = $formFieldDefinitionFactory;
         $this->mergeFormFieldDefinitionMaps = $mergeFormFieldDefinitionMaps;
         $this->formGroupsBuilder            = $formGroupsBuilder;
+        $this->formSectionsBuilder          = $formSectionsBuilder;
         $this->formSectionFactory           = $formSectionFactory;
         $this->formStructureFactory         = $formStructureFactory;
     }
@@ -74,39 +72,9 @@ class FormStructureBuilder
         $fieldsFromConfig = $formDefinition->getFieldDefinitions();
         $fields           = $this->mergeFormFieldDefinitionMaps->merge($fieldsFromEntity, $fieldsFromConfig);
 
-        $groups = $this->formGroupsBuilder->buildGroups($fields, $formDefinition->getGroupsFromSections());
-
-        $sectionIdToGroupsMap = $this->buildSectionIdToGroupsMap($groups);
-        $sections             = $this->buildSectionInstances($formName, $sectionIdToGroupsMap, $formDefinition);
+        $groups   = $this->formGroupsBuilder->buildGroups($fields, $formDefinition->getGroupsFromSections());
+        $sections = $this->formSectionsBuilder->buildSections($formName, $groups, $formDefinition->getSectionsConfig());
 
         return $this->formStructureFactory->create($formName, $sections);
-    }
-
-    private function buildSectionIdToGroupsMap(array $groups): array
-    {
-        return reduce($groups, function (array $map, FormGroupInterface $group): array {
-            $map[$group->getSectionId()][] = $group;
-            return $map;
-        }, []);
-    }
-
-    private function buildSectionInstances(
-        string $formName,
-        array $sectionIdToGroupsMap,
-        HyvaFormDefinitionInterface $formDefinition
-    ): array {
-        $sectionConfig = $formDefinition->getSectionsConfig();
-        return map(function (string $sectionId) use (
-            $sectionIdToGroupsMap,
-            $sectionConfig,
-            $formName
-        ): FormSectionInterface {
-            $this->formSectionFactory->create([
-                'id'       => $sectionId,
-                'groups'   => $sectionIdToGroupsMap[$sectionId],
-                'label'    => $sectionConfig['label'] ?? null,
-                'formName' => $formName,
-            ]);
-        }, keys($sectionIdToGroupsMap));
     }
 }
