@@ -12,6 +12,12 @@ use function array_merge as merge;
 
 class MergeFormFieldDefinitionMapsTest extends TestCase
 {
+    private function createField(array $fieldData): FormFieldDefinitionInterface
+    {
+        $defaults = ['formName' => 'test'];
+        return ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, merge($defaults, $fieldData));
+    }
+
     public function testMergesEmptyInput(): void
     {
         /** @var MergeFormFieldDefinitionMaps $sut */
@@ -28,11 +34,11 @@ class MergeFormFieldDefinitionMapsTest extends TestCase
         /** @var MergeFormFieldDefinitionMaps $sut */
         $sut = ObjectManager::getInstance()->create(MergeFormFieldDefinitionMaps::class);
 
-        $fieldsA = [
-            'foo' => ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, ['name' => 'foo']),
+        $fieldsA   = [
+            'foo' => $this->createField(['name' => 'foo']),
         ];
-        $fieldsB = [
-            'bar' => ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, ['name' => 'bar']),
+        $fieldsB   = [
+            'bar' => $this->createField(['name' => 'bar']),
         ];
 
         $this->assertSame(merge($fieldsB, $fieldsA), $sut->merge($fieldsA, $fieldsB));
@@ -44,14 +50,14 @@ class MergeFormFieldDefinitionMapsTest extends TestCase
         $sut = ObjectManager::getInstance()->create(MergeFormFieldDefinitionMaps::class);
 
         $fieldsA = [
-            'foo' => ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, [
+            'foo' => $this->createField([
                 'name'      => 'foo',
                 'groupId'   => 'groupA',
                 'inputType' => 'text',
             ]),
         ];
         $fieldsB = [
-            'foo' => ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, [
+            'foo' => $this->createField([
                 'name'    => 'foo',
                 'groupId' => 'groupB',
                 'options' => [['label' => 'Test', 'value' => 1]],
@@ -73,12 +79,12 @@ class MergeFormFieldDefinitionMapsTest extends TestCase
         $sut = ObjectManager::getInstance()->create(MergeFormFieldDefinitionMaps::class);
 
         $fieldsA = [
-            'onlyA' => ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, ['name' => 'onlyA']),
-            'both'  => ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, ['name' => 'both']),
+            'onlyA' => $this->createField(['name' => 'onlyA']),
+            'both'  => $this->createField(['name' => 'both']),
         ];
         $fieldsB = [
-            'both'  => ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, ['name' => 'both']),
-            'onlyB' => ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, ['name' => 'onlyB']),
+            'both'  => $this->createField(['name' => 'both']),
+            'onlyB' => $this->createField(['name' => 'onlyB']),
         ];
 
         $result = $sut->merge($fieldsA, $fieldsB);

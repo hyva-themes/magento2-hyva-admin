@@ -15,6 +15,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     private $name;
 
     /**
+     * @var string|null
+     */
+    private $label;
+
+    /**
      * @var array|null
      */
     private $options;
@@ -59,10 +64,17 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
      */
     private $layout;
 
+    /**
+     * @var string
+     */
+    private $formName;
+
     public function __construct(
         LayoutInterface $layout,
         FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
+        string $formName,
         string $name,
+        ?string $label = null,
         ?array $options = [],
         ?string $inputType = null,
         ?string $groupId = null,
@@ -72,8 +84,10 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         ?string $valueProcessor = null
     ) {
         $this->layout                     = $layout;
+        $this->formName                   = $formName;
         $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
         $this->name                       = $name;
+        $this->label                      = $label;
         $this->options                    = $options;
         $this->inputType                  = $inputType;
         $this->groupId                    = $groupId;
@@ -86,6 +100,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     public function toArray(): array
     {
         return filter([
+            'formName'       => $this->formName,
             'name'           => $this->name,
             'options'        => $this->options,
             'inputType'      => $this->inputType,
@@ -107,6 +122,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         return $this->name;
     }
 
+    public function getLabel(): string
+    {
+        return $this->label ?? ucwords(str_replace('_', ' ', $this->getName()));
+    }
+
     public function getHtml(): string
     {
         $block = $this->layout->createBlock(Template::class);
@@ -123,7 +143,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getGroupId(): string
     {
-        return $this->groupId ?? '';
+        return $this->groupId ?? FormGroupInterface::DEFAULT_GROUP_ID;
     }
 
     public function getInputType(): string
@@ -134,6 +154,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     public function isEnabled(): bool
     {
         return (bool) $this->enabled;
+    }
+
+    public function getFormName(): string
+    {
+        return $this->formName;
     }
 
     private function determineTemplate(): string

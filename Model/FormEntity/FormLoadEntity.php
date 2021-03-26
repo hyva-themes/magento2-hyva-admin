@@ -101,16 +101,19 @@ class FormLoadEntity
     /**
      * @return FormFieldDefinitionInterface[]
      */
-    public function getFieldDefinitions(): array
+    public function getFieldDefinitions(string $formName): array
     {
         $this->initFields();
         $fieldCodes = $this->getFieldCodes();
-        return zip($fieldCodes, map([$this, 'buildFieldDefinitionForAttribute'], $fieldCodes));
+        return zip($fieldCodes, map(function (string $code) use ($formName): FormFieldDefinitionInterface {
+            return $this->buildFieldDefinitionForAttribute($formName, $code);
+        }, $fieldCodes));
     }
 
-    private function buildFieldDefinitionForAttribute(string $code): FormFieldDefinitionInterface
+    private function buildFieldDefinitionForAttribute(string $formName, string $code): FormFieldDefinitionInterface
     {
         return $this->formFieldDefinitionFactory->create([
+            'formName'       => $formName,
             'name'           => $code,
             'options'        => $this->getFieldOptions($code),
             'inputType'      => $this->getFieldInputType($code),

@@ -12,4 +12,6 @@ interface HyvaFormInterface
      * @return HyvaForm\FormSectionInterface[]
      */
     public function getSections(): array;
+
+    public function hasOnlyDefaultSection(): bool;
 }

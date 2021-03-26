@@ -4,6 +4,8 @@ namespace Hyva\Admin\ViewModel\HyvaForm;
 
 interface FormSectionInterface
 {
+    public const DEFAULT_SECTION_ID = '';
+
     public function getId(): string;
 
     /**

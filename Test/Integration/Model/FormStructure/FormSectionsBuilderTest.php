@@ -27,7 +27,7 @@ class FormSectionsBuilderTest extends TestCase
 
     private function createGroup(array $data = []): FormGroupInterface
     {
-        $default = ['fields' => [], 'sectionId' => '', 'sortOrder' => 0];
+        $default = ['fields' => [], 'sectionId' => FormSectionInterface::DEFAULT_SECTION_ID, 'sortOrder' => 0];
         return $group = ObjectManager::getInstance()->create(FormGroupInterface::class, merge($default, $data));
     }
 
@@ -49,9 +49,10 @@ class FormSectionsBuilderTest extends TestCase
         ];
         $sections      = $this->buildSections($sectionConfig, $groups);
 
+        $defaultSectionId = FormSectionInterface::DEFAULT_SECTION_ID;
         $this->assertCount(1, $sections);
-        $this->assertSame('', $sections['']->getId());
-        $this->assertCount(2, $sections['']->getGroups());
+        $this->assertSame($defaultSectionId, $sections[$defaultSectionId]->getId());
+        $this->assertCount(2, $sections[$defaultSectionId]->getGroups());
     }
 
     public function testCreatesOnlySectionsThatHaveGroups(): void
