@@ -20,7 +20,7 @@ $buttons    = $navigation->getButtons();
             <?php endforeach; ?>
         </div>
 
-        <?php if (count($form->getSections()) > 1): ?>
+        <?php if (!$form->hasOnlyDefaultSection() && !empty($form->getSections())): ?>
             <div>
                 <!-- One day this is supposed to render as tabs to click on -->
                 <?php foreach ($form->getSections() as $section): ?>

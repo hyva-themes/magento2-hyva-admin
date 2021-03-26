@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Test\Integration\Model\FormStructure;
 
 use function array_keys as keys;
+use function array_merge as merge;
 
 use Hyva\Admin\Model\FormStructure\FormGroupsBuilder;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
@@ -14,7 +15,8 @@ class FormGroupsBuilderTest extends TestCase
 {
     private function createField(array $fieldData): FormFieldDefinitionInterface
     {
-        return ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, $fieldData);
+        $defaults  = ['formName' => 'test'];
+        return ObjectManager::getInstance()->create(FormFieldDefinitionInterface::class, merge($defaults, $fieldData));
     }
 
     /**

@@ -43,16 +43,16 @@ class FormSectionsBuilder
         }, []);
     }
 
-    private function buildSectionInstances(string $formName, array $sectionIdToGroupsMap): array
+    private function buildSectionInstances(string $formName, array $sectionIdToSectionConfigMap): array
     {
-        return map(function (string $sectionId) use ($sectionIdToGroupsMap, $formName): FormSectionInterface {
+        return map(function (string $sectionId) use ($sectionIdToSectionConfigMap, $formName): FormSectionInterface {
             return $this->formSectionFactory->create([
                 'id'       => $sectionId,
-                'groups'   => $sectionIdToGroupsMap[$sectionId],
+                'groups'   => $sectionIdToSectionConfigMap[$sectionId]['groups'],
                 'label'    => $sortOrders['label'] ?? null,
                 'formName' => $formName,
             ]);
-        }, keys($sectionIdToGroupsMap));
+        }, keys($sectionIdToSectionConfigMap));
     }
 
     /**

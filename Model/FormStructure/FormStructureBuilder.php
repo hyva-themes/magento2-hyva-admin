@@ -68,12 +68,12 @@ class FormStructureBuilder
         HyvaFormDefinitionInterface $formDefinition,
         FormLoadEntity $formEntity
     ): FormStructure {
-        $fieldsFromEntity = $formEntity->getFieldDefinitions();
+        $fieldsFromEntity = $formEntity->getFieldDefinitions($formName);
         $fieldsFromConfig = $formDefinition->getFieldDefinitions();
         $fields           = $this->mergeFormFieldDefinitionMaps->merge($fieldsFromEntity, $fieldsFromConfig);
 
         $groups   = $this->formGroupsBuilder->buildGroups($fields, $formDefinition->getGroupsFromSections());
-        $sections = $this->formSectionsBuilder->buildSections($formName, $groups, $formDefinition->getSectionsConfig());
+        $sections = $this->formSectionsBuilder->buildSections($formName, $formDefinition->getSectionsConfig(), $groups);
 
         return $this->formStructureFactory->create(['formName' => $formName, 'sections' => $sections]);
     }

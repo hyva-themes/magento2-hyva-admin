@@ -11,13 +11,7 @@ use Hyva\Admin\Model\FormStructure\FormStructureBuilder;
 use Hyva\Admin\Model\HyvaFormDefinitionInterface;
 use Hyva\Admin\Model\HyvaFormDefinitionInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaForm\FormNavigationInterfaceFactory;
-use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterfaceFactory;
-
-use function array_column as pick;
-use function array_filter as filter;
-use function array_map as map;
-use function array_merge as merge;
-use function array_values as values;
+use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface;
 
 class HyvaFormViewModel implements HyvaFormInterface
 {
@@ -97,7 +91,7 @@ class HyvaFormViewModel implements HyvaFormInterface
 
     private function getFormStructure(): FormStructure
     {
-        if (! isset($this->memoizedFormStructure)) {
+        if (!isset($this->memoizedFormStructure)) {
             $this->memoizedFormStructure = $this->formStructureBuilder->buildStructure(
                 $this->formName,
                 $this->getFormDefinition(),
@@ -131,5 +125,12 @@ class HyvaFormViewModel implements HyvaFormInterface
             'loadConfig' => $this->getFormDefinition()->getLoadConfig(),
             'saveConfig' => $this->getFormDefinition()->getSaveConfig(),
         ]);
+    }
+
+    public function hasOnlyDefaultSection(): bool
+    {
+        $sections = $this->getSections();
+
+        return count($sections) === 1 && isset($sections[FormSectionInterface::DEFAULT_SECTION_ID]);
     }
 }

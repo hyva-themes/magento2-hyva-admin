@@ -4,6 +4,8 @@ namespace Hyva\Admin\ViewModel\HyvaForm;
 
 interface FormGroupInterface
 {
+    public const DEFAULT_GROUP_ID = '';
+
     public function getId(): string;
 
     public function getLabel(): string;

@@ -27,6 +27,8 @@ use function array_values as values;
  */
 class FormLoadEntityRepositoryTest extends TestCase
 {
+    const TEST_FORM_NAME = 'test';
+
     public function aTestMethod()
     {
         return 0;
@@ -56,7 +58,7 @@ class FormLoadEntityRepositoryTest extends TestCase
         $sut    = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $result = $sut->fetchTypeAndMethod(__CLASS__ . '::aTestMethod', [], 'int');
         $this->assertSame(0, $result->getValue());
-        $this->assertSame([], $result->getFieldDefinitions());
+        $this->assertSame([], $result->getFieldDefinitions(self::TEST_FORM_NAME));
     }
 
     /**
@@ -73,7 +75,7 @@ class FormLoadEntityRepositoryTest extends TestCase
             CustomerInterface::class
         );
         $this->assertInstanceOf(CustomerInterface::class, $result->getValue());
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
 
         // system attribute
         $this->assertContainsField('firstname', $fields);
@@ -99,7 +101,7 @@ class FormLoadEntityRepositoryTest extends TestCase
             BlockInterface::class
         );
         $this->assertInstanceOf(BlockInterface::class, $result->getValue());
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
 
         $this->assertContainsField(BlockInterface::IDENTIFIER, $fields);
         $this->assertContainsField(BlockInterface::TITLE, $fields);
@@ -119,7 +121,7 @@ class FormLoadEntityRepositoryTest extends TestCase
             ProductInterface::class
         );
         $this->assertInstanceOf(ProductInterface::class, $result->getValue());
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
 
         // system attribute
         $this->assertContainsField('sku', $fields);
@@ -150,7 +152,7 @@ class FormLoadEntityRepositoryTest extends TestCase
         );
         $this->assertInstanceOf(OrderModel::class, $result->getValue());
 
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
         $this->assertContainsField('id', $fields);
         $this->assertContainsField('customer', $fields);
     }
@@ -172,7 +174,7 @@ class FormLoadEntityRepositoryTest extends TestCase
         );
         $this->assertInstanceOf(StoreInterface::class, $result->getValue());
 
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
         $this->assertContainsField('id', $fields);
         $this->assertContainsField('name', $fields);
         $this->assertContainsField('store_group_id', $fields);

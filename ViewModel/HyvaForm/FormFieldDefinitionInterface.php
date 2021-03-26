@@ -6,6 +6,8 @@ interface FormFieldDefinitionInterface
 {
     public function getName(): string;
 
+    public function getLabel(): string;
+
     public function getHtml(): string;
 
     /**
@@ -18,6 +20,8 @@ interface FormFieldDefinitionInterface
     public function getInputType(): string;
 
     public function isEnabled(): bool;
+
+    public function getFormName(): string;
 
     public function toArray(): array;
 

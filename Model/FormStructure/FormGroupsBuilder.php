@@ -10,6 +10,7 @@ use function array_map as map;
 use function array_merge as merge;
 use function array_reduce as reduce;
 
+use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterfaceFactory;
@@ -91,7 +92,7 @@ class FormGroupsBuilder
         return $this->formGroupFactory->create(merge($groupConfig, [
             'fields'    => $fieldsInGroup,
             'label'     => $groupConfig['label'] ?? null,
-            'sectionId' => $groupConfig['sectionId'] ?? '',
+            'sectionId' => $groupConfig['sectionId'] ?? FormSectionInterface::DEFAULT_SECTION_ID,
         ]));
     }
 
