@@ -6,11 +6,11 @@ interface FormGroupInterface
 {
     public const DEFAULT_GROUP_ID = '';
 
+    public const DEFAULT_GROUP_NAME = 'Additional';
+
     public function getId(): string;
 
     public function getLabel(): string;
-
-    public function hasLabel(): bool;
 
     /**
      * @return FormFieldDefinitionInterface[]

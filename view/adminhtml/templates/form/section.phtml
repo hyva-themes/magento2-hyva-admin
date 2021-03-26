@@ -9,7 +9,7 @@ $escaper = $escaper ?? $block;
 ?>
 <div>
     <?php foreach ($section->getGroups() as $group): ?>
-        <?php if ($group->hasLabel()): ?>
+        <?php if (! $section->hasOnlyDefaultGroup()): ?>
             <!-- When it grows this up is supposed to render as a collapsable field group -->
             <div class="group-<?= $group->getId() ?>">
                 <?= $escaper->escapeHtml($group->getLabel()) ?>

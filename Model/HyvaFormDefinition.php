@@ -102,7 +102,9 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
 
     private function getIncludeFieldsConfig(): array
     {
-        return $this->getFormConfig()['fields']['include'] ?? [];
+        $fieldConfigs = $this->getFormConfig()['fields']['include'] ?? [];
+
+        return $this->buildIdToConfigMap($fieldConfigs, 'name');
     }
 
     private function frequencies(array $a): array
@@ -129,8 +131,13 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
 
         $this->validateGroupIdsAreUniquePerSection($groupIds);
 
-        return reduce($groupsConfig, function (array $map, array $groupConfig): array {
-            $map[$groupConfig['id']] = $groupConfig;
+        return $this->buildIdToConfigMap($groupsConfig, 'id');
+    }
+
+    private function buildIdToConfigMap(array $configs, string $idField): array
+    {
+        return reduce($configs, function (array $map, array $config) use ($idField): array {
+            $map[$config[$idField]] = $config;
             return $map;
         }, []);
     }
