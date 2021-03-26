@@ -6,6 +6,7 @@ use function array_column as pick;
 use function array_combine as zip;
 use function array_keys as keys;
 use function array_map as map;
+use function array_merge as merge;
 use function array_reduce as reduce;
 
 use Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface;
@@ -38,7 +39,7 @@ class FormSectionsBuilder
     private function buildSectionIdToGroupsMap(array $groups): array
     {
         return reduce($groups, function (array $map, FormGroupInterface $group): array {
-            $map[$group->getSectionId()][] = $group;
+            $map[$group->getSectionId()][$group->getId()] = $group;
             return $map;
         }, []);
     }
@@ -46,12 +47,11 @@ class FormSectionsBuilder
     private function buildSectionInstances(string $formName, array $sectionIdToSectionConfigMap): array
     {
         return map(function (string $sectionId) use ($sectionIdToSectionConfigMap, $formName): FormSectionInterface {
-            return $this->formSectionFactory->create([
+            return $this->formSectionFactory->create(merge([
                 'id'       => $sectionId,
-                'groups'   => $sectionIdToSectionConfigMap[$sectionId]['groups'],
-                'label'    => $sortOrders['label'] ?? null,
+                'label'    => null,
                 'formName' => $formName,
-            ]);
+            ], $sectionIdToSectionConfigMap[$sectionId]));
         }, keys($sectionIdToSectionConfigMap));
     }
 

@@ -46,6 +46,10 @@ class FormXmlToArrayConverterTest extends TestCase
                 $this->getSectionsXml(),
                 $this->getSectionsExpected(),
             ],
+            'empty-section-id'   => [
+                $this->getEmptySectionIdXml(),
+                $this->getEmptySectionIdExpected(),
+            ],
             'navigation'         => [
                 $this->getNavigationXml(),
                 $this->getNavigationExpected(),
@@ -219,6 +223,30 @@ EOXML;
                     'groups'    => [
                         ['id' => 'whatever', 'sortOrder' => '10'],
                     ],
+                ],
+            ],
+        ];
+    }
+
+    private function getEmptySectionIdXml(): string
+    {
+        return <<<EOXML
+<sections>
+    <section id="" label="Default" sortOrder="10">
+    </section>
+</sections>
+EOXML;
+
+    }
+
+    private function getEmptySectionIdExpected(): array
+    {
+        return [
+            'sections' => [
+                [
+                    'id'        => '',
+                    'label'     => 'Default',
+                    'sortOrder' => '10',
                 ],
             ],
         ];

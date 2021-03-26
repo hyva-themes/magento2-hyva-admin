@@ -13,6 +13,8 @@ interface FormSectionInterface
      */
     public function getGroups(): array;
 
+    public function hasOnlyDefaultGroup(): bool;
+
     public function getHtml(): string;
 
     public function getLabel(): ?string;

@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 
 use function array_merge as merge;
 
+/**
+ * @covers \Hyva\Admin\Model\HyvaFormDefinition
+ */
 class HyvaFormDefinitionTest extends TestCase
 {
     public function testReturnsTheName(): void
@@ -31,8 +34,8 @@ class HyvaFormDefinitionTest extends TestCase
                 return [
                     'fields' => [
                         'include' => [
-                            'foo' => ['label' => 'Field One'],
-                            'bar' => ['label' => 'Field Two'],
+                            ['label' => 'Field One', 'id' => 'foo'],
+                            ['label' => 'Field Two', 'id' => 'bar'],
                         ],
                     ],
                 ];

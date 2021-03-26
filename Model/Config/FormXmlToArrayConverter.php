@@ -112,7 +112,7 @@ class FormXmlToArrayConverter
     {
         return filter(merge(
             XmlToArray::getAttributeConfig($fieldElement, 'name'),
-            XmlToArray::getAttributeConfig($fieldElement, 'group'),
+            XmlToArray::getAttributeConfig($fieldElement, 'group', 'groupId'),
             XmlToArray::getAttributeConfig($fieldElement, 'template'),
             XmlToArray::getAttributeConfig($fieldElement, 'type'),
             XmlToArray::getAttributeConfig($fieldElement, 'enabled'),
@@ -159,11 +159,13 @@ class FormXmlToArrayConverter
     private function convertSection(\DOMElement $sectionElement): array
     {
         return filter(merge(
-            XmlToArray::getAttributeConfig($sectionElement, 'id'),
+            ['id' => $sectionElement->getAttribute('id')], // empty string is valid id value
             XmlToArray::getAttributeConfig($sectionElement, 'label'),
             XmlToArray::getAttributeConfig($sectionElement, 'sortOrder'),
             ['groups' => map([$this, 'convertSectionGroup'], XmlToArray::getChildrenByName($sectionElement, 'group'))]
-        ));
+        ), function ($value): bool {
+            return is_string($value) || $value;
+        });
     }
 
     private function convertSectionGroup(\DOMElement $groupElement): array

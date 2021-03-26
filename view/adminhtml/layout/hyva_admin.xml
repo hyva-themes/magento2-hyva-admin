@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Hyva_Admin::css/styles.css" defer="defer" />
+    </head>
+    <body>
+        <!-- overridden to add AlpineJs before requireJs loads -->
+        <referenceBlock name="require.js" template="Hyva_Admin::page/js/require_js.phtml">
+            <arguments>
+                <argument name="secure_html_renderer_polyfill" xsi:type="object">\Hyva\Admin\Model\Polyfill\SecureHtmlRenderer</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

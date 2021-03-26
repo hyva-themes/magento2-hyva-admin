@@ -60,13 +60,7 @@ class FormGroup implements FormGroupInterface
 
     public function getLabel(): string
     {
-        return $this->label;
-    }
-
-    public function hasLabel(): bool
-    {
-        // Todo: add logic to determine
-        return isset($this->label);
+        return $this->label ?? self::DEFAULT_GROUP_NAME;
     }
 
     public function getFields(): array

@@ -64,4 +64,9 @@ class FormSection implements FormSectionInterface
     {
         return $this->label;
     }
+
+    public function hasOnlyDefaultGroup(): bool
+    {
+        return count($this->groups) === 1 && isset($this->groups[FormGroupInterface::DEFAULT_GROUP_ID]);
+    }
 }
