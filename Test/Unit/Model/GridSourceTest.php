@@ -50,7 +50,8 @@ class GridSourceTest extends TestCase
             $gridName,
             $gridSourceType,
             $this->createMock(GridSourcePrefetchEventDispatcher::class),
-            $this->createMock(GridSource\SearchCriteriaBindings::class)
+            $this->createMock(GridSource\SearchCriteriaBindings::class),
+            $this->createMock(GridSource\SearchCriteriaIdentity::class)
         );
     }
 

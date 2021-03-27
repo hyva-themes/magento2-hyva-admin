@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Model;
 
 use Hyva\Admin\Model\GridSource\SearchCriteriaBindings;
+use Hyva\Admin\Model\GridSource\SearchCriteriaIdentity;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
@@ -27,6 +28,8 @@ class GridSource implements HyvaGridSourceInterface
      */
     private $rawGridData;
 
+    private $rawGridDataSearchCriteriaHash = '';
+
     /**
      * @var GridSourcePrefetchEventDispatcher
      */
@@ -42,16 +45,23 @@ class GridSource implements HyvaGridSourceInterface
      */
     private $gridName;
 
+    /**
+     * @var SearchCriteriaIdentity
+     */
+    private $searchCriteriaIdentity;
+
     public function __construct(
         string $gridName,
         GridSourceType\GridSourceTypeInterface $gridSourceType,
         GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher,
-        SearchCriteriaBindings $searchCriteriaBindings
+        SearchCriteriaBindings $searchCriteriaBindings,
+        SearchCriteriaIdentity $searchCriteriaIdentity
     ) {
         $this->gridName                          = $gridName;
         $this->gridSourceType                    = $gridSourceType;
         $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
         $this->defaultSearchCriteriaBindings     = $searchCriteriaBindings;
+        $this->searchCriteriaIdentity            = $searchCriteriaIdentity;
     }
 
     public function extractColumnDefinitions(array $configuredColumns, array $hiddenKeys, bool $keepAll): array
@@ -111,9 +121,11 @@ class GridSource implements HyvaGridSourceInterface
 
     private function getRawGridData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
-        if (!isset($this->rawGridData)) {
-            $preprocessedSearchCriteria = $this->preprocessSearchCriteria($searchCriteria);
-            $this->rawGridData          = $this->gridSourceType->fetchData($preprocessedSearchCriteria);
+        $preprocessedSearchCriteria = $this->preprocessSearchCriteria($searchCriteria);
+        $searchCriteriaHash         = $this->searchCriteriaIdentity->hash($preprocessedSearchCriteria);
+        if ($this->rawGridDataSearchCriteriaHash !== $searchCriteriaHash) {
+            $this->rawGridDataSearchCriteriaHash = $searchCriteriaHash;
+            $this->rawGridData                   = $this->gridSourceType->fetchData($preprocessedSearchCriteria);
         }
         return $this->rawGridData;
     }

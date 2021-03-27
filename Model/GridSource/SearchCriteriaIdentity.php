@@ -2,13 +2,13 @@
 
 namespace Hyva\Admin\Model\GridSource;
 
+use function array_map as map;
+use function array_values as values;
+
 use Magento\Framework\Api\Filter;
 use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
-
-use function array_map as map;
-use function array_values as values;
 
 class SearchCriteriaIdentity
 {
@@ -39,7 +39,7 @@ class SearchCriteriaIdentity
 
     private function serializeFilterGroups(array $filterGroups): string
     {
-        $a = map(function(FilterGroup $g): string {
+        $a = map(function (FilterGroup $g): string {
             return $this->serializeFilters($g->getFilters());
         }, $filterGroups);
 
