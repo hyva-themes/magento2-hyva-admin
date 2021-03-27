@@ -20,21 +20,25 @@ $buttons    = $navigation->getButtons();
             <?php endforeach; ?>
         </div>
 
-        <?php if (!$form->hasOnlyDefaultSection() && !empty($form->getSections())): ?>
+        <div class="flex flex-col md:flex-row">
+            <?php if (!$form->hasOnlyDefaultSection() && !empty($form->getSections())): ?>
+                <div class="w-screen max-w-sm mr-10 flex flex-col">
+                    <!-- One day this is supposed to render as tabs to click on -->
+                    <?php foreach ($form->getSections() as $section): ?>
+                        <div class="border border-gray-400 -mb-px py-2 px-10 text-center cursor-pointer">
+                            <?= $escaper->escapeHtml($section->getLabel()) ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
             <div>
-                <!-- One day this is supposed to render as tabs to click on -->
                 <?php foreach ($form->getSections() as $section): ?>
-                    <?= $escaper->escapeHtml($section->getLabel()) ?>
+                    <div class="section-<?= $section->getId() ?>">
+                        <?= $section->getHtml() ?>
+                    </div>
                 <?php endforeach; ?>
             </div>
-        <?php endif; ?>
-
-        <div>
-            <?php foreach ($form->getSections() as $section): ?>
-                <div class="section-<?= $section->getId() ?>">
-                    <?= $section->getHtml() ?>
-                </div>
-            <?php endforeach; ?>
         </div>
     </div>
 </div>

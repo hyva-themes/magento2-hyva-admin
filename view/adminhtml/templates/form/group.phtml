@@ -7,13 +7,15 @@
 $escaper = $escaper ?? $block;
 
 ?>
-<div>
-    <?php foreach ($group->getFields() as $field): ?>
-    <div>
+<?php foreach ($group->getFields() as $field): ?>
+<div class="flex flex-col md:flex-row">
+    <div class="w-40 min-w-full max-width-none">
         <label for="<?= $escaper->escapeHtmlAttr($field->getName()) ?>">
             <?= $escaper->escapeHtml($field->getLabel()) ?>:
         </label>
     </div>
-    <div><?= $field->getHtml() ?></div>
-    <?php endforeach; ?>
+    <div class="border border-gray-200">
+        <?= $field->getHtml() ?>
+    </div>
 </div>
+<?php endforeach; ?>

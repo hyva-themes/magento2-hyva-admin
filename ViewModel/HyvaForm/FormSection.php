@@ -60,9 +60,9 @@ class FormSection implements FormSectionInterface
         return $block->toHtml();
     }
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? self::DEFAULT_SECTION_LABEL;
     }
 
     public function hasOnlyDefaultGroup(): bool
