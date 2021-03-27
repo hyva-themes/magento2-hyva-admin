@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Nothing currently.
+- Add composer dependency on laminas/laminas-code:^3.0.0 for Magento 2.3 compatibility.
 
 ### Changed
 - Nothing currently.

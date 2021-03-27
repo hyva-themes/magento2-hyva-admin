@@ -4,6 +4,7 @@
     "require": {
         "php": "^7.3.0",
         "ext-dom": "*",
+        "laminas/laminas-code": "^3.0.0",
         "magento/framework": ">=101.0.0",
         "magento/module-backend": ">=101.0.0"
     },
