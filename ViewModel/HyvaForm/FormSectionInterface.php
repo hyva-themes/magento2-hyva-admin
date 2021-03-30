@@ -14,7 +14,7 @@ interface FormSectionInterface
      */
     public function getGroups(): array;
 
-    public function hasOnlyDefaultGroup(): bool;
+    public function isDeclaredInConfig(): bool;
 
     public function getHtml(): string;
 

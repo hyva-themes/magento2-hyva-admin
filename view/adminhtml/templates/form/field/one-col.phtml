@@ -1,0 +1,11 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+?>
+<div class="border border-gray-50 col-span-2">
+    <?= $escaper->escapeHtml($field->getLabel()) ?>:
+    <br/>This is some super long text content because I want to see how the cell really resizes to accommodate, omg it still just keeps on going and going honk honk wtf omg when will I reach the end of the line though?
+</div>

@@ -64,10 +64,16 @@ class FormSectionsBuilder
     {
         $sectionIds = keys($sectionIdToGroupsMap);
         return zip($sectionIds, map(function (string $sectionId) use ($sectionIdToGroupsMap, $sectionConfig): array {
-            $config           = $sectionConfig[$sectionId] ?? [];
+            $config           = $this->extractSectionConfig($sectionId, $sectionConfig);
             $config['groups'] = $sectionIdToGroupsMap[$sectionId];
             return $config;
         }, $sectionIds));
+    }
+
+    private function extractSectionConfig(string $sectionId, array $sectionConfig): array
+    {
+        $originInfo = ['declaredInConfig' => isset($sectionConfig[$sectionId])];
+        return merge($sectionConfig[$sectionId] ?? [], $originInfo);
     }
 
     private function sortConfigMap(array $sectionIdToConfigMap, array $sectionIdOrderFromConfig): array

@@ -10,6 +10,8 @@ interface FormFieldDefinitionInterface
 
     public function getHtml(): string;
 
+    public function getInputHtml(): string;
+
     /**
      * @return FormFieldOptionInterface[]
      */

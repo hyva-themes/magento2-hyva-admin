@@ -10,35 +10,51 @@ $uniqueId   = '_' . md5($form->getFormName());
 $navigation = $form->getNavigation();
 $buttons    = $navigation->getButtons();
 ?>
+<script>
+    function init_form_<?= $uniqueId ?>() {
+        return {
+            activeSection: '<?= $form->getDefaultActiveSectionId() ?>',
+            activeGroups: <?= json_encode($form->getDefaultActiveGroupsMap()) ?>,
+            isActiveGroup: function(section, group) {
+                return this.activeGroups[section] === group;
+            }
+        }
+    }
+</script>
 <!-- Hyva_Admin form "<?= $escaper->escapeHtml($form->getFormName()) ?>" -->
-<div class="hyva-admin-form">
-    <div class="max-w-full px-0 py-6 mx-auto">
+<form x-data="init_form_<?= $uniqueId ?>()">
+    <div class="hyva-admin-form">
+        <div class="max-w-full px-0 py-6 mx-auto">
 
-        <div>
-            <?php foreach ($navigation->getButtons() as $button): ?>
-                <?= $button->getHtml() ?>
-            <?php endforeach; ?>
-        </div>
+            <div>
+                <?php foreach ($navigation->getButtons() as $button): ?>
+                    <?= $button->getHtml() ?>
+                <?php endforeach; ?>
+            </div>
 
-        <div class="flex flex-col md:flex-row">
-            <?php if (!$form->hasOnlyDefaultSection() && !empty($form->getSections())): ?>
-                <div class="w-screen max-w-sm mr-10 flex flex-col">
-                    <!-- One day this is supposed to render as tabs to click on -->
+            <div class="flex flex-col md:flex-row">
+                <?php if ($form->hasDeclaredSections()): ?>
+                    <div class="w-screen max-w-sm mr-10 flex flex-col">
+                        <!-- One day this is supposed to render as tabs to click on -->
+                        <?php foreach ($form->getSections() as $section): ?>
+                            <div class="border border-gray-400 -mb-px py-2 px-10 text-center cursor-pointer"
+                                @click="activeSection = '<?= $section->getId() ?>'"
+                                 x-bind:class="{ 'font-bold': activeSection === '<?= $section->getId() ?>' }">
+                                <?= $escaper->escapeHtml($section->getLabel()) ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <div>
                     <?php foreach ($form->getSections() as $section): ?>
-                        <div class="border border-gray-400 -mb-px py-2 px-10 text-center cursor-pointer">
-                            <?= $escaper->escapeHtml($section->getLabel()) ?>
+                        <div class="section-<?= $section->getId() ?>"
+                             x-show="activeSection === '<?= $section->getId()?>'">
+                            <?= $section->getHtml() ?>
                         </div>
                     <?php endforeach; ?>
                 </div>
-            <?php endif; ?>
-
-            <div>
-                <?php foreach ($form->getSections() as $section): ?>
-                    <div class="section-<?= $section->getId() ?>">
-                        <?= $section->getHtml() ?>
-                    </div>
-                <?php endforeach; ?>
             </div>
         </div>
     </div>
-</div>
+</form>
