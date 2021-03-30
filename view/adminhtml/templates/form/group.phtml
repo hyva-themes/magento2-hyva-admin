@@ -7,15 +7,17 @@
 $escaper = $escaper ?? $block;
 
 ?>
-<?php foreach ($group->getFields() as $field): ?>
-<div class="flex flex-col md:flex-row">
-    <div class="w-40 min-w-full max-width-none">
-        <label for="<?= $escaper->escapeHtmlAttr($field->getName()) ?>">
-            <?= $escaper->escapeHtml($field->getLabel()) ?>:
-        </label>
+<div>
+    <!-- When it grows this up is supposed to render as a collapsable field group -->
+    <div class="group-<?= $group->getId() ?> mb-4 mt-3 font-bold"
+        @click="activeGroups['<?= $group->getSectionId() ?>'] = '<?= $group->getId() ?>'">
+        <?= $escaper->escapeHtml($group->getLabel()) ?>
     </div>
-    <div class="border border-gray-200">
-        <?= $field->getHtml() ?>
+    <div class="grid gap-3" style="grid-template-columns: 17rem minmax(0, 1fr)"
+         x-show="this.activeGroups['<?= $group->getSectionId() ?>'] === '<?= $group->getId() ?>'"
+    >
+        <?php foreach ($group->getFields() as $field): ?>
+            <?= $field->getHtml() ?>
+        <?php endforeach; ?>
     </div>
 </div>
-<?php endforeach; ?>

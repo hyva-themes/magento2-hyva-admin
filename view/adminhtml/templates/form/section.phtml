@@ -9,10 +9,6 @@ $escaper = $escaper ?? $block;
 ?>
 <div>
     <?php foreach ($section->getGroups() as $group): ?>
-        <!-- When it grows this up is supposed to render as a collapsable field group -->
-        <div class="text-lg group-<?= $group->getId() ?>">
-            <?= $escaper->escapeHtml($group->getLabel()) ?>
-        </div>
         <?= $group->getHtml() ?>
     <?php endforeach; ?>
 </div>

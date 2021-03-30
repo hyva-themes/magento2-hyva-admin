@@ -13,5 +13,9 @@ interface HyvaFormInterface
      */
     public function getSections(): array;
 
-    public function hasOnlyDefaultSection(): bool;
+    public function hasDeclaredSections(): bool;
+
+    public function getDefaultActiveSectionId(): string;
+
+    public function getDefaultActiveGroupsMap(): array;
 }

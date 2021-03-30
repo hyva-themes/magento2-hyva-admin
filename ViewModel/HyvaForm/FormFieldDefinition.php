@@ -129,8 +129,20 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getHtml(): string
     {
+        return $this->renderTemplate($this->template ?? $this->determineFieldTemplate());
+    }
+
+    public function getInputHtml(): string
+    {
+        $inputType = $this->getInputType() ?: 'text';
+        $template  = 'Hyva_Admin::form/field/input/' . $inputType . '.phtml';
+        return $this->renderTemplate($template);
+    }
+
+    private function renderTemplate(string $template): string
+    {
         $block = $this->layout->createBlock(Template::class);
-        $block->setTemplate($this->template ?? $this->determineTemplate());
+        $block->setTemplate($template);
         $block->assign('field', $this);
 
         return $block->toHtml();
@@ -161,9 +173,8 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         return $this->formName;
     }
 
-    private function determineTemplate(): string
+    private function determineFieldTemplate(): string
     {
-        // todo: use input type to determine template to use
-        return 'Hyva_Admin::form/field/text.phtml';
+        return 'Hyva_Admin::form/field/two-col.phtml';
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Hyva\Admin\ViewModel;
 
+use function array_keys as keys;
+use function array_reduce as reduce;
+
 use Hyva\Admin\Model\FormEntity\FormLoadEntity;
 use Hyva\Admin\Model\FormEntity\FormLoadEntityRepository;
 use Hyva\Admin\Model\FormSource;
@@ -84,6 +87,9 @@ class HyvaFormViewModel implements HyvaFormInterface
         ]);
     }
 
+    /**
+     * @return HyvaForm\FormSectionInterface[]
+     */
     public function getSections(): array
     {
         return $this->getFormStructure()->getSections();
@@ -127,10 +133,25 @@ class HyvaFormViewModel implements HyvaFormInterface
         ]);
     }
 
-    public function hasOnlyDefaultSection(): bool
+    public function hasDeclaredSections(): bool
     {
         $sections = $this->getSections();
+        return count($sections) > 1
+            || (!isset($sections[FormSectionInterface::DEFAULT_SECTION_ID]))
+            || $sections[FormSectionInterface::DEFAULT_SECTION_ID]->isDeclaredInConfig();
+    }
 
-        return count($sections) === 1 && isset($sections[FormSectionInterface::DEFAULT_SECTION_ID]);
+    public function getDefaultActiveSectionId(): string
+    {
+        return keys($this->getSections())[0];
+    }
+
+    public function getDefaultActiveGroupsMap(): array
+    {
+        $sections = $this->getSections();
+        return reduce(keys($sections), function (array $map, string $sectionId) use ($sections): array {
+            $map[$sectionId] = keys($sections[$sectionId]->getGroups())[0];
+            return $map;
+        }, []);
     }
 }

@@ -32,13 +32,25 @@ class FormSection implements FormSectionInterface
      */
     private $layout;
 
-    public function __construct(LayoutInterface $layout, string $id, string $formName, array $groups, ?string $label)
-    {
-        $this->layout   = $layout;
-        $this->id       = $id;
-        $this->formName = $formName;
-        $this->groups   = $groups;
-        $this->label    = $label;
+    /**
+     * @var bool
+     */
+    private $declaredInConfig;
+
+    public function __construct(
+        LayoutInterface $layout,
+        string $id,
+        string $formName,
+        array $groups,
+        ?string $label,
+        bool $declaredInConfig = false
+    ) {
+        $this->layout           = $layout;
+        $this->id               = $id;
+        $this->formName         = $formName;
+        $this->groups           = $groups;
+        $this->label            = $label;
+        $this->declaredInConfig = $declaredInConfig;
     }
 
     public function getId(): string
@@ -65,8 +77,8 @@ class FormSection implements FormSectionInterface
         return $this->label ?? self::DEFAULT_SECTION_LABEL;
     }
 
-    public function hasOnlyDefaultGroup(): bool
+    public function isDeclaredInConfig(): bool
     {
-        return count($this->groups) === 1 && isset($this->groups[FormGroupInterface::DEFAULT_GROUP_ID]);
+        return $this->declaredInConfig;
     }
 }
