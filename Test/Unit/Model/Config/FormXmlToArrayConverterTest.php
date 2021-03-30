@@ -149,7 +149,7 @@ EOXML;
             'fields' => [
                 '@keepAllSourceFields' => 'true',
                 'include'              => [
-                    ['name' => 'identifier', 'group' => 'important-things'],
+                    ['name' => 'identifier', 'groupId' => 'important-things'],
                     ['name' => 'title', 'template' => 'My_Module::form/title-field.phtml'],
                     ['name' => 'content', 'type' => 'wysiwyg'],
                     ['name' => 'creation_time', 'type' => 'datetime'],
