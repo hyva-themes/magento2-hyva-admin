@@ -14,7 +14,7 @@ $escaper = $escaper ?? $block;
         <?= $escaper->escapeHtml($group->getLabel()) ?>
     </div>
     <div class="grid gap-3" style="grid-template-columns: 17rem minmax(0, 1fr)"
-         x-show="this.activeGroups['<?= $group->getSectionId() ?>'] === '<?= $group->getId() ?>'"
+         x-show="activeGroups['<?= $group->getSectionId() ?>'] === '<?= $group->getId() ?>'"
     >
         <?php foreach ($group->getFields() as $field): ?>
             <?= $field->getHtml() ?>
