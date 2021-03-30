@@ -34,8 +34,8 @@ class HyvaFormDefinitionTest extends TestCase
                 return [
                     'fields' => [
                         'include' => [
-                            ['label' => 'Field One', 'id' => 'foo'],
-                            ['label' => 'Field Two', 'id' => 'bar'],
+                            ['label' => 'Field One', 'name' => 'foo'],
+                            ['label' => 'Field Two', 'name' => 'bar'],
                         ],
                     ],
                 ];
