@@ -10,4 +10,14 @@ class ArrayValueExtractor
     {
         return keys($array);
     }
+
+    /**
+     * @param array $array
+     * @param string $code
+     * @return mixed
+     */
+    public function getValue(array $array, string $code)
+    {
+        return $array[$code];
+    }
 }

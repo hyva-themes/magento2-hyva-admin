@@ -13,6 +13,11 @@ interface FormFieldDefinitionInterface
     public function getInputHtml(): string;
 
     /**
+     * @return mixed
+     */
+    public function getValue();
+
+    /**
      * @return FormFieldOptionInterface[]
      */
     public function getOptions(): array;
