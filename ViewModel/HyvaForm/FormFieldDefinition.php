@@ -76,6 +76,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     private $value;
 
+    /**
+     * @var int|null
+     */
+    private $sortOrder;
+
     public function __construct(
         LayoutInterface $layout,
         FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
@@ -90,7 +95,8 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         ?bool $isEnabled = null,
         ?bool $isExcluded = null,
         bool $joinColumns = false,
-        ?string $valueProcessor = null
+        ?string $valueProcessor = null,
+        ?int $sortOrder = null
     ) {
         $this->layout                     = $layout;
         $this->formName                   = $formName;
@@ -106,6 +112,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         $this->excluded                   = $isExcluded;
         $this->joinColumns                = $joinColumns;
         $this->valueProcessor             = $valueProcessor;
+        $this->sortOrder                  = $sortOrder;
     }
 
     public function toArray(): array
@@ -123,6 +130,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
             'isExcluded'     => $this->excluded,
             'joinColumns'    => $this->joinColumns,
             'valueProcessor' => $this->valueProcessor,
+            'sortOrder'      => $this->sortOrder,
         ]);
     }
 
@@ -188,6 +196,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     public function getFormName(): string
     {
         return $this->formName;
+    }
+
+    public function getSortOrder(): ?int
+    {
+        return $this->sortOrder;
     }
 
     private function determineFieldContainerTemplate(): string

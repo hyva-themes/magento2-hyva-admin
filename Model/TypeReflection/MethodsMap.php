@@ -88,6 +88,7 @@ class MethodsMap
         $this->initMethodMapForType($type);
         $methodInfo = $this->memoizedMethodMaps[$type][$methodName] ?? false;
         // TODO: ignore optional parameters in parameter count validation
+        // revisit when building the save process
         return $methodInfo &&
             $methodInfo['parameterCount'] === 1 &&
             substr($methodName, 0, 3) === 'set' &&
