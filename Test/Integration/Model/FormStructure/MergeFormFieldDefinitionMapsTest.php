@@ -73,7 +73,7 @@ class MergeFormFieldDefinitionMapsTest extends TestCase
         $this->assertSame([['label' => 'Test', 'value' => 1]], $result['foo']->getOptions());
     }
 
-    public function testMergesDIfferentAndSameFields(): void
+    public function testMergesDifferentAndSameFields(): void
     {
         /** @var MergeFormFieldDefinitionMaps $sut */
         $sut = ObjectManager::getInstance()->create(MergeFormFieldDefinitionMaps::class);
@@ -90,7 +90,7 @@ class MergeFormFieldDefinitionMapsTest extends TestCase
         $result = $sut->merge($fieldsA, $fieldsB);
 
         $this->assertCount(3, $result);
-        $this->assertSame(['onlyB', 'both', 'onlyA'], keys($result));
+        $this->assertSame(['both', 'onlyB', 'onlyA'], keys($result));
         $this->assertSame('onlyB', $result['onlyB']->getName());
         $this->assertSame('both', $result['both']->getName());
         $this->assertSame('onlyA', $result['onlyA']->getName());
