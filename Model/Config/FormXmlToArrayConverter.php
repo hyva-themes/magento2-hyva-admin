@@ -93,7 +93,7 @@ class FormXmlToArrayConverter
          * <fields>
          *     <include keepAllSourceFields="true">
          *         <field name="identifier" group="important-things"/>
-         *         <field name="title" template="My_Module::form/title-field.phtml"/>
+         *         <field name="title" template="My_Module::form/title-field.phtml" joinColumns="true"/>
          *         <field name="content" type="wysiwyg"/>
          *         <field name="creation_time" type="datetime"/>
          *         <field name="is_active" type="boolean"/>
@@ -114,6 +114,7 @@ class FormXmlToArrayConverter
             XmlToArray::getAttributeConfig($fieldElement, 'name'),
             XmlToArray::getAttributeConfig($fieldElement, 'group', 'groupId'),
             XmlToArray::getAttributeConfig($fieldElement, 'template'),
+            XmlToArray::getAttributeConfig($fieldElement, 'joinColumns'),
             XmlToArray::getAttributeConfig($fieldElement, 'type'),
             XmlToArray::getAttributeConfig($fieldElement, 'enabled'),
             XmlToArray::getAttributeConfig($fieldElement, 'source'),

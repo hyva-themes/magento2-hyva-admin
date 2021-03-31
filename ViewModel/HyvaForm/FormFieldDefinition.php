@@ -60,6 +60,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     private $formFieldDefinitionFactory;
 
     /**
+     * @var bool
+     */
+    private $joinColumns;
+
+    /**
      * @var LayoutInterface
      */
     private $layout;
@@ -84,6 +89,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         ?string $template = null,
         ?bool $isEnabled = null,
         ?bool $isExcluded = null,
+        bool $joinColumns = false,
         ?string $valueProcessor = null
     ) {
         $this->layout                     = $layout;
@@ -98,6 +104,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         $this->template                   = $template;
         $this->enabled                    = $isEnabled;
         $this->excluded                   = $isExcluded;
+        $this->joinColumns                = $joinColumns;
         $this->valueProcessor             = $valueProcessor;
     }
 
@@ -107,12 +114,14 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
             'formName'       => $this->formName,
             'name'           => $this->name,
             'value'          => $this->value,
+            'label'          => $this->label,
             'options'        => $this->options,
             'inputType'      => $this->inputType,
             'groupId'        => $this->groupId,
             'template'       => $this->template,
             'isEnabled'      => $this->enabled,
             'isExcluded'     => $this->excluded,
+            'joinColumns'    => $this->joinColumns,
             'valueProcessor' => $this->valueProcessor,
         ]);
     }
@@ -185,6 +194,8 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     private function determineFieldTemplate(): string
     {
-        return 'Hyva_Admin::form/field/two-col.phtml';
+        return $this->joinColumns
+            ? 'Hyva_Admin::form/field/one-col.phtml'
+            : 'Hyva_Admin::form/field/two-col.phtml';
     }
 }
