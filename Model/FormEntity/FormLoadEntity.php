@@ -201,7 +201,7 @@ class FormLoadEntity
             return $this->customAttributesExtractor->getValue($this->value, $code);
         }
         if (in_array($code, $this->extensionAttributes, true)) {
-            return $this->extensionAttributeTypeExtractor->getValue($this->valueType, $code, $this->valueType);
+            return $this->extensionAttributeTypeExtractor->getValue($this->valueType, $code, $this->value);
         }
         if (in_array($code, $this->getterMethodAttributes, true)) {
             return $this->getterMethodsExtractor->getValue($this->value, $code);
