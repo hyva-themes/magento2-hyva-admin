@@ -22,4 +22,6 @@ interface FormGroupInterface
     public function getSectionId(): string;
 
     public function getSortOrder(): int;
+
+    public function isOnlyDefaultGroup(): bool;
 }

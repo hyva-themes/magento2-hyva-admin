@@ -8,13 +8,29 @@ $escaper = $escaper ?? $block;
 
 ?>
 <div>
-    <!-- When it grows this up is supposed to render as a collapsable field group -->
+    <?php if (! $group->isOnlyDefaultGroup()): ?>
     <div class="group-<?= $group->getId() ?> mb-4 mt-3 font-bold"
         @click="activeGroups['<?= $group->getSectionId() ?>'] = '<?= $group->getId() ?>'">
         <?= $escaper->escapeHtml($group->getLabel()) ?>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" class="inline"
+             viewBox="0 0 28 28" height="20" width="20"
+             x-show="activeGroups['<?= $group->getSectionId() ?>'] !== '<?= $group->getId() ?>'"
+        >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none"  stroke="currentColor" class="inline"
+             viewBox="0 0 28 28" height="20" width="20"
+             x-show="activeGroups['<?= $group->getSectionId() ?>'] === '<?= $group->getId() ?>'"
+        >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
     </div>
+    <?php endif; ?>
     <div class="grid gap-3" style="grid-template-columns: 17rem minmax(0, 1fr)"
          x-show="activeGroups['<?= $group->getSectionId() ?>'] === '<?= $group->getId() ?>'"
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0 transform scale-100"
+         x-transition:enter-end="opacity-100 transform scale-100"
     >
         <?php foreach ($group->getFields() as $field): ?>
             <?= $field->getHtml() ?>

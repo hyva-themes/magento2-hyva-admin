@@ -36,10 +36,11 @@ class FormGroupsBuilder
      */
     public function buildGroups(array $fields, array $groupIdToConfigMap): array
     {
-        $fieldToGroupIdMap      = $this->buildFieldToGroupIdMap($fields);
-        $groupIdToFieldIdsMap   = $this->buildGroupToFieldIdsMap($fieldToGroupIdMap);
-        $configMapWithFields    = $this->addFieldIdsToGroupConfig($groupIdToConfigMap, $groupIdToFieldIdsMap);
-        $groupIdToFullConfigMap = $this->addSortOrderWhereMissing($configMapWithFields);
+        $fieldToGroupIdMap             = $this->buildFieldToGroupIdMap($fields);
+        $groupIdToFieldIdsMap          = $this->buildGroupToFieldIdsMap($fieldToGroupIdMap);
+        $configMapWithFields           = $this->addFieldIdsToGroupConfig($groupIdToConfigMap, $groupIdToFieldIdsMap);
+        $configMapWithDefaultGroupFlag = $this->addOnlyDefaultGroupFlagToGroupConfig($configMapWithFields);
+        $groupIdToFullConfigMap        = $this->addSortOrderWhereMissing($configMapWithDefaultGroupFlag);
 
         return $this->buildGroupInstances($groupIdToFullConfigMap, $fields);
     }
@@ -116,14 +117,14 @@ class FormGroupsBuilder
     private function addSortOrderToGroupsWithoutConfig(array $allGroupsConfig): array
     {
         $isGroupWithoutConfiguration = function (array $groupConfig): bool {
-            return ! $this->isGroupWithConfiguration($groupConfig);
+            return !$this->isGroupWithConfiguration($groupConfig);
         };
         return $this->addSortOrderToGroups($allGroupsConfig, $isGroupWithoutConfiguration);
     }
 
     private function addSortOrderToGroups(array $allGroupsConfig, callable $filter): array
     {
-        $sortOrders = pick($allGroupsConfig, 'sortOrder');
+        $sortOrders   = pick($allGroupsConfig, 'sortOrder');
         $maxSortOrder = max($sortOrders ?: [0]);
 
         return map(function (array $groupConfig) use ($filter, &$maxSortOrder): array {
@@ -136,6 +137,22 @@ class FormGroupsBuilder
 
     private function isGroupWithConfiguration(array $groupConfig): bool
     {
-        return ! isset($groupConfig[self::NO_CONFIG]);
+        return !isset($groupConfig[self::NO_CONFIG]);
+    }
+
+    private function hasOnlyDefaultGroup(array $groupIdToConfigsMap): bool
+    {
+        return count($groupIdToConfigsMap) == 1
+            && isset($groupIdToConfigsMap[FormGroupInterface::DEFAULT_GROUP_ID])
+            && !$this->isGroupWithConfiguration($groupIdToConfigsMap[FormGroupInterface::DEFAULT_GROUP_ID]);
+    }
+
+    private function addOnlyDefaultGroupFlagToGroupConfig(array $groupIdToConfigsMap): array
+    {
+        $hasOnlyDefaultGroup = $this->hasOnlyDefaultGroup($groupIdToConfigsMap);
+        return map(function (array $config) use ($hasOnlyDefaultGroup): array {
+            $config['isOnlyDefaultGroup'] = $hasOnlyDefaultGroup;
+            return $config;
+        }, $groupIdToConfigsMap);
     }
 }
