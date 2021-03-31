@@ -30,6 +30,8 @@ interface FormFieldDefinitionInterface
 
     public function getFormName(): string;
 
+    public function getSortOrder(): ?int;
+
     public function toArray(): array;
 
     public function merge(FormFieldDefinitionInterface $field): FormFieldDefinitionInterface;

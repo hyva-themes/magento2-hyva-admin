@@ -4,7 +4,5 @@
 /** @var \Magento\Framework\Escaper $escaper */
 /** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
 
-$escaper = $escaper ?? $block;
-
 ?>
-<input form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>" type="text" value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"/>
+<input form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>" type="date" value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"/>

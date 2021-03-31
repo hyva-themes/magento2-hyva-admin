@@ -135,7 +135,7 @@ EOXML;
         <field name="content" type="wysiwyg"/>
         <field name="creation_time" type="datetime"/>
         <field name="is_active" type="boolean"/>
-        <field name="comment" enabled="false"/>
+        <field name="comment" enabled="false" sortOrder="10"/>
         <field name="store_ids" type="select" source="\Magento\Eav\Model\Entity\Attribute\Source\Store"/>
         <field name="admin" valueProcessor="\My\Module\Form\AdminLinkProcessor"/>
     </include>
@@ -154,7 +154,7 @@ EOXML;
                     ['name' => 'content', 'type' => 'wysiwyg'],
                     ['name' => 'creation_time', 'type' => 'datetime'],
                     ['name' => 'is_active', 'type' => 'boolean'],
-                    ['name' => 'comment', 'enabled' => 'false'],
+                    ['name' => 'comment', 'enabled' => 'false', 'sortOrder' => "10"],
                     [
                         'name'   => 'store_ids',
                         'type'   => 'select',
