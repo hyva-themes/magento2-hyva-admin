@@ -148,14 +148,12 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getHtml(): string
     {
-        return $this->renderTemplate($this->template ?? $this->determineFieldTemplate());
+        return $this->renderTemplate($this->determineFieldContainerTemplate());
     }
 
-    public function getInputHtml(): string
+    public function getContentHtml(): string
     {
-        $inputType = $this->getInputType() ?: 'text';
-        $template  = 'Hyva_Admin::form/field/input/' . $inputType . '.phtml';
-        return $this->renderTemplate($template);
+        return $this->renderTemplate($this->determineFieldContentTemplate());
     }
 
     private function renderTemplate(string $template): string
@@ -179,7 +177,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getInputType(): string
     {
-        return (string) $this->inputType;
+        return $this->inputType ?? 'text';
     }
 
     public function isEnabled(): bool
@@ -192,10 +190,15 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         return $this->formName;
     }
 
-    private function determineFieldTemplate(): string
+    private function determineFieldContainerTemplate(): string
     {
         return $this->joinColumns
             ? 'Hyva_Admin::form/field/one-col.phtml'
             : 'Hyva_Admin::form/field/two-col.phtml';
+    }
+
+    private function determineFieldContentTemplate(): string
+    {
+        return $this->template ?? 'Hyva_Admin::form/field/input/' . $this->getInputType() . '.phtml';
     }
 }

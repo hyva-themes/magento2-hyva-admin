@@ -10,7 +10,7 @@ interface FormFieldDefinitionInterface
 
     public function getHtml(): string;
 
-    public function getInputHtml(): string;
+    public function getContentHtml(): string;
 
     /**
      * @return mixed
