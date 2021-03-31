@@ -27,7 +27,12 @@ class FormSectionsBuilderTest extends TestCase
 
     private function createGroup(array $data = []): FormGroupInterface
     {
-        $default = ['fields' => [], 'sectionId' => FormSectionInterface::DEFAULT_SECTION_ID, 'sortOrder' => 0];
+        $default = [
+            'fields'             => [],
+            'sectionId'          => FormSectionInterface::DEFAULT_SECTION_ID,
+            'sortOrder'          => 0,
+            'isOnlyDefaultGroup' => true,
+        ];
         return $group = ObjectManager::getInstance()->create(FormGroupInterface::class, merge($default, $data));
     }
 

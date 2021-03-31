@@ -37,20 +37,27 @@ class FormGroup implements FormGroupInterface
      */
     private $layout;
 
+    /**
+     * @var bool
+     */
+    private $isOnlyDefaultGroup;
+
     public function __construct(
         LayoutInterface $layout,
         string $id,
         array $fields,
         string $sectionId,
         int $sortOrder,
+        bool $isOnlyDefaultGroup,
         ?string $label = null
     ) {
-        $this->layout    = $layout;
-        $this->id        = $id;
-        $this->fields    = $fields;
-        $this->label     = $label;
-        $this->sectionId = $sectionId;
-        $this->sortOrder = $sortOrder;
+        $this->layout             = $layout;
+        $this->id                 = $id;
+        $this->fields             = $fields;
+        $this->label              = $label;
+        $this->sectionId          = $sectionId;
+        $this->sortOrder          = $sortOrder;
+        $this->isOnlyDefaultGroup = $isOnlyDefaultGroup;
     }
 
     public function getId(): string
@@ -60,7 +67,14 @@ class FormGroup implements FormGroupInterface
 
     public function getLabel(): string
     {
-        return $this->label ?? self::DEFAULT_GROUP_NAME;
+        return $this->label ?? $this->buildDefaultLabel();
+    }
+
+    private function buildDefaultLabel(): string
+    {
+        return $this->id === self::DEFAULT_GROUP_ID
+            ? self::DEFAULT_GROUP_NAME
+            : ucwords(str_replace('_', ' ', $this->id));
     }
 
     public function getFields(): array
@@ -85,5 +99,10 @@ class FormGroup implements FormGroupInterface
     public function getSortOrder(): int
     {
         return $this->sortOrder;
+    }
+
+    public function isOnlyDefaultGroup(): bool
+    {
+        return $this->isOnlyDefaultGroup;
     }
 }

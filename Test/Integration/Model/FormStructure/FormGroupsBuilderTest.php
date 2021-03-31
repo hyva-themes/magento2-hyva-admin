@@ -124,4 +124,47 @@ class FormGroupsBuilderTest extends TestCase
         $groups = $this->buildGroups($fields, $groupIdToConfigMap);
         $this->assertSame(['group4', 'group3', 'group1', 'group2'], keys($groups));
     }
+
+    public function testSetsOnlyDefaultGroupFlagToTrueIfNoGroupConfig(): void
+    {
+        $fields    = [
+            $this->createField(['name' => 'foo']),
+            $this->createField(['name' => 'bar']),
+        ];
+        $groupIdToConfigMap = [];
+
+        $groups = $this->buildGroups($fields, $groupIdToConfigMap);
+        $this->assertArrayHasKey(FormGroupInterface::DEFAULT_GROUP_ID, $groups);
+        $this->assertTrue($groups[FormGroupInterface::DEFAULT_GROUP_ID]->isOnlyDefaultGroup());
+    }
+
+    public function testSetsOnlyDefaultGroupFlagToFalseIfGroupConfig(): void
+    {
+        $fields    = [
+            $this->createField(['name' => 'foo']),
+            $this->createField(['name' => 'bar']),
+        ];
+        $groupIdToConfigMap = [
+            FormGroupInterface::DEFAULT_GROUP_ID => ['id' => FormGroupInterface::DEFAULT_GROUP_ID],
+        ];
+
+        $groups = $this->buildGroups($fields, $groupIdToConfigMap);
+        $this->assertArrayHasKey(FormGroupInterface::DEFAULT_GROUP_ID, $groups);
+        $this->assertFalse($groups[FormGroupInterface::DEFAULT_GROUP_ID]->isOnlyDefaultGroup());
+    }
+
+    public function testSetsOnlyDefaultGroupFlagToFalseIfMultipleGroups(): void
+    {
+        $fields    = [
+            $this->createField(['name' => 'foo']),
+            $this->createField(['name' => 'bar', 'groupId' => 'foo']),
+        ];
+        $groupIdToConfigMap = [];
+
+        $groups = $this->buildGroups($fields, $groupIdToConfigMap);
+        $this->assertArrayHasKey(FormGroupInterface::DEFAULT_GROUP_ID, $groups);
+        $this->assertArrayHasKey('foo', $groups);
+        $this->assertFalse($groups[FormGroupInterface::DEFAULT_GROUP_ID]->isOnlyDefaultGroup());
+        $this->assertFalse($groups['foo']->isOnlyDefaultGroup());
+    }
 }
