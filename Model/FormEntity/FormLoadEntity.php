@@ -115,6 +115,7 @@ class FormLoadEntity
         return $this->formFieldDefinitionFactory->create([
             'formName'       => $formName,
             'name'           => $code,
+            'value'          => $this->getFieldValue($code),
             'options'        => $this->getFieldOptions($code),
             'inputType'      => $this->getFieldInputType($code),
             'groupId'        => $this->getFieldGroup($code),
@@ -188,5 +189,25 @@ class FormLoadEntity
     private function isCustomAttribute(string $code): bool
     {
         return in_array($code, $this->customAttributes, true);
+    }
+
+    /**
+     * @param string $code
+     * @return mixed
+     */
+    private function getFieldValue(string $code)
+    {
+        if (in_array($code, $this->customAttributes, true)) {
+            return $this->customAttributesExtractor->getValue($this->value, $code);
+        }
+        if (in_array($code, $this->extensionAttributes, true)) {
+            return $this->extensionAttributeTypeExtractor->getValue($this->valueType, $code, $this->valueType);
+        }
+        if (in_array($code, $this->getterMethodAttributes, true)) {
+            return $this->getterMethodsExtractor->getValue($this->value, $code);
+        }
+        if (in_array($code, $this->arrayKeyAttributes, true)) {
+            return $this->arrayValueExtractor->getValue($this->value, $code);
+        }
     }
 }

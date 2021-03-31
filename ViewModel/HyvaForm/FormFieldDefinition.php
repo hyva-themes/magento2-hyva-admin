@@ -69,11 +69,14 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
      */
     private $formName;
 
+    private $value;
+
     public function __construct(
         LayoutInterface $layout,
         FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
         string $formName,
         string $name,
+        $value = null,
         ?string $label = null,
         ?array $options = [],
         ?string $inputType = null,
@@ -87,6 +90,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         $this->formName                   = $formName;
         $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
         $this->name                       = $name;
+        $this->value                      = $value;
         $this->label                      = $label;
         $this->options                    = $options;
         $this->inputType                  = $inputType;
@@ -102,6 +106,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         return filter([
             'formName'       => $this->formName,
             'name'           => $this->name,
+            'value'          => $this->value,
             'options'        => $this->options,
             'inputType'      => $this->inputType,
             'groupId'        => $this->groupId,
@@ -125,6 +130,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     public function getLabel(): string
     {
         return $this->label ?? ucwords(str_replace('_', ' ', $this->getName()));
+    }
+
+    public function getValue()
+    {
+        return $this->value;
     }
 
     public function getHtml(): string
