@@ -131,7 +131,7 @@ EOXML;
 <fields>
     <include keepAllSourceFields="true">
         <field name="identifier" group="important-things"/>
-        <field name="title" template="My_Module::form/title-field.phtml"/>
+        <field name="title" template="My_Module::form/title-field.phtml" joinColumns="true"/>
         <field name="content" type="wysiwyg"/>
         <field name="creation_time" type="datetime"/>
         <field name="is_active" type="boolean"/>
@@ -150,7 +150,7 @@ EOXML;
                 '@keepAllSourceFields' => 'true',
                 'include'              => [
                     ['name' => 'identifier', 'groupId' => 'important-things'],
-                    ['name' => 'title', 'template' => 'My_Module::form/title-field.phtml'],
+                    ['name' => 'title', 'template' => 'My_Module::form/title-field.phtml', 'joinColumns' => 'true'],
                     ['name' => 'content', 'type' => 'wysiwyg'],
                     ['name' => 'creation_time', 'type' => 'datetime'],
                     ['name' => 'is_active', 'type' => 'boolean'],

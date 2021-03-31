@@ -62,6 +62,9 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
         return $this->getFormConfig()['save'] ?? [];
     }
 
+    /**
+     * @return FormFieldDefinitionInterface[]
+     */
     public function getFieldDefinitions(): array
     {
         $fieldCodes = keys($this->getIncludeFieldsConfig());
@@ -102,7 +105,10 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
 
     private function getIncludeFieldsConfig(): array
     {
-        $fieldConfigs = $this->getFormConfig()['fields']['include'] ?? [];
+        $fieldConfigs = map(function (array $config): array {
+            $config['joinColumns'] = ($config['joinColumns'] ?? false) === 'true';
+            return $config;
+        }, $this->getFormConfig()['fields']['include'] ?? []);
 
         return $this->buildIdToConfigMap($fieldConfigs, 'name');
     }

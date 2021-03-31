@@ -50,6 +50,50 @@ class HyvaFormDefinitionTest extends TestCase
         $this->assertContainsOnlyInstancesOf(FormFieldDefinitionInterface::class, $fieldDefinitions);
     }
 
+    /**
+     * @magentoAppArea adminhtml
+     * @dataProvider joinColumnsTestDataProvider
+     */
+    public function testCastsJoinFieldPropertyToBool(array $columnConfig, bool $expectsJoinedColumns): void
+    {
+        $stubFormConfigReader = new class($columnConfig) implements HyvaFormConfigReaderInterface {
+            private $columnConfig;
+
+            public function __construct(array $columnConfig)
+            {
+                $this->columnConfig = $columnConfig;
+            }
+
+            public function getFormConfiguration(string $formName): array
+            {
+                return [
+                    'fields' => [
+                        'include' => [$this->columnConfig],
+                    ],
+                ];
+            }
+        };
+
+        $arguments = ['formName' => 'test', 'formConfigReader' => $stubFormConfigReader];
+        /** @var HyvaFormDefinition $sut */
+        $sut              = ObjectManager::getInstance()->create(HyvaFormDefinitionInterface::class, $arguments);
+        $fieldDefinitions = $sut->getFieldDefinitions();
+        if ($expectsJoinedColumns) {
+            $this->assertStringContainsString('col-span-2', $fieldDefinitions['foo']->getHtml());
+        } else {
+            $this->assertStringNotContainsString('col-span-2', $fieldDefinitions['foo']->getHtml());
+        }
+    }
+
+    public function joinColumnsTestDataProvider(): array
+    {
+        return [
+            'explicit-true'  => [['name' => 'foo', 'joinColumns' => 'true'], true],
+            'explicit-false' => [['name' => 'foo', 'joinColumns' => 'false'], false],
+            'implicit-false' => [['name' => 'foo'], false],
+        ];
+    }
+
     public function testReturnsEmptyArrayIfNotSectionsAreDeclared(): void
     {
         $stubFormConfigReader = new class() implements HyvaFormConfigReaderInterface {
