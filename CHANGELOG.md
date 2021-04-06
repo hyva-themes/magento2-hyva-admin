@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Nothing.
+
+### Changed
+- Nothing currently.
+
+### Removed
+- No removals.
+
+## [1.1.5] - 2021-04-06
+### Added
 - Add composer dependency on laminas/laminas-code:^3.0.0 for Magento 2.3 compatibility.
 - Read return type from method declaration on interfaces if present.
 - Use Select inspection on collection grid source type for columns that do not have getters or setters.
