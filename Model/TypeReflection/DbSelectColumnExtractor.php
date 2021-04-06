@@ -2,7 +2,6 @@
 
 namespace Hyva\Admin\Model\TypeReflection;
 
-use Magento\Framework\DataObject;
 use Magento\Framework\DB\Select;
 
 use function array_filter as filter;
@@ -56,7 +55,7 @@ class DbSelectColumnExtractor
         }, $this->getFullColumnList($select)));
     }
 
-    public function getColumnType(Select $select, string $key): ?string
+    public function getColumnType(Select $select, string $key): string
     {
         $columnEntries = filter($this->getFullColumnList($select), function (array $columnEntry) use ($key): bool {
             [$correlationName, $column, $alias] = $columnEntry;
@@ -64,7 +63,7 @@ class DbSelectColumnExtractor
         });
         return $columnEntries
             ? $this->extractColumnType($select, values($columnEntries)[0])
-            : null;
+            : 'unknown';
 
     }
 
@@ -75,8 +74,14 @@ class DbSelectColumnExtractor
         return $this->tableColumnExtractor->getColumnType($tableName, $column);
     }
 
-    public function extractColumnValue(string $key, DataObject $object)
+    public function extractColumnValue(string $key, $object)
     {
-        return $object->getData($key);
+        if (method_exists($object, 'getData')) {
+            return $object->getData($key);
+        }
+        if ($object instanceof \ArrayAccess) {
+            return $object[$key];
+        }
+        return null;
     }
 }

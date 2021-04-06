@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Add composer dependency on laminas/laminas-code:^3.0.0 for Magento 2.3 compatibility.
 - Read return type from method declaration on interfaces if present.
+- Use Select inspection on collection grid source type for columns that do not have getters or setters.
+  This also supports fields added with joins and custom fields on existing flat tables.
 
 ### Changed
 - Nothing currently.
