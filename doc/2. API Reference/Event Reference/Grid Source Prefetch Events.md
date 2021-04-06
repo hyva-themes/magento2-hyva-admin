@@ -7,7 +7,9 @@ Before the grid data is loaded from the grid source object, two events are dispa
 
   \
 
-The grid name event suffix is basically the grid name in lower case, with underscores instead of special characters.
+The grid name event suffix is basically the grid name in lower case, with underscores instead of non-alphanumeric characters.
+
+For example, a grid named `product-grid` would dispatch the event `hyva_grid_source_prefetch_product_grid`.
 
 Both events are intended to be used to customize the search criteria instance that will be passed to the grid source.
 
