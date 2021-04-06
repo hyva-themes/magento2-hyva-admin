@@ -177,10 +177,25 @@ class MethodsMap
 
     private function getParentReflectionMethod(MethodReflection $method): ?MethodReflection
     {
-        $parent = $method->getDeclaringClass()->getParentClass();
+        $parent = $this->determineMethodParent($method);
         return $parent && $parent->hasMethod($method->getName())
             ? $parent->getMethod($method->getName())
             : null;
+    }
+
+    private function determineMethodParent(MethodReflection $method): ?ClassReflection
+    {
+        return $method->getDeclaringClass()->getParentClass() ?: $this->findInterfaceForMethod($method);
+    }
+
+    private function findInterfaceForMethod(MethodReflection $method): ?ClassReflection
+    {
+        return values(filter(
+            $method->getDeclaringClass()->getInterfaces(),
+            function (ClassReflection $interface) use ($method): bool {
+                return $interface->hasMethod($method->getName());
+            }
+        ))[0] ?? null;
     }
 
     private function readAnnotatedReturnTypeFromMethod(MethodReflection $method): ?string

@@ -115,4 +115,11 @@ class MethodsMapTest extends TestCase
         $this->assertSame(StubReflectionTargetChild::class, $sut->getParameterType($class, 'annotatedRelative', 'arg'));
         $this->assertSame(MethodsMap::class, $sut->getParameterType($class, 'annotatedImportedType', 'arg'));
     }
+
+    public function testReturnsTypeFromInterfaceIfNotOverridden(): void
+    {
+        $sut   = new MethodsMap(new FieldNamer(), new NamespaceMapper());
+        $returnType = $sut->getMethodReturnType(StubReflectionTargetParent::class, 'getIdentities');
+        $this->assertSame('string[]', $returnType);
+    }
 }
