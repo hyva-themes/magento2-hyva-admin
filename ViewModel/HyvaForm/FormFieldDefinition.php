@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel\HyvaForm;
 
+use Hyva\Admin\Model\FormEntity\FormFieldValueProcessorFactory;
+use Hyva\Admin\Model\FormEntity\FormFieldValueProcessorInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 use function array_filter as filter;
@@ -9,6 +11,16 @@ use function array_merge as merge;
 
 class FormFieldDefinition implements FormFieldDefinitionInterface
 {
+    /**
+     * @var FormFieldDefinitionInterfaceFactory
+     */
+    private $formFieldDefinitionFactory;
+
+    /**
+     * @var FormFieldValueProcessorFactory
+     */
+    private $fieldValueProcessorFactory;
+
     /**
      * @var string
      */
@@ -28,6 +40,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
      * @var string|null
      */
     private $inputType;
+
+    /**
+     * @var string
+     */
+    private $valueType;
 
     /**
      * @var string|null
@@ -55,11 +72,6 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     private $valueProcessor;
 
     /**
-     * @var FormFieldDefinitionInterfaceFactory
-     */
-    private $formFieldDefinitionFactory;
-
-    /**
      * @var bool
      */
     private $joinColumns;
@@ -81,11 +93,22 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
      */
     private $sortOrder;
 
+    private $valueTypeToInputTypeMap = [
+        'string'  => 'text',
+        'decimal' => 'text',
+        'int'     => 'number',
+        'bool'    => 'boolean',
+        'text'    => 'textarea',
+        'array'   => 'select',
+    ];
+
     public function __construct(
         LayoutInterface $layout,
         FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
+        FormFieldValueProcessorFactory $fieldValueProcessorFactory,
         string $formName,
         string $name,
+        ?string $valueType = null,
         $value = null,
         ?string $label = null,
         ?array $options = [],
@@ -99,9 +122,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         ?int $sortOrder = null
     ) {
         $this->layout                     = $layout;
-        $this->formName                   = $formName;
         $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
+        $this->fieldValueProcessorFactory = $fieldValueProcessorFactory;
+        $this->formName                   = $formName;
         $this->name                       = $name;
+        $this->valueType                  = $valueType;
         $this->value                      = $value;
         $this->label                      = $label;
         $this->options                    = $options;
@@ -121,6 +146,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
             'formName'       => $this->formName,
             'name'           => $this->name,
             'value'          => $this->value,
+            'valueType'      => $this->valueType,
             'label'          => $this->label,
             'options'        => $this->options,
             'inputType'      => $this->inputType,
@@ -151,7 +177,9 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getValue()
     {
-        return $this->value;
+        return $this->valueProcessor
+            ? $this->getValueProcessor()->toFieldValue($this->value)
+            : $this->value;
     }
 
     public function getHtml(): string
@@ -185,7 +213,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getInputType(): string
     {
-        return $this->inputType ?? 'text';
+        return $this->inputType ?? $this->determineInputType();
     }
 
     public function isEnabled(): bool
@@ -213,5 +241,30 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     private function determineFieldContentTemplate(): string
     {
         return $this->template ?? 'Hyva_Admin::form/field/input/' . $this->getInputType() . '.phtml';
+    }
+
+    private function getValueProcessor(): FormFieldValueProcessorInterface
+    {
+        return $this->fieldValueProcessorFactory->get($this->name, $this->valueProcessor);
+    }
+
+    private function determineInputType(): string
+    {
+        if (in_array($this->valueType, ['string', 'float', 'decimal'], true)) {
+            return 'text';
+        }
+        if ($this->valueType === 'text') {
+            return 'textarea';
+        }
+        if ($this->valueType === 'array') {
+            return 'select';
+        }
+        if ($this->valueType === 'bool') {
+            return 'bool';
+        }
+        if ($this->valueType === 'int') {
+            return 'number';
+        }
+        return 'text';
     }
 }

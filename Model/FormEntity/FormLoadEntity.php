@@ -113,16 +113,19 @@ class FormLoadEntity
     private function buildFieldDefinitionForAttribute(string $formName, string $code): FormFieldDefinitionInterface
     {
         return $this->formFieldDefinitionFactory->create([
-            'formName'       => $formName,
-            'name'           => $code,
-            'value'          => $this->getFieldValue($code),
-            'options'        => $this->getFieldOptions($code),
-            'inputType'      => $this->getFieldInputType($code),
-            'groupId'        => $this->getFieldGroup($code),
-            'template'       => null,
-            'isEnabled'      => true,
-            'isExcluded'     => false,
-            'valueProcessor' => null,
+            'formName'   => $formName,
+            'name'       => $code,
+            'value'      => $this->getFieldValue($code),
+            'valueType'  => $this->valueType,
+            'label'      => $this->getFieldLabel($code),
+            'options'    => $this->getFieldOptions($code),
+            'inputType'  => $this->getFieldInputType($code),
+            'groupId'    => $this->getFieldGroup($code),
+            'isExcluded' => false,
+            'isEnabled'  => true,
+            //'sortOrder'      => null,
+            //'valueProcessor' => null,
+            'template'   => null,
         ]);
     }
 
@@ -162,6 +165,13 @@ class FormLoadEntity
     {
         return $this->isCustomAttribute($code)
             ? $this->customAttributesExtractor->getAttributeGroup($this->value, $code)
+            : null;
+    }
+
+    private function getFieldLabel(string $code): ?string
+    {
+        return $this->isCustomAttribute($code)
+            ? $this->customAttributesExtractor->getAttributeLabel($this->valueType, $code)
             : null;
     }
 
