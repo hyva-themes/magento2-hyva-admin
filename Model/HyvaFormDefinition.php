@@ -106,7 +106,7 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
     private function getIncludeFieldsConfig(): array
     {
         $fieldConfigs = map(function (array $config): array {
-            $config['joinColumns'] = ($config['joinColumns'] ?? false) === 'true';
+            $config['joinColumns'] = ($config['joinColumns'] ?? false) === 'true'; // cast string 'true'|'false' -> bool
             return $config;
         }, $this->getFormConfig()['fields']['include'] ?? []);
 
@@ -115,9 +115,9 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
 
     private function frequencies(array $a): array
     {
-        return reduce($a, function (array $f, $x): array {
-            $f[$x] = ($f[$x] ?? 0) + 1;
-            return $f;
+        return reduce($a, function (array $freq, $x): array {
+            $freq[$x] = ($freq[$x] ?? 0) + 1;
+            return $freq;
         }, []);
     }
 
