@@ -7,7 +7,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Filesystem;
 
-class Csv extends AbstractTypeType
+class Csv extends AbstractType
 {
 
     private string $fileName = "export/export.csv";

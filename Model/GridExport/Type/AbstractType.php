@@ -7,7 +7,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
 
-abstract class AbstractTypeType implements TypeInterface
+abstract class AbstractType implements TypeInterface
 {
     private HyvaGridInterface $grid;
     private string $fileName;

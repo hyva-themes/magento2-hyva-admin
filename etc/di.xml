@@ -87,6 +87,7 @@
             <argument name="gridExportTypes" xsi:type="array">
                 <item name="csv" xsi:type="string">Hyva\Admin\Model\GridExport\Type\Csv</item>
                 <item name="xml" xsi:type="string">Hyva\Admin\Model\GridExport\Type\Xml</item>
+                <item name="xlsx" xsi:type="string">Hyva\Admin\Model\GridExport\Type\Xlsx</item>
             </argument>
         </arguments>
     </type>

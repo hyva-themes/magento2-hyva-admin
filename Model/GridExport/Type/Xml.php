@@ -10,10 +10,10 @@ use Magento\Framework\Convert\Excel;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Convert\ExcelFactory;
 
-class Xml extends AbstractTypeType
+class Xml extends AbstractType
 {
 
-    private string $fileName = "export/export.xlsx";
+    private string $fileName = "export/export.xml";
 
     private Filesystem $filesystem;
 
