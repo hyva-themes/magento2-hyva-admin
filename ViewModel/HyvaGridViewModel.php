@@ -25,9 +25,11 @@ use function array_values as values;
 
 class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
 {
-    private HyvaGrid\NavigationInterface $memoizedNavigation;
+    /**
+     * @var HyvaGrid\NavigationInterface
+     */
+    private $memoizedNavigation;
 
-    private HyvaGridDefinitionInterfaceFactory $gridDefinitionFactory;
     /**
      * @var HyvaGridDefinitionInterfaceFactory
      */

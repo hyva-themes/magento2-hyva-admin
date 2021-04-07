@@ -38,8 +38,8 @@ class Export
             throw new \InvalidArgumentException(sprintf('Export type "%s" not defined', $type));
         }
         return $this->exportTypeDefinition->get($export->getId(), [
-            'grid' => $grid,
-            'fileName' => $export->getFileName() ?: $gridName
+            'grid'     => $grid,
+            'fileName' => $export->getFileName() ?: ($gridName . "." . $export->getId()),
         ]);
     }
 

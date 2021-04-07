@@ -450,6 +450,18 @@ class GridXmlToArrayConverter
         );
     }
 
+    private function getExportConfig(\DOMElement $exportsElement): ?array
+    {
+        return filter(merge(
+            XmlToArray::getAttributeConfig($exportsElement, 'id'),
+            XmlToArray::getAttributeConfig($exportsElement, 'label'),
+            XmlToArray::getAttributeConfig($exportsElement, 'fileName'),
+            XmlToArray::getAttributeConfig($exportsElement, 'enabled'),
+            XmlToArray::getAttributeConfig($exportsElement, 'class'),
+            XmlToArray::getAttributeConfig($exportsElement, 'sortOrder')
+        ));
+    }
+
     private function getFiltersConfig(\DOMElement $navigationElement): ?array
     {
         /*

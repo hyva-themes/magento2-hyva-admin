@@ -7,6 +7,7 @@ namespace Hyva\Admin\Model\GridExport\Type;
 
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
+use Hyva\Admin\Model\GridExport\Source\GridSourceIteratorFactory;
 use Magento\Framework\Filesystem;
 
 class Xlsx extends AbstractType
@@ -22,13 +23,13 @@ class Xlsx extends AbstractType
      */
     private $fileSystem;
     /**
-     * @var SourceIteratorFactory
+     * @var GridSourceIteratorFactory
      */
     private $sourceIteratorFactory;
 
     public function __construct(
         Filesystem $filesystem,
-        SourceIteratorFactory $sourceIteratorFactory,
+        GridSourceIteratorFactory $sourceIteratorFactory,
         HyvaGridInterface $grid,
         string $fileName = ""
     ) {
