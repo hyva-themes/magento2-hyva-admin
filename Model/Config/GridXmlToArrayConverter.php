@@ -79,39 +79,140 @@ class GridXmlToArrayConverter
         return $this->getSourceConfig($source, 'collection');
     }
 
-    /*
-     * TODO: his is currently just an unfinished sketch of the method.
-     */
     private function getQuerySourceConfig(?\DOMElement $source): array
     {
         /*
-         * <source type="query">
+         * <source>
          *     <query>
          *         <select>
-         *             <column name="id"/>
-         *             <column name="name"/>
-         *             <column name="t.speed"/>
+         *             <from table="catalog_product" as="main_table"/>
+         *             <columns>
+         *                 <column name="entity_id" as="id"/>
+         *                 <column name="sku"/>
+         *             </columns>
+         *             <join type="left" table="catalog_product_entity_varchar" as="t_name">
+         *                 <on>t_name.entity_id=main_table.entity_id AND attribute_id=47</on>
+         *                 <columns>
+         *                     <column name="value" as="name"/>
+         *                 </columns>
+         *             </join>
+         *             <groupBy>
+         *                 <column name="main_table.attribute_set_id"/>
+         *                 <column name="t_name.name"/>
+         *             <groupBy>
          *         </select>
-         *         <from table="fossa_table" as="foo"/>
-         *         <join type="left" table="other_table" alias="t">
-         *             <condition>foo.id=t.id</condition>
-         *         </join>
-         *         <where>
-         *             <and>fossa.product_id IN(:product_ids)</and>
-         *         </where>
+         *         <unionSelect type="all">
+         *             <from table="catalog_product_other"/>
+         *          </unionSelect>
          *     </query>
-         *     <bindParamenters>
-         *         <product_ids>product_ids</product_ids>
-         *     </bindParamenters>
          * </source>
          */
         $query = XmlToArray::getChildByName($source, 'query');
-        if ($query) {
-            $bindParameters = XmlToArray::getChildByName($source, 'bindParameters');
-            // todo: unfinished business. Needs more thought and will be built out last.
-            $queryConfig = ['query' => [], 'bindParams' => ($bindParameters ?? [])];
-        }
-        return $queryConfig ?? [];
+        return $query
+            ? [
+                'query' => filter([
+                    'select' => $this->getQuerySelectConfig(XmlToArray::getChildByName($query, 'select')),
+                    'unions' => values(filter(map(
+                        [$this, 'getQueryUnionSelectConfig'],
+                        XmlToArray::getChildrenByName($query, 'unionSelect')
+                    ))),
+                ]),
+            ]
+            : [];
+    }
+
+    private function getQuerySelectConfig(?\DOMElement $selectElement): array
+    {
+        return $selectElement
+            ? filter([
+                'from'    => $this->getQueryFromConfig(XmlToArray::getChildByName($selectElement, 'from')),
+                'columns' => $this->getQueryColumnsConfig(XmlToArray::getChildByName($selectElement, 'columns')),
+                'joins'   => map([$this, 'getQueryJoinConfig'], XmlToArray::getChildrenByName($selectElement, 'join')),
+                'groupBy' => $this->getQueryGroupByConfig(XmlToArray::getChildByName($selectElement, 'groupBy')),
+            ])
+            : [];
+    }
+
+    private function getQueryFromConfig(?\DOMElement $fromElement): array
+    {
+        /* <from table="catalog_product" as="main_table"/> */
+        return $fromElement
+            ? merge(
+                XmlToArray::getAttributeConfig($fromElement, 'table'),
+                XmlToArray::getAttributeConfig($fromElement, 'as', '@as')
+            )
+            : [];
+    }
+
+    private function getQueryColumnsConfig(?\DOMElement $columnsElement): array
+    {
+        /*
+         * <columns>
+         *     <column name="entity_id" as="id"/>
+         *     <column name="sku"/>
+         * </columns>
+         */
+        return $columnsElement
+            ? filter(map(function (\DOMElement $columnElement): array {
+                return merge(
+                    XmlToArray::getAttributeConfig($columnElement, 'name', 'column'),
+                    XmlToArray::getAttributeConfig($columnElement, 'as', '@as')
+                );
+            }, XmlToArray::getChildrenByName($columnsElement, 'column')))
+            : [];
+    }
+
+    private function getQueryJoinConfig(\DOMElement $joinElement): array
+    {
+        /*
+         * <join type="left" table="catalog_product_entity_varchar" as="t_name">
+         *     <on>t_name.entity_id=main_table.entity_id AND attribute_id=47</on>
+         *     <columns>
+         *         <column name="value" as="name"/>
+         *     </columns>
+         * </join>
+         */
+        return filter(merge(
+            XmlToArray::getAttributeConfig($joinElement, 'type'),
+            [
+                'join' => filter(merge(
+                    XmlToArray::getAttributeConfig($joinElement, 'table'),
+                    XmlToArray::getAttributeConfig($joinElement, 'as', '@as')
+                )),
+            ],
+            XmlToArray::getElementConfig($joinElement, 'on'),
+            ['columns' => $this->getQueryColumnsConfig(XmlToArray::getChildByName($joinElement, 'columns'))]
+        ));
+    }
+
+    private function getQueryGroupByConfig(?\DOMElement $groupByElement): array
+    {
+        /*
+         * <groupBy>
+         *     <column name="main_table.attribute_set_id"/>
+         *     <column name="t_name.name"/>
+         * <groupBy>
+         */
+        return $groupByElement
+            ? values(filter(map(function (\DOMElement $groupByColumnElement): array {
+                return filter(merge(
+                    XmlToArray::getAttributeConfig($groupByColumnElement, 'name', 'column')
+                ));
+            }, XmlToArray::getChildrenByName($groupByElement, 'column'))))
+            : [];
+    }
+
+    private function getQueryUnionSelectConfig(\DOMElement $unionSelectConfig): array
+    {
+        /*
+         * <unionSelect type="all">
+         *    <from table="catalog_product_other"/>
+         * </unionSelect>
+         */
+        return filter(merge(
+            XmlToArray::getAttributeConfig($unionSelectConfig, 'type'),
+            $this->getQuerySelectConfig($unionSelectConfig)
+        ));
     }
 
     private function getDefaultSourceCriteriaBindingsConfig(\DOMElement $sourceElement): array
@@ -239,7 +340,7 @@ class GridXmlToArrayConverter
          * </exclude>
          */
         $excludeElement = XmlToArray::getChildByName($columnsElement, 'exclude');
-        $getName = function (\DOMElement $col): string {
+        $getName        = function (\DOMElement $col): string {
             return $col->getAttribute('name');
         };
         return $excludeElement

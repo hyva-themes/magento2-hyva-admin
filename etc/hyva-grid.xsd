@@ -46,6 +46,7 @@
                 <xs:element name="repositoryListMethod" type="phpTypeAndMethod"/>
                 <xs:element name="arrayProvider" type="phpType"/>
                 <xs:element name="collection" type="phpType" />
+                <xs:element name="query" type="queryType" />
             </xs:choice>
             <xs:element name="defaultSearchCriteriaBindings" type="searchCriteriaBindingsType" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
@@ -55,7 +56,7 @@
                     <xs:enumeration value="array"/>
                     <xs:enumeration value="repository"/>
                     <xs:enumeration value="collection" />
-                    <!--<xs:enumeration value="query" />-->
+                    <xs:enumeration value="query" />
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
@@ -302,7 +303,7 @@
     </xs:complexType>
 
     <xs:simpleType name="conditionType">
-        <xs:restriction base="xs:normalizedString">
+        <xs:restriction base="xs:string">
             <xs:enumeration value="eq"/>
             <xs:enumeration value="is"/>
             <xs:enumeration value="neq" />
@@ -322,4 +323,89 @@
             <xs:enumeration value="finset" />
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:simpleType name="selectJoinTypes">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="inner"/>
+            <xs:enumeration value="left"/>
+            <xs:enumeration value="right"/>
+            <xs:enumeration value="full"/>
+            <xs:enumeration value="cross"/>
+            <xs:enumeration value="natural"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:complexType name="queryType">
+        <xs:sequence>
+            <xs:element name="select" type="querySelectType" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="unionSelect" type="unionSelectType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="querySelectType">
+        <xs:sequence>
+            <xs:element name="from" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="table" type="xs:normalizedString" use="required"/>
+                    <xs:attribute name="as" type="xs:normalizedString"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="columns" type="aliasableColumnsType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="join" type="selectJoinType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="groupBy" type="nonAliasableColumnsType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="aliasableColumnsType">
+        <xs:sequence>
+            <xs:element name="column" type="aliasableColumnType" minOccurs="0" maxOccurs="unbounded">
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="nonAliasableColumnsType">
+        <xs:sequence>
+            <xs:element name="column" type="nonAliasableColumnType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="nonAliasableColumnType">
+        <xs:attribute name="name" type="columnNameType" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="aliasableColumnType">
+        <xs:attribute name="name" type="columnNameType" use="required"/>
+        <xs:attribute name="as" type="columnNameType"/>
+    </xs:complexType>
+
+    <xs:simpleType name="columnNameType">
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="[a-zA-Z_][a-zA-Z0-9_-]*"/>s
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="selectJoinType">
+        <xs:sequence>
+            <xs:element name="on" type="xs:string"/>
+            <xs:element name="columns" type="nonAliasableColumnsType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="type" type="selectJoinTypes"/>
+        <xs:attribute name="table" type="xs:normalizedString" use="required"/>
+        <xs:attribute name="as" type="xs:normalizedString"/>
+    </xs:complexType>
+
+    <xs:complexType name="unionSelectType">
+        <xs:complexContent>
+            <xs:extension base="querySelectType">
+                <xs:attribute name="type">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="all"/>
+                            <xs:enumeration value="distinct"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 </xs:schema>
