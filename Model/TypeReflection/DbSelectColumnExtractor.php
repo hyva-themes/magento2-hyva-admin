@@ -7,7 +7,6 @@ use Magento\Framework\DB\Select;
 use function array_filter as filter;
 use function array_map as map;
 use function array_merge as merge;
-use function array_reduce as reduce;
 use function array_values as values;
 
 class DbSelectColumnExtractor
