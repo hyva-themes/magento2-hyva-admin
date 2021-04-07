@@ -2,7 +2,9 @@
 
 namespace Hyva\Admin\Test\Unit\Model\TypeReflection\Stub;
 
-class StubReflectionTargetParent
+use Magento\Framework\DataObject\IdentityInterface;
+
+class StubReflectionTargetParent implements IdentityInterface
 {
     /**
      * @return string
@@ -31,5 +33,10 @@ class StubReflectionTargetParent
     final public function getMethodWithAnnotationAndSignatureFromParent(): string
     {
         return "0";
+    }
+
+    public function getIdentities()
+    {
+        return [];
     }
 }

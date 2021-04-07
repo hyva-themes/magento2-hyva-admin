@@ -7,7 +7,10 @@ use Hyva\Admin\Model\GridSourceType\RepositorySourceType\HyvaGridEventContainer;
 
 class HyvaGridEventDispatcher
 {
-    private EventManagerInterface $eventManager;
+    /**
+     * @var EventManagerInterface
+     */
+    private $eventManager;
 
     public function __construct(EventManagerInterface $eventManager)
     {

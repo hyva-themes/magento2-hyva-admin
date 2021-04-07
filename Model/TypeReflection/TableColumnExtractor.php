@@ -8,9 +8,15 @@ use function array_keys as keys;
 
 class TableColumnExtractor
 {
-    private ResourceConnection $resourceConnection;
+    /**
+     * @var ResourceConnection
+     */
+    private $resourceConnection;
 
-    private array $memoizedTableDescriptions = [];
+    /**
+     * @var array[]
+     */
+    private $memoizedTableDescriptions = [];
 
     public function __construct(ResourceConnection $resourceConnection)
     {
@@ -33,9 +39,9 @@ class TableColumnExtractor
         return keys($this->describeTable($tableName));
     }
 
-    public function getColumnType(string $phpType, string $key): ?string
+    public function getColumnType(string $tableName, string $key): ?string
     {
-        $tableDescription = $this->describeTable($phpType);
+        $tableDescription = $this->describeTable($tableName);
         return isset($tableDescription[$key])
             ? $tableDescription[$key]['DATA_TYPE']
             : null;

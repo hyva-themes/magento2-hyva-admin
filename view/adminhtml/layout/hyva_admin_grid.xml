@@ -5,12 +5,10 @@
     </head>
     <body>
         <!-- overridden to add AlpineJs before requireJs loads -->
-        <referenceBlock name="require.js" template="Hyva_Admin::page/js/require_js.phtml"/>
-        <block class="Magento\Catalog\Block\Product\ProductList\Upsell" name="product.info.upsell" template="Magento_Catalog::product/list/items.phtml">
+        <referenceBlock name="require.js" template="Hyva_Admin::page/js/require_js.phtml">
             <arguments>
-                <argument name="type" xsi:type="string">upsell</argument>
-                <argument name="view_model" xsi:type="object">Magento\Catalog\ViewModel\Product\Listing\PreparePostData</argument>
+                <argument name="secure_html_renderer_polyfill" xsi:type="object">\Hyva\Admin\Model\Polyfill\SecureHtmlRenderer</argument>
             </arguments>
-        </block>
+        </referenceBlock>
     </body>
 </page>

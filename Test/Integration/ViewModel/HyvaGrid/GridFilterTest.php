@@ -135,6 +135,20 @@ class GridFilterTest extends TestCase
         $this->assertSame($columnOptions, $resultOptionsAsArray);
     }
 
+    public function testAllowsColumnOptionWithZeroValueForSelect(): void
+    {
+        $columnOptions        = [
+            ['label' => 'Option One', 'value' => '1'],
+            ['label' => 'Option Two', 'value' => '0'],
+        ];
+        $sut                  = $this->createFilter([], ['options' => $columnOptions]);
+
+        $resultOptionsAsArray = map(function (FilterOptionInterface $option): array {
+            return ['label' => $option->getLabel(), 'value' => $option->getValues()[0]];
+        }, $sut->getOptions());
+        $this->assertSame($columnOptions, $resultOptionsAsArray);
+    }
+
     public function testReturnsFilterValueNullIfNotInRequest(): void
     {
         $sut = $this->createFilter([]);

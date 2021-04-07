@@ -19,35 +19,68 @@ use Magento\Framework\UrlInterface as UrlBuilder;
 
 class Navigation implements NavigationInterface
 {
-    const DEFAULT_PAGE_SIZE = 20;
-    const DEFAULT_PAGE_SIZES = '10,20,50';
+    public const DEFAULT_PAGE_SIZE = 20;
+    public const DEFAULT_PAGE_SIZES = '10,20,50';
 
-    private HyvaGridSourceInterface $gridSource;
+    /**
+     * @var HyvaGridSourceInterface
+     */
+    private $gridSource;
 
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
+    /**
+     * @var SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
 
-    private SearchCriteriaInterface $memoizedSearchCriteria;
+    /**
+     * @var SearchCriteriaInterface
+     */
+    private $memoizedSearchCriteria;
 
-    private RequestInterface $request;
+    /**
+     * @var RequestInterface
+     */
+    private $request;
 
-    private UrlBuilder $urlBuilder;
+    /**
+     * @var UrlBuilder
+     */
+    private $urlBuilder;
 
-    private GridFilterInterfaceFactory $gridFilterFactory;
+    /**
+     * @var GridFilterInterfaceFactory
+     */
+    private $gridFilterFactory;
 
-    private array $navigationConfig;
+    /**
+     * @var array[]
+     */
+    private $navigationConfig;
 
     /**
      * @var ColumnDefinitionInterface[]
      */
-    private array $columnDefinitions;
+    private $columnDefinitions;
 
-    private SortOrderBuilder $sortOrderBuilder;
+    /**
+     * @var SortOrderBuilder
+     */
+    private $sortOrderBuilder;
 
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private GridButtonInterfaceFactory $gridButtonFactory;
+    /**
+     * @var GridButtonInterfaceFactory
+     */
+    private $gridButtonFactory;
 
-    private GridExportInterfaceFactory $gridExportFactory;
+    /**
+     * @var GridExportInterfaceFactory
+     */
+    private $gridExportFactory;
 
     public function __construct(
         string $gridName,
@@ -152,7 +185,9 @@ class Navigation implements NavigationInterface
         // initializes the renderer block will not be loaded during the processing of the ajax request.
         return reduce(
             $this->columnDefinitions,
-            fn(bool $isEnabled, ColumnDefinitionInterface $c): bool => $isEnabled && !$c->getRendererBlockName(),
+            function (bool $isEnabled, ColumnDefinitionInterface $c): bool {
+                return $isEnabled && !$c->getRendererBlockName();
+            },
             ($this->navigationConfig['@isAjaxEnabled'] ?? '') !== 'false'
         );
     }
@@ -414,10 +449,14 @@ class Navigation implements NavigationInterface
         // sort all buttons with a sortOrder before the ones without a sortOrder
         $maxSortOrder = empty($elementsConfig)
             ? 0
-            : max(map(fn(array $elementConfig) => $elementConfig['sortOrder'] ?? 0, $elementsConfig)) + 1;
+            : max(map(function (array $buttonConfig) {
+                return $buttonConfig['sortOrder'] ?? 0;
+            }, $elementsConfig)) + 1;
         usort(
             $elementsConfig,
-            fn(array $a, array $b) => ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder)
+            function (array $a, array $b) use ($maxSortOrder) {
+                return ($a['sortOrder'] ?? $maxSortOrder) <=> ($b['sortOrder'] ?? $maxSortOrder);
+            }
         );
 
         return $elementsConfig;

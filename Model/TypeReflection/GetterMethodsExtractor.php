@@ -17,9 +17,15 @@ use Magento\Framework\Reflection\FieldNamer;
 
 class GetterMethodsExtractor
 {
-    private MethodsMap $methodsMap;
+    /**
+     * @var MethodsMap
+     */
+    private $methodsMap;
 
-    private FieldNamer $fieldNamer;
+    /**
+     * @var FieldNamer
+     */
+    private $fieldNamer;
 
     public function __construct(MethodsMap $methodsMap, FieldNamer $fieldNamer)
     {
@@ -31,23 +37,27 @@ class GetterMethodsExtractor
     {
         return reduce(
             [AbstractModel::class, DataObject::class],
-            fn(array $methods, string $parent): array => is_subclass_of($type, $parent)
-                ? diff($methods, $this->getGenericParentClassMethods($parent))
-                : $methods,
+            function (array $methods, string $parent) use ($type): array {
+                return is_subclass_of($type, $parent)
+                    ? diff($methods, $this->getGenericParentClassMethods($parent))
+                    : $methods;
+            },
             $methods
         );
     }
 
     private function getGenericParentClassMethods(string $class): array
     {
-        $methods = keys($this->methodsMap->getMethodsMap($class));
+        $methods = keys($this->methodsMap->getMethodsReturnTypeMap($class));
         // exclude getId since it needs to be inherited as a field on child classes
-        return filter($methods, fn(string $method): bool => $method !== 'getId');
+        return filter($methods, function (string $method): bool {
+            return $method !== 'getId';
+        });
     }
 
-    private function isMethodValidForDataField(string $type, string $method): bool
+    private function isMethodValidGetter(string $type, string $method): bool
     {
-        return (bool) $this->methodsMap->isMethodValidForDataField($type, $method);
+        return (bool) $this->methodsMap->isMethodValidGetter($type, $method);
     }
 
     private function fromType(string $type): array
@@ -59,9 +69,11 @@ class GetterMethodsExtractor
 
     private function buildMethodList(string $type): array
     {
-        $allMethods       = keys($this->methodsMap->getMethodsMap($type));
+        $allMethods       = keys($this->methodsMap->getMethodsReturnTypeMap($type));
         $methods          = $this->removeGenericParentClassMethods($type, $allMethods);
-        $potentialGetters = filter($methods, fn(string $method) => $this->isMethodValidForDataField($type, $method));
+        $potentialGetters = filter($methods, function (string $method) use ($type) {
+            return $this->isMethodValidGetter($type, $method);
+        });
 
         return values(filter($potentialGetters, function (string $method) use ($type): bool {
             $returnType = $this->methodsMap->getMethodReturnType($type, $method);

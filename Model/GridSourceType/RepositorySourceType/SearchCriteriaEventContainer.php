@@ -6,6 +6,9 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 
 class SearchCriteriaEventContainer
 {
+    /**
+     * @var SearchCriteriaInterface
+     */
     private $searchCriteria;
 
     public function __construct(SearchCriteriaInterface $searchCriteria)

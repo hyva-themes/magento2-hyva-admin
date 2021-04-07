@@ -28,31 +28,75 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
     private HyvaGrid\NavigationInterface $memoizedNavigation;
 
     private HyvaGridDefinitionInterfaceFactory $gridDefinitionFactory;
+    /**
+     * @var HyvaGridDefinitionInterfaceFactory
+     */
+    private $gridDefinitionFactory;
 
-    private HyvaGrid\CellInterfaceFactory $cellFactory;
+    /**
+     * @var HyvaGrid\CellInterfaceFactory
+     */
+    private $cellFactory;
 
-    private HyvaGridSourceFactory $gridSourceFactory;
+    /**
+     * @var HyvaGridSourceFactory
+     */
+    private $gridSourceFactory;
 
-    private HyvaGrid\RowInterfaceFactory $rowFactory;
+    /**
+     * @var HyvaGrid\RowInterfaceFactory
+     */
+    private $rowFactory;
 
-    private HyvaGrid\NavigationInterfaceFactory $navigationFactory;
+    /**
+     * @var HyvaGrid\NavigationInterfaceFactory
+     */
+    private $navigationFactory;
 
-    private HyvaGridDefinitionInterface $memoizedGridDefinition;
+    /**
+     * @var HyvaGridDefinitionInterface
+     */
+    private $memoizedGridDefinition;
 
-    private HyvaGridSourceInterface $memoizedGridSource;
+    /**
+     * @var HyvaGridSourceInterface
+     */
+    private $memoizedGridSource;
 
-    private HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory;
+    /**
+     * @var HyvaGrid\EntityDefinitionInterfaceFactory
+     */
+    private $entityDefinitionFactory;
 
-    private HyvaGrid\GridActionInterfaceFactory $actionFactory;
+    /**
+     * @var HyvaGrid\GridActionInterfaceFactory
+     */
+    private $actionFactory;
 
-    private HyvaGrid\MassActionInterfaceFactory $massActionFactory;
+    /**
+     * @var HyvaGrid\MassActionInterfaceFactory
+     */
+    private $massActionFactory;
 
-    private HyvaGridEventDispatcher $hyvaEventDispatcher;
+    /**
+     * @var HyvaGridEventDispatcher
+     */
+    private $hyvaEventDispatcher;
 
-    private LayoutInterface $layout;
+    /**
+     * @var LayoutInterface
+     */
+    private $layout;
 
-    private string $gridName;
-    private array $memoizedColumnDefinitions;
+    /**
+     * @var string
+     */
+    private $gridName;
+
+    /**
+     * @var array
+     */
+    private $memoizedColumnDefinitions;
 
     public function __construct(
         string $gridName,
@@ -273,11 +317,18 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
     public function getMassActionIdColumn(): ?string
     {
         $idColumn = $this->getGridDefinition()->getMassActionConfig()['@idColumn']
-            ?? (string) keys($this->getColumnDefinitions())[0]
+            ?? $this->getFirstColumnKey()
             ?? null;
         $this->validateActionIdColumnExists($idColumn, 'MassActionAction');
 
         return $idColumn;
+    }
+
+    public function getFirstColumnKey(): ?string
+    {
+        return isset($this->getColumnDefinitions()[0])
+            ? (string) $this->getColumnDefinitions()[0]
+            : null;
     }
 
     public function getMassActionIdsParam(): ?string

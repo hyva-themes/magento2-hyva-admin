@@ -1,13 +1,7 @@
 # Hyvä Admin
 
 This module aims to make creating grids and forms in the Magento 2 adminhtml area joyful and fast.    
-It does not use any UI components.
-
-
-|branch|status|
-|---|---|
-|main|![main branch tests](https://github.com/hyva-themes/magento2-hyva-admin/workflows/Hyv%C3%A4%20Admin%20Tests/badge.svg)|
-|php73|![php73 branch tests](https://github.com/hyva-themes/magento2-hyva-admin/workflows/Hyv%C3%A4%20Admin%20Tests/badge.svg?branch=php73)|
+It does not use any UI components. Status: ![main branch tests](https://github.com/hyva-themes/magento2-hyva-admin/workflows/Hyv%C3%A4%20Admin%20Tests/badge.svg)
 
 > They  came  round  the  corner,  and there was Eeyore's
   house, looking as comfy as anything.  
@@ -113,9 +107,7 @@ New features will be added in a backward compatible manner.
 ## Contributions
 
 PR's are very welcome.  
-Please submit contributions based on the main branch, as the php73 branch is backported automatically whenever a release is made.
-
-It's early in this modules life, so I will probably like to chime in on bigger changes.
+Please submit contributions based on the main branch. Currently the oldest supported PHP version is 7.3.
 
 ## Copyright & License
 

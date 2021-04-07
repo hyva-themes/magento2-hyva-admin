@@ -7,7 +7,7 @@ class NamespaceMapper
     /**
      * @var NamespaceMap[]
      */
-    private array $memizedNamespaceMaps = [];
+    private $memizedNamespaceMaps = [];
 
     public function forFile(string $file): NamespaceMap
     {

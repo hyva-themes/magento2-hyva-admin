@@ -4,9 +4,15 @@ namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 class EntityDefinition implements EntityDefinitionInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private array $entityDefinition;
+    /**
+     * @var array
+     */
+    private $entityDefinition;
 
     public function __construct(string $gridName, array $entityDefinition)
     {

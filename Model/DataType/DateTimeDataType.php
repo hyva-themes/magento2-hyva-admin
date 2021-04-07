@@ -7,9 +7,12 @@ use Magento\Framework\Stdlib\DateTime\DateTimeFormatterInterface;
 
 class DateTimeDataType implements DataTypeInterface
 {
-    const TYPE_DATETIME = 'datetime';
+    public const TYPE_DATETIME = 'datetime';
 
-    private DateTimeFormatterInterface $dateTimeFormatter;
+    /**
+     * @var DateTimeFormatterInterface
+     */
+    private $dateTimeFormatter;
 
     public function __construct(DateTimeFormatterInterface $dateTimeFormatter)
     {

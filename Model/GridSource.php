@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Model;
 
 use Hyva\Admin\Model\GridSource\SearchCriteriaBindings;
+use Hyva\Admin\Model\GridSource\SearchCriteriaIdentity;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
@@ -17,24 +18,50 @@ use function array_slice as slice;
 
 class GridSource implements HyvaGridSourceInterface
 {
-    private GridSourceType\GridSourceTypeInterface $gridSourceType;
+    /**
+     * @var GridSourceType\GridSourceTypeInterface
+     */
+    private $gridSourceType;
 
-    private GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher;
+    /**
+     * @var RawGridSourceContainer
+     */
+    private $rawGridData;
 
-    private SearchCriteriaBindings $defaultSearchCriteriaBindings;
+    private $rawGridDataSearchCriteriaHash = '';
 
-    private string $gridName;
+    /**
+     * @var GridSourcePrefetchEventDispatcher
+     */
+    private $gridSourcePrefetchEventDispatcher;
+
+    /**
+     * @var SearchCriteriaBindings
+     */
+    private $defaultSearchCriteriaBindings;
+
+    /**
+     * @var string
+     */
+    private $gridName;
+
+    /**
+     * @var SearchCriteriaIdentity
+     */
+    private $searchCriteriaIdentity;
 
     public function __construct(
         string $gridName,
         GridSourceType\GridSourceTypeInterface $gridSourceType,
         GridSourcePrefetchEventDispatcher $gridSourcePrefetchEventDispatcher,
-        SearchCriteriaBindings $searchCriteriaBindings
+        SearchCriteriaBindings $searchCriteriaBindings,
+        SearchCriteriaIdentity $searchCriteriaIdentity
     ) {
         $this->gridName                          = $gridName;
         $this->gridSourceType                    = $gridSourceType;
         $this->gridSourcePrefetchEventDispatcher = $gridSourcePrefetchEventDispatcher;
         $this->defaultSearchCriteriaBindings     = $searchCriteriaBindings;
+        $this->searchCriteriaIdentity            = $searchCriteriaIdentity;
     }
 
     public function extractColumnDefinitions(array $configuredColumns, array $hiddenKeys, bool $keepAll): array
@@ -95,7 +122,12 @@ class GridSource implements HyvaGridSourceInterface
     private function getRawGridData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
         $preprocessedSearchCriteria = $this->preprocessSearchCriteria($searchCriteria);
-        return $this->gridSourceType->fetchData($preprocessedSearchCriteria);
+        $searchCriteriaHash         = $this->searchCriteriaIdentity->hash($preprocessedSearchCriteria);
+        if ($this->rawGridDataSearchCriteriaHash !== $searchCriteriaHash) {
+            $this->rawGridDataSearchCriteriaHash = $searchCriteriaHash;
+            $this->rawGridData                   = $this->gridSourceType->fetchData($preprocessedSearchCriteria);
+        }
+        return $this->rawGridData;
     }
 
     private function preprocessSearchCriteria(SearchCriteriaInterface $searchCriteria): SearchCriteriaInterface

@@ -11,7 +11,10 @@ use Magento\Framework\View\LayoutInterface;
 
 class BooleanFilter implements ColumnDefinitionMatchingFilterInterface
 {
-    private LayoutInterface $layout;
+    /**
+     * @var LayoutInterface
+     */
+    private $layout;
 
     public function __construct(LayoutInterface $layout)
     {

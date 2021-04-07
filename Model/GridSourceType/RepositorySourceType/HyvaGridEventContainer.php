@@ -4,6 +4,9 @@ namespace Hyva\Admin\Model\GridSourceType\RepositorySourceType;
 
 class HyvaGridEventContainer
 {
+    /**
+     * @var mixed
+     */
     private $hyvaGridEventObject;
 
     public function __construct($hyvaGridEventObject)

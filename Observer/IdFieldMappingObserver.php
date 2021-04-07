@@ -3,16 +3,19 @@
 namespace Hyva\Admin\Observer;
 
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\SearchCriteriaEventContainer;
-use Hyva\Admin\Model\TypeReflection;
+use Hyva\Admin\Model\GridTypeReflection;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Event\Observer as Event;
 use Magento\Framework\Event\ObserverInterface;
 
 class IdFieldMappingObserver implements ObserverInterface
 {
-    private TypeReflection $typeReflection;
+    /**
+     * @var GridTypeReflection
+     */
+    private $typeReflection;
 
-    public function __construct(TypeReflection $typeReflection)
+    public function __construct(GridTypeReflection $typeReflection)
     {
         $this->typeReflection = $typeReflection;
     }

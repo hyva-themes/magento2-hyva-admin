@@ -5,13 +5,25 @@ namespace Hyva\Admin\ViewModel\HyvaGrid;
 class MassAction implements MassActionInterface
 {
 
-    private string $id;
+    /**
+     * @var string
+     */
+    private $id;
 
-    private string $url;
+    /**
+     * @var string
+     */
+    private $url;
 
-    private string $label;
+    /**
+     * @var string
+     */
+    private $label;
 
-    private bool $requireConfirmation;
+    /**
+     * @var bool
+     */
+    private $requireConfirmation;
 
     public function __construct(string $id, string $url, string $label, bool $requireConfirmation = false)
     {

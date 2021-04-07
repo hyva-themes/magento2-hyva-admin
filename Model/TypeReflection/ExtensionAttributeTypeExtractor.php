@@ -12,7 +12,10 @@ use function array_values as values;
 
 class ExtensionAttributeTypeExtractor
 {
-    private MethodsMap $methodsMap;
+    /**
+     * @var MethodsMap
+     */
+    private $methodsMap;
 
     public function __construct(MethodsMap $methodsMap)
     {
@@ -31,11 +34,11 @@ class ExtensionAttributeTypeExtractor
 
     private function getGetterExtensionAttributesGetterMethod(string $type): ?string
     {
-        $methods = keys($this->methodsMap->getMethodsMap($type));
+        $methods = keys($this->methodsMap->getMethodsReturnTypeMap($type));
         return values(filter($methods, function (string $method) use ($type): bool {
                 $returnType = $this->getMethodReturnType($type, $method);
                 return $this->isExtensionAttributesType($returnType);
-        }))[0] ?? null;
+            }))[0] ?? null;
     }
 
     private function isExtensionAttributesType(string $returnType): bool
@@ -52,7 +55,8 @@ class ExtensionAttributeTypeExtractor
     public function getExtensionAttributeType(string $type, string $key): string
     {
         $extensionAttributesType = $this->forType($type);
-        $returnType        = $this->getMethodReturnType($extensionAttributesType, $this->getMethodNameForKey($key));
+        $returnType              = $this->getMethodReturnType($extensionAttributesType,
+            $this->getMethodNameForKey($key));
         return substr($returnType, -2) === '[]'
             ? 'array'
             : $returnType;
@@ -61,7 +65,7 @@ class ExtensionAttributeTypeExtractor
     public function getValue(string $type, string $key, $object)
     {
         $extensionAttributesGetter = $this->getGetterExtensionAttributesGetterMethod($type);
-        $extensionAttributes = $object->{$extensionAttributesGetter}();
+        $extensionAttributes       = $object->{$extensionAttributesGetter}();
 
         $method = $this->getMethodNameForKey($key);
         return $extensionAttributes->{$method}();

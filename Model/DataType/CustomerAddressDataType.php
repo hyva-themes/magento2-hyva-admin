@@ -10,7 +10,7 @@ use function array_filter as filter;
 
 class CustomerAddressDataType implements DataTypeInterface
 {
-    const TYPE_MAGENTO_CUSTOMER_ADDRESS = 'magento_customer_address';
+    public const TYPE_MAGENTO_CUSTOMER_ADDRESS = 'magento_customer_address';
 
     public function valueToTypeCode($value): ?string
     {

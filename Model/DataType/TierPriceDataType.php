@@ -10,7 +10,7 @@ use function array_map as map;
 
 class TierPriceDataType implements DataTypeInterface
 {
-    const TYPE_MAGENTO_TIER_PRICE = 'magento_tier_price';
+    public const TYPE_MAGENTO_TIER_PRICE = 'magento_tier_price';
 
     public function valueToTypeCode($value): ?string
     {

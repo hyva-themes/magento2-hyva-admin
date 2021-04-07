@@ -5,14 +5,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Nothing currently.
+- Nothing.
 
 ### Changed
+- Nothing currently.
+
+### Removed
+- No removals.
+
+## [1.1.5] - 2021-04-06
+### Added
+- Add composer dependency on laminas/laminas-code:^3.0.0 for Magento 2.3 compatibility.
+- Read return type from method declaration on interfaces if present.
+- Use Select inspection on collection grid source type for columns that do not have getters or setters.
+  This also supports fields added with joins and custom fields on existing flat tables.
+
+### Changed
+- Nothing currently.
+
+### Removed
+- No removals.
+
+
+## [1.1.4] - 2021-03-15
+### Added
+- Add polyfill for `\Magento\Framework\View\Helper\SecureHtmlRenderer` for
+  `view/adminhtml/templates/page/js/require_js.phtml` Magento 2.3 compatibility.
+
+### Changed
+- Bugfix: allow underscore in route-id for route declarations in XML
+- Bugfix: grid column filters with a zero value are now possible
+- Bugfix issue #42: array grid providers returning an empty array no longer produce a stack trace.
 - Fixed example how to use `ColumnDefinition::merge()` in the docs.
 - Bugfix issue #33: With active filters the array grid source type page count still is calculated based on all grid
   records, not the filtered grid entries, resulting in added blank pages at the end.
-
-
+  
 ### Removed
 - No removals.
 

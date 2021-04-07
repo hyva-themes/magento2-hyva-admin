@@ -11,7 +11,7 @@ use function array_values as values;
 class ConstraintContainsColumn extends Constraint
 {
     /** @var ColumnDefinitionInterface[] */
-    private array $actualColumns;
+    private $actualColumns;
 
     public function __construct(array $actualColumns)
     {

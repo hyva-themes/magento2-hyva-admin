@@ -1,0 +1,12 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+?>
+<select id="<?= $field->getName() ?>" form="<?= $field->getFormName() ?>">
+    <?php foreach ($field->getOptions() as $option): ?>
+    <option value="<?= $escaper->escapeHtmlAttr($option->getValue()) ?>"><?= $escaper->escapeHtml($option->getLabel()) ?></option>
+    <?php endforeach; ?>
+</select>

@@ -12,29 +12,65 @@ use function array_map as map;
 
 class GridFilter implements GridFilterInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private string $filterFormId;
+    /**
+     * @var string
+     */
+    private $filterFormId;
 
-    private ColumnDefinitionInterface $columnDefinition;
+    /**
+     * @var ColumnDefinitionInterface
+     */
+    private $columnDefinition;
 
-    private FilterOptionInterfaceFactory $filterOptionFactory;
+    /**
+     * @var FilterOptionInterfaceFactory
+     */
+    private $filterOptionFactory;
 
-    private FilterSourceModelFactory $filterSourceModelFactory;
+    /**
+     * @var FilterSourceModelFactory
+     */
+    private $filterSourceModelFactory;
 
-    private GridFilterTypeLocator $gridFilterTypeLocator;
+    /**
+     * @var GridFilterTypeLocator
+     */
+    private $gridFilterTypeLocator;
 
-    private RequestInterface $request;
+    /**
+     * @var RequestInterface
+     */
+    private $request;
 
-    private ?string $enabled;
+    /**
+     * @var string|null
+     */
+    private $enabled;
 
-    private ?array $options;
+    /**
+     * @var array|null
+     */
+    private $options;
 
-    private ?string $filterType;
+    /**
+     * @var string|null
+     */
+    private $filterType;
 
-    private ?string $template;
+    /**
+     * @var string|null
+     */
+    private $template;
 
-    private ?string $source;
+    /**
+     * @var string|null
+     */
+    private $source;
 
     public function __construct(
         string $gridName,
@@ -123,7 +159,7 @@ class GridFilter implements GridFilterInterface
     {
         $arguments = [
             'label'  => (string) __($optionConfig['label']),
-            'values' => $optionConfig['values'] ?? ($optionConfig['value'] ? [$optionConfig['value']] : []),
+            'values' => $optionConfig['values'] ?? (isset($optionConfig['value']) ? [$optionConfig['value']] : []),
         ];
         return $this->filterOptionFactory->create($arguments);
     }

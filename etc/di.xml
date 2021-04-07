@@ -29,9 +29,29 @@
                 type="Hyva\Admin\ViewModel\HyvaGrid\FilterOption"/>
     <preference for="Hyva\Admin\ViewModel\HyvaGrid\GridButtonInterface"
                 type="Hyva\Admin\ViewModel\HyvaGrid\GridButton"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaFormInterface" type="Hyva\Admin\ViewModel\HyvaFormViewModel"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface"
+                type="Hyva\Admin\ViewModel\HyvaForm\FormSection"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaForm\FormNavigationInterface"
+                type="Hyva\Admin\ViewModel\HyvaForm\FormNavigation"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaForm\FormGroupInterface" type="Hyva\Admin\ViewModel\HyvaForm\FormGroup"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaForm\FormFieldOptionInterface"
+                type="Hyva\Admin\ViewModel\HyvaForm\FormFieldOption"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface"
+                type="Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinition"/>
+    <preference for="Hyva\Admin\ViewModel\HyvaForm\FormButtonInterface"
+                type="Hyva\Admin\ViewModel\HyvaForm\FormButton"/>
+    <preference for="Hyva\Admin\Model\HyvaFormDefinitionInterface" type="Hyva\Admin\Model\HyvaFormDefinition"/>
+    <preference for="Hyva\Admin\Model\Config\HyvaFormConfigReaderInterface"
+                type="Hyva\Admin\Model\Config\FormConfigReader"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>
+        </arguments>
+    </type>
+    <type name="Hyva\Admin\Block\Adminhtml\HyvaForm">
+        <arguments>
+            <argument name="formTemplate" xsi:type="string">Hyva_Admin::form.phtml</argument>
         </arguments>
     </type>
     <type name="Hyva\Admin\Model\DataType\DataTypeFacade">

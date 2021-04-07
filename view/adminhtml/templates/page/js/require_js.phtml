@@ -1,6 +1,11 @@
 <?php
 /** @var \Magento\Backend\Block\Page\RequireJs $block */
 /** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
+
+if (! isset($secureRenderer)) {
+    $secureRenderer = $block->getData('secure_html_renderer_polyfill');
+}
+
 ?>
 
 <script src="<?php echo $block->getViewFileUrl('Hyva_Admin::js/alpine.js'); ?>"></script>

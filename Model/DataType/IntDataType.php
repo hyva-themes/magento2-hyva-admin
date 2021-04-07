@@ -6,7 +6,7 @@ use Hyva\Admin\Api\DataTypeInterface;
 
 class IntDataType implements DataTypeInterface
 {
-    const TYPE_INT = 'int';
+    public const TYPE_INT = 'int';
 
     public function valueToTypeCode($value): ?string
     {

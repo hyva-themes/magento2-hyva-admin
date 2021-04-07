@@ -2,42 +2,85 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
-use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
+use function array_contains as contains;
+use function array_filter as filter;
+use function array_merge as merge;
+use function array_unique as unique;
+use function array_values as values;
+
 use Hyva\Admin\Model\GridSourceType\CollectionSourceType\GridSourceCollectionFactory;
-use Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor;
+use Hyva\Admin\Model\GridTypeReflection;
 use Hyva\Admin\Model\RawGridSourceContainer;
-use Hyva\Admin\Model\TypeReflection;
+use Hyva\Admin\Model\TypeReflection\DbSelectColumnExtractor;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Eav\Model\Entity\Collection\AbstractCollection as AbstractEavCollection;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
-
-use function array_filter as filter;
-use function array_values as values;
+use Magento\Framework\Data\Collection\AbstractDb;
 
 class CollectionGridSourceType implements GridSourceTypeInterface
 {
-    private string $gridName;
+    /**
+     * @var string
+     */
+    private $gridName;
 
-    private array $sourceConfiguration;
+    /**
+     * @var array[]
+     */
+    private $sourceConfiguration;
 
-    private TypeReflection $typeReflection;
+    /**
+     * @var GridTypeReflection
+     */
+    private $typeReflection;
 
-    private RawGridSourceDataAccessor $gridSourceDataAccessor;
+    /**
+     * @var RawGridSourceDataAccessor
+     */
+    private $gridSourceDataAccessor;
 
-    private ColumnDefinitionInterfaceFactory $columnDefinitionFactory;
+    /**
+     * @var ColumnDefinitionInterfaceFactory
+     */
+    private $columnDefinitionFactory;
 
-    private GridSourceCollectionFactory $gridSourceCollectionFactory;
+    /**
+     * @var GridSourceCollectionFactory
+     */
+    private $gridSourceCollectionFactory;
 
-    private CollectionProcessorInterface $defaultCollectionProcessor;
+    /**
+     * @var CollectionProcessorInterface
+     */
+    private $defaultCollectionProcessor;
 
-    private CollectionProcessorInterface $eavCollectionProcessor;
+    /**
+     * @var CollectionProcessorInterface
+     */
+    private $eavCollectionProcessor;
+
+    /**
+     * @var DbSelectColumnExtractor
+     */
+    private $dbSelectColumnExtractor;
+
+    /**
+     * @var string[]
+     */
+    private $memoizedTypeReflectionFields;
+
+    /**
+     * @var string[]
+     */
+    private $memoizedSelectInspectionFields;
 
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
-        TypeReflection $typeReflection,
+        GridTypeReflection $typeReflection,
+        DbSelectColumnExtractor $dbSelectColumnExtractor,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         GridSourceCollectionFactory $gridSourceCollectionFactory,
@@ -47,6 +90,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         $this->gridName                    = $gridName;
         $this->sourceConfiguration         = $sourceConfiguration;
         $this->typeReflection              = $typeReflection;
+        $this->dbSelectColumnExtractor     = $dbSelectColumnExtractor;
         $this->gridSourceDataAccessor      = $gridSourceDataAccessor;
         $this->columnDefinitionFactory     = $columnDefinitionFactory;
         $this->gridSourceCollectionFactory = $gridSourceCollectionFactory;
@@ -56,11 +100,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     public function getRecordType(): string
     {
-        $collection = $this->gridSourceCollectionFactory->create($this->getCollectionConfig());
-        $type       = $collection->getItemObjectClass();
-        return $type === \Magento\Framework\View\Element\UiComponent\DataProvider\Document::class
-            ? $collection->getMainTable() // seems to work okay for now
-            : $type;
+        return $this->getCollectionInstance()->getItemObjectClass();
     }
 
     private function getCollectionConfig(): string
@@ -70,18 +110,22 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     public function getColumnKeys(): array
     {
-        return $this->typeReflection->getFieldNames($this->getRecordType());
+        $this->memoizeFieldNames();
+        return unique(merge($this->memoizedTypeReflectionFields, $this->memoizedSelectInspectionFields));
     }
 
     public function getColumnDefinition(string $key): ColumnDefinitionInterface
     {
+        $this->memoizeFieldNames();
         return $this->buildColumnDefinition($key);
     }
 
     private function buildColumnDefinition(string $key): ColumnDefinitionInterface
     {
         $recordType = $this->getRecordType();
-        $columnType = $this->typeReflection->getColumnType($recordType, $key);
+        $columnType = $this->isTypeReflectionField($key)
+            ? $this->typeReflection->getColumnType($recordType, $key)
+            : $this->dbSelectColumnExtractor->getColumnType($this->getCollectionInstance()->getSelect(), $key);
         $label      = $this->typeReflection->extractLabel($recordType, $key);
         $options    = $this->typeReflection->extractOptions($recordType, $key);
 
@@ -108,7 +152,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
-        $collection = $this->gridSourceCollectionFactory->create($this->getCollectionConfig());
+        $collection = $this->getCollectionInstance();
         if (method_exists($collection, 'addFieldToSelect')) {
             $collection->addFieldToSelect('*');
         }
@@ -129,11 +173,35 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     public function extractValue($record, string $key)
     {
-        return $this->typeReflection->extractValue($this->getRecordType(), $key, $record);
+        $this->memoizeFieldNames();
+        return $this->isTypeReflectionField($key)
+            ? $this->typeReflection->extractValue($this->getRecordType(), $key, $record)
+            : $this->dbSelectColumnExtractor->extractColumnValue($key, $record);
     }
 
     public function extractTotalRowCount(RawGridSourceContainer $rawGridData): int
     {
         return $this->gridSourceDataAccessor->unbox($rawGridData)->getSize();
+    }
+
+    private function getCollectionInstance(): AbstractDb
+    {
+        return $this->gridSourceCollectionFactory->create($this->getCollectionConfig());
+    }
+
+    private function isTypeReflectionField(string $key): bool
+    {
+        return contains($this->memoizedTypeReflectionFields, $key, true);
+    }
+
+    private function memoizeFieldNames(): void
+    {
+        if (!isset($this->memoizedTypeReflectionFields)) {
+            $type                               = $this->getRecordType();
+            $this->memoizedTypeReflectionFields = $this->typeReflection->getFieldNames($type);
+
+            $select                               = $this->getCollectionInstance()->getSelect();
+            $this->memoizedSelectInspectionFields = $this->dbSelectColumnExtractor->getSelectColumns($select);
+        }
     }
 }

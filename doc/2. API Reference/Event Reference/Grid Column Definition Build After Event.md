@@ -17,8 +17,7 @@ The dispatched event is
 ```
 
 
-The grid event name suffix is the grid name in lower case with underscores instead of special characters.
-
+The grid event name suffix is the grid name in lower case with underscores instead of non-alphanumeric characters. For example a grid named `product-grid` will dispatch events named `hyva_grid_column_definition_build_after_product_grid`.
 
 ### Event Arguments
 
@@ -34,7 +33,7 @@ The event arguments are
 
 The grid name is passed along with the event for informational purposes, changing it has no effect.
 
-The data container is an instance of 
+The data container is an instance of
 
 `\Hyva\Admin\Model\GridSourceType\RepositorySourceType\HyvaGridEventContainer`.
 
@@ -57,6 +56,7 @@ public function execute(Observer $observer)
     $container->replaceContainerData($columnsMap);
 }
 ```
+
 
 Note: the `ColumnDefinition::merge()` method does not change the existing instance, instead, it returns a new instance with the merged properties applied.
 
