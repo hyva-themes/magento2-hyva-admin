@@ -65,10 +65,9 @@ class HyvaGridBlockTest extends TestCase
         $stubGridFactory = $this->createMock(HyvaGridInterfaceFactory::class);
         $stubGridFactory->method('create')->willReturn($stubGrid);
         $arguments   = ['grid_name' => 'dummy-grid-name'];
-        $children = [];
         $stubContext = $this->createMock(TemplateBlockContext::class);
 
-        $sut = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory, $children,  $arguments);
+        $sut = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory,  $arguments);
 
         $this->assertSame($stubGrid, $sut->getGrid());
     }
@@ -82,10 +81,9 @@ class HyvaGridBlockTest extends TestCase
                         ->with(['gridName' => 'dummy-grid-name'])
                         ->willReturn($stubGrid);
         $arguments   = ['grid_name' => 'dummy-grid-name'];
-        $children = [];
         $stubContext = $this->createMock(TemplateBlockContext::class);
 
-        $sut = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory, $children, $arguments);
+        $sut = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory, $arguments);
 
         $sut->getGrid();
     }

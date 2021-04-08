@@ -13,7 +13,10 @@ abstract class BaseHyvaGrid extends Template
      */
     private $gridFactory;
 
-    private HyvaGridInterface $grid;
+    /**
+     * @var HyvaGridInterface
+     */
+    private $grid;
 
     public function __construct(
         Template\Context $context,
@@ -35,7 +38,7 @@ abstract class BaseHyvaGrid extends Template
                 throw new \LogicException($msg);
             }
 
-            $this->grid = $this->gridFactory->create(['gridName' => $this->_getData('grid_name')]);
+            $this->grid = $this->gridFactory->create(['gridName' => $gridName]);
         }
         return $this->grid;
     }

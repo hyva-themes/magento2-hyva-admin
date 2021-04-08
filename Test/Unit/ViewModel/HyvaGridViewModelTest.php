@@ -20,6 +20,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridViewModel;
+use Magento\Framework\View\Layout;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -153,7 +154,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
-
+        $layout                       = $this->createStubLayout();
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
             $dummyGridDefinitionFactory,
@@ -164,7 +165,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyEntityDefinitionFactory,
             $dummyActionFactory,
             $dummyMassActionFactory,
-            $dummyHyvaEventDispatcher
+            $dummyHyvaEventDispatcher,
+            $layout
         );
 
         $this->assertInstanceOf(HyvaGridInterface::class, $sut);
@@ -188,6 +190,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
+        $layout                       = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'test-grid-name',
@@ -199,7 +202,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyEntityDefinitionFactory,
             $dummyActionFactory,
             $dummyMassActionFactory,
-            $dummyHyvaEventDispatcher
+            $dummyHyvaEventDispatcher,
+            $layout
         );
 
         $this->assertSame(3, $sut->getColumnCount());
@@ -221,6 +225,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
+        $layout                       = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -232,7 +237,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyEntityDefinitionFactory,
             $dummyActionFactory,
             $dummyMassActionFactory,
-            $dummyHyvaEventDispatcher
+            $dummyHyvaEventDispatcher,
+            $layout
         );
 
         $this->assertSame(['foo' => $columnFoo, 'bar' => $columnBar], $sut->getColumnDefinitions());
@@ -256,6 +262,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
+        $layout                       = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -267,7 +274,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyEntityDefinitionFactory,
             $dummyActionFactory,
             $dummyMassActionFactory,
-            $dummyHyvaEventDispatcher
+            $dummyHyvaEventDispatcher,
+            $layout
         );
 
         $this->assertSame(['foo' => $columnFoo, 'qux' => $columnQux], $sut->getColumnDefinitions());
@@ -302,6 +310,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
+        $layout                       = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -313,7 +322,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyEntityDefinitionFactory,
             $dummyActionFactory,
             $dummyMassActionFactory,
-            $dummyHyvaEventDispatcher
+            $dummyHyvaEventDispatcher,
+            $layout
         );
 
         $rows = $sut->getRows();
@@ -334,6 +344,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
+        $layout                       = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -345,7 +356,8 @@ class HyvaGridViewModelTest extends TestCase
             $dummyEntityDefinitionFactory,
             $dummyActionFactory,
             $dummyMassActionFactory,
-            $dummyHyvaEventDispatcher
+            $dummyHyvaEventDispatcher,
+            $layout
         );
 
         $this->assertInstanceOf(NavigationInterface::class, $sut->getNavigation());
@@ -363,6 +375,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory       = $this->createStubActionFactory();
         $dummyMassActionFactory   = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher = $this->createStubHyvaEventDispatcher();
+        $layout                       = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -374,9 +387,15 @@ class HyvaGridViewModelTest extends TestCase
             $stubEntityDefinitionFactory,
             $dummyActionFactory,
             $dummyMassActionFactory,
-            $dummyHyvaEventDispatcher
+            $dummyHyvaEventDispatcher,
+            $layout
         );
 
         $this->assertInstanceOf(EntityDefinitionInterface::class, $sut->getEntityDefinition());
+    }
+
+    private function createStubLayout()
+    {
+        return $this->createMock(Layout::class);
     }
 }
