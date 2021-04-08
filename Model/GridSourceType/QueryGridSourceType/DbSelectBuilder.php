@@ -5,7 +5,9 @@ namespace Hyva\Admin\Model\GridSourceType\QueryGridSourceType;
 use function array_column as pick;
 use function array_filter as filter;
 use function array_map as map;
+use function array_merge as merge;
 use function array_reduce as reduce;
+use function array_values as values;
 
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Select;
@@ -26,14 +28,14 @@ class DbSelectBuilder
     {
         $select = $this->buildSelect($queryConfig['select'] ?? []);
 
-        return $this->applyUnionSelectConfig($select, $queryConfig['unions'] ?? []);
+        return $this->applyUnionSelects($select, $queryConfig['unions'] ?? []);
     }
 
     private function buildSelect(array $selectConfig): Select
     {
         $select  = $this->resourceConnection->getConnection()->select();
         $table   = $this->buildTableArg($selectConfig['from'] ?? []);
-        $columns = map([$this, 'buildColumnArg'], $selectConfig['columns'] ?? []) ?: '*';
+        $columns = $this->buildColumnsArg($selectConfig['columns'] ?? []) ?: '*';
         $select->from($table, $columns);
         $select->group(pick($selectConfig['groupBy'] ?? [], 'column'));
 
@@ -44,23 +46,29 @@ class DbSelectBuilder
     {
         $joinMethod = 'join' . ucfirst($joinConfig['type'] ?? 'left');
         $table      = $this->buildTableArg($joinConfig['join'] ?? []);
-        $columns    = map([$this, 'buildColumnArg'], $joinConfig['columns'] ?? []) ?: [];
+        $columns    = $this->buildColumnsArg($joinConfig['columns'] ?? []);
         $select->$joinMethod($table, $joinConfig['on'] ?? '', $columns);
 
         return $select;
+    }
+
+    private function buildColumnsArg(array $columnsConfig): array
+    {
+        return merge([], ...values(map([$this, 'buildColumnArg'], $columnsConfig)));
     }
 
     /**
      * @param array $columnConfig
      * @return string|string[]
      */
-    private function buildColumnArg(array $columnConfig)
+    private function buildColumnArg(array $columnConfig): array
     {
-        $column = $columnConfig['column'] ?? '';
+        $expression = isset($columnConfig['expression']) ? new \Zend_Db_Expr($columnConfig['expression']) : '';
+        $column     = $columnConfig['column'] ?? $expression;
 
         return isset($columnConfig['@as'])
             ? [$columnConfig['@as'] => $column]
-            : $column;
+            : [$column];
     }
 
     /**
@@ -76,18 +84,34 @@ class DbSelectBuilder
             : $table;
     }
 
-    private function applyUnionSelectConfig(Select $select, array $unionSelectsConfig): Select
+    private function applyUnionSelects(Select $select, array $unionSelectsConfig): Select
     {
-        $distinctUnionSelectConfigs = filter($unionSelectsConfig ?? [], function (array $unionConfig): bool {
+        $select = $this->applyUnionSelectDistinct($select, $unionSelectsConfig);
+
+        return $this->applyUnionSelectAll($select, $unionSelectsConfig);
+    }
+
+    private function applyUnionSelectDistinct(Select $select, array $unionSelectsConfig): Select
+    {
+        $distinctUnionSelectsConfig = filter($unionSelectsConfig ?? [], function (array $unionConfig): bool {
             return ($unionConfig['type'] ?? 'distinct') !== 'all';
         });
-        $select->union(map([$this, 'buildSelect'], $distinctUnionSelectConfigs), Select::SQL_UNION);
+        return $this->applyUnionSelectConfig($select, $distinctUnionSelectsConfig, Select::SQL_UNION);
+    }
 
-        $allUnionSelectConfigs = filter($unionSelectsConfig ?? [], function (array $unionConfig): bool {
+    private function applyUnionSelectAll(Select $select, array $unionSelectsConfig): Select
+    {
+        $allUnionSelectsConfig = filter($unionSelectsConfig ?? [], function (array $unionConfig): bool {
             return ($unionConfig['type'] ?? 'distinct') === 'all';
         });
-        $select->union(map([$this, 'buildSelect'], $allUnionSelectConfigs), Select::SQL_UNION_ALL);
+        return $this->applyUnionSelectConfig($select, $allUnionSelectsConfig, Select::SQL_UNION_ALL);
+    }
 
-        return $select;
+    private function applyUnionSelectConfig(Select $select, array $unionSelectConfigs, string $unionType): Select
+    {
+        $selects = map([$this, 'buildSelect'], $unionSelectConfigs);
+        return $selects
+            ? $select->getConnection()->select()->union(merge([$select], $selects), $unionType)
+            : $select;
     }
 }

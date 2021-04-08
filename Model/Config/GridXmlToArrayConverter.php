@@ -150,16 +150,31 @@ class GridXmlToArrayConverter
          * <columns>
          *     <column name="entity_id" as="id"/>
          *     <column name="sku"/>
+         *     <expression as="count">COUNT(*)</expression>
          * </columns>
          */
         return $columnsElement
-            ? filter(map(function (\DOMElement $columnElement): array {
-                return merge(
-                    XmlToArray::getAttributeConfig($columnElement, 'name', 'column'),
-                    XmlToArray::getAttributeConfig($columnElement, 'as', '@as')
-                );
-            }, XmlToArray::getChildrenByName($columnsElement, 'column')))
+            ? filter(merge(
+                map([$this, 'getQuerySelectColumn'], XmlToArray::getChildrenByName($columnsElement, 'column')),
+                map([$this, 'getQuerySelectExpression'], XmlToArray::getChildrenByName($columnsElement, 'expression'))
+            ))
             : [];
+    }
+
+    private function getQuerySelectColumn(\DOMElement $columnElement): array
+    {
+        return merge(
+            XmlToArray::getAttributeConfig($columnElement, 'name', 'column'),
+            XmlToArray::getAttributeConfig($columnElement, 'as', '@as')
+        );
+    }
+
+    private function getQuerySelectExpression(\DOMElement $expressionElement): array
+    {
+        return filter(merge(
+            ['expression' => trim($expressionElement->textContent)],
+            XmlToArray::getAttributeConfig($expressionElement, 'as', '@as')
+        ));
     }
 
     private function getQueryJoinConfig(\DOMElement $joinElement): array

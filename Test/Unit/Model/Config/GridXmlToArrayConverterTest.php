@@ -164,6 +164,7 @@ EOXML;
                 <columns>
                     <column name="entity_id" as="id"/>
                     <column name="sku"/>
+                    <expression as="count">COUNT(*)</expression>
                 </columns>
                 <join type="left" table="catalog_product_entity_varchar" as="t_name">
                     <on>t_name.entity_id=main_table.entity_id AND attribute_id=47</on>
@@ -194,6 +195,7 @@ EOXML;
                         'columns' => [
                             ['column' => 'entity_id', '@as' => 'id'],
                             ['column' => 'sku'],
+                            ['expression' => 'COUNT(*)', '@as' => 'count']
                         ],
                         'joins'   => [
                             [

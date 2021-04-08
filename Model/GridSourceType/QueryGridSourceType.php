@@ -2,12 +2,17 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use function array_map as map;
+
 use Hyva\Admin\Model\GridSourceType\QueryGridSourceType\DbSelectBuilder;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\Model\TypeReflection\DbSelectColumnExtractor;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
+use Magento\Framework\Api\Filter;
+use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Api\SortOrder;
 use Magento\Framework\DB\Select;
 
 class QueryGridSourceType implements GridSourceTypeInterface
@@ -76,12 +81,15 @@ class QueryGridSourceType implements GridSourceTypeInterface
     {
         $select = $this->getSelect();
 
-        // todo: apply search criteria
+        $this->applyFilters($select, $searchCriteria);
+        $this->applySortOrder($select, $searchCriteria);
+        $this->applyPagination($select, $searchCriteria);
 
-        // todo: dispatch query_before event with select instance
+        // todo: dispatch query_before event
 
-        $data  = $select->query(\Zend_Db::FETCH_ASSOC);
-        $count = (int) $this->getSelectCountSql($select)->query(\Zend_db::FETCH_NUM)[0];
+        $data        = $select->query(\Zend_Db::FETCH_ASSOC)->fetchAll();
+        $countSelect = $this->getSelectCountSql($select);
+        $count       = (int) $countSelect->query(\Zend_Db::FETCH_NUM)->fetchColumn()[0];
 
         return RawGridSourceContainer::forData(['data' => $data, 'count' => $count]);
     }
@@ -116,6 +124,24 @@ class QueryGridSourceType implements GridSourceTypeInterface
      */
     private function getSelectCountSql(Select $select): Select
     {
+        if ($unionSelects = $select->getPart(Select::UNION)) {
+            $unionCountSelecstPart = map(function (array $unionPart) {
+                $countSelect = $this->getSelectCountSql($unionPart[0]);
+                return [$countSelect, Select::SQL_UNION_ALL];
+            }, $unionSelects);
+            $countSelect           = clone $select;
+            $countSelect->setPart(Select::UNION, $unionCountSelecstPart);
+
+            $sumCountsSelect = $select->getConnection()->select();
+            $sumCountsSelect->from($countSelect, new \Zend_Db_Expr('SUM(n)'));
+
+            return $sumCountsSelect;
+        }
+        return $this->buildCountSelect($select);
+    }
+
+    private function buildCountSelect(Select $select): Select
+    {
         $countSelect = clone $select;
         $countSelect->reset(Select::ORDER);
         $countSelect->reset(Select::LIMIT_COUNT);
@@ -124,7 +150,7 @@ class QueryGridSourceType implements GridSourceTypeInterface
 
         $part = $this->getSelect()->getPart(Select::GROUP);
         if (!is_array($part) || !count($part)) {
-            $countSelect->columns(new \Zend_Db_Expr('COUNT(*)'));
+            $countSelect->columns(['n' => new \Zend_Db_Expr('COUNT(*)')]);
             return $countSelect;
         }
 
@@ -133,5 +159,36 @@ class QueryGridSourceType implements GridSourceTypeInterface
         $countSelect->columns(new \Zend_Db_Expr(("COUNT(DISTINCT " . implode(", ", $group) . ")")));
 
         return $countSelect;
+    }
+
+    private function applyFilters(Select $select, SearchCriteriaInterface $searchCriteria): void
+    {
+        $filterGroupsSql = map(function (FilterGroup $group) use ($select): string {
+            $filtersSql = map(function (Filter $filter) use ($select): string {
+                $condition = [$filter->getConditionType() ?? 'eq' => $filter->getValue()];
+                return $select->getConnection()->prepareSqlCondition($filter->getField(), $condition);
+            }, $group->getFilters());
+            return implode(' OR ', $filtersSql);
+        }, $searchCriteria->getFilterGroups());
+
+        map([$select, 'where'], $filterGroupsSql);
+    }
+
+    private function applySortOrder(Select $select, SearchCriteriaInterface $searchCriteria): void
+    {
+        $orderSpecs = map(function (SortOrder $sortOrder) use ($select): string {
+            $field = $select->getConnection()->quoteIdentifier($sortOrder->getField());
+            return sprintf('%s %s', $field, $sortOrder->getDirection());
+        }, $searchCriteria->getSortOrders() ?? []);
+
+        $select->order($orderSpecs);
+    }
+
+    private function applyPagination(Select $select, SearchCriteriaInterface $searchCriteria): void
+    {
+        if ($pageSize = $searchCriteria->getPageSize()) {
+            $page = max($searchCriteria->getCurrentPage() ?? 1, 1);
+            $select->limitPage($page, $pageSize);
+        }
     }
 }

@@ -351,43 +351,44 @@
                     <xs:attribute name="as" type="xs:normalizedString"/>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="columns" type="aliasableColumnsType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="columns" type="querySelectColumnsType" minOccurs="0" maxOccurs="1"/>
             <xs:element name="join" type="selectJoinType" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="groupBy" type="nonAliasableColumnsType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="groupBy" type="queryGroupByColumnsType" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="aliasableColumnsType">
+    <xs:complexType name="querySelectColumnsType">
         <xs:sequence>
-            <xs:element name="column" type="aliasableColumnType" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="column" type="selectColumnType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="expression" type="selectExpressionType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="nonAliasableColumnsType">
+    <xs:complexType name="queryGroupByColumnsType">
         <xs:sequence>
-            <xs:element name="column" type="nonAliasableColumnType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="column" type="groupByColumnType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="nonAliasableColumnType">
+    <xs:complexType name="groupByColumnType">
         <xs:attribute name="name" type="columnNameType" use="required"/>
     </xs:complexType>
 
-    <xs:complexType name="aliasableColumnType">
+    <xs:complexType name="selectColumnType">
         <xs:attribute name="name" type="columnNameType" use="required"/>
         <xs:attribute name="as" type="columnNameType"/>
     </xs:complexType>
 
     <xs:simpleType name="columnNameType">
         <xs:restriction base="xs:normalizedString">
-            <xs:pattern value="[a-zA-Z_][a-zA-Z0-9_-]*"/>s
+            <xs:pattern value="[a-zA-Z_][a-zA-Z0-9_-]*"/>
         </xs:restriction>
     </xs:simpleType>
 
     <xs:complexType name="selectJoinType">
         <xs:sequence>
             <xs:element name="on" type="xs:string"/>
-            <xs:element name="columns" type="nonAliasableColumnsType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="columns" type="queryGroupByColumnsType" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="type" type="selectJoinTypes"/>
         <xs:attribute name="table" type="xs:normalizedString" use="required"/>
@@ -407,5 +408,13 @@
                 </xs:attribute>
             </xs:extension>
         </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="selectExpressionType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="as" type="columnNameType"/>
+            </xs:extension>
+        </xs:simpleContent>
     </xs:complexType>
 </xs:schema>
