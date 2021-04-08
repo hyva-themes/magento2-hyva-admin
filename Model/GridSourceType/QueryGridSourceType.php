@@ -177,8 +177,7 @@ class QueryGridSourceType implements GridSourceTypeInterface
     private function applySortOrder(Select $select, SearchCriteriaInterface $searchCriteria): void
     {
         $orderSpecs = map(function (SortOrder $sortOrder) use ($select): string {
-            $field = $select->getConnection()->quoteIdentifier($sortOrder->getField());
-            return sprintf('%s %s', $field, $sortOrder->getDirection());
+            return sprintf('%s %s', $sortOrder->getField(), $sortOrder->getDirection());
         }, $searchCriteria->getSortOrders() ?? []);
 
         $select->order($orderSpecs);

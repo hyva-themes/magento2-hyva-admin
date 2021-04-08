@@ -5,7 +5,11 @@ namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 use Hyva\Admin\Model\GridSourceType\QueryGridSourceType;
 use Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
+use Magento\Framework\Api\Filter;
+use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteria;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SortOrder;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Adapter\AdapterInterface as DbAdapter;
 use Magento\Framework\DB\Ddl\Table;
@@ -40,19 +44,16 @@ class QueryGridSourceTypeTest extends TestCase
         }
     }
 
-    private function getConnection(): DbAdapter
-    {
-        return ObjectManager::getInstance()->get(ResourceConnection::class)->getConnection();
-    }
-
     private function createFixtureTable(string $tableName, array $tableData): void
     {
         $this->dropTableIfExists($tableName);
+        $this->fixtureTables[] = $tableName;
 
         $firstRow    = values($tableData)[0];
         $columnNames = keys($firstRow);
-        $types       = map(function ($v): string {
-            return is_float($v) ? 'float' : (is_int($v) ? 'integer' : 'text');
+        $columnTypes = map(function ($v): string {
+            $types = ['double' => Table::TYPE_FLOAT, 'integer' => Table::TYPE_INTEGER];
+            return $types[gettype($v)] ?? Table::TYPE_TEXT;
         }, $firstRow);
 
         $table = new Table();
@@ -60,12 +61,16 @@ class QueryGridSourceTypeTest extends TestCase
 
         map(function (string $columnName, string $type) use ($table): void {
             $table->addColumn($columnName, $type);
-        }, $columnNames, $types);
+        }, $columnNames, $columnTypes);
 
         $this->getConnection()->createTable($table);
         $this->getConnection()->insertMultiple($tableName, $tableData);
 
-        $this->fixtureTables[] = $tableName;
+    }
+
+    private function getConnection(): DbAdapter
+    {
+        return ObjectManager::getInstance()->get(ResourceConnection::class)->getConnection();
     }
 
     private function createQueryGridSourceType(array $queryConfig): QueryGridSourceType
@@ -255,5 +260,56 @@ class QueryGridSourceTypeTest extends TestCase
         $result = $sut->fetchData(new SearchCriteria());
         $this->assertSame(4, $sut->extractTotalRowCount($result));
         $this->assertSame($expected, $this->unboxGridData($result));
+    }
+
+    public function testAppliesSearchCriteria(): void
+    {
+        $tableData = [
+            ['a' => '4', 'b' => '2', 'c' => 1],
+            ['a' => '6', 'b' => '2', 'c' => 1],
+            ['a' => '5', 'b' => '4', 'c' => 1],
+            ['a' => '3', 'b' => '4', 'c' => 1],
+            ['a' => '2', 'b' => '5', 'c' => 1],
+            ['a' => '1', 'b' => '2', 'c' => 0],
+            ['a' => '1', 'b' => '2', 'c' => 1],
+        ];
+        $this->createFixtureTable('foo', $tableData);
+
+        $queryConfig = [
+            'select' => [
+                'from'    => ['table' => 'foo'],
+                'columns' => [['column' => 'a']],
+            ],
+        ];
+
+        $sut = $this->createQueryGridSourceType($queryConfig);
+
+        $searchCriteria = new SearchCriteria([
+            'filter_groups' => [
+                new FilterGroup([
+                    'filters' => [
+                        new Filter(['field' => 'b', 'value' => '2', 'condition_type' => 'eq']),
+                        new Filter(['field' => 'b', 'value' => '5', 'condition_type' => 'eq']),
+                    ],
+                ]),
+                new FilterGroup([
+                    'filters' => [
+                        new Filter(['field' => 'c', 'value' => '0', 'condition_type' => 'gt'])
+                    ]
+                ])
+            ],
+            'sort_orders'   => [
+                new SortOrder(['field' => 'a', 'direction' => 'asc']),
+            ],
+            'page_size'     => 3,
+            'current_page'  => 1,
+        ]);
+        $result         = $sut->fetchData($searchCriteria);
+        $this->assertSame(4, $sut->extractTotalRowCount($result));
+        $this->assertSame([
+            ['a' => '1'],
+            ['a' => '2'],
+            ['a' => '4'],
+        ], $this->unboxGridData($result));
     }
 }
