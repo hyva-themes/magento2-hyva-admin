@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use function array_filter as filter;
 use function array_map as map;
 
 use Hyva\Admin\Model\GridSourceType\QueryGridSourceType\DbSelectBuilder;
@@ -73,8 +74,25 @@ class QueryGridSourceType implements GridSourceTypeInterface
     {
         return $this->columnDefinitionFactory->create([
             'key'  => $key,
-            'type' => $this->dbSelectColumnExtractor->getColumnType($this->getSelect(), $key),
+            'type' => $this->mapDbTypeToColumnType($this->dbSelectColumnExtractor->getColumnType($this->getSelect(),
+                $key)),
         ]);
+    }
+
+    private function mapDbTypeToColumnType(string $dbType): string
+    {
+        $dbTypeToColumnTypeMap = [
+            'smallint'   => 'int',
+            'bigint'     => 'int',
+            'decimal'    => 'price',
+            'varchar'    => 'string',
+            'shorttext'  => 'string',
+            'mediumtext' => 'text',
+            'longtext'   => 'text',
+            'timestamp'  => 'datetime',
+        ];
+
+        return $dbTypeToColumnTypeMap[$dbType] ?? $dbType;
     }
 
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
@@ -89,7 +107,7 @@ class QueryGridSourceType implements GridSourceTypeInterface
 
         $data        = $select->query(\Zend_Db::FETCH_ASSOC)->fetchAll();
         $countSelect = $this->getSelectCountSql($select);
-        $count       = (int) $countSelect->query(\Zend_Db::FETCH_NUM)->fetchColumn()[0];
+        $count       = (int) $countSelect->query(\Zend_Db::FETCH_NUM)->fetchColumn();
 
         return RawGridSourceContainer::forData(['data' => $data, 'count' => $count]);
     }
@@ -176,9 +194,11 @@ class QueryGridSourceType implements GridSourceTypeInterface
 
     private function applySortOrder(Select $select, SearchCriteriaInterface $searchCriteria): void
     {
-        $orderSpecs = map(function (SortOrder $sortOrder) use ($select): string {
-            return sprintf('%s %s', $sortOrder->getField(), $sortOrder->getDirection());
-        }, $searchCriteria->getSortOrders() ?? []);
+        $orderSpecs = filter(map(function (SortOrder $sortOrder) use ($select): string {
+            return $sortOrder->getField()
+                ? sprintf('%s %s', $sortOrder->getField(), $sortOrder->getDirection())
+                : '';
+        }, $searchCriteria->getSortOrders() ?? []));
 
         $select->order($orderSpecs);
     }

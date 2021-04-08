@@ -294,9 +294,9 @@ class QueryGridSourceTypeTest extends TestCase
                 ]),
                 new FilterGroup([
                     'filters' => [
-                        new Filter(['field' => 'c', 'value' => '0', 'condition_type' => 'gt'])
-                    ]
-                ])
+                        new Filter(['field' => 'c', 'value' => '0', 'condition_type' => 'gt']),
+                    ],
+                ]),
             ],
             'sort_orders'   => [
                 new SortOrder(['field' => 'a', 'direction' => 'asc']),
@@ -311,5 +311,34 @@ class QueryGridSourceTypeTest extends TestCase
             ['a' => '2'],
             ['a' => '4'],
         ], $this->unboxGridData($result));
+    }
+
+    public function testExtractsTotalCountWhilePaging(): void
+    {
+        $tableData = [
+            ['a' => '4', 'b' => '2'],
+            ['a' => '6', 'b' => '2'],
+            ['a' => '5', 'b' => '4'],
+            ['a' => '3', 'b' => '4'],
+            ['a' => '2', 'b' => '5'],
+            ['a' => '1', 'b' => '2'],
+            ['a' => '1', 'b' => '10'],
+        ];
+        $this->createFixtureTable('foo', $tableData);
+
+        $queryConfig = [
+            'select' => [
+                'from' => ['table' => 'foo'],
+            ],
+        ];
+        $sut         = $this->createQueryGridSourceType($queryConfig);
+
+        $searchCriteria = new SearchCriteria([
+            'page_size'    => 2,
+            'current_page' => 4,
+        ]);
+        $result         = $sut->fetchData($searchCriteria);
+        $this->assertSame(7, $sut->extractTotalRowCount($result));
+        $this->assertSame([['a' => '1', 'b' => '10']], $this->unboxGridData($result));
     }
 }
