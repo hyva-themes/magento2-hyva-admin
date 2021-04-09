@@ -13,6 +13,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - No removals.
 
+## [1.1.6] - 2021-04-09
+### Added
+- A new Query Grid Source Type is now available to display DB table data without using ORM models.
+
+### Changed
+- Nothing currently.
+
+### Removed
+- No removals.
+
 ## [1.1.5] - 2021-04-06
 ### Added
 - Add composer dependency on laminas/laminas-code:^3.0.0 for Magento 2.3 compatibility.

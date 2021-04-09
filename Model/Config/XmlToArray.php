@@ -58,13 +58,13 @@ class XmlToArray
     }
 
     /**
-     * @param \DOMElement $element
+     * @param \DOMElement $parent
      * @param string $name
      * @return string[]
      */
-    public static function getElementConfig(\DOMElement $element, string $name): array
+    public static function getElementConfig(\DOMElement $parent, string $name): array
     {
-        $childElement = self::getChildByName($element, $name);
+        $childElement = self::getChildByName($parent, $name);
         return $childElement
             ? filter([$name => trim($childElement->nodeValue)])
             : [];

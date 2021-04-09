@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:element name="grid">
-        <xs:complexType >
+        <xs:complexType>
             <xs:all>
                 <xs:element name="source" type="source" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="massActions" type="massAction" minOccurs="0"/>
@@ -15,7 +15,8 @@
 
     <xs:simpleType name="phpTypeAndMethod">
         <xs:annotation>
-            <xs:documentation>A PHP Class or Interface name and a method name, separated by two colons.</xs:documentation>
+            <xs:documentation>A PHP Class or Interface name and a method name, separated by two colons.
+            </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:normalizedString">
             <xs:pattern value="\\?[A-Z][a-zA-Z0-9]*(\\[A-Z][A-Za-z0-9]*)*::[a-z][A-Za-z]+"/>
@@ -45,17 +46,19 @@
             <xs:choice minOccurs="1" maxOccurs="1">
                 <xs:element name="repositoryListMethod" type="phpTypeAndMethod"/>
                 <xs:element name="arrayProvider" type="phpType"/>
-                <xs:element name="collection" type="phpType" />
+                <xs:element name="collection" type="phpType"/>
+                <xs:element name="query" type="queryType"/>
             </xs:choice>
-            <xs:element name="defaultSearchCriteriaBindings" type="searchCriteriaBindingsType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="defaultSearchCriteriaBindings" type="searchCriteriaBindingsType" minOccurs="0"
+                        maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="type">
             <xs:simpleType>
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="array"/>
                     <xs:enumeration value="repository"/>
-                    <xs:enumeration value="collection" />
-                    <!--<xs:enumeration value="query" />-->
+                    <xs:enumeration value="collection"/>
+                    <xs:enumeration value="query"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
@@ -155,7 +158,8 @@
 
     <xs:simpleType name="routeType">
         <xs:annotation>
-            <xs:documentation>The Magento three-part route/controller/action syntax. A * indicates the current value.</xs:documentation>
+            <xs:documentation>The Magento three-part route/controller/action syntax. A * indicates the current value.
+            </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:string">
             <xs:pattern value="(\*|[a-zA-Z0-9_]+)/((\*|[a-zA-Z0-9_/]+)/)?(\*|[a-zA-Z0-9/]+)?"/>
@@ -164,7 +168,9 @@
 
     <xs:simpleType name="templateType">
         <xs:annotation>
-            <xs:documentation>A fully qualified module name and a template file path within a modules view/[are]/templates/ folder, separeted by two colons.</xs:documentation>
+            <xs:documentation>A fully qualified module name and a template file path within a modules
+                view/[are]/templates/ folder, separeted by two colons.
+            </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:normalizedString">
             <xs:pattern value="[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*::[a-zA-Z/.-]+\.phtml"/>
@@ -319,24 +325,111 @@
     </xs:complexType>
 
     <xs:simpleType name="conditionType">
-        <xs:restriction base="xs:normalizedString">
+        <xs:restriction base="xs:string">
             <xs:enumeration value="eq"/>
             <xs:enumeration value="is"/>
-            <xs:enumeration value="neq" />
-            <xs:enumeration value="lteq" />
-            <xs:enumeration value="to" />
-            <xs:enumeration value="gteq" />
-            <xs:enumeration value="moreeq" />
-            <xs:enumeration value="from" />
-            <xs:enumeration value="gt" />
-            <xs:enumeration value="lt" />
-            <xs:enumeration value="like" />
-            <xs:enumeration value="nlike" />
-            <xs:enumeration value="in" />
-            <xs:enumeration value="nin" />
-            <xs:enumeration value="notnull" />
-            <xs:enumeration value="null" />
-            <xs:enumeration value="finset" />
+            <xs:enumeration value="neq"/>
+            <xs:enumeration value="lteq"/>
+            <xs:enumeration value="to"/>
+            <xs:enumeration value="gteq"/>
+            <xs:enumeration value="moreeq"/>
+            <xs:enumeration value="from"/>
+            <xs:enumeration value="gt"/>
+            <xs:enumeration value="lt"/>
+            <xs:enumeration value="like"/>
+            <xs:enumeration value="nlike"/>
+            <xs:enumeration value="in"/>
+            <xs:enumeration value="nin"/>
+            <xs:enumeration value="notnull"/>
+            <xs:enumeration value="null"/>
+            <xs:enumeration value="finset"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:simpleType name="selectJoinTypes">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="inner"/>
+            <xs:enumeration value="left"/>
+            <xs:enumeration value="right"/>
+            <xs:enumeration value="full"/>
+            <xs:enumeration value="cross"/>
+            <xs:enumeration value="natural"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:complexType name="queryType">
+        <xs:sequence>
+            <xs:element name="select" type="querySelectType" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="unionSelect" type="querySelectType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="unionSelectType">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="all"/>
+                    <xs:enumeration value="distinct"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="querySelectType">
+        <xs:sequence>
+            <xs:element name="from" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="table" type="xs:normalizedString" use="required"/>
+                    <xs:attribute name="as" type="xs:normalizedString"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="columns" type="querySelectColumnsType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="join" type="selectJoinType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="groupBy" type="queryGroupByColumnsType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="querySelectColumnsType">
+        <xs:sequence>
+            <xs:element name="column" type="selectColumnType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="expression" type="selectExpressionType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="queryGroupByColumnsType">
+        <xs:sequence>
+            <xs:element name="column" type="groupByColumnType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="groupByColumnType">
+        <xs:attribute name="name" type="columnNameType" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="selectColumnType">
+        <xs:attribute name="name" type="columnNameType" use="required"/>
+        <xs:attribute name="as" type="columnNameType"/>
+    </xs:complexType>
+
+    <xs:simpleType name="columnNameType">
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="[a-zA-Z_][a-zA-Z0-9_-]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="selectJoinType">
+        <xs:sequence>
+            <xs:element name="on" type="xs:string"/>
+            <xs:element name="columns" type="queryGroupByColumnsType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="type" type="selectJoinTypes"/>
+        <xs:attribute name="table" type="xs:normalizedString" use="required"/>
+        <xs:attribute name="as" type="xs:normalizedString"/>
+    </xs:complexType>
+
+    <xs:complexType name="selectExpressionType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="as" type="columnNameType"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
 </xs:schema>

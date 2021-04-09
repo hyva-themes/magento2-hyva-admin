@@ -162,23 +162,29 @@ EOXML;
     {
         return <<<EOXML
     <source>
-        <query>
+        <query unionSelectType="distinct">
             <select>
-                <column name="id"/>
-                <column name="name"/>
-                <column name="t.speed"/>
+                <from table="catalog_product" as="main_table"/>
+                <columns>
+                    <column name="entity_id" as="id"/>
+                    <column name="sku"/>
+                    <expression as="count">COUNT(*)</expression>
+                </columns>
+                <join type="left" table="catalog_product_entity_varchar" as="t_name">
+                    <on>t_name.entity_id=main_table.entity_id AND attribute_id=47</on>
+                    <columns>
+                        <column name="value" as="name"/>
+                    </columns>
+                </join>
+                <groupBy>
+                    <column name="main_table.attribute_set_id"/>
+                    <column name="t_name.name"/>
+                </groupBy>
             </select>
-            <from table="fossa_table" as="foo"/>
-            <join type="left" table="other_table" alias="t">
-                <condition>foo.id=t.id</condition>
-            </join>
-            <where>
-                <and>fossa.product_id IN(:product_ids)</and>
-            </where>
+            <unionSelect>
+                <from table="catalog_product_other"/>
+             </unionSelect>
         </query>
-        <bindParamenters>
-            <product_ids>product_ids</product_ids>
-        </bindParamenters>
     </source>
 EOXML;
     }
@@ -187,8 +193,36 @@ EOXML;
     {
         return [
             'source' => [
-                'query'      => [],
-                'bindParams' => [],
+                'query' => [
+                    '@unionSelectType' => 'distinct',
+                    'select' => [
+                        'from'    => ['table' => 'catalog_product', '@as' => 'main_table'],
+                        'columns' => [
+                            ['column' => 'entity_id', '@as' => 'id'],
+                            ['column' => 'sku'],
+                            ['expression' => 'COUNT(*)', '@as' => 'count']
+                        ],
+                        'joins'   => [
+                            [
+                                'type'    => 'left',
+                                'join'    => ['table' => 'catalog_product_entity_varchar', '@as' => 't_name'],
+                                'on'      => 't_name.entity_id=main_table.entity_id AND attribute_id=47',
+                                'columns' => [
+                                    ['column' => 'value', '@as' => 'name'],
+                                ],
+                            ],
+                        ],
+                        'groupBy' => [
+                            ['column' => 'main_table.attribute_set_id'],
+                            ['column' => 't_name.name'],
+                        ]
+                    ],
+                    'unions' => [
+                        [
+                            'from' => ['table' => 'catalog_product_other'],
+                        ],
+                    ],
+                ],
             ],
         ];
     }

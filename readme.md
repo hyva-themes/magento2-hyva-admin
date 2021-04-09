@@ -81,7 +81,7 @@ Once installed, grids can be added to any admin page by adding a bit of layout X
 The layout XML has to contain two things:
 
 * A `<update handle="hyva_admin_grid"/>` declaration to load alpine.js and tailwind.
-* A `Hyva\Admin\Block\Adminhtml\HyvaGrid` block, with name of the grid configuration as a block argument.
+* A `Hyva\Admin\Block\Adminhtml\HyvaGrid` block, with name of the grid configuration as a block argument (or as the block name-in-layout).
 
 After that, a grid configuration has to be created in a directory `[Your_Module]/view/adminhtml/hyva-grid`, where the
 file names corresponds to the name that was passed to the grid block (with a `.xml` suffix added to the file name).
