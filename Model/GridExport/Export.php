@@ -1,6 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Hyva\Admin\Model\GridExport;
+
+use function array_filter as filter;
 
 use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
@@ -8,38 +10,37 @@ use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
 
 class Export
 {
+    /**
+     * @var HyvaGridInterfaceFactory
+     */
+    private $gridFactory;
 
-    private HyvaGridInterfaceFactory $gridFactory;
+    /**
+     * @var ExportTypeLocator
+     */
+    private $exportTypeDefinition;
 
-    private TypeDefinition $exportTypeDefinition;
-
-    public function __construct(HyvaGridInterfaceFactory $gridFactory, TypeDefinition $exportTypeDefinition)
+    public function __construct(HyvaGridInterfaceFactory $gridFactory, ExportTypeLocator $exportTypeDefinition)
     {
-        $this->gridFactory = $gridFactory;
+        $this->gridFactory          = $gridFactory;
         $this->exportTypeDefinition = $exportTypeDefinition;
     }
 
-    /**
-     * @param string $gridName
-     * @param string $type
-     * @return TypeInterface
-     */
-    public function getExportType(string $gridName, string $type): TypeInterface
+    public function getExportType(string $gridName, string $exportType): ExportTypeInterface
     {
-        $grid = $this->getGrid($gridName);
+        $grid    = $this->getGrid($gridName);
         $exports = $grid->getNavigation()->getExports();
-        /**
-         * @var $export GridExportInterface
-         */
-        $export = current(array_filter($exports, function ($value) use ($type) {
-            return $value->getId() == $type;
+
+        /**  @var $export GridExportInterface */
+        $export = current(filter($exports, function (GridExportInterface $export) use ($exportType) {
+            return $export->getId() === $exportType;
         }));
         if (!$export) {
-            throw new \InvalidArgumentException(sprintf('Export type "%s" not defined', $type));
+            throw new \InvalidArgumentException(sprintf('Export type "%s" not defined', $exportType));
         }
         return $this->exportTypeDefinition->get($export->getId(), [
             'grid'     => $grid,
-            'fileName' => $export->getFileName() ?: ($gridName . "." . $export->getId()),
+            'fileName' => $export->getFileName() ?: ($gridName . '.' . $export->getId()),
         ]);
     }
 

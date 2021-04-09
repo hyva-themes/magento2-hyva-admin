@@ -239,7 +239,7 @@ class GridXmlToArrayConverter
          * </exclude>
          */
         $excludeElement = XmlToArray::getChildByName($columnsElement, 'exclude');
-        $getName = function (\DOMElement $col): string {
+        $getName        = function (\DOMElement $col): string {
             return $col->getAttribute('name');
         };
         return $excludeElement
@@ -279,7 +279,7 @@ class GridXmlToArrayConverter
          *     </buttons>
          *     <exports>
          *         <export id="csv" label="Export to CSV" class="Hyva\Admin\Model\Export\Csv" />
-         *         <export id="xml" label="Export to CSV" class="Hyva\Admin\Model\Export\Xml" />
+         *         <export id="xml" label="Export to XML" class="Hyva\Admin\Model\Export\Xml" />
          *     </exports>
          * </navigation>
          */
@@ -423,18 +423,31 @@ class GridXmlToArrayConverter
             : null;
     }
 
-    private function getExportsConfig(\DOMElement $exportsElement): ?array
+    private function getExportsConfig(\DOMElement $navigationElement): ?array
     {
         /*
          *     <exports>
          *         <export id="csv" label="Export to CSV" class="Hyva\Admin\Model\Export\Csv" />
-         *         <export id="xml" label="Export to CSV" class="Hyva\Admin\Model\Export\Xml" />
+         *         <export id="xml" label="Export to XML" template="Hyva\Admin\Model\Export\Xml" />
          *     </exports>
          */
-        $buttonsElement = XmlToArray::getChildByName($exportsElement, 'exports');
-        return $buttonsElement
-            ? map([$this, 'getExportConfig'], XmlToArray::getChildrenByName($buttonsElement, 'export'))
+        $exportsElement = XmlToArray::getChildByName($navigationElement, 'exports');
+        return $exportsElement
+            ? map([$this, 'getExportConfig'], XmlToArray::getChildrenByName($exportsElement, 'export'))
             : null;
+    }
+
+    private function getExportConfig(\DOMElement $exportElement): array
+    {
+        return filter(merge(
+            XmlToArray::getAttributeConfig($exportElement, 'id'),
+            XmlToArray::getAttributeConfig($exportElement, 'label'),
+            XmlToArray::getAttributeConfig($exportElement, 'fileName'),
+            XmlToArray::getAttributeConfig($exportElement, 'enabled'),
+            XmlToArray::getAttributeConfig($exportElement, 'class'),
+            XmlToArray::getAttributeConfig($exportElement, 'sortOrder')
+            // refactor: add class attribute as it is defined in xsd
+        ));
     }
 
     private function getButtonConfig(\DOMElement $buttonsElement): ?array
@@ -448,18 +461,6 @@ class GridXmlToArrayConverter
             XmlToArray::getAttributeConfig($buttonsElement, 'sortOrder'),
             XmlToArray::getAttributeConfig($buttonsElement, 'enabled'),
         );
-    }
-
-    private function getExportConfig(\DOMElement $exportsElement): ?array
-    {
-        return filter(merge(
-            XmlToArray::getAttributeConfig($exportsElement, 'id'),
-            XmlToArray::getAttributeConfig($exportsElement, 'label'),
-            XmlToArray::getAttributeConfig($exportsElement, 'fileName'),
-            XmlToArray::getAttributeConfig($exportsElement, 'enabled'),
-            XmlToArray::getAttributeConfig($exportsElement, 'class'),
-            XmlToArray::getAttributeConfig($exportsElement, 'sortOrder')
-        ));
     }
 
     private function getFiltersConfig(\DOMElement $navigationElement): ?array

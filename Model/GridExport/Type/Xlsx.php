@@ -1,27 +1,39 @@
-<?php
-/**
- *
- * @thanks to https://gist.github.com/kasparsd/ade34dd94a80b97fb9ec59391a0c620f
+<?php declare(strict_types=1);
+
+/*
+ * Thanks to https://gist.github.com/kasparsd/ade34dd94a80b97fb9ec59391a0c620f
  */
+
 namespace Hyva\Admin\Model\GridExport\Type;
 
+use function array_keys as keys;
+use function array_map as map;
+use function array_search as search;
+use function array_sum as sum;
+use function array_values as values;
+
+use Hyva\Admin\Model\GridExport\Source\GridSourceIteratorFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
-use Hyva\Admin\Model\GridExport\Source\GridSourceIteratorFactory;
 use Magento\Framework\Filesystem;
 
-class Xlsx extends AbstractType
+class Xlsx extends AbstractExportType
 {
     /**
      * @var string
      */
-    private $fileName = "export/export.xslx";
+    private $defaultFileName = "export/export.xlsx";
 
+    /**
+     * @var array
+     */
     private $sharedStrings = [];
+
     /**
      * @var Filesystem
      */
     private $fileSystem;
+
     /**
      * @var GridSourceIteratorFactory
      */
@@ -31,19 +43,21 @@ class Xlsx extends AbstractType
         Filesystem $filesystem,
         GridSourceIteratorFactory $sourceIteratorFactory,
         HyvaGridInterface $grid,
-        string $fileName = ""
+        string $fileName = ''
     ) {
-        parent::__construct($grid, $fileName);
-        $this->fileSystem = $filesystem;
+        $this->validateZipExtensionInstalled();
+
+        parent::__construct($grid, $fileName ?: $this->defaultFileName);
+        $this->fileSystem            = $filesystem;
         $this->sourceIteratorFactory = $sourceIteratorFactory;
     }
 
-    public function createFileToDownload()
+    public function createFileToDownload(): void
     {
         $filename = $this->getFileName();
-        $read = $this->fileSystem->getDirectoryRead($this->getRootDir());
+        $read     = $this->fileSystem->getDirectoryRead($this->getRootDir());
         $rootPath = $read->getAbsolutePath($filename);
-        $zip = new \ZipArchive();
+        $zip      = new \ZipArchive();
         if ($zip->open($rootPath, \ZipArchive::CREATE)) {
             $zip->addEmptyDir('docProps');
             $zip->addFromString('docProps/app.xml', $this->getAppXml());
@@ -61,8 +75,9 @@ class Xlsx extends AbstractType
         }
     }
 
-    private function getWorkbookXml()
+    private function getWorkbookXml(): string
     {
+        // refactor: heredoc?
         return sprintf(
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 			<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
@@ -73,8 +88,9 @@ class Xlsx extends AbstractType
         );
     }
 
-    private function getContentTypesXml()
+    private function getContentTypesXml(): string
     {
+        // refactor: heredoc?
         return sprintf(
             '<?xml version="1.0" encoding="UTF-8"?>
 			<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
@@ -89,30 +105,29 @@ class Xlsx extends AbstractType
         );
     }
 
-    private function getSharedStringsXml()
+    private function getSharedStringsXml(): string
     {
-        $sharedStrings = [];
-
-        foreach ($this->sharedStrings as $string => $string_count) {
-            $sharedStrings[] = sprintf(
+        $sharedStrings = map(function (string $string) {
+            return sprintf(
                 '<si><t>%s</t></si>',
                 filter_var($string, FILTER_SANITIZE_SPECIAL_CHARS)
             );
-        }
+        }, keys($this->sharedStrings));
 
         return sprintf(
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 			<sst count="%d" uniqueCount="%d" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 				%s
 			</sst>',
-            array_sum($this->sharedStrings),
+            sum($this->sharedStrings),
             count($this->sharedStrings),
             implode("\n", $sharedStrings)
         );
     }
 
-    private function getWorkbookRelsXml()
+    private function getWorkbookRelsXml(): string
     {
+        // refactor: heredoc?
         return sprintf(
             '<?xml version="1.0" encoding="UTF-8"?>
 			<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
@@ -122,8 +137,9 @@ class Xlsx extends AbstractType
         );
     }
 
-    private function getAppXml()
+    private function getAppXml(): string
     {
+        // refactor: heredoc?
         return sprintf(
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 			<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
@@ -132,7 +148,7 @@ class Xlsx extends AbstractType
         );
     }
 
-    private function getCoreXml()
+    private function getCoreXml(): string
     {
         return sprintf(
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -144,8 +160,9 @@ class Xlsx extends AbstractType
         );
     }
 
-    private function getRelsXml()
+    private function getRelsXml(): string
     {
+        // refactor: heredoc?
         return sprintf(
             '<?xml version="1.0" encoding="UTF-8"?>
 			<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
@@ -156,15 +173,16 @@ class Xlsx extends AbstractType
         );
     }
 
-    private function getSheet()
+    private function getSheet(): string
     {
         $iterator = $this->sourceIteratorFactory->create(['grid' => $this->getGrid()]);
-        $rows [] = $this->addRow(array_values($this->getHeaderData()), 0);
+        $rows[]   = $this->buildRow(values($this->getHeaderData()), 0);
         foreach ($iterator as $rowNumber => $row) {
-            $row = array_values(array_map(function (CellInterface $column) {
+            $row = values(map(function (CellInterface $column): string {
                 return $column->getTextValue();
             }, $row->getCells()));
-            $rows []= $this->addRow($row, $rowNumber+1);
+
+            $rows[] = $this->buildRow($row, $rowNumber + 1);
         }
 
         return sprintf(
@@ -178,45 +196,34 @@ class Xlsx extends AbstractType
         );
     }
 
-    function getSharedStringNo($string)
+    public function getSharedStringNo(string $string): string
     {
         static $stringPos = [];
 
-        if (isset($this->shared_strings[$string])) {
-            $this->sharedStrings[$string] += 1;
-        } else {
-            $this->sharedStrings[$string] = 1;
-        }
+        $this->sharedStrings[$string] = ($this->sharedStrings[$string] ?? 0) + 1;
 
         if (!isset($stringPos[$string])) {
-            $stringPos[$string] = array_search($string, array_keys($this->sharedStrings));
+            $stringPos[$string] = search($string, keys($this->sharedStrings));
         }
 
         return $stringPos[$string];
     }
 
-    function getCellName($RowNumber, $ColumnNumber)
+    public function getCellName(int $rowNumber, int $columnNumber): string
     {
-        $n = $ColumnNumber;
-        for ($r = ''; $n >= 0; $n = intval($n / 26) - 1) {
+        for ($n = $columnNumber, $r = ''; $n >= 0; $n = intval($n / 26) - 1) {
             $r = chr($n % 26 + 0x41) . $r;
         }
-        return $r . ($RowNumber + 1);
+        return $r . ($rowNumber + 1);
     }
 
-    /**
-     * @param $row
-     * @param                                             $rowNumber
-     * @param array                                       $rows
-     * @return string
-     */
-    private function addRow($row, $rowNumber)
+    private function buildRow(array $row, int $rowNumber): string
     {
         $cells = [];
         foreach ($row as $colNumber => $fieldValue) {
-            $fieldType = 's';
+            $fieldType        = 's';
             $fieldValueNumber = $this->getSharedStringNo($fieldValue);
-            $cells[] = sprintf(
+            $cells[]          = sprintf(
                 '<c r="%s" t="%s"><v>%d</v></c>',
                 $this->getCellName($rowNumber, $colNumber),
                 $fieldType,
@@ -230,5 +237,12 @@ class Xlsx extends AbstractType
             $rowNumber + 1,
             implode("\n", $cells)
         );
+    }
+
+    private function validateZipExtensionInstalled(): void
+    {
+        if (!class_exists(\ZipArchive::class)) {
+            throw new \RuntimeException(sprintf('Unable to use Xlsx export type because the required PHP extension ext-zip is not installed.'));
+        }
     }
 }

@@ -23,7 +23,7 @@ use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_values as values;
 
-class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
+class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface // why is the export interface here?
 {
     /**
      * @var HyvaGrid\NavigationInterface
@@ -196,7 +196,7 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
 
     public function getRows(): array
     {
-      return $this->getRowsForSearchCriteria($this->getNavigation()->getSearchCriteria());
+        return $this->getRowsForSearchCriteria($this->getNavigation()->getSearchCriteria());
     }
 
     public function getRowsForSearchCriteria(SearchCriteriaInterface $searchCriteria): array
@@ -341,7 +341,7 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
     public function getNavigationHtml(): string
     {
         $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::element/navigation.phtml');
+        $renderer->setTemplate('Hyva_Admin::grid/navigation.phtml');
         $renderer->assign('navigation', $this->getNavigation());
         return $renderer->toHtml();
     }
@@ -349,7 +349,7 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
     public function getActionsHtml(): string
     {
         $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::element/actions.phtml');
+        $renderer->setTemplate('Hyva_Admin::grid/actions.phtml');
         $renderer->assign('actions', $this->getActions());
         return $renderer->toHtml();
     }
@@ -357,12 +357,13 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
     public function getExportsHtml(): string
     {
         $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::element/exports.phtml');
+        $renderer->setTemplate('Hyva_Admin::grid/exports.phtml');
         $renderer->assign('exports', $this->getNavigation()->getExports());
         return $renderer->toHtml();
     }
 
-    private function createRenderer(): Template {
+    private function createRenderer(): Template
+    {
         return $this->layout->createBlock(Template::class);
     }
 }

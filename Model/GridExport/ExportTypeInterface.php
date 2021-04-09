@@ -4,7 +4,7 @@ namespace Hyva\Admin\Model\GridExport;
 
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 
-interface TypeInterface
+interface ExportTypeInterface
 {
 
     public function getFileName(): string;

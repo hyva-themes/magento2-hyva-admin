@@ -13,11 +13,6 @@ abstract class BaseHyvaGrid extends Template
      */
     private $gridFactory;
 
-    /**
-     * @var HyvaGridInterface
-     */
-    private $grid;
-
     public function __construct(
         Template\Context $context,
         string $gridTemplate,
@@ -31,15 +26,12 @@ abstract class BaseHyvaGrid extends Template
 
     public function getGrid(): HyvaGridInterface
     {
-        if (!isset($this->grid)) {
-            $gridName = str_replace(['/', '\\', '.'], '', $this->_getData('grid_name') ?? $this->getNameInLayout());
-            if (!$gridName) {
-                $msg = 'The name of the hyvä grid needs to be set on the block instance.';
-                throw new \LogicException($msg);
-            }
-
-            $this->grid = $this->gridFactory->create(['gridName' => $gridName]);
+        $gridName = str_replace(['/', '\\', '.'], '', $this->_getData('grid_name') ?? $this->getNameInLayout());
+        if (!$gridName) {
+            $msg = 'The name of the hyvä grid needs to be set on the block instance.';
+            throw new \LogicException($msg);
         }
-        return $this->grid;
+
+        return $this->gridFactory->create(['gridName' => $gridName]);
     }
 }

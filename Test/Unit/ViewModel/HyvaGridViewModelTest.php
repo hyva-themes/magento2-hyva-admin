@@ -20,7 +20,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridViewModel;
-use Magento\Framework\View\Layout;
+use Magento\Framework\View\LayoutInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -73,6 +73,14 @@ class HyvaGridViewModelTest extends TestCase
     private function createStubCellFactory(): MockObject
     {
         return $this->createMock(CellInterfaceFactory::class);
+    }
+
+    /**
+     * @return MockObject|LayoutInterface
+     */
+    private function createStubLayout(): MockObject
+    {
+        return $this->createMock(LayoutInterface::class);
     }
 
     /**
@@ -154,8 +162,8 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
-        $layout                       = $this->createStubLayout();
-        $sut = new HyvaGridViewModel(
+        $dummyLayout                  = $this->createStubLayout();
+        $sut                          = new HyvaGridViewModel(
             'dummy-grid-name',
             $dummyGridDefinitionFactory,
             $dummyGridSourceFactory,
@@ -166,7 +174,7 @@ class HyvaGridViewModelTest extends TestCase
             $dummyActionFactory,
             $dummyMassActionFactory,
             $dummyHyvaEventDispatcher,
-            $layout
+            $dummyLayout
         );
 
         $this->assertInstanceOf(HyvaGridInterface::class, $sut);
@@ -190,7 +198,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
-        $layout                       = $this->createStubLayout();
+        $dummyLayout                  = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'test-grid-name',
@@ -203,7 +211,7 @@ class HyvaGridViewModelTest extends TestCase
             $dummyActionFactory,
             $dummyMassActionFactory,
             $dummyHyvaEventDispatcher,
-            $layout
+            $dummyLayout
         );
 
         $this->assertSame(3, $sut->getColumnCount());
@@ -225,7 +233,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
-        $layout                       = $this->createStubLayout();
+        $dummyLayout                  = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -238,7 +246,7 @@ class HyvaGridViewModelTest extends TestCase
             $dummyActionFactory,
             $dummyMassActionFactory,
             $dummyHyvaEventDispatcher,
-            $layout
+            $dummyLayout
         );
 
         $this->assertSame(['foo' => $columnFoo, 'bar' => $columnBar], $sut->getColumnDefinitions());
@@ -262,7 +270,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
-        $layout                       = $this->createStubLayout();
+        $dummyLayout                  = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -275,7 +283,7 @@ class HyvaGridViewModelTest extends TestCase
             $dummyActionFactory,
             $dummyMassActionFactory,
             $dummyHyvaEventDispatcher,
-            $layout
+            $dummyLayout
         );
 
         $this->assertSame(['foo' => $columnFoo, 'qux' => $columnQux], $sut->getColumnDefinitions());
@@ -310,7 +318,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
-        $layout                       = $this->createStubLayout();
+        $dummyLayout                  = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -323,7 +331,7 @@ class HyvaGridViewModelTest extends TestCase
             $dummyActionFactory,
             $dummyMassActionFactory,
             $dummyHyvaEventDispatcher,
-            $layout
+            $dummyLayout
         );
 
         $rows = $sut->getRows();
@@ -344,7 +352,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher     = $this->createStubHyvaEventDispatcher();
-        $layout                       = $this->createStubLayout();
+        $dummyLayout                  = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -357,7 +365,7 @@ class HyvaGridViewModelTest extends TestCase
             $dummyActionFactory,
             $dummyMassActionFactory,
             $dummyHyvaEventDispatcher,
-            $layout
+            $dummyLayout
         );
 
         $this->assertInstanceOf(NavigationInterface::class, $sut->getNavigation());
@@ -375,7 +383,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyActionFactory       = $this->createStubActionFactory();
         $dummyMassActionFactory   = $this->createStubMassActionFactory();
         $dummyHyvaEventDispatcher = $this->createStubHyvaEventDispatcher();
-        $layout                       = $this->createStubLayout();
+        $dummyLayout              = $this->createStubLayout();
 
         $sut = new HyvaGridViewModel(
             'dummy-grid-name',
@@ -388,14 +396,9 @@ class HyvaGridViewModelTest extends TestCase
             $dummyActionFactory,
             $dummyMassActionFactory,
             $dummyHyvaEventDispatcher,
-            $layout
+            $dummyLayout
         );
 
         $this->assertInstanceOf(EntityDefinitionInterface::class, $sut->getEntityDefinition());
-    }
-
-    private function createStubLayout()
-    {
-        return $this->createMock(Layout::class);
     }
 }

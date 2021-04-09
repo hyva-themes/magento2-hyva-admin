@@ -78,9 +78,9 @@ class GridXmlToArrayConverterTest extends TestCase
                 $this->getMassActionXml(),
                 $this->getMassActionExpected(),
             ],
-            'exports'                   => [
+            'exports'                  => [
                 $this->getExportXml(),
-                $this->getExportExpected()
+                $this->getExportExpected(),
             ],
             'keep-columns-from-source' => [
                 $this->getIncludeWithKeepColumnsFromSourceXml(),
@@ -425,8 +425,8 @@ EOXML;
     {
         $actions = [
             ['id' => 'update', 'label' => 'Update', 'url' => '*/massActions/update'],
-            ['id' => 'delete','label' => 'Delete All', 'url' => '*/massActions/delete', 'requireConfirmation' => true],
-            ['id' => 'reindex','label' => 'Reindex', 'url' => '*/massActions/reindex'],
+            ['id' => 'delete', 'label' => 'Delete All', 'url' => '*/massActions/delete', 'requireConfirmation' => true],
+            ['id' => 'reindex', 'label' => 'Reindex', 'url' => '*/massActions/reindex'],
         ];
         return ['massActions' => ['@idColumn' => 'id', '@idsParam' => 'ids', 'actions' => $actions]];
     }
@@ -437,8 +437,8 @@ EOXML;
     <navigation>
         <exports>
             <export id="csv" label="Export to CSV"/>
-            <export id="xml" label="Export to XML"  />
-            <export id="csv2" label="Export to CSV2" fileName="file.csv" enabled="true" template="" sortOrder="1"/>
+            <export id="xml" label="Export to XML" class="\My\Custom\Export" />
+            <export id="csv2" label="Export to CSV2" fileName="file.csv" enabled="true" sortOrder="1"/>
         </exports>
     </navigation>
 EOXML;
@@ -450,8 +450,14 @@ EOXML;
             'navigation' => [
                 'exports' => [
                     ['id' => 'csv', 'label' => 'Export to CSV'],
-                    ['id' => 'xml','label' => 'Export to XML'],
-                    ['id' => 'csv2','label' => 'Export to CSV2','fileName' => 'file.csv', 'enabled' => 'true', 'sortOrder' => '1'],
+                    ['id' => 'xml', 'label' => 'Export to XML', 'class' => '\My\Custom\Export'],
+                    [
+                        'id'        => 'csv2',
+                        'label'     => 'Export to CSV2',
+                        'fileName'  => 'file.csv',
+                        'enabled'   => 'true',
+                        'sortOrder' => '1',
+                    ],
                 ],
             ],
         ];

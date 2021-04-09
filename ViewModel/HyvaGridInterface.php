@@ -23,6 +23,7 @@ interface HyvaGridInterface
      */
     public function getRows(): array;
 
+    // refactor: move to export interface together with new method getSearchCriteria
     public function getRowsForSearchCriteria(SearchCriteriaInterface $searchCriteria): array;
 
     public function getNavigation(): HyvaGrid\NavigationInterface;

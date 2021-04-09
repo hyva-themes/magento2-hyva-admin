@@ -9,8 +9,7 @@ $uniqueId   = '_' . md5($grid->getGridName());
 $rows = $grid->getRows();
 ?>
 <div class="hyva-admin-grid"
-     x-data="initDataTable<?= /** @noEscape */
-     $uniqueId ?>()"
+     x-data="initDataTable<?= /** @noEscape */$uniqueId ?>()"
      x-init="refs=$refs; initState();">
     <div class="max-w-full px-0 py-6 mx-auto">
         <div class="flex items-center justify-between mb-4">
@@ -22,7 +21,7 @@ $rows = $grid->getRows();
             </div>
             <div class="flex-1 pr-4">
                 <div class="relative flex flex-wrap md:w-3/4 gap-x-8">
-                    <?= $grid->getNavigationHtml(); ?>
+                    <?= $grid->getNavigationHtml(); /* refactor: $navigation->getHtml()*/ ?>
                 </div>
             </div>
             <div>
@@ -31,8 +30,8 @@ $rows = $grid->getRows();
                         <?php foreach ($navigation->getButtons() as $button): ?>
                             <?= $button->getHtml() ?>
                         <?php endforeach; ?>
-                        <?= $grid->getActionsHtml(); ?>
-                        <?= $grid->getExportsHtml(); ?>
+                        <?= $grid->getActionsHtml(); /* refactor: $grid->getActions()->getHtml() */ ?>
+                        <?= $grid->getExportsHtml(); /* refactor: $grid->getExports()->getHtml() */ ?>
                     </div>
                 </div>
             </div>
@@ -44,8 +43,8 @@ $rows = $grid->getRows();
                   x-ref="massaction-form"
                   method="post">
                 <?= $block->getBlockHtml('formkey'); ?>
-                <label for="massAction<?= /** @noEscape */
-                $uniqueId ?>" class="font-medium text-md mr-4">
+                <label for="massAction<?= /** @noEscape */ $uniqueId ?>"
+                       class="font-medium text-md mr-4">
                     <?= $escaper->escapeHtml(__('Mass Actions:')) ?>
                 </label>
                 <select @change="doMassAction($event.target.selectedOptions[0])"
@@ -60,7 +59,7 @@ $rows = $grid->getRows();
                     <?php foreach ($massActions as $massAction): ?>
                         <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
                         <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>"
-                                class="<?= $massAction->getId() ?>"
+                                class="<?= $massAction->getId() /* refactor: don't use the mass action id as css class*/ ?>"
                                 value="<?= $escaper->escapeUrl($massActionUrl) ?>">
                             <?= $escaper->escapeHtml($massAction->getLabel()) ?>
                         </option>
@@ -116,9 +115,7 @@ $rows = $grid->getRows();
                                     x-ref="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>"
                                     x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>')"
                                     <?php if ($column->isSortable()): ?>
-                                        @click="updateGrid('<?= $escaper->escapeUrl(
-                                                $navigation->getSortByUrl($column->getKey(), $newDirection)
-                                            ) ?>')"
+                                        @click="updateGrid('<?= $escaper->escapeUrl($navigation->getSortByUrl($column->getKey(), $newDirection)) ?>')"
                                     <?php endif; ?>>
                                     <?= $escaper->escapeHtml($column->getLabel()) ?>
                                     <?php if ($isSortedByColumn && $navigation->isSortOrderAscending()): ?>
@@ -183,10 +180,7 @@ $rows = $grid->getRows();
                         <?php foreach ($rows as $row): ?>
                             <?php if ($rowAction = $actions[$grid->getRowActionId()] ?? false) {
                                 $rowActionUrl       = $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row));
-                                $rowActionAttribute = sprintf(
-                                    "onclick=\"window.location.href='%s'\"",
-                                    $escaper->escapeJs($rowActionUrl)
-                                );
+                                $rowActionAttribute = sprintf("onclick=\"window.location.href='%s'\"", $escaper->escapeJs($rowActionUrl));
                             } else {
                                 $rowActionAttribute = '';
                             } ?>
@@ -198,11 +192,8 @@ $rows = $grid->getRows();
                                             rounded-lg cursor-pointer hover:bg-gray-200">
                                             <input form="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>"
                                                    type="checkbox"
-                                                   value="<?= $escaper
-                                                       ->escapeHtmlAttr(
-                                                           $row
-                                                               ->getCell($grid->getMassActionIdColumn())
-                                                               ->getRawValue()
+                                                   value="<?= $escaper->escapeHtmlAttr(
+                                                           $row->getCell($grid->getMassActionIdColumn())->getRawValue()
                                                        ) ?>"
                                                    name="<?= $escaper->escapeHtmlAttr($grid->getMassActionIdsParam()) ?>[]"
                                                    class="form-checkbox rowCheckbox focus:outline-none focus:shadow-outline"
@@ -214,8 +205,7 @@ $rows = $grid->getRows();
                                 <?php foreach ($row->getCells() as $cell): ?>
                                     <td class="col-<?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()); ?>"
                                         <?= /** @noEscape */ $rowActionAttribute ?>
-                                        x-show="isColumnVisible('col-<?= $escaper
-                                            ->escapeHtmlAttr($cell->getColumnDefinition()->getKey()) ?>')"
+                                        x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()) ?>')"
                                     >
                                         <?= $cell->getHtml() ?>
                                     </td>
@@ -225,8 +215,7 @@ $rows = $grid->getRows();
                                         <?php foreach ($actions as $action): ?>
                                             <a class="px-3 font-medium text-blue-800 whitespace-no-wrap
                                                 hover:text-blue-600"
-                                               href="<?= $escaper
-                                                   ->escapeUrl($block->getUrl(
+                                               href="<?= $escaper->escapeUrl($block->getUrl(
                                                        $action->getUrl(),
                                                        $action->getParams($row)
                                                    )) ?>">
@@ -261,7 +250,7 @@ $rows = $grid->getRows();
             massActionStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-selectedRows' ?>',
             hiddenColsStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-hiddenCols' ?>',
 
-            headings: [
+            headings: [ // refactor: render with PHP
                 <?php foreach ($grid->getColumnDefinitions() as $column): ?>
                 {
                     'key': 'col-<?= $escaper->escapeHtml($column->getKey()) ?>',
@@ -269,7 +258,7 @@ $rows = $grid->getRows();
                 },
                 <?php endforeach; ?>
             ],
-            exports: [
+            exports: [ // refactor: render with PHP
                 <?php foreach ($grid->getNavigation()->getExports() as $export): ?>
                 {
                     'id': '<?= $escaper->escapeHtml($export->getId()) ?>',

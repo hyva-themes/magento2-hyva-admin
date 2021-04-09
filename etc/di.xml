@@ -102,7 +102,7 @@
             <argument name="eavCollectionProcessor" xsi:type="object">Magento\Eav\Model\Api\SearchCriteria\CollectionProcessor</argument>
         </arguments>
     </type>
-    <type name="Hyva\Admin\Model\GridExport\TypeDefinition">
+    <type name="Hyva\Admin\Model\GridExport\ExportTypeLocator">
         <arguments>
             <argument name="gridExportTypes" xsi:type="array">
                 <item name="csv" xsi:type="string">Hyva\Admin\Model\GridExport\Type\Csv</item>

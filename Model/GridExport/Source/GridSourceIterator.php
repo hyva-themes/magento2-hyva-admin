@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Hyva\Admin\Model\GridExport\Source;
 
@@ -9,21 +9,39 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 
 class GridSourceIterator implements \Iterator
 {
-    protected SearchCriteriaInterface $searchCriteria;
+    /**
+     * @var SearchCriteriaInterface
+     */
+    protected $searchCriteria;
 
-    protected int $total;
+    /**
+     * @var int
+     */
+    protected $total;
 
-    protected NavigationInterface $navigation;
+    /**
+     * @var NavigationInterface
+     */
+    protected $navigation;
 
-    private HyvaGridExportInterface $grid;
+    /**
+     * @var HyvaGridExportInterface
+     */
+    private $grid;
 
-    private array $currentBatch = [];
+    /**
+     * @var array
+     */
+    private $currentBatch = [];
 
-    private int $currentCounter=0;
+    /**
+     * @var int
+     */
+    private $currentCounter = 0;
 
     public function __construct(HyvaGridExportInterface $grid)
     {
-        $this->grid = $grid;
+        $this->grid           = $grid;
         $this->searchCriteria = $grid->getSearchCriteria();
         $this->searchCriteria->setPageSize(200);
         $this->total = $grid->getTotalRowsCount();
@@ -31,12 +49,12 @@ class GridSourceIterator implements \Iterator
 
     public function current(): RowInterface
     {
-        if(!isset($this->currentBatch[$this->currentCounter])){
+        if (!isset($this->currentBatch[$this->currentCounter])) {
             $this->currentBatch = [];
-            $page =  (int) ceil($this->currentCounter / $this->searchCriteria->getPageSize());
+            $page               = (int) ceil($this->currentCounter / $this->searchCriteria->getPageSize());
             $this->searchCriteria->setCurrentPage($page + 1);
             $inBatchCounter = 0;
-            foreach( $this->grid->getRowsForSearchCriteria($this->searchCriteria) as $row){
+            foreach ($this->grid->getRowsForSearchCriteria($this->searchCriteria) as $row) {
                 $this->currentBatch[$this->currentCounter + $inBatchCounter] = $row;
                 ++$inBatchCounter;
             }

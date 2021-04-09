@@ -27,7 +27,7 @@ class MassAction implements MassActionInterface
 
     public function __construct(string $id, string $url, string $label, bool $requireConfirmation = false)
     {
-        $this->id = $id;
+        $this->id                  = $id;
         $this->url                 = $url;
         $this->label               = $label;
         $this->requireConfirmation = $requireConfirmation;

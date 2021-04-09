@@ -295,6 +295,7 @@
                     <xs:attribute name="fileName" type="xs:string"/>
                     <xs:attribute name="enabled" type="boolean"/>
                     <xs:attribute name="template" type="templateType"/>
+                    <!-- refactor: add class attribute as it is parsed by converter?!? -->
                     <xs:attribute name="sortOrder" type="xs:int"/>
                 </xs:complexType>
             </xs:element>

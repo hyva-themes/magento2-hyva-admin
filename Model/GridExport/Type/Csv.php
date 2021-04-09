@@ -1,47 +1,54 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Hyva\Admin\Model\GridExport\Type;
+
+use function array_map as map;
 
 use Hyva\Admin\Model\GridExport\Source\GridSourceIteratorFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Filesystem;
 
-class Csv extends AbstractType
+class Csv extends AbstractExportType
 {
+    /**
+     * @var string
+     */
+    private $defaultFileName = "export/export.csv";
 
-    private string $fileName = "export/export.csv";
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
 
-    private Filesystem $filesystem;
+    /**
+     * @var GridSourceIteratorFactory
+     */
+    private $gridSourceIteratorFactory;
 
-    private GridSourceIteratorFactory $gridSourceIteratorFactory;
-
-
-    public function __construct( Filesystem $filesystem, GridSourceIteratorFactory $gridSourceIteratorFactory, HyvaGridInterface $grid, string $fileName = "")
-    {
-        parent::__construct($grid, $fileName ?: $this->fileName);
-        $this->filesystem = $filesystem;
+    public function __construct(
+        Filesystem $filesystem,
+        GridSourceIteratorFactory $gridSourceIteratorFactory,
+        HyvaGridInterface $grid,
+        string $fileName = ''
+    ) {
+        parent::__construct($grid, $fileName ?: $this->defaultFileName);
+        $this->filesystem                = $filesystem;
         $this->gridSourceIteratorFactory = $gridSourceIteratorFactory;
     }
 
-    public function createFileToDownload()
+    public function createFileToDownload(): void
     {
-        $file = $this->getFileName();
+        $file      = $this->getFileName();
         $directory = $this->filesystem->getDirectoryWrite($this->getRootDir());
-        $stream = $directory->openFile($file, 'w+');
-        $iterator = $this->gridSourceIteratorFactory->create(['grid' => $this->getGrid()]);
+        $stream    = $directory->openFile($file, 'w+');
+        $iterator  = $this->gridSourceIteratorFactory->create(['grid' => $this->getGrid()]);
         $stream->lock();
-        $addHeader = true;
-        foreach($iterator as $row){
-            if ($addHeader) {
-                $stream->writeCsv($this->getHeaderData());
-                $addHeader = false;
-            }
-            $stream->writeCsv(
-                array_map(function (CellInterface $cell) {
-                    return $cell->getTextValue();
-                }, $row->getCells())
-            );
+        $stream->writeCsv($this->getHeaderData());
+        foreach ($iterator as $row) {
+            $stream->writeCsv(map(function (CellInterface $cell): string {
+                return $cell->getTextValue();
+            }, $row->getCells()));
         }
         $stream->unlock();
         $stream->close();

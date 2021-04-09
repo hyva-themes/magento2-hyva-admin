@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace Hyva\Admin\Controller\Adminhtml\Export;
 
@@ -11,12 +11,20 @@ use Magento\Framework\App\Response\Http\FileFactory;
 
 class Download extends Action implements HttpGetActionInterface
 {
+    /**
+     * @var Export
+     */
+    private $export;
 
-    private Export $export;
+    /**
+     * @var RequestInterface
+     */
+    private $request;
 
-    private RequestInterface $request;
-
-    private FileFactory $fileFactory;
+    /**
+     * @var FileFactory
+     */
+    private $fileFactory;
 
     public function __construct(
         Context $context,
@@ -25,9 +33,9 @@ class Download extends Action implements HttpGetActionInterface
         Export $export
     ) {
         parent::__construct($context);
-        $this->request = $request;
+        $this->request     = $request;
         $this->fileFactory = $fileFactory;
-        $this->export = $export;
+        $this->export      = $export;
     }
 
     public function execute()
@@ -47,7 +55,7 @@ class Download extends Action implements HttpGetActionInterface
             $exportType->getRootDir(),
             $exportType->getContentType()
         );
-        $response->sendResponse();
+        return $response;
     }
 
 }

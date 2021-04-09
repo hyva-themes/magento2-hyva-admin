@@ -220,6 +220,7 @@ class Navigation implements NavigationInterface
         return $this->buildUrl($route, $params, $nonNsQueryParams);
     }
 
+    // refactor: make this private again
     public function buildUrl(string $route, array $params, array $nonNsParams = []): string
     {
         $namespacedQuery = merge($this->qualifyQueryParamsWithGridNamespace($params['_query'] ?? []), $nonNsParams);
@@ -242,6 +243,7 @@ class Navigation implements NavigationInterface
 
     public function getSearchCriteria(): SearchCriteriaInterface
     {
+        // refactor: get rid of this memoization
         if (!isset($this->memoizedSearchCriteria)) {
             if ($this->isPagerEnabled()) {
                 $this->searchCriteriaBuilder->setPageSize($this->getPageSize());
@@ -446,7 +448,8 @@ class Navigation implements NavigationInterface
 
     private function sortElements(array $elementsConfig): array
     {
-        // sort all buttons with a sortOrder before the ones without a sortOrder
+        // Sort elements with a sortOrder before the ones without a sortOrder.
+        // At the time of writing elements are buttons ands exports.
         $maxSortOrder = empty($elementsConfig)
             ? 0
             : max(map(function (array $buttonConfig) {
@@ -469,6 +472,6 @@ class Navigation implements NavigationInterface
 
     private function buildExport(array $config): GridExportInterface
     {
-        return $this->gridExportFactory->create(merge([], $config));
+        return $this->gridExportFactory->create($config);
     }
 }
