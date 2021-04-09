@@ -37,7 +37,6 @@ The record type argument is the type for the grid records. It will either be a P
 
 The grid name and the record type are passed along with the event for informational purposes, they can not be changed by observers.
 
-
 ### Observers
 
 
