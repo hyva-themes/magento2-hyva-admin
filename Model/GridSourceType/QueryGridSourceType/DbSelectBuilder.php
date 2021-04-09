@@ -28,7 +28,7 @@ class DbSelectBuilder
     {
         $select = $this->buildSelect($queryConfig['select'] ?? []);
 
-        $type = ($queryConfig['@unionSelect'] ?? 'all') === 'all' ? Select::SQL_UNION_ALL : Select::SQL_UNION;
+        $type = ($queryConfig['@unionSelectType'] ?? 'all') === 'all' ? Select::SQL_UNION_ALL : Select::SQL_UNION;
         return $this->applyUnionSelects($select, $queryConfig['unions'] ?? [], $type);
     }
 

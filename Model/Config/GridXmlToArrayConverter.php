@@ -83,7 +83,7 @@ class GridXmlToArrayConverter
     {
         /*
          * <source>
-         *     <query unionSelect="distinct">
+         *     <query unionSelectType="distinct">
          *         <select>
          *             <from table="catalog_product" as="main_table"/>
          *             <columns>
@@ -111,7 +111,7 @@ class GridXmlToArrayConverter
         return $query
             ? [
                 'query' => filter(merge(
-                    XmlToArray::getAttributeConfig($query, 'unionSelect', '@unionSelect'),
+                    XmlToArray::getAttributeConfig($query, 'unionSelectType', '@unionSelectType'),
                     ['select' => $this->getQuerySelectConfig(XmlToArray::getChildByName($query, 'select'))],
                     [
                         'unions' => values(filter(map(

@@ -346,7 +346,7 @@
             <xs:element name="select" type="querySelectType" minOccurs="1" maxOccurs="1"/>
             <xs:element name="unionSelect" type="querySelectType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
-        <xs:attribute name="unionSelect">
+        <xs:attribute name="unionSelectType">
             <xs:simpleType>
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="all"/>

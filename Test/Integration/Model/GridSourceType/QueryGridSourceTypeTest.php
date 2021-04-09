@@ -242,6 +242,7 @@ class QueryGridSourceTypeTest extends TestCase
         $this->createFixtureTable('foo2', $tableData2);
 
         $queryConfig = [
+            // implicit default: '@unionSelectType' => 'all',
             'select' => [
                 'from'    => ['table' => 'foo1'],
                 'columns' => [['column' => 'a'], ['column' => 'b']],
@@ -276,7 +277,7 @@ class QueryGridSourceTypeTest extends TestCase
         $this->createFixtureTable('foo2', $tableData2);
 
         $queryConfig = [
-            '@unionSelect' => 'distinct',
+            '@unionSelectType' => 'distinct',
             'select' => [
                 'from'    => ['table' => 'foo1'],
                 'columns' => [['column' => 'a'], ['column' => 'b']],
