@@ -28,7 +28,8 @@ class DbSelectBuilder
     {
         $select = $this->buildSelect($queryConfig['select'] ?? []);
 
-        return $this->applyUnionSelects($select, $queryConfig['unions'] ?? []);
+        $type = ($queryConfig['@unionSelect'] ?? 'all') === 'all' ? Select::SQL_UNION_ALL : Select::SQL_UNION;
+        return $this->applyUnionSelects($select, $queryConfig['unions'] ?? [], $type);
     }
 
     private function buildSelect(array $selectConfig): Select
@@ -84,34 +85,11 @@ class DbSelectBuilder
             : $table;
     }
 
-    private function applyUnionSelects(Select $select, array $unionSelectsConfig): Select
+    private function applyUnionSelects(Select $select, array $unionSelectsConfig, string $unionSelectType): Select
     {
-        $select = $this->applyUnionSelectDistinct($select, $unionSelectsConfig);
-
-        return $this->applyUnionSelectAll($select, $unionSelectsConfig);
-    }
-
-    private function applyUnionSelectDistinct(Select $select, array $unionSelectsConfig): Select
-    {
-        $distinctUnionSelectsConfig = filter($unionSelectsConfig ?? [], function (array $unionConfig): bool {
-            return ($unionConfig['type'] ?? 'distinct') !== 'all';
-        });
-        return $this->applyUnionSelectConfig($select, $distinctUnionSelectsConfig, Select::SQL_UNION);
-    }
-
-    private function applyUnionSelectAll(Select $select, array $unionSelectsConfig): Select
-    {
-        $allUnionSelectsConfig = filter($unionSelectsConfig ?? [], function (array $unionConfig): bool {
-            return ($unionConfig['type'] ?? 'distinct') === 'all';
-        });
-        return $this->applyUnionSelectConfig($select, $allUnionSelectsConfig, Select::SQL_UNION_ALL);
-    }
-
-    private function applyUnionSelectConfig(Select $select, array $unionSelectConfigs, string $unionType): Select
-    {
-        $selects = map([$this, 'buildSelect'], $unionSelectConfigs);
+        $selects = map([$this, 'buildSelect'], $unionSelectsConfig);
         return $selects
-            ? $select->getConnection()->select()->union(merge([$select], $selects), $unionType)
+            ? $select->getConnection()->select()->union(merge([$select], $selects), $unionSelectType)
             : $select;
     }
 }

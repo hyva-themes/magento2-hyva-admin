@@ -83,7 +83,7 @@ class GridXmlToArrayConverter
     {
         /*
          * <source>
-         *     <query>
+         *     <query unionSelect="distinct">
          *         <select>
          *             <from table="catalog_product" as="main_table"/>
          *             <columns>
@@ -101,7 +101,7 @@ class GridXmlToArrayConverter
          *                 <column name="t_name.name"/>
          *             <groupBy>
          *         </select>
-         *         <unionSelect type="all">
+         *         <unionSelect>
          *             <from table="catalog_product_other"/>
          *          </unionSelect>
          *     </query>
@@ -110,13 +110,16 @@ class GridXmlToArrayConverter
         $query = XmlToArray::getChildByName($source, 'query');
         return $query
             ? [
-                'query' => filter([
-                    'select' => $this->getQuerySelectConfig(XmlToArray::getChildByName($query, 'select')),
-                    'unions' => values(filter(map(
-                        [$this, 'getQueryUnionSelectConfig'],
-                        XmlToArray::getChildrenByName($query, 'unionSelect')
-                    ))),
-                ]),
+                'query' => filter(merge(
+                    XmlToArray::getAttributeConfig($query, 'unionSelect', '@unionSelect'),
+                    ['select' => $this->getQuerySelectConfig(XmlToArray::getChildByName($query, 'select'))],
+                    [
+                        'unions' => values(filter(map(
+                            [$this, 'getQueryUnionSelectConfig'],
+                            XmlToArray::getChildrenByName($query, 'unionSelect')
+                        ))),
+                    ]
+                )),
             ]
             : [];
     }
@@ -220,14 +223,11 @@ class GridXmlToArrayConverter
     private function getQueryUnionSelectConfig(\DOMElement $unionSelectConfig): array
     {
         /*
-         * <unionSelect type="all">
+         * <unionSelect>
          *    <from table="catalog_product_other"/>
          * </unionSelect>
          */
-        return filter(merge(
-            XmlToArray::getAttributeConfig($unionSelectConfig, 'type'),
-            $this->getQuerySelectConfig($unionSelectConfig)
-        ));
+        return $this->getQuerySelectConfig($unionSelectConfig);
     }
 
     private function getDefaultSourceCriteriaBindingsConfig(\DOMElement $sourceElement): array

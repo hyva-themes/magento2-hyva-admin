@@ -70,7 +70,10 @@ class DbSelectColumnExtractor
     {
         [$correlationName, $column, $alias] = $columnEntry;
         $tableName = $this->getRealTableNameIfAlias($select, $correlationName);
-        return $this->tableColumnExtractor->getColumnType($tableName, $column);
+
+        return is_string($column)
+            ? $this->tableColumnExtractor->getColumnType($tableName, $column)
+            : 'string'; // for Zend_Db_Expr instances default to string type
     }
 
     public function extractColumnValue(string $key, $object)

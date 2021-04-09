@@ -240,7 +240,10 @@ class QueryGridSourceType implements GridSourceTypeInterface
     {
         $event           = 'hyva_grid_query_before_' . $this->getGridNameEventSuffix($this->gridName);
         $selectContainer = new DbSelectEventContainer($select);
-        $this->eventManager->dispatch($event, ['select_container' => $selectContainer]);;
+        $this->eventManager->dispatch($event, [
+            'select_container' => $selectContainer,
+            'grid_name'        => $this->gridName,
+        ]);;
 
         return $selectContainer->getSelect();
     }

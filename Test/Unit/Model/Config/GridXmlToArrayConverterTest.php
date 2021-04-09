@@ -158,7 +158,7 @@ EOXML;
     {
         return <<<EOXML
     <source>
-        <query>
+        <query unionSelect="distinct">
             <select>
                 <from table="catalog_product" as="main_table"/>
                 <columns>
@@ -177,7 +177,7 @@ EOXML;
                     <column name="t_name.name"/>
                 </groupBy>
             </select>
-            <unionSelect type="all">
+            <unionSelect>
                 <from table="catalog_product_other"/>
              </unionSelect>
         </query>
@@ -190,6 +190,7 @@ EOXML;
         return [
             'source' => [
                 'query' => [
+                    '@unionSelect' => 'distinct',
                     'select' => [
                         'from'    => ['table' => 'catalog_product', '@as' => 'main_table'],
                         'columns' => [
@@ -214,7 +215,6 @@ EOXML;
                     ],
                     'unions' => [
                         [
-                            'type' => 'all',
                             'from' => ['table' => 'catalog_product_other'],
                         ],
                     ],

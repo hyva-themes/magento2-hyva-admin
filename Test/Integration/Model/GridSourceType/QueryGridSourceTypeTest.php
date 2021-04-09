@@ -227,14 +227,14 @@ class QueryGridSourceTypeTest extends TestCase
         );
     }
 
-    public function testAppliesUnionSelects(): void
+    public function testAppliesUnionSelectsAllByDefault(): void
     {
         $tableData1 = [
             ['a' => '1', 'b' => '2'],
             ['a' => '3', 'b' => '4'],
         ];
         $tableData2 = [
-            ['a' => 'v', 'b' => 'w'],
+            ['a' => '1', 'b' => '2'],
             ['a' => 'x', 'b' => 'y'],
         ];
         $expected   = array_merge($tableData1, $tableData2);
@@ -242,6 +242,41 @@ class QueryGridSourceTypeTest extends TestCase
         $this->createFixtureTable('foo2', $tableData2);
 
         $queryConfig = [
+            'select' => [
+                'from'    => ['table' => 'foo1'],
+                'columns' => [['column' => 'a'], ['column' => 'b']],
+            ],
+            'unions' => [
+                [
+                    'from'    => ['table' => 'foo2'],
+                    'columns' => [['column' => 'a'], ['column' => 'b']],
+                ],
+            ],
+        ];
+
+        $sut = $this->createQueryGridSourceType($queryConfig);
+
+        $result = $sut->fetchData(new SearchCriteria());
+        $this->assertSame(4, $sut->extractTotalRowCount($result));
+        $this->assertSame($expected, $this->unboxGridData($result));
+    }
+
+    public function testAppliesUnionSelectsDistinct(): void
+    {
+        $tableData1 = [
+            ['a' => '1', 'b' => '2'],
+            ['a' => '3', 'b' => '4'],
+        ];
+        $tableData2 = [
+            ['a' => '1', 'b' => '2'], // this row is a duplicate from tableData1
+            ['a' => 'x', 'b' => 'y'],
+        ];
+        $expected   = array_merge($tableData1, [['a' => 'x', 'b' => 'y']]);
+        $this->createFixtureTable('foo1', $tableData1);
+        $this->createFixtureTable('foo2', $tableData2);
+
+        $queryConfig = [
+            '@unionSelect' => 'distinct',
             'select' => [
                 'from'    => ['table' => 'foo1'],
                 'columns' => [['column' => 'a'], ['column' => 'b']],
