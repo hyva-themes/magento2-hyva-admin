@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use Hyva\Admin\Model\GridSourceType\QueryGridSourceType\DbSelectEventContainer;
 use function array_filter as filter;
 use function array_map as map;
 
@@ -14,6 +15,7 @@ use Magento\Framework\Api\Filter;
 use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 use Magento\Framework\DB\Select;
 
 class QueryGridSourceType implements GridSourceTypeInterface
@@ -49,13 +51,19 @@ class QueryGridSourceType implements GridSourceTypeInterface
      */
     private $dbSelectBuilder;
 
+    /**
+     * @var EventManager
+     */
+    private $eventManager;
+
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         DbSelectColumnExtractor $dbSelectColumnExtractor,
-        DbSelectBuilder $dbSelectBuilder
+        DbSelectBuilder $dbSelectBuilder,
+        EventManager $eventManager
     ) {
         $this->gridName                = $gridName;
         $this->sourceConfiguration     = $sourceConfiguration['query'] ?? [];
@@ -63,6 +71,7 @@ class QueryGridSourceType implements GridSourceTypeInterface
         $this->columnDefinitionFactory = $columnDefinitionFactory;
         $this->dbSelectColumnExtractor = $dbSelectColumnExtractor;
         $this->dbSelectBuilder         = $dbSelectBuilder;
+        $this->eventManager            = $eventManager;
     }
 
     public function getColumnKeys(): array
@@ -110,13 +119,7 @@ class QueryGridSourceType implements GridSourceTypeInterface
 
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
-        $select = $this->getSelect();
-
-        $this->applyFilters($select, $searchCriteria);
-        $this->applySortOrder($select, $searchCriteria);
-        $this->applyPagination($select, $searchCriteria);
-
-        // todo: dispatch query_before event
+        $select = $this->prepareSelect($this->getSelect(), $searchCriteria);
 
         $data        = $select->query(\Zend_Db::FETCH_ASSOC)->fetchAll();
         $countSelect = $this->getSelectCountSql($select);
@@ -222,5 +225,28 @@ class QueryGridSourceType implements GridSourceTypeInterface
             $page = max($searchCriteria->getCurrentPage() ?? 1, 1);
             $select->limitPage($page, $pageSize);
         }
+    }
+
+    private function prepareSelect(Select $select, SearchCriteriaInterface $searchCriteria): Select
+    {
+        $this->applyFilters($select, $searchCriteria);
+        $this->applySortOrder($select, $searchCriteria);
+        $this->applyPagination($select, $searchCriteria);
+
+        return $this->dispatchQueryBeforeEvent($select);
+    }
+
+    private function dispatchQueryBeforeEvent(Select $select): Select
+    {
+        $event           = 'hyva_grid_query_before_' . $this->getGridNameEventSuffix($this->gridName);
+        $selectContainer = new DbSelectEventContainer($select);
+        $this->eventManager->dispatch($event, ['select_container' => $selectContainer]);;
+
+        return $selectContainer->getSelect();
+    }
+
+    private function getGridNameEventSuffix(string $gridName): string
+    {
+        return strtolower(preg_replace('/[^[:alpha:]]+/', '_', $gridName));
     }
 }
