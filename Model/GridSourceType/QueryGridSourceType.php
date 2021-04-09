@@ -81,15 +81,28 @@ class QueryGridSourceType implements GridSourceTypeInterface
 
     private function mapDbTypeToColumnType(string $dbType): string
     {
+        /**
+         * @see \Magento\Framework\DB\Adapter\Pdo\Mysql::$_ddlColumnTypes
+         *
+         * There also are a couple of other db types in the map that are used by the core.
+         * Regarding casting floats and decimals to price type, that is the most common case
+         * in Magento, so I figured it probably requires the least number of overrides in
+         * grid configurations.
+         */
         $dbTypeToColumnTypeMap = [
+            'boolean'    => 'bool',
             'smallint'   => 'int',
+            'integer'    => 'int',
             'bigint'     => 'int',
+            'float'      => 'price',
             'decimal'    => 'price',
             'varchar'    => 'string',
             'shorttext'  => 'string',
+            'char'       => 'string',
             'mediumtext' => 'text',
             'longtext'   => 'text',
             'timestamp'  => 'datetime',
+            'date'       => 'datetime',
         ];
 
         return $dbTypeToColumnTypeMap[$dbType] ?? $dbType;
