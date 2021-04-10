@@ -11,7 +11,7 @@ if ($exports): ?>
                                     rounded-lg hover:text-blue-500 focus:outline-none focus:shadow-outline md:px-4"
         >
             <svg xmlns="http://www.w3.org/2000/svg"
-                 class="w-6 h-6 md:hidden md:visible"
+                 class="w-6 h-6 md:hidden"
                  viewBox="0 0 24 24"
                  stroke-width="2"
                  stroke="currentColor"
@@ -20,9 +20,8 @@ if ($exports): ?>
                  stroke-linejoin="round"
             >
                 <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
-                <path
-                    d="M5.5 5h13a1 1 0 0 1 0.5 1.5L14 12L14 19L10 16L10 12L5 6.5a1 1 0 0 1 0.5 -1.5"/>
-            </svg>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+            </svg><!-- cloud-download -->
             <span class="hidden md:block md:visible">
                 <?= $escaper->escapeHtml(__('Export')) ?>
             </span>
@@ -31,13 +30,13 @@ if ($exports): ?>
                  stroke-linecap="round" stroke-linejoin="round">
                 <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
                 <polyline points="6 9 12 15 18 9"/>
-            </svg>
+            </svg><!-- chevron down -->
         </button>
 
         <div x-show="openExport"
              @click.away="openExport = false"
-             class="absolute top-0 right-0 z-40 block p-4 mt-16 -mr-1 overflow-y-auto bg-white
-                                rounded-lg shadow-lg"
+             class="absolute top-0 z-40 block p-4 mt-16 -mr-1 overflow-y-auto bg-white
+                    rounded-lg shadow-lg flex"
              style="max-height: 75vh;">
             <?php foreach($exports as $export): ?>
                 <a href="<?= $escaper->escapeHtmlAttr($navigation->getExportUrl($export->getType())) ?>"
