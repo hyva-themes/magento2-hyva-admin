@@ -223,9 +223,4 @@ class ExportTypesTest extends TestCase
 
         $this->testFilesToRemove[] = $file;
     }
-
-    public function testFiltersAndSortOrdersAreApplied(): void
-    {
-        $this->markTestIncomplete();
-    }
 }
