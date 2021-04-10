@@ -36,7 +36,7 @@ class ExportTypesTest extends TestCase
     {
         map(function (string $fileName) {
             if (file_exists($fileName)) {
-                //unlink($fileName);
+                unlink($fileName);
             }
         }, $this->testFilesToRemove);
     }
@@ -45,9 +45,13 @@ class ExportTypesTest extends TestCase
     {
         $firstRow   = $gridData[0];
         $columnKeys = keys($firstRow);
-        $columns    = map([$this, 'createColumn'], $columnKeys);
 
-        return zip($columnKeys, $columns);
+        return $this->createColumnsForKeys($columnKeys);
+    }
+
+    private function createColumnsForKeys(array $columnKeys): array
+    {
+        return zip($columnKeys, map([$this, 'createColumn'], $columnKeys));
     }
 
     private function createColumn(string $key): ColumnDefinitionInterface
@@ -88,9 +92,9 @@ class ExportTypesTest extends TestCase
         return $fileSystem->getDirectoryRead($export->getExportDir())->getAbsolutePath($export->getFileName());
     }
 
-    private function createStubGrid(array $gridData): HyvaGridViewModel
+    private function createStubGrid(array $gridData, array $columns = null): HyvaGridViewModel
     {
-        $columns  = $this->createColumnsFromGrid($gridData);
+        $columns  = $columns ?? $this->createColumnsFromGrid($gridData);
         $stubGrid = $this->createMock(HyvaGridViewModel::class);
         $stubGrid->method('getColumnDefinitions')->willReturn($columns);
         $stubGrid->method('getSearchCriteria')->willReturn(new SearchCriteria());
@@ -203,7 +207,21 @@ class ExportTypesTest extends TestCase
 
     public function testExportsOnlyHeadersForEmptyGrid(): void
     {
-        $this->markTestIncomplete();
+        $gridData  = [];
+        $columns   = $this->createColumnsForKeys(['aaa', 'bbb', 'ccc']);
+        $grid      = $this->createStubGrid($gridData, $columns);
+        $csvExport = ObjectManager::getInstance()->create(Csv::class, ['grid' => $grid]);
+
+        $csvExport->createFileToDownload();
+
+        $file = $this->getExportFilePath($csvExport);
+        $this->assertFileExists($file);
+        $exportData = explode(PHP_EOL, trim(file_get_contents($file)));
+
+        $this->assertCount(1, $exportData);
+        $this->assertSame('Aaa,Bbb,Ccc', $exportData[0] ?? '');
+
+        $this->testFilesToRemove[] = $file;
     }
 
     public function testFiltersAndSortOrdersAreApplied(): void
