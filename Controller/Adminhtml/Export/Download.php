@@ -3,7 +3,7 @@
 namespace Hyva\Admin\Controller\Adminhtml\Export;
 
 use Hyva\Admin\Model\GridExport\GridExportTypeLocator;
-use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
+use Hyva\Admin\Model\GridExport\HyvaGridExportInterfaceFactory;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
@@ -28,22 +28,28 @@ class Download extends Action implements HttpGetActionInterface
     private $fileFactory;
 
     /**
-     * @var HyvaGridInterfaceFactory
+     * @var HyvaGridExportInterfaceFactory
      */
     private $gridFactory;
+
+    /**
+     * @var Context
+     */
+    private $context;
 
     public function __construct(
         Context $context,
         RequestInterface $request,
         FileFactory $fileFactory,
         GridExportTypeLocator $gridExportLocator,
-        HyvaGridInterfaceFactory $gridFactory
+        HyvaGridExportInterfaceFactory $gridFactory
     ) {
         parent::__construct($context);
         $this->request           = $request;
         $this->fileFactory       = $fileFactory;
         $this->gridExportLocator = $gridExportLocator;
         $this->gridFactory       = $gridFactory;
+        $this->context           = $context;
     }
 
     public function execute()

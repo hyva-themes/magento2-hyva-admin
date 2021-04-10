@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridExport;
 
+use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
 interface HyvaGridExportInterface
@@ -11,4 +12,8 @@ interface HyvaGridExportInterface
     public function getRowsForSearchCriteria(SearchCriteriaInterface $searchCriteria): array;
 
     public function getTotalRowsCount(): int;
+
+    public function getExport(string $exportType): ?GridExportInterface;
+
+    public function getGridName(): string;
 }

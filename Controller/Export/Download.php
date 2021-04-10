@@ -3,7 +3,7 @@
 namespace Hyva\Admin\Controller\Export;
 
 use Hyva\Admin\Model\GridExport\GridExportTypeLocator;
-use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
+use Hyva\Admin\Model\GridExport\HyvaGridExportInterfaceFactory;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\Http\FileFactory;
@@ -26,7 +26,7 @@ class Download implements ActionInterface
     private $fileFactory;
 
     /**
-     * @var HyvaGridInterfaceFactory
+     * @var HyvaGridExportInterfaceFactory
      */
     private $gridFactory;
 
@@ -34,7 +34,7 @@ class Download implements ActionInterface
         RequestInterface $request,
         FileFactory $fileFactory,
         GridExportTypeLocator $gridExportLocator,
-        HyvaGridInterfaceFactory $gridFactory
+        HyvaGridExportInterfaceFactory $gridFactory
     ) {
         $this->request           = $request;
         $this->fileFactory       = $fileFactory;

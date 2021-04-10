@@ -4,8 +4,8 @@ namespace Hyva\Admin\Model\GridExport\Type;
 
 use function array_map as map;
 
+use Hyva\Admin\Model\GridExport\HyvaGridExportInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
-use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Filesystem;
 
 class Csv extends AbstractExportType
@@ -22,7 +22,7 @@ class Csv extends AbstractExportType
 
     public function __construct(
         Filesystem $filesystem,
-        HyvaGridInterface $grid,
+        HyvaGridExportInterface $grid,
         string $fileName = ''
     ) {
         parent::__construct($grid, $fileName ?: $this->defaultFileName);

@@ -4,9 +4,9 @@ namespace Hyva\Admin\Model\GridExport\Type;
 
 use function array_map as map;
 
+use Hyva\Admin\Model\GridExport\HyvaGridExportInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
-use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Convert\Excel;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Convert\ExcelFactory;
@@ -31,12 +31,12 @@ class Xml extends AbstractExportType
     public function __construct(
         Filesystem $filesystem,
         ExcelFactory $excelFactory,
-        HyvaGridInterface $grid,
+        HyvaGridExportInterface $grid,
         string $fileName = ''
     ) {
         parent::__construct($grid, $fileName ?: $this->defaultFileName);
-        $this->filesystem                = $filesystem;
-        $this->excelFactory              = $excelFactory;
+        $this->filesystem   = $filesystem;
+        $this->excelFactory = $excelFactory;
     }
 
     public function createFileToDownload(): void

@@ -12,8 +12,8 @@ use function array_search as search;
 use function array_sum as sum;
 use function array_values as values;
 
+use Hyva\Admin\Model\GridExport\HyvaGridExportInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
-use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Filesystem;
 
 class Xlsx extends AbstractExportType
@@ -35,7 +35,7 @@ class Xlsx extends AbstractExportType
 
     public function __construct(
         Filesystem $filesystem,
-        HyvaGridInterface $grid,
+        HyvaGridExportInterface $grid,
         string $fileName = ''
     ) {
         $this->validateZipExtensionInstalled();

@@ -12,6 +12,7 @@ use Hyva\Admin\ViewModel\HyvaGrid;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 
+use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
@@ -199,21 +200,6 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
         return $this->getRowsForSearchCriteria($this->getNavigation()->getSearchCriteria());
     }
 
-    public function getRowsForSearchCriteria(SearchCriteriaInterface $searchCriteria): array
-    {
-        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
-    }
-
-    public function getSearchCriteria(): SearchCriteriaInterface
-    {
-        return $this->getNavigation()->getSearchCriteria();
-    }
-
-    public function getTotalRowsCount(): int
-    {
-        return $this->getNavigation()->getTotalRowsCount();
-    }
-
     private function buildRow($record): HyvaGrid\RowInterface
     {
         $cells         = $this->buildCells($record);
@@ -365,5 +351,25 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
     private function createRenderer(): Template
     {
         return $this->layout->createBlock(Template::class);
+    }
+
+    public function getSearchCriteria(): SearchCriteriaInterface
+    {
+        return $this->getNavigation()->getSearchCriteria();
+    }
+
+    public function getRowsForSearchCriteria(SearchCriteriaInterface $searchCriteria): array
+    {
+        return map([$this, 'buildRow'], $this->getGridSourceModel()->getRecords($searchCriteria));
+    }
+
+    public function getTotalRowsCount(): int
+    {
+        return $this->getNavigation()->getTotalRowsCount();
+    }
+
+    public function getExport(string $exportType): ?GridExportInterface
+    {
+        return $this->getNavigation()->getExports()[$exportType] ?? null;
     }
 }

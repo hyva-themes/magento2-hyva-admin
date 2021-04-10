@@ -25,9 +25,9 @@ class GridExportTypeLocator
         $this->objectManager   = $objectManager;
     }
 
-    public function getExportType(HyvaGridInterface $grid, string $exportType): ExportTypeInterface
+    public function getExportType(HyvaGridExportInterface $grid, string $exportType): ExportTypeInterface
     {
-        $export = $grid->getNavigation()->getExports()[$exportType] ?? null;
+        $export = $grid->getExport($exportType);
 
         if (!$export) {
             $msg = sprintf('Export type "%s" not configured for Hyvä grid "%s"', $exportType, $grid->getGridName());

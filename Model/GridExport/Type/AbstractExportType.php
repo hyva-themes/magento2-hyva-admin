@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridExport\Type;
 
+use Hyva\Admin\Model\GridExport\HyvaGridExportInterface;
 use function array_map as map;
 
 use Hyva\Admin\Model\GridExport\ExportTypeInterface;
@@ -12,7 +13,7 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 abstract class AbstractExportType implements ExportTypeInterface
 {
     /**
-     * @var HyvaGridInterface
+     * @var HyvaGridExportInterface
      */
     private $grid;
 
@@ -26,12 +27,10 @@ abstract class AbstractExportType implements ExportTypeInterface
      */
     private $contentType = 'application/octet-stream';
 
-    public function __construct(HyvaGridInterface $grid, string $fileName)
+    public function __construct(HyvaGridExportInterface $grid, string $fileName)
     {
-        $this->grid = $grid;
-        if ($fileName) {
-            $this->fileName = $fileName;
-        }
+        $this->grid     = $grid;
+        $this->fileName = $fileName;
     }
 
     public function getFileName(): string
@@ -49,7 +48,7 @@ abstract class AbstractExportType implements ExportTypeInterface
         return DirectoryList::VAR_DIR;
     }
 
-    protected function getGrid(): HyvaGridInterface
+    protected function getGrid(): HyvaGridExportInterface
     {
         return $this->grid;
     }
