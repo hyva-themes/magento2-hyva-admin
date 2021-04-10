@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\LayoutInterface;
 use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
@@ -84,8 +86,14 @@ class Navigation implements NavigationInterface
      */
     private $gridExportFactory;
 
+    /**
+     * @var LayoutInterface
+     */
+    private $layout;
+
     public function __construct(
         string $gridName,
+        LayoutInterface $layout,
         HyvaGridSourceInterface $gridSource,
         GridFilterInterfaceFactory $gridFilterFactory,
         array $navigationConfig,
@@ -97,6 +105,7 @@ class Navigation implements NavigationInterface
         GridButtonInterfaceFactory $gridButtonFactory,
         GridExportInterfaceFactory $gridExportFactory
     ) {
+        $this->layout                = $layout;
         $this->gridSource            = $gridSource;
         $this->navigationConfig      = $navigationConfig;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -222,8 +231,7 @@ class Navigation implements NavigationInterface
         return $this->buildUrl($route, $params, $nonNsQueryParams);
     }
 
-    // refactor: make this private again
-    public function buildUrl(string $route, array $params, array $nonNsParams = []): string
+    private function buildUrl(string $route, array $params, array $nonNsParams = []): string
     {
         $namespacedQuery = merge($this->qualifyQueryParamsWithGridNamespace($params['_query'] ?? []), $nonNsParams);
         return $this->urlBuilder->getUrl($route, merge($params, ['_query' => $namespacedQuery]));
@@ -476,5 +484,23 @@ class Navigation implements NavigationInterface
         $ids           = pick($sortedConfigs, 'type');
 
         return zip($ids, map([$this->gridExportFactory, 'create'], $sortedConfigs));
+    }
+
+    public function getExportUrl(string $type): string
+    {
+        return $this->buildUrl('hyva_admin/export/download', [
+            // preserve filters and order for export, page and pageSize will be ignored
+            '_current'   => true,
+            'gridName'   => $this->gridName,
+            'exportType' => $type,
+        ]);
+    }
+
+    public function getHtml(): string
+    {
+        $renderer = $this->layout->createBlock(Template::class);
+        $renderer->setTemplate('Hyva_Admin::grid/navigation.phtml');
+        $renderer->assign('navigation', $this);
+        return $renderer->toHtml();
     }
 }

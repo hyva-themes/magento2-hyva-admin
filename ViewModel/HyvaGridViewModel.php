@@ -324,19 +324,10 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
         return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? $this->getMassActionIdColumn();
     }
 
-    public function getNavigationHtml(): string
+    public function getColumnToggleHtml(): string
     {
         $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::grid/navigation.phtml');
-        $renderer->assign('navigation', $this->getNavigation());
-        return $renderer->toHtml();
-    }
-
-    public function getActionsHtml(): string
-    {
-        $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::grid/actions.phtml');
-        $renderer->assign('actions', $this->getActions());
+        $renderer->setTemplate('Hyva_Admin::grid/column-toggle.phtml');
         return $renderer->toHtml();
     }
 

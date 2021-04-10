@@ -75,4 +75,8 @@ interface NavigationInterface
      * @return GridExportInterface[]
      */
     public function getExports(): array;
+
+    public function getExportUrl(string $type): string;
+
+    public function getHtml(): string;
 }
