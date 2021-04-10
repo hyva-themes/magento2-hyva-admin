@@ -335,6 +335,7 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
     {
         $renderer = $this->createRenderer();
         $renderer->setTemplate('Hyva_Admin::grid/exports.phtml');
+        $renderer->assign('navigation', $this->getNavigation());
         $renderer->assign('exports', $this->getNavigation()->getExports());
         return $renderer->toHtml();
     }

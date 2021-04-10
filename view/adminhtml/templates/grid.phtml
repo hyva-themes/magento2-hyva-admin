@@ -265,14 +265,6 @@ $rows       = $grid->getRows();
                 },
                 <?php endforeach; ?>
             ],
-            exports: [
-                <?php foreach ($grid->getNavigation()->getExports() as $export): ?>
-                {
-                    'label': '<?= $escaper->escapeJs($export->getLabel()) ?>',
-                    'url': '<?= $escaper->escapeJs($navigation->getExportUrl($export->getType())) ?>',
-                },
-                <?php endforeach; ?>
-            ],
 
             open: false,
             openExport: false,

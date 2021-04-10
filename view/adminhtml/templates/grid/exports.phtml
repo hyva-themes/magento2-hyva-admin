@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
 /** @var \Magento\Framework\Escaper $escaper */
-/** @var Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface[] $exports */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface[] $exports */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface $navigation  */
 
 if ($exports): ?>
     <div class="exports inline-flex mx-2">
@@ -38,13 +39,13 @@ if ($exports): ?>
              class="absolute top-0 right-0 z-40 block p-4 mt-16 -mr-1 overflow-y-auto bg-white
                                 rounded-lg shadow-lg"
              style="max-height: 75vh;">
-            <template x-for="exportItem in exports">
-                <a x-bind:href="exportItem.url"
+            <?php foreach($exports as $export): ?>
+                <a href="<?= $escaper->escapeHtmlAttr($navigation->getExportUrl($export->getType())) ?>"
                    @click="openExport = false"
                    class="text-gray-700 inline-flex mx-2 cursor-pointer">
-                    <span x-text="exportItem.label"/>
+                    <span><?= $escaper->escapeHtml($export->getLabel()) ?></span>
                 </a>
-            </template>
+            <?php endforeach; ?>
         </div>
     </div>
 <?php endif; ?>
