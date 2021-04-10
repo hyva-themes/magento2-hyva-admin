@@ -8,7 +8,7 @@ interface GridExportInterface
 
     public function getLabel(): string;
 
-    public function getFileName(): string;
+    public function getFileName(): ?string;
 
     public function getClass(): ?string;
 }

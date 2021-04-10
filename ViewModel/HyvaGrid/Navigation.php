@@ -480,7 +480,10 @@ class Navigation implements NavigationInterface
      */
     public function getExports(): array
     {
-        $sortedConfigs = $this->sortElements($this->navigationConfig['exports'] ?? []);
+        $exportsConfig = filter($this->navigationConfig['exports'] ?? [], function (array $exportConfig): bool {
+            return ($exportConfig['enabled'] ?? 'true') !== 'false';
+        });
+        $sortedConfigs = $this->sortElements($exportsConfig);
         $ids           = pick($sortedConfigs, 'type');
 
         return zip($ids, map([$this->gridExportFactory, 'create'], $sortedConfigs));
@@ -501,6 +504,7 @@ class Navigation implements NavigationInterface
         $renderer = $this->layout->createBlock(Template::class);
         $renderer->setTemplate('Hyva_Admin::grid/navigation.phtml');
         $renderer->assign('navigation', $this);
+
         return $renderer->toHtml();
     }
 }

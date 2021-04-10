@@ -40,6 +40,7 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
         '/grid/columns/exclude/column' => 'name',
         '/grid/navigation/filters/filter' => 'column',
         '/grid/navigation/buttons/button' => 'id',
+        '/grid/navigation/exports/export' => 'type',
     ];
 
     /**
