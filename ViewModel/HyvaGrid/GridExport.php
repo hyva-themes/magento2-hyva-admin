@@ -7,7 +7,7 @@ class GridExport implements GridExportInterface
     /**
      * @var string
      */
-    private $id;
+    private $type;
 
     /**
      * @var string|null
@@ -35,14 +35,14 @@ class GridExport implements GridExportInterface
     private $sortOrder;
 
     public function __construct(
-        string $id,
+        string $type,
         ?string $label,
         ?string $fileName = null,
         ?string $enabled = null,
         ?string $template = null,
         ?string $sortOrder = null
     ) {
-        $this->id        = $id;
+        $this->type      = $type;
         $this->label     = $label;
         $this->enabled   = $enabled;
         $this->template  = $template;
@@ -50,9 +50,9 @@ class GridExport implements GridExportInterface
         $this->sortOrder = $sortOrder;
     }
 
-    public function getId(): string
+    public function getType(): string
     {
-        return $this->id;
+        return $this->type;
     }
 
     public function getLabel(): string
@@ -63,5 +63,11 @@ class GridExport implements GridExportInterface
     public function getFileName(): string
     {
         return (string) $this->fileName;
+    }
+
+    public function getClass(): ?string
+    {
+        // refactor: add class prop
+        return null;
     }
 }

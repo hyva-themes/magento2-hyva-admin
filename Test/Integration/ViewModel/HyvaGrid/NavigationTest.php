@@ -3,12 +3,14 @@
 namespace Hyva\Admin\Test\Integration\ViewModel\HyvaGrid;
 
 use function array_filter as filter;
+use function array_keys as keys;
 use function array_map as map;
 
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Model\HyvaGridSourceInterface;
 use Hyva\Admin\Test\Integration\TestingGridDataProvider;
 use Hyva\Admin\ViewModel\HyvaGrid\GridButton;
+use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\Navigation;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
@@ -27,11 +29,10 @@ class NavigationTest extends TestCase
 
     private function createArrayGridSource(array $gridData): HyvaGridSourceInterface
     {
-        $gridName         = 'testing-grid';
         $gridSourceConfig = ['arrayProvider' => TestingGridDataProvider::withArray($gridData)];
-        $sourceTypeArgs   = ['gridName' => $gridName, 'sourceConfiguration' => $gridSourceConfig];
+        $sourceTypeArgs   = ['gridName' => self::TEST_GRID, 'sourceConfiguration' => $gridSourceConfig];
         $arraySourceType  = ObjectManager::getInstance()->create(ArrayProviderGridSourceType::class, $sourceTypeArgs);
-        $gridSourceArgs   = ['gridSourceType' => $arraySourceType, 'gridName' => $gridName];
+        $gridSourceArgs   = ['gridSourceType' => $arraySourceType, 'gridName' => self::TEST_GRID];
 
         return ObjectManager::getInstance()->create(HyvaGridSourceInterface::class, $gridSourceArgs);
     }
@@ -660,5 +661,26 @@ class NavigationTest extends TestCase
         $navigationConfig = ['@isAjaxEnabled' => 'false'];
         $sut              = $this->createNavigation($gridData, $navigationConfig);
         $this->assertFalse($sut->isAjaxEnabled());
+    }
+
+    public function testReturnsMapOfConfiguredExports(): void
+    {
+        $gridData         = [
+            ['col_a' => 'a', 'col_b' => 'b'],
+        ];
+        $navigationConfig = [
+            'exports' => [
+                ['type' => 'csv', 'label' => 'Export to CSV'],
+                ['type' => 'xml', 'label' => 'Export to XML'],
+            ],
+        ];
+
+        $sut = $this->createNavigation($gridData, $navigationConfig);
+
+        $exports = $sut->getExports();
+        $this->assertSame(['csv', 'xml'], keys($exports));
+        $this->assertContainsOnlyInstancesOf(GridExportInterface::class, $exports);
+        $this->assertSame('csv', $exports['csv']->getType());
+        $this->assertSame('xml', $exports['xml']->getType());
     }
 }

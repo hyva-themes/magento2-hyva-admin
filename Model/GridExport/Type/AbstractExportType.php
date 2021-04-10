@@ -44,12 +44,12 @@ abstract class AbstractExportType implements ExportTypeInterface
         return $this->contentType;
     }
 
-    public function getRootDir(): string
+    public function getExportDir(): string
     {
         return DirectoryList::VAR_DIR;
     }
 
-    public function getGrid(): HyvaGridInterface
+    protected function getGrid(): HyvaGridInterface
     {
         return $this->grid;
     }

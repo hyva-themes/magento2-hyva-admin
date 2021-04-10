@@ -17,7 +17,7 @@ class Xml extends AbstractExportType
     /**
      * @var string
      */
-    private $defaultFileName = "export/export.xml";
+    private $defaultFileName = 'export/export.xml';
 
     /**
      * @var Filesystem
@@ -50,7 +50,7 @@ class Xml extends AbstractExportType
     public function createFileToDownload(): void
     {
         $file      = $this->getFileName();
-        $directory = $this->filesystem->getDirectoryWrite($this->getRootDir());
+        $directory = $this->filesystem->getDirectoryWrite($this->getExportDir());
         $iterator  = $this->gridSourceIteratorFactory->create(['grid' => $this->getGrid()]);
 
         /** @var Excel $excel */

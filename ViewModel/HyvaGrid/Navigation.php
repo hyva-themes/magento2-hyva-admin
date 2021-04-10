@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
+use function array_column as pick;
+use function array_combine as zip;
 use function array_filter as filter;
 use function array_keys as keys;
 use function array_map as map;
@@ -465,13 +467,14 @@ class Navigation implements NavigationInterface
         return $elementsConfig;
     }
 
+    /**
+     * @return GridExportInterface[]
+     */
     public function getExports(): array
     {
-        return map([$this, 'buildExport'], $this->sortElements($this->navigationConfig['exports'] ?? []));
-    }
+        $sortedConfigs = $this->sortElements($this->navigationConfig['exports'] ?? []);
+        $ids           = pick($sortedConfigs, 'type');
 
-    private function buildExport(array $config): GridExportInterface
-    {
-        return $this->gridExportFactory->create($config);
+        return zip($ids, map([$this->gridExportFactory, 'create'], $sortedConfigs));
     }
 }

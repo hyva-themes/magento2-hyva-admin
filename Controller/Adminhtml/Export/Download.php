@@ -2,7 +2,8 @@
 
 namespace Hyva\Admin\Controller\Adminhtml\Export;
 
-use Hyva\Admin\Model\GridExport\Export;
+use Hyva\Admin\Model\GridExport\GridExportTypeLocator;
+use Hyva\Admin\ViewModel\HyvaGridInterfaceFactory;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
@@ -12,9 +13,9 @@ use Magento\Framework\App\Response\Http\FileFactory;
 class Download extends Action implements HttpGetActionInterface
 {
     /**
-     * @var Export
+     * @var GridExportTypeLocator
      */
-    private $export;
+    private $gridExportLocator;
 
     /**
      * @var RequestInterface
@@ -26,34 +27,39 @@ class Download extends Action implements HttpGetActionInterface
      */
     private $fileFactory;
 
+    /**
+     * @var HyvaGridInterfaceFactory
+     */
+    private $gridFactory;
+
     public function __construct(
         Context $context,
         RequestInterface $request,
         FileFactory $fileFactory,
-        Export $export
+        GridExportTypeLocator $gridExportLocator,
+        HyvaGridInterfaceFactory $gridFactory
     ) {
         parent::__construct($context);
-        $this->request     = $request;
-        $this->fileFactory = $fileFactory;
-        $this->export      = $export;
+        $this->request           = $request;
+        $this->fileFactory       = $fileFactory;
+        $this->gridExportLocator = $gridExportLocator;
+        $this->gridFactory       = $gridFactory;
     }
 
     public function execute()
     {
-        $exportType = $this->export->getExportType(
-            $this->request->getParam('gridName', ''),
-            $this->request->getParam('exportType', '')
-        );
-        $exportType->createFileToDownload();
+        $grid   = $this->gridFactory->create(['gridName' => $this->request->getParam('gridName', '')]);
+        $export = $this->gridExportLocator->getExportType($grid, $this->request->getParam('exportType', ''));
+        $export->createFileToDownload();
         $response = $this->fileFactory->create(
-            basename($exportType->getFileName()),
+            basename($export->getFileName()),
             [
                 "type"  => "filename",
-                "value" => $exportType->getFileName(),
+                "value" => $export->getFileName(),
                 "rm"    => true,
             ],
-            $exportType->getRootDir(),
-            $exportType->getContentType()
+            $export->getExportDir(),
+            $export->getContentType()
         );
         return $response;
     }

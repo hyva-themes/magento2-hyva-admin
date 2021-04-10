@@ -394,8 +394,8 @@ class GridXmlToArrayConverter
          *         <button id="foo" label="Foo" onclick="doFoo"/>
          *     </buttons>
          *     <exports>
-         *         <export id="csv" label="Export to CSV" class="Hyva\Admin\Model\Export\Csv" />
-         *         <export id="xml" label="Export to XML" class="Hyva\Admin\Model\Export\Xml" />
+         *         <export type="csv" label="Export to CSV" class="Hyva\Admin\Model\Export\Csv" />
+         *         <export type="xml" label="Export to XML" class="Hyva\Admin\Model\Export\Xml" />
          *     </exports>
          * </navigation>
          */
@@ -543,8 +543,8 @@ class GridXmlToArrayConverter
     {
         /*
          *     <exports>
-         *         <export id="csv" label="Export to CSV" class="Hyva\Admin\Model\Export\Csv" />
-         *         <export id="xml" label="Export to XML" template="Hyva\Admin\Model\Export\Xml" />
+         *         <export type="csv" label="Export to CSV" class="Hyva\Admin\Model\Export\Csv" />
+         *         <export type="xml" label="Export to XML" template="Hyva\Admin\Model\Export\Xml" />
          *     </exports>
          */
         $exportsElement = XmlToArray::getChildByName($navigationElement, 'exports');
@@ -556,7 +556,7 @@ class GridXmlToArrayConverter
     private function getExportConfig(\DOMElement $exportElement): array
     {
         return filter(merge(
-            XmlToArray::getAttributeConfig($exportElement, 'id'),
+            XmlToArray::getAttributeConfig($exportElement, 'type'),
             XmlToArray::getAttributeConfig($exportElement, 'label'),
             XmlToArray::getAttributeConfig($exportElement, 'fileName'),
             XmlToArray::getAttributeConfig($exportElement, 'enabled'),

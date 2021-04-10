@@ -14,7 +14,7 @@ class Csv extends AbstractExportType
     /**
      * @var string
      */
-    private $defaultFileName = "export/export.csv";
+    private $defaultFileName = 'export/export.csv';
 
     /**
      * @var Filesystem
@@ -40,7 +40,7 @@ class Csv extends AbstractExportType
     public function createFileToDownload(): void
     {
         $file      = $this->getFileName();
-        $directory = $this->filesystem->getDirectoryWrite($this->getRootDir());
+        $directory = $this->filesystem->getDirectoryWrite($this->getExportDir());
         $stream    = $directory->openFile($file, 'w+');
         $iterator  = $this->gridSourceIteratorFactory->create(['grid' => $this->getGrid()]);
         $stream->lock();

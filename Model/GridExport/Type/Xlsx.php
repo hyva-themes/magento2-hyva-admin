@@ -22,7 +22,7 @@ class Xlsx extends AbstractExportType
     /**
      * @var string
      */
-    private $defaultFileName = "export/export.xlsx";
+    private $defaultFileName = 'export/export.xlsx';
 
     /**
      * @var array
@@ -55,7 +55,7 @@ class Xlsx extends AbstractExportType
     public function createFileToDownload(): void
     {
         $filename = $this->getFileName();
-        $read     = $this->fileSystem->getDirectoryRead($this->getRootDir());
+        $read     = $this->fileSystem->getDirectoryRead($this->getExportDir());
         $rootPath = $read->getAbsolutePath($filename);
         $zip      = new \ZipArchive();
         if ($zip->open($rootPath, \ZipArchive::CREATE)) {
@@ -196,7 +196,7 @@ class Xlsx extends AbstractExportType
         );
     }
 
-    public function getSharedStringNo(string $string): string
+    public function getSharedStringNo(string $string): int
     {
         static $stringPos = [];
 

@@ -2,8 +2,6 @@
 
 namespace Hyva\Admin\Model\GridExport;
 
-use Hyva\Admin\ViewModel\HyvaGridInterface;
-
 interface ExportTypeInterface
 {
 
@@ -13,8 +11,5 @@ interface ExportTypeInterface
 
     public function createFileToDownload();
 
-    public function getRootDir(): string;
-
-    public function getGrid(): HyvaGridInterface;
-
+    public function getExportDir(): string;
 }

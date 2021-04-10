@@ -23,7 +23,7 @@ use function array_merge as merge;
 use function array_reduce as reduce;
 use function array_values as values;
 
-class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface // why is the export interface here?
+class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
 {
     /**
      * @var HyvaGrid\NavigationInterface

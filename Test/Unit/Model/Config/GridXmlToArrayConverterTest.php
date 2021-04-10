@@ -195,12 +195,12 @@ EOXML;
             'source' => [
                 'query' => [
                     '@unionSelectType' => 'distinct',
-                    'select' => [
+                    'select'           => [
                         'from'    => ['table' => 'catalog_product', '@as' => 'main_table'],
                         'columns' => [
                             ['column' => 'entity_id', '@as' => 'id'],
                             ['column' => 'sku'],
-                            ['expression' => 'COUNT(*)', '@as' => 'count']
+                            ['expression' => 'COUNT(*)', '@as' => 'count'],
                         ],
                         'joins'   => [
                             [
@@ -215,9 +215,9 @@ EOXML;
                         'groupBy' => [
                             ['column' => 'main_table.attribute_set_id'],
                             ['column' => 't_name.name'],
-                        ]
+                        ],
                     ],
-                    'unions' => [
+                    'unions'           => [
                         [
                             'from' => ['table' => 'catalog_product_other'],
                         ],
@@ -470,9 +470,9 @@ EOXML;
         return <<<EOXML
     <navigation>
         <exports>
-            <export id="csv" label="Export to CSV"/>
-            <export id="xml" label="Export to XML" class="\My\Custom\Export" />
-            <export id="csv2" label="Export to CSV2" fileName="file.csv" enabled="true" sortOrder="1"/>
+            <export type="csv" label="Export to CSV"/>
+            <export type="xml" label="Export to XML" class="\My\Custom\Export" />
+            <export type="csv2" label="Export to CSV2" fileName="file.csv" enabled="true" sortOrder="1"/>
         </exports>
     </navigation>
 EOXML;
@@ -483,10 +483,10 @@ EOXML;
         return [
             'navigation' => [
                 'exports' => [
-                    ['id' => 'csv', 'label' => 'Export to CSV'],
-                    ['id' => 'xml', 'label' => 'Export to XML', 'class' => '\My\Custom\Export'],
+                    ['type' => 'csv', 'label' => 'Export to CSV'],
+                    ['type' => 'xml', 'label' => 'Export to XML', 'class' => '\My\Custom\Export'],
                     [
-                        'id'        => 'csv2',
+                        'type'      => 'csv2',
                         'label'     => 'Export to CSV2',
                         'fileName'  => 'file.csv',
                         'enabled'   => 'true',

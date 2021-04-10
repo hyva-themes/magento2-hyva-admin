@@ -261,9 +261,9 @@ $rows = $grid->getRows();
             exports: [ // refactor: render with PHP
                 <?php foreach ($grid->getNavigation()->getExports() as $export): ?>
                 {
-                    'id': '<?= $escaper->escapeHtml($export->getId()) ?>',
+                    'id': '<?= $escaper->escapeHtml($export->getType()) ?>',
                     'value': '<?= $escaper->escapeHtml($export->getLabel()) ?>',
-                    'url': '<?= $escaper->escapeHtml($grid->getNavigation()->buildUrl('hyva_admin/export/download', ['_current' => true, 'gridName' => $grid->getGridName(), 'exportType' => $export->getId(), '_query' => [ 'p' => 1, 'pageSize' => 100]])) ?>',
+                    'url': '<?= $escaper->escapeHtml($grid->getNavigation()->buildUrl('hyva_admin/export/download', ['_current' => true, 'gridName' => $grid->getGridName(), 'exportType' => $export->getType(), '_query' => ['p' => 1, 'pageSize' => 100]])) ?>',
                 },
                 <?php endforeach; ?>
             ],
