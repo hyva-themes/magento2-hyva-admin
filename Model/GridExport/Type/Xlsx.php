@@ -12,7 +12,6 @@ use function array_search as search;
 use function array_sum as sum;
 use function array_values as values;
 
-use Hyva\Admin\Model\GridExport\Source\GridSourceIteratorFactory;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Magento\Framework\Filesystem;
@@ -34,22 +33,15 @@ class Xlsx extends AbstractExportType
      */
     private $fileSystem;
 
-    /**
-     * @var GridSourceIteratorFactory
-     */
-    private $sourceIteratorFactory;
-
     public function __construct(
         Filesystem $filesystem,
-        GridSourceIteratorFactory $sourceIteratorFactory,
         HyvaGridInterface $grid,
         string $fileName = ''
     ) {
         $this->validateZipExtensionInstalled();
 
         parent::__construct($grid, $fileName ?: $this->defaultFileName);
-        $this->fileSystem            = $filesystem;
-        $this->sourceIteratorFactory = $sourceIteratorFactory;
+        $this->fileSystem = $filesystem;
     }
 
     public function createFileToDownload(): void
@@ -175,9 +167,8 @@ class Xlsx extends AbstractExportType
 
     private function getSheet(): string
     {
-        $iterator = $this->sourceIteratorFactory->create(['grid' => $this->getGrid()]);
-        $rows[]   = $this->buildRow(values($this->getHeaderData()), 0);
-        foreach ($iterator as $rowNumber => $row) {
+        $rows[] = $this->buildRow(values($this->getHeaderData()), 0);
+        foreach ($this->iterateGrid() as $rowNumber => $row) {
             $row = values(map(function (CellInterface $column): string {
                 return $column->getTextValue();
             }, $row->getCells()));

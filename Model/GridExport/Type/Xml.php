@@ -7,7 +7,6 @@ use function array_map as map;
 use Hyva\Admin\ViewModel\HyvaGrid\CellInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
-use Hyva\Admin\Model\GridExport\Source\GridSourceIteratorFactory;
 use Magento\Framework\Convert\Excel;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Convert\ExcelFactory;
@@ -29,14 +28,8 @@ class Xml extends AbstractExportType
      */
     private $excelFactory;
 
-    /**
-     * @var GridSourceIteratorFactory
-     */
-    private $gridSourceIteratorFactory;
-
     public function __construct(
         Filesystem $filesystem,
-        GridSourceIteratorFactory $gridSourceIteratorFactory,
         ExcelFactory $excelFactory,
         HyvaGridInterface $grid,
         string $fileName = ''
@@ -44,18 +37,16 @@ class Xml extends AbstractExportType
         parent::__construct($grid, $fileName ?: $this->defaultFileName);
         $this->filesystem                = $filesystem;
         $this->excelFactory              = $excelFactory;
-        $this->gridSourceIteratorFactory = $gridSourceIteratorFactory;
     }
 
     public function createFileToDownload(): void
     {
         $file      = $this->getFileName();
         $directory = $this->filesystem->getDirectoryWrite($this->getExportDir());
-        $iterator  = $this->gridSourceIteratorFactory->create(['grid' => $this->getGrid()]);
 
         /** @var Excel $excel */
         $excel = $this->excelFactory->create([
-            'iterator'    => $iterator,
+            'iterator'    => $this->iterateGrid(),
             'rowCallback' => function (RowInterface $data): array {
                 return $this->getRowData($data);
             },

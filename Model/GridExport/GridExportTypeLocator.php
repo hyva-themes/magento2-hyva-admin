@@ -39,6 +39,7 @@ class GridExportTypeLocator
             throw new \LogicException(sprintf('Hyva_Admin Grid Export type "%s" is unknown', $exportType));
         }
 
-        return $this->objectManager->create($exportClass, ['grid' => $grid]);
+        $filename = $grid->getGridName() . '.' . $export->getType();
+        return $this->objectManager->create($exportClass, ['grid' => $grid, 'fileName' => $filename]);
     }
 }

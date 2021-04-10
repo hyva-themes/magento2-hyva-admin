@@ -36,7 +36,7 @@ class ExportTypesTest extends TestCase
     {
         map(function (string $fileName) {
             if (file_exists($fileName)) {
-                unlink($fileName);
+                //unlink($fileName);
             }
         }, $this->testFilesToRemove);
     }
@@ -199,5 +199,15 @@ class ExportTypesTest extends TestCase
         $this->assertSame((string) end($gridData)['val'], end($exportData)); // last row
 
         $this->testFilesToRemove[] = $file;
+    }
+
+    public function testExportsOnlyHeadersForEmptyGrid(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testFiltersAndSortOrdersAreApplied(): void
+    {
+        $this->markTestIncomplete();
     }
 }

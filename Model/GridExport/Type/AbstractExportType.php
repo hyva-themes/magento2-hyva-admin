@@ -58,7 +58,21 @@ abstract class AbstractExportType implements ExportTypeInterface
     {
         return map(function (ColumnDefinitionInterface $column): string {
             return $column->getLabel();
-        }, $this->getGrid()->getColumnDefinitions());
+        }, $this->grid->getColumnDefinitions());
+    }
+
+    protected function iterateGrid()
+    {
+        $searchCriteria = $this->grid->getSearchCriteria();
+        $searchCriteria->setPageSize(200);
+        $searchCriteria->setCurrentPage(1);
+        $current = 0;
+        do {
+            foreach ($this->grid->getRowsForSearchCriteria($searchCriteria) as $row) {
+                yield $current++ => $row;
+            }
+            $searchCriteria->setCurrentPage($searchCriteria->getCurrentPage() + 1);
+        } while ($current < $this->grid->getTotalRowsCount());
     }
 
     abstract public function createFileToDownload(): void;
