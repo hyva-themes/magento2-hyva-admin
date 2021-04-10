@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Nothing.
+- It's now possible to configure Exports for grids thanks to https://github.com/pointia!
 
 ### Changed
 - Nothing currently.
