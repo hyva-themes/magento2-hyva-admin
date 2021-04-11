@@ -7,6 +7,9 @@ There is one attribute, `useAjax`.
 
 ```markup
 <navigation useAjax="false">
+    <exports>
+            <export type="csv" label="Export as CSV"/>
+    </exports>
     <pager>
         <pageSizes>2,5,10</pageSizes>
     </pager>

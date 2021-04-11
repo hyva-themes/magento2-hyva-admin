@@ -10,6 +10,7 @@ Currently supported data providers are:
 * repositoryListMethod
 * arrayProvider
 * collection
+* query
 
 
 More data provider types will be added in future. The next provider type will likely be a SQL query provider.
@@ -35,6 +36,17 @@ More data provider types will be added in future. The next provider type will li
 ```markup
 <source>
     <collection>\Magento\Catalog\Model\ResourceModel\Product\Collection</collection>
+</source>
+```
+
+
+```markup
+<source>
+    <query>
+        <select>
+            <from table="sales_order"/>
+        </select>
+    </query>
 </source>
 ```
 
