@@ -36,12 +36,12 @@ if ($exports): ?>
         <div x-show="openExport"
              @click.away="openExport = false"
              class="absolute top-0 z-40 block p-4 mt-16 -mr-1 overflow-y-auto bg-white
-                    rounded-lg shadow-lg flex"
+                    rounded-lg shadow-lg flex flex-col"
              style="max-height: 75vh;">
-            <?php foreach($exports as $export): ?>
+            <?php foreach ($exports as $export): ?>
                 <a href="<?= $escaper->escapeHtmlAttr($navigation->getExportUrl($export->getType())) ?>"
                    @click="openExport = false"
-                   class="text-gray-700 inline-flex mx-2 cursor-pointer">
+                   class="text-gray-700 inline-flex mx-2 cursor-pointer my-2">
                     <span><?= $escaper->escapeHtml($export->getLabel()) ?></span>
                 </a>
             <?php endforeach; ?>
