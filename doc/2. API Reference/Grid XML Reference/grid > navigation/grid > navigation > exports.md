@@ -24,7 +24,7 @@ Each available type is declared as a child `<export>` node.
 
 Each export is identified by its type. Three types are available out of the box (csv, xml and xlsx).
 
-Further information about implementing custom export types can be found in the PHP API reference under Grid `AbstractExportType`.
+Further information about implementing custom export types can be found in the PHP API reference under **Grid AbstractExportType**.
 
 ## Attributes
 
