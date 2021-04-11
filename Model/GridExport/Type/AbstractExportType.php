@@ -60,7 +60,7 @@ abstract class AbstractExportType implements ExportTypeInterface
         }, $this->grid->getColumnDefinitions());
     }
 
-    protected function iterateGrid()
+    protected function iterateGrid(): \Iterator
     {
         $searchCriteria = $this->grid->getSearchCriteria();
         $searchCriteria->setPageSize(200);
