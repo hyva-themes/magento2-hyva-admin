@@ -31,7 +31,7 @@ class GridExport implements GridExportInterface
 
     public function __construct(
         string $type,
-        ?string $label,
+        ?string $label = null,
         ?string $fileName = null,
         ?string $class = null,
         ?string $sortOrder = null
@@ -50,7 +50,7 @@ class GridExport implements GridExportInterface
 
     public function getLabel(): string
     {
-        return (string) $this->label;
+        return $this->label ?? (string) __('Export as %1', mb_strtoupper($this->getType()));
     }
 
     public function getFileName(): ?string

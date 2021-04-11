@@ -297,7 +297,7 @@
             <xs:element name="export" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:attribute name="type" type="xs:normalizedString" use="required"/>
-                    <xs:attribute name="label" type="xs:string" use="required"/>
+                    <xs:attribute name="label" type="xs:string"/>
                     <xs:attribute name="fileName" type="xs:string"/>
                     <xs:attribute name="enabled" type="boolean"/>
                     <xs:attribute name="class" type="phpType"/>
