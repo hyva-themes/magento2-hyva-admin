@@ -274,7 +274,9 @@ $rows       = $grid->getRows();
                 this.$watch('selectedRows', this.storeSelectedRows.bind(this));
                 this.selectedRows = this.getSelectedRows();
                 this.hiddenCols = this.getHiddenCols();
+                <?php if ($navigation->hasFilters()): ?>
                 this.filterUri = this.getFormUriEncoded(document.getElementById('<?= $navigation->getFilterFormId() ?>'));
+                <?php endif; ?>
             },
 
             getSelectedRows() {
