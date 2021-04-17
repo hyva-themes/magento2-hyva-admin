@@ -13,6 +13,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - No removals.
 
+## [1.1.8] - 2021-04-17
+### Added
+- Nothing currently.
+
+### Changed
+- Bugfix: grids without filters throw an error that action is undefined on null.
+
+### Removed
+- No removals.
+
 ## [1.1.7] - 2021-04-11
 ### Added
 - It's now possible to configure Exports for grids, thanks to https://github.com/pointia!
