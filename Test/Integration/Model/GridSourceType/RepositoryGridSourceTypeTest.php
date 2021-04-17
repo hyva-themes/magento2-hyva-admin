@@ -8,6 +8,7 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Api\SearchCriteria;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -132,11 +133,12 @@ class RepositoryGridSourceTypeTest extends TestCase
         ];
 
         /** @var RepositoryGridSourceType $sut */
-        $sut            = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
-        $searchCriteria = (new SearchCriteria())->setPageSize(1);
-        $records        = $sut->extractRecords($sut->fetchData($searchCriteria));
-        $email          = $sut->extractValue($records[0], 'email');
-        $this->assertSame('customer@example.com', $email);
+        $sut     = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $builder = ObjectManager::getInstance()->create(SearchCriteriaBuilder::class);
+        $builder->addFilter('email', 'customer@example.com')->setPageSize(1);
+        $records = $sut->extractRecords($sut->fetchData($builder->create()));
+        $this->assertNotEmpty($records);
+        $this->assertSame('customer@example.com', $sut->extractValue($records[0] ?? null, 'email'));
     }
 
     /**
@@ -174,7 +176,8 @@ class RepositoryGridSourceTypeTest extends TestCase
         $searchCriteria = (new SearchCriteria())->setPageSize(1);
         $records        = values($sut->extractRecords($sut->fetchData($searchCriteria)));
 
-        $metaTitle = $sut->extractValue($records[0], 'meta_title');
+        $this->assertNotEmpty($records);
+        $metaTitle = $sut->extractValue($records[0] ?? null, 'meta_title');
         $this->assertSame('meta title', $metaTitle);
     }
 }

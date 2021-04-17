@@ -168,7 +168,8 @@ class CollectionGridSourceTypeTest extends TestCase
         $rawGridData = $sut->fetchData((new SearchCriteria())->setPageSize(1));
         $records     = $sut->extractRecords($rawGridData);
 
-        $this->assertSame('meta title', $sut->extractValue($records[0], 'meta_title'));
+        $this->assertNotEmpty($records);
+        $this->assertSame('meta title', $sut->extractValue($records[0] ?? null, 'meta_title'));
         $this->assertSame('simple', $sut->extractValue($records[0], 'sku'));
         $this->assertSame('Simple Product', $sut->extractValue($records[0], 'name'));
     }
