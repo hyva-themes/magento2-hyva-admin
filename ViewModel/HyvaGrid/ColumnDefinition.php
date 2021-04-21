@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
-use Magento\Eav\Model\Entity\Attribute\Source\SourceInterface;
+use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\ObjectManagerInterface;
 
 use function array_merge as merge;
@@ -170,7 +170,7 @@ class ColumnDefinition implements ColumnDefinitionInterface
         return $this->options ?? ($this->hasSourceModel() ? $this->createSourceModel()->toOptionArray() : []);
     }
 
-    private function createSourceModel(): ?SourceInterface
+    private function createSourceModel(): ?OptionSourceInterface
     {
         return $this->hasSourceModel() ? $this->objectManager->get($this->source) : null;
     }
