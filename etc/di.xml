@@ -83,6 +83,7 @@
                 <item name="magento_product_type" xsi:type="string">Hyva\Admin\Model\DataType\ProductTypeInstanceDataType</item>
                 <item name="magento_tier_price" xsi:type="string">Hyva\Admin\Model\DataType\TierPriceDataType</item>
                 <item name="store_id" xsi:type="string">\Hyva\Admin\Model\DataType\StoreIdDataType</item>
+                <item name="website_id" xsi:type="string">\Hyva\Admin\Model\DataType\WebsiteIdDataType</item>
                 <item name="object" xsi:type="string">Hyva\Admin\Model\DataType\GenericObjectDataType</item>
                 <item name="unknown" xsi:type="string">Hyva\Admin\Model\DataType\UnknownDataType</item>
             </argument>
