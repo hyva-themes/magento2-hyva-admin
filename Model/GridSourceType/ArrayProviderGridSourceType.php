@@ -3,8 +3,7 @@
 namespace Hyva\Admin\Model\GridSourceType;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
-use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
-use Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor;
+use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
@@ -17,6 +16,7 @@ use Magento\Framework\Api\SortOrder;
 use function array_contains as contains;
 use function array_filter as filter;
 use function array_keys as keys;
+use function array_map as map;
 use function array_reduce as reduce;
 use function array_slice as slice;
 use function array_values as values;
@@ -63,6 +63,11 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
      */
     private $gridName;
 
+    /**
+     * @var HyvaGridSourceProcessorInterface[]
+     */
+    private $processors;
+
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
@@ -70,10 +75,12 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
         ArrayProviderSourceType\ArrayProviderFactory $arrayProviderFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         DataTypeGuesserInterface $dataTypeGuesser,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        array $processors = []
     ) {
 
         $this->gridName                = $gridName;
+        $this->processors              = $processors;
         $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
         $this->arrayProviderFactory    = $arrayProviderFactory;
         $this->arrayProviderClass      = $sourceConfiguration['arrayProvider'] ?? '';
@@ -133,9 +140,23 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
         if (!isset($this->memoizedGridData)) {
-            $provider               = $this->arrayProviderFactory->create($this->arrayProviderClass);
-            $filterGroups           = $searchCriteria->getFilterGroups() ?? [];
-            $this->memoizedGridData = $this->applyFilterGroups($provider->getHyvaGridData(), $filterGroups);
+            $provider = $this->arrayProviderFactory->create($this->arrayProviderClass);
+
+            map(function (HyvaGridSourceProcessorInterface $processor) use ($provider, $searchCriteria): void {
+                $processor->beforeLoad($this->gridName, $searchCriteria, $provider);
+            }, $this->processors);
+
+            $filterGroups = $searchCriteria->getFilterGroups() ?? [];
+
+            $result = reduce(
+                $this->processors,
+                function (array $result, HyvaGridSourceProcessorInterface $processor) use ($searchCriteria): array {
+                    return $processor->afterLoad($this->gridName, $searchCriteria, $result) ?? $result;
+                },
+                $this->applyFilterGroups($provider->getHyvaGridData(), $filterGroups)
+            );
+
+            $this->memoizedGridData = $result;
         }
 
         $gridData = $this->applyPagination($this->memoizedGridData, $searchCriteria);

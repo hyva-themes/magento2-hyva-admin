@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 - New grid column type website_id.
+- New low level grid customization hook via \Hyva\Admin\Api\HyvaGridSourceProcessorInterface that can be configured
+  on grids in the XML at the path grid/source/processors
 
 ### Changed
 - Allow `as=""` attribute for query grid source join columns

@@ -6,7 +6,7 @@ use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Model\GridSourceType\CollectionGridSourceType;
 use Hyva\Admin\Model\GridSourceType\QueryGridSourceType;
 use Hyva\Admin\Model\GridSourceType\RepositoryGridSourceType;
-use Hyva\Admin\Model\GridSourceType\SourceTypeLocator;
+use Hyva\Admin\Model\GridSourceType\SourceTypeClassLocator;
 use PHPUnit\Framework\TestCase;
 
 class SourceTypeLocatorTest extends TestCase
@@ -15,13 +15,13 @@ class SourceTypeLocatorTest extends TestCase
     {
         $this->expectException(\OutOfBoundsException::class);
         $this->expectExceptionMessage('Unknown HyvaGrid source type on grid "test-grid": "foo"');
-        (new SourceTypeLocator())->getFor('test-grid', ['@type' => 'foo']);
+        (new SourceTypeClassLocator())->getFor('test-grid', ['@type' => 'foo']);
     }
     public function testThrowsExceptionIfNoSourceIsConfigured(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('No source type configuration found for grid "test-grid"');
-        (new SourceTypeLocator())->getFor('test-grid', []);
+        (new SourceTypeClassLocator())->getFor('test-grid', []);
     }
 
     /**
@@ -29,7 +29,7 @@ class SourceTypeLocatorTest extends TestCase
      */
     public function testDeterminesTypeByPresentConfig(array $config, string $expected): void
     {
-        $this->assertSame($expected, (new SourceTypeLocator())->getFor('test-grid', $config));
+        $this->assertSame($expected, (new SourceTypeClassLocator())->getFor('test-grid', $config));
     }
 
     public function sourceTypeProvider(): array

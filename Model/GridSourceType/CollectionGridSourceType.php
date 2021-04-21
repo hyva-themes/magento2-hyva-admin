@@ -4,10 +4,13 @@ namespace Hyva\Admin\Model\GridSourceType;
 
 use function array_contains as contains;
 use function array_filter as filter;
+use function array_map as map;
 use function array_merge as merge;
+use function array_reduce as reduce;
 use function array_unique as unique;
 use function array_values as values;
 
+use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\GridSourceType\CollectionSourceType\GridSourceCollectionFactory;
 use Hyva\Admin\Model\GridTypeReflection;
 use Hyva\Admin\Model\RawGridSourceContainer;
@@ -76,6 +79,11 @@ class CollectionGridSourceType implements GridSourceTypeInterface
      */
     private $memoizedSelectInspectionFields;
 
+    /**
+     * @var HyvaGridSourceProcessorInterface
+     */
+    private $processors;
+
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
@@ -85,10 +93,12 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         GridSourceCollectionFactory $gridSourceCollectionFactory,
         CollectionProcessorInterface $defaultCollectionProcessor,
-        CollectionProcessorInterface $eavCollectionProcessor
+        CollectionProcessorInterface $eavCollectionProcessor,
+        array $processors = []
     ) {
         $this->gridName                    = $gridName;
         $this->sourceConfiguration         = $sourceConfiguration;
+        $this->processors                  = $processors;
         $this->typeReflection              = $typeReflection;
         $this->dbSelectColumnExtractor     = $dbSelectColumnExtractor;
         $this->gridSourceDataAccessor      = $gridSourceDataAccessor;
@@ -157,13 +167,28 @@ class CollectionGridSourceType implements GridSourceTypeInterface
             $collection->addFieldToSelect('*');
         }
 
+        map(function (HyvaGridSourceProcessorInterface $processor) use ($collection, $searchCriteria): void {
+            $processor->beforeLoad($this->gridName, $searchCriteria, $collection);
+        }, $this->processors);
+
         if (is_subclass_of($collection, AbstractEavCollection::class)) {
             $this->eavCollectionProcessor->process($searchCriteria, $collection);
         } else {
             $this->defaultCollectionProcessor->process($searchCriteria, $collection);
         }
 
-        return RawGridSourceContainer::forData($collection);
+        $afterProcessdCollection = reduce(
+            $this->processors,
+            function (
+                AbstractDb $collection,
+                HyvaGridSourceProcessorInterface $processor
+            ) use ($searchCriteria): AbstractDb {
+                return $processor->afterLoad($this->gridName, $searchCriteria, $collection) ?? $collection;
+            },
+            $collection
+        );
+
+        return RawGridSourceContainer::forData($afterProcessdCollection);
     }
 
     public function extractRecords(RawGridSourceContainer $rawGridData): array

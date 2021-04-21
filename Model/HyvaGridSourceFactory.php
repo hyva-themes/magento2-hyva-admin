@@ -2,28 +2,39 @@
 
 namespace Hyva\Admin\Model;
 
+use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
+use Hyva\Admin\Model\GridSource\GridSourceProcessorBuilder;
 use Hyva\Admin\Model\GridSource\SearchCriteriaBindings;
 use function array_merge as merge;
-use Hyva\Admin\Model\GridSourceType\SourceTypeLocator;
+use Hyva\Admin\Model\GridSourceType\SourceTypeClassLocator;
 
 use Magento\Framework\ObjectManagerInterface;
 
 class HyvaGridSourceFactory
 {
     /**
-     * @var SourceTypeLocator
+     * @var SourceTypeClassLocator
      */
-    private $sourceTypeLocator;
+    private $sourceTypeClassLocator;
 
     /**
      * @var ObjectManagerInterface
      */
     private $objectManager;
 
-    public function __construct(ObjectManagerInterface $objectManager, SourceTypeLocator $sourceTypeLocator)
-    {
-        $this->sourceTypeLocator = $sourceTypeLocator;
-        $this->objectManager     = $objectManager;
+    /**
+     * @var GridSourceProcessorBuilder
+     */
+    private $gridSourceProcessorBuilder;
+
+    public function __construct(
+        ObjectManagerInterface $objectManager,
+        SourceTypeClassLocator $sourceTypeClassLocator,
+        GridSourceProcessorBuilder $gridSourceProcessorBuilder
+    ) {
+        $this->objectManager              = $objectManager;
+        $this->sourceTypeClassLocator     = $sourceTypeClassLocator;
+        $this->gridSourceProcessorBuilder = $gridSourceProcessorBuilder;
     }
 
     public function createFor(HyvaGridDefinitionInterface $gridDefinition): HyvaGridSourceInterface
@@ -40,8 +51,8 @@ class HyvaGridSourceFactory
             'sourceConfiguration' => $gridSourceConfiguration,
         ];
         $gridSourceType             = $this->objectManager->create(
-            $this->sourceTypeLocator->getFor($gridDefinition->getName(), $gridSourceConfiguration),
-            $sharedConstructorArguments
+            $this->sourceTypeClassLocator->getFor($gridDefinition->getName(), $gridSourceConfiguration),
+            merge($sharedConstructorArguments, ['processors' => $this->buildProcessors($gridSourceConfiguration)])
         );
         $bindingsConfig             = $gridSourceConfiguration['defaultSearchCriteriaBindings'] ?? [];
         $searchCriteriaBindings     = $this->objectManager->create(
@@ -54,5 +65,14 @@ class HyvaGridSourceFactory
             HyvaGridSourceInterface::class,
             merge($dependencies, $sharedConstructorArguments)
         );
+    }
+
+    /**
+     * @param array[] $gridSourceProcessorsConfig
+     * @return HyvaGridSourceProcessorInterface[]
+     */
+    private function buildProcessors(array $gridSourceConfiguration): array
+    {
+        return $this->gridSourceProcessorBuilder->build($gridSourceConfiguration['processors'] ?? []);
     }
 }

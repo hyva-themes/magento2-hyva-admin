@@ -2,7 +2,7 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
-class SourceTypeLocator
+class SourceTypeClassLocator
 {
     private $typeToGridSourceClassMap = [
         'repository' => RepositoryGridSourceType::class,

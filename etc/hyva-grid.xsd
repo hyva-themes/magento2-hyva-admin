@@ -51,6 +51,7 @@
             </xs:choice>
             <xs:element name="defaultSearchCriteriaBindings" type="searchCriteriaBindingsType" minOccurs="0"
                         maxOccurs="1"/>
+            <xs:element name="processors" type="gridProcessorsType" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="type">
             <xs:simpleType>
@@ -430,5 +431,16 @@
                 <xs:attribute name="as" type="columnNameType"/>
             </xs:extension>
         </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="gridProcessorsType">
+        <xs:sequence>
+            <xs:element name="processor" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="class" type="phpType"/>
+                    <xs:attribute name="enabled" type="boolean"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
     </xs:complexType>
 </xs:schema>

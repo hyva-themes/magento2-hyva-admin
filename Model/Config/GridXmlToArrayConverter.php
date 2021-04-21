@@ -33,7 +33,8 @@ class GridXmlToArrayConverter
                 $this->getRepositoryProviderSourceConfig($sourceElement),
                 $this->getCollectionSourceConfig($sourceElement),
                 $this->getQuerySourceConfig($sourceElement),
-                $this->getDefaultSourceCriteriaBindingsConfig($sourceElement)
+                $this->getDefaultSourceCriteriaBindingsConfig($sourceElement),
+                $this->getSourceProcessorsConfig($sourceElement)
             )
             : [];
     }
@@ -260,6 +261,36 @@ class GridXmlToArrayConverter
                 XmlToArray::getAttributeConfig($fieldElement, 'value'),
             ));
         }, XmlToArray::getChildrenByName($bindingsElement, 'field'));
+    }
+
+    private function getSourceProcessorsConfig(\DOMElement $sourceElement): array
+    {
+        /*
+         * <source>
+         *     <processors>
+         *         <processor class="\Hyva\Aaaa\Model\GridProcessorA" enabled="true"/>
+         *         <processor class="\Hyva\Bbbb\Model\GridProcessorB" enabled="false"/>
+         *         <processor class="\Hyva\Cccc\Model\GridProcessorC"/>
+         *     </processors>
+         * </source>
+         */
+        $processorsElement = XmlToArray::getChildByName($sourceElement, 'processors');
+        return $processorsElement
+            ? filter([
+                'processors' => map(
+                    [$this, 'getSourceProcessorConfig'],
+                    XmlToArray::getChildrenByName($processorsElement, 'processor')
+                ),
+            ])
+            : [];
+    }
+
+    private function getSourceProcessorConfig(\DOMElement $processorElement): array
+    {
+        return filter(merge(
+            XmlToArray::getAttributeConfig($processorElement, 'class'),
+            XmlToArray::getAttributeConfig($processorElement, 'enabled')
+        ));
     }
 
     private function convertColumnsConfig(\DOMElement $root): array
@@ -562,7 +593,7 @@ class GridXmlToArrayConverter
             XmlToArray::getAttributeConfig($exportElement, 'enabled'),
             XmlToArray::getAttributeConfig($exportElement, 'class'),
             XmlToArray::getAttributeConfig($exportElement, 'sortOrder')
-            // refactor: add class attribute as it is defined in xsd
+        // refactor: add class attribute as it is defined in xsd
         ));
     }
 

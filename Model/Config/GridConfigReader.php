@@ -33,6 +33,7 @@ class GridConfigReader implements HyvaGridConfigReaderInterface
 
     private $idAttributes = [
         '/grid/source/defaultSearchCriteriaBindings/field' => 'name',
+        '/grid/source/processors/processor' => 'class',
         '/grid/massActions/action' => 'id',
         '/grid/actions/action' => 'id',
         '/grid/columns/include/column' => 'name',

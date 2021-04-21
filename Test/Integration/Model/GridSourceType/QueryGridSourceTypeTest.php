@@ -2,16 +2,19 @@
 
 namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 
+use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\GridSourceType\QueryGridSourceType;
 use Hyva\Admin\Model\GridSourceType\RawGridSourceDataAccessor;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Magento\Framework\Api\Filter;
 use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteria;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Adapter\AdapterInterface as DbAdapter;
 use Magento\Framework\DB\Ddl\Table;
+use Magento\Framework\DB\Select;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -72,10 +75,11 @@ class QueryGridSourceTypeTest extends TestCase
         return ObjectManager::getInstance()->get(ResourceConnection::class)->getConnection();
     }
 
-    private function createQueryGridSourceType(array $queryConfig): QueryGridSourceType
+    private function createQueryGridSourceType(array $queryConfig, array $processors = []): QueryGridSourceType
     {
         $args = [
             'gridName'            => 'test',
+            'processors'          => $processors,
             'sourceConfiguration' => [
                 'query' => $queryConfig,
             ],
@@ -278,11 +282,11 @@ class QueryGridSourceTypeTest extends TestCase
 
         $queryConfig = [
             '@unionSelectType' => 'distinct',
-            'select' => [
+            'select'           => [
                 'from'    => ['table' => 'foo1'],
                 'columns' => [['column' => 'a'], ['column' => 'b']],
             ],
-            'unions' => [
+            'unions'           => [
                 [
                     'from'    => ['table' => 'foo2'],
                     'columns' => [['column' => 'a'], ['column' => 'b']],
@@ -375,5 +379,47 @@ class QueryGridSourceTypeTest extends TestCase
         $result         = $sut->fetchData($searchCriteria);
         $this->assertSame(7, $sut->extractTotalRowCount($result));
         $this->assertSame([['a' => '1', 'b' => '10']], $this->unboxGridData($result));
+    }
+
+    public function testAppliesSourceProcessors(): void
+    {
+        $processor = new class() implements HyvaGridSourceProcessorInterface
+        {
+            /**
+             * @param string $gridName
+             * @param SearchCriteriaInterface $searchCriteria
+             * @param \Magento\Framework\DB\Select $source
+             */
+            public function beforeLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $source): void
+            {
+                $searchCriteria->setPageSize(1);
+                $source->columns('a');
+            }
+
+            public function afterLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $rawResult)
+            {
+                $rawResult['data'][0]['a'] = (string) ($rawResult['data'][0]['a'] + 1);
+
+                return $rawResult;
+            }
+        };
+
+        $tableData = [
+            ['a' => '1', 'b' => '2'],
+            ['a' => '3', 'b' => '4'],
+        ];
+        $this->createFixtureTable('foo', $tableData);
+
+        $queryConfig = [
+            'select' => [
+                'from' => ['table' => 'foo'],
+            ],
+        ];
+
+        $sut = $this->createQueryGridSourceType($queryConfig, [$processor]);
+
+        $result = $sut->fetchData(new SearchCriteria());
+        $this->assertSame(2, $sut->extractTotalRowCount($result));
+        $this->assertSame([['a' => '2', 'b' => '2']], $this->unboxGridData($result));
     }
 }

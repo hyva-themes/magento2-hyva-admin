@@ -42,6 +42,10 @@ class GridXmlToArrayConverterTest extends TestCase
                 $this->getQuerySourceXml(),
                 $this->getQuerySourceExpected(),
             ],
+            'source-with-processors' => [
+                $this->getSourceProcessorsXml(),
+                $this->getSourceProcessorsExpected(),
+            ],
             'columns'                  => [
                 $this->getColumnsXml(),
                 $this->getColumnsExpected(),
@@ -225,6 +229,30 @@ EOXML;
                 ],
             ],
         ];
+    }
+
+    private function getSourceProcessorsXml(): string
+    {
+        return <<<EOXML
+    <source>
+        <processors>
+            <processor class="\Hyva\Aaaa\Model\GridProcessorA" enabled="true"/>
+            <processor class="\Hyva\Bbbb\Model\GridProcessorB" enabled="false"/>
+            <processor class="\Hyva\Cccc\Model\GridProcessorC"/>
+        </processors>
+    </source>
+EOXML;
+    }
+
+    private function getSourceProcessorsExpected(): array
+    {
+        return ['source' => [
+            'processors' => [
+                ['class' => '\Hyva\Aaaa\Model\GridProcessorA', 'enabled' => 'true'],
+                ['class' => '\Hyva\Bbbb\Model\GridProcessorB', 'enabled' => 'false'],
+                ['class' => '\Hyva\Cccc\Model\GridProcessorC']
+            ]
+        ]];
     }
 
     private function getColumnsXml(): string

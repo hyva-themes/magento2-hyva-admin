@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 
+use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\DataType\ArrayDataType;
 use Hyva\Admin\Model\DataType\BooleanDataType;
 use Hyva\Admin\Model\DataType\IntDataType;
@@ -11,6 +12,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Cms\Model\ResourceModel\Page\Collection as CmsPageCollection;
 use Magento\Framework\Api\SearchCriteria;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Sales\Model\ResourceModel\Order\Grid\Collection as OrderGridCollection;
@@ -240,5 +242,50 @@ class CollectionGridSourceTypeTest extends TestCase
         $this->assertContains(self::TEST_FIELD['name'], $columns);
         $this->assertContains('billing_address_id', $columns);
         $this->assertContains('id', $columns);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Catalog/_files/products_list.php
+     */
+    public function testAppliesSourceProcessors(): void
+    {
+        $spy                = new \stdClass();
+        $spy->calledMethods = [];
+
+        $processor = new class($spy) implements HyvaGridSourceProcessorInterface {
+
+            private $spy;
+
+            public function __construct(\stdClass $spy)
+            {
+                $this->spy = $spy;
+            }
+
+            public function beforeLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $source): void
+            {
+                $searchCriteria->setPageSize(1);
+                $this->spy->calledMethods[] = 'A';
+            }
+
+            public function afterLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $rawResult)
+            {
+                $this->spy->calledMethods[] = 'B';
+            }
+        };
+
+        $args = [
+            'gridName'            => 'test',
+            'processors'          => [$processor],
+            'sourceConfiguration' => ['collection' => ProductCollection::class],
+        ];
+        /** @var CollectionGridSourceType $sut */
+        $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
+
+        $rawGridData = $sut->fetchData((new SearchCriteria()));
+
+        $this->assertSame(['A', 'B'], $spy->calledMethods);
+        $records = $sut->extractRecords($rawGridData);
+        $this->assertCount(1, $records);
     }
 }

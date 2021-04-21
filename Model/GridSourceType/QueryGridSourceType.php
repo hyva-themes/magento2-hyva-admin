@@ -2,11 +2,13 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
-use Hyva\Admin\Model\GridSourceType\QueryGridSourceType\DbSelectEventContainer;
 use function array_filter as filter;
 use function array_map as map;
+use function array_reduce as reduce;
 
+use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\GridSourceType\QueryGridSourceType\DbSelectBuilder;
+use Hyva\Admin\Model\GridSourceType\QueryGridSourceType\DbSelectEventContainer;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\Model\TypeReflection\DbSelectColumnExtractor;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
@@ -15,8 +17,8 @@ use Magento\Framework\Api\Filter;
 use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
-use Magento\Framework\Event\ManagerInterface as EventManager;
 use Magento\Framework\DB\Select;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 
 class QueryGridSourceType implements GridSourceTypeInterface
 {
@@ -56,6 +58,11 @@ class QueryGridSourceType implements GridSourceTypeInterface
      */
     private $eventManager;
 
+    /**
+     * @var HyvaGridSourceProcessorInterface[]
+     */
+    private $processors;
+
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
@@ -63,10 +70,12 @@ class QueryGridSourceType implements GridSourceTypeInterface
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
         DbSelectColumnExtractor $dbSelectColumnExtractor,
         DbSelectBuilder $dbSelectBuilder,
-        EventManager $eventManager
+        EventManager $eventManager,
+        array $processors = []
     ) {
         $this->gridName                = $gridName;
         $this->sourceConfiguration     = $sourceConfiguration['query'] ?? [];
+        $this->processors              = $processors;
         $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
         $this->columnDefinitionFactory = $columnDefinitionFactory;
         $this->dbSelectColumnExtractor = $dbSelectColumnExtractor;
@@ -83,8 +92,10 @@ class QueryGridSourceType implements GridSourceTypeInterface
     {
         return $this->columnDefinitionFactory->create([
             'key'  => $key,
-            'type' => $this->mapDbTypeToColumnType($this->dbSelectColumnExtractor->getColumnType($this->getSelect(),
-                $key)),
+            'type' => $this->mapDbTypeToColumnType($this->dbSelectColumnExtractor->getColumnType(
+                $this->getSelect(),
+                $key
+            )),
         ]);
     }
 
@@ -119,13 +130,21 @@ class QueryGridSourceType implements GridSourceTypeInterface
 
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
-        $select = $this->prepareSelect($this->getSelect(), $searchCriteria);
+        $select = $this->prepareSelect($searchCriteria);
 
         $data        = $select->query(\Zend_Db::FETCH_ASSOC)->fetchAll();
         $countSelect = $this->getSelectCountSql($select);
         $count       = (int) $countSelect->query(\Zend_Db::FETCH_NUM)->fetchColumn();
 
-        return RawGridSourceContainer::forData(['data' => $data, 'count' => $count]);
+        $rawGridSourceData = reduce(
+            $this->processors,
+            function (array $sourceData, HyvaGridSourceProcessorInterface $processor) use ($searchCriteria): array {
+                return $processor->afterLoad($this->gridName, $searchCriteria, $sourceData) ?? $sourceData;
+            },
+            ['data' => $data, 'count' => $count]
+        );
+
+        return RawGridSourceContainer::forData($rawGridSourceData);
     }
 
     public function getRecordType(): string
@@ -227,15 +246,6 @@ class QueryGridSourceType implements GridSourceTypeInterface
         }
     }
 
-    private function prepareSelect(Select $select, SearchCriteriaInterface $searchCriteria): Select
-    {
-        $this->applyFilters($select, $searchCriteria);
-        $this->applySortOrder($select, $searchCriteria);
-        $this->applyPagination($select, $searchCriteria);
-
-        return $this->dispatchQueryBeforeEvent($select);
-    }
-
     private function dispatchQueryBeforeEvent(Select $select): Select
     {
         $event           = 'hyva_grid_query_before_' . $this->getGridNameEventSuffix($this->gridName);
@@ -243,7 +253,7 @@ class QueryGridSourceType implements GridSourceTypeInterface
         $this->eventManager->dispatch($event, [
             'select_container' => $selectContainer,
             'grid_name'        => $this->gridName,
-        ]);;
+        ]);
 
         return $selectContainer->getSelect();
     }
@@ -251,5 +261,24 @@ class QueryGridSourceType implements GridSourceTypeInterface
     private function getGridNameEventSuffix(string $gridName): string
     {
         return strtolower(preg_replace('/[^[:alpha:]]+/', '_', $gridName));
+    }
+
+    private function prepareSelect(SearchCriteriaInterface $searchCriteria): Select
+    {
+        $select = reduce(
+            $this->processors,
+            function (Select $select, HyvaGridSourceProcessorInterface $processor) use ($searchCriteria): Select {
+                $processor->beforeLoad($this->gridName, $searchCriteria, $select);
+                return $select;
+            },
+            $this->getSelect()
+        );
+
+        $this->applyFilters($select, $searchCriteria);
+        $this->applySortOrder($select, $searchCriteria);
+        $this->applyPagination($select, $searchCriteria);
+
+        $select = $this->dispatchQueryBeforeEvent($select);
+        return $select;
     }
 }

@@ -2,13 +2,15 @@
 
 namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 
-use Hyva\Admin\Model\DataType\TextDataType;
+use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\DataType\ScalarAndNullDataType;
+use Hyva\Admin\Model\DataType\TextDataType;
 use Hyva\Admin\Model\GridSourceType\ArrayProviderGridSourceType;
 use Hyva\Admin\Test\Integration\TestingGridDataProvider;
 use Magento\Framework\Api\Filter;
 use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteria;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -17,12 +19,18 @@ use PHPUnit\Framework\TestCase;
  */
 class ArrayProviderGridSourceTypeTest extends TestCase
 {
-    private function createArrayProviderGridSourceTypeWithArray(array $testGridData): ArrayProviderGridSourceType
-    {
+    private function createArrayProviderGridSourceTypeWithArray(
+        array $testGridData,
+        array $processors = []
+    ): ArrayProviderGridSourceType {
         $name                = 'test-grid';
         $sourceConfiguration = ['arrayProvider' => TestingGridDataProvider::withArray($testGridData)];
 
-        $constructorArguments = ['gridName' => $name, 'sourceConfiguration' => $sourceConfiguration];
+        $constructorArguments = [
+            'gridName'            => $name,
+            'sourceConfiguration' => $sourceConfiguration,
+            'processors'          => $processors,
+        ];
         return ObjectManager::getInstance()->create(ArrayProviderGridSourceType::class, $constructorArguments);
     }
 
@@ -61,7 +69,6 @@ class ArrayProviderGridSourceTypeTest extends TestCase
 
         $this->assertSame($key, $columnDefinition->getKey());
         $this->assertSame(ScalarAndNullDataType::TYPE_SCALAR_NULL, $columnDefinition->getType());
-
     }
 
     public function testHandlesNumericColumnKeysGracefully(): void
@@ -101,5 +108,33 @@ class ArrayProviderGridSourceTypeTest extends TestCase
         $rawDataContainer = $sut->fetchData($searchCriteria);
         $count            = $sut->extractTotalRowCount($rawDataContainer);
         $this->assertSame(1, $count);
+    }
+
+    public function testAppliesProcessors(): void
+    {
+        $testGridData = [
+            ['aaa' => 111, 'bbb' => 222],
+            ['aaa' => 111, 'bbb' => 222],
+        ];
+
+        $processor = new class() implements HyvaGridSourceProcessorInterface {
+            public function beforeLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $source): void
+            {
+                $searchCriteria->setPageSize(1);
+            }
+
+            public function afterLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $rawResult)
+            {
+                $rawResult[0]['aaa'] = $rawResult[0]['aaa'] + 1;
+
+                return $rawResult;
+            }
+        };
+
+        $sut              = $this->createArrayProviderGridSourceTypeWithArray($testGridData, [$processor]);
+        $rawDataContainer = $sut->fetchData(new SearchCriteria());
+        $actualData       = $sut->extractRecords($rawDataContainer);
+
+        $this->assertSame([['aaa' => 112, 'bbb' => 222]], $actualData);
     }
 }

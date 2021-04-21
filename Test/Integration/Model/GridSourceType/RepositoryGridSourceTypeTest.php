@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 
+use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\DataType\TextDataType;
 use Hyva\Admin\Model\GridSourceType\RepositoryGridSourceType;
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -9,6 +10,8 @@ use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Api\SearchCriteria;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Api\SearchResults;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -179,5 +182,46 @@ class RepositoryGridSourceTypeTest extends TestCase
         $this->assertNotEmpty($records);
         $metaTitle = $sut->extractValue($records[0] ?? null, 'meta_title');
         $this->assertSame('meta title', $metaTitle);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Customer/_files/customer.php
+     */
+    public function testAppliesProcessors(): void
+    {
+        $processor = new class implements HyvaGridSourceProcessorInterface {
+
+            public function beforeLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $source): void
+            {
+                $searchCriteria->setPageSize(1);
+            }
+
+            /**
+             * @param string $gridName
+             * @param SearchCriteriaInterface $searchCriteria
+             * @param SearchResults $rawResult
+             */
+            public function afterLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $rawResult)
+            {
+                /** @var CustomerInterface[] $customers */
+                $customers = $rawResult->getItems();
+                $first     = values($customers)[0];
+                $first->setEmail('test test test');
+            }
+        };
+
+        $repoGetListMethod = CustomerRepositoryInterface::class . '::getList';
+        $args              = [
+            'gridName'            => 'test',
+            'processors'          => [$processor],
+            'sourceConfiguration' => ['repositoryListMethod' => $repoGetListMethod],
+        ];
+
+        /** @var RepositoryGridSourceType $sut */
+        $sut            = ObjectManager::getInstance()->create(RepositoryGridSourceType::class, $args);
+        $searchCriteria = (new SearchCriteria());
+        $records        = $sut->extractRecords($sut->fetchData($searchCriteria));
+        $this->assertSame(1, $searchCriteria->getPageSize());
+        $this->assertSame('test test test', values($records)[0]->getEmail());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\DataType\ProductGalleryDataType;
 use Hyva\Admin\Model\GridSourceType\RepositorySourceType\RepositorySourceFactory;
 use Hyva\Admin\Model\RawGridSourceContainer;
@@ -13,6 +14,8 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchResults;
 
 use function array_filter as filter;
+use function array_map as map;
+use function array_reduce as reduce;
 
 class RepositoryGridSourceType implements GridSourceTypeInterface
 {
@@ -56,16 +59,23 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
      */
     private $memoizedRecordType;
 
+    /**
+     * @var HyvaGridSourceProcessorInterface[]
+     */
+    private $processors;
+
     public function __construct(
         string $gridName,
         array $sourceConfiguration,
         RawGridSourceDataAccessor $gridSourceDataAccessor,
         RepositorySourceFactory $repositorySourceFactory,
         ColumnDefinitionInterfaceFactory $columnDefinitionFactory,
-        GridTypeReflection $typeReflection
+        GridTypeReflection $typeReflection,
+        array $processors = []
     ) {
         $this->gridName                = $gridName;
         $this->sourceConfiguration     = $sourceConfiguration;
+        $this->processors              = $processors;
         $this->gridSourceDataAccessor  = $gridSourceDataAccessor;
         $this->repositorySourceFactory = $repositorySourceFactory;
         $this->columnDefinitionFactory = $columnDefinitionFactory;
@@ -124,7 +134,19 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
         $repositoryGetList = $this->repositorySourceFactory->create($this->getSourceRepoConfig());
-        $result            = $repositoryGetList($searchCriteria);
+
+        map(function (HyvaGridSourceProcessorInterface $processor) use ($repositoryGetList, $searchCriteria): void {
+            $processor->beforeLoad($this->gridName, $searchCriteria, $repositoryGetList->peek());
+        }, $this->processors);
+
+        $result = reduce(
+            $this->processors,
+            function ($result, HyvaGridSourceProcessorInterface $processor) use ($searchCriteria) {
+                $processed = $processor->afterLoad($this->gridName, $searchCriteria, $result);
+                return $processed ?? $result;
+            },
+            $repositoryGetList($searchCriteria)
+        );
 
         return RawGridSourceContainer::forData($result);
     }
