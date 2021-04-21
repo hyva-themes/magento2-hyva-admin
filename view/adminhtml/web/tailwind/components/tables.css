@@ -8,7 +8,7 @@
     @apply py-2;
     @apply font-semibold;
     @apply tracking-wider;
-    @apply uppercase;
+    /*@apply uppercase;*/
     @apply text-base;
     @apply align-middle;
 
