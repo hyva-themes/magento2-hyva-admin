@@ -52,7 +52,7 @@ class ProductGalleryEntryDataType implements DataTypeInterface
     public function toString($value): ?string
     {
         return $this->valueToTypeCode($value)
-            ? $this->productMedia->getImageHtmlElement($value->getFile(), $value->getLabel())
+            ? $this->productMedia->getImageHtmlElement($value->getFile(), (string) $value->getLabel())
             : null;
     }
 
