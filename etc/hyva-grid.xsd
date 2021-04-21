@@ -417,7 +417,7 @@
     <xs:complexType name="selectJoinType">
         <xs:sequence>
             <xs:element name="on" type="xs:string"/>
-            <xs:element name="columns" type="queryGroupByColumnsType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="columns" type="querySelectColumnsType" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="type" type="selectJoinTypes"/>
         <xs:attribute name="table" type="xs:normalizedString" use="required"/>
