@@ -97,7 +97,8 @@ class GridButton implements GridButtonInterface
 
     public function getLabel(): string
     {
-        return (string) $this->label;
+        $label = (string) $this->label;
+        return $label !== '' ? $label : ucfirst($this->id);
     }
 
     public function getUrl(): string

@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - New grid column type website_id.
 
 ### Changed
-- Nothing currently.
+- Allow `as=""` attribute for query grid source join columns
 
 ### Removed
 - No removals.
