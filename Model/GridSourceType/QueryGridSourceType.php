@@ -132,9 +132,11 @@ class QueryGridSourceType implements GridSourceTypeInterface
     {
         $select = $this->prepareSelect($searchCriteria);
 
-        $data        = $select->query(\Zend_Db::FETCH_ASSOC)->fetchAll();
+        $db          = $select->getConnection();
+        // Call query() on the adapter instead of $select because the atter drops the bind parameters (bug).
+        $data        = $db->query($select, $select->getBind())->fetchAll();
         $countSelect = $this->getSelectCountSql($select);
-        $count       = (int) $countSelect->query(\Zend_Db::FETCH_NUM)->fetchColumn();
+        $count       = (int) $db->query($countSelect, $countSelect->getBind())->fetchColumn();
 
         $rawGridSourceData = reduce(
             $this->processors,
