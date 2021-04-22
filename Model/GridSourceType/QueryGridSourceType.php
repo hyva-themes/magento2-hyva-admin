@@ -2,9 +2,11 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
+use function array_column as pick;
 use function array_filter as filter;
 use function array_map as map;
 use function array_reduce as reduce;
+use function array_search as search;
 
 use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\GridSourceType\QueryGridSourceType\DbSelectBuilder;
@@ -22,6 +24,7 @@ use Magento\Framework\Event\ManagerInterface as EventManager;
 
 class QueryGridSourceType implements GridSourceTypeInterface
 {
+    private const COLUMN_ALIASES = 2;
 
     /**
      * @var RawGridSourceDataAccessor
@@ -132,7 +135,7 @@ class QueryGridSourceType implements GridSourceTypeInterface
     {
         $select = $this->prepareSelect($searchCriteria);
 
-        $db          = $select->getConnection();
+        $db = $select->getConnection();
         // Call query() on the adapter instead of $select because the atter drops the bind parameters (bug).
         $data        = $db->query($select, $select->getBind())->fetchAll();
         $countSelect = $this->getSelectCountSql($select);
@@ -221,7 +224,8 @@ class QueryGridSourceType implements GridSourceTypeInterface
         $filterGroupsSql = map(function (FilterGroup $group) use ($select): string {
             $filtersSql = map(function (Filter $filter) use ($select): string {
                 $condition = [$filter->getConditionType() ?? 'eq' => $filter->getValue()];
-                return $select->getConnection()->prepareSqlCondition($filter->getField(), $condition);
+                $fieldName = $this->extractRealColumnName($select, $filter->getField());
+                return $select->getConnection()->prepareSqlCondition($fieldName, $condition);
             }, $group->getFilters());
             return implode(' OR ', $filtersSql);
         }, $searchCriteria->getFilterGroups());
@@ -282,5 +286,14 @@ class QueryGridSourceType implements GridSourceTypeInterface
 
         $select = $this->dispatchQueryBeforeEvent($select);
         return $select;
+    }
+
+    private function extractRealColumnName(Select $select, string $field)
+    {
+        $aliases   = pick($select->getPart(Select::COLUMNS), self::COLUMN_ALIASES);
+        $idx       = search($field, $aliases, true);
+        [$schema, $name] = $select->getPart(Select::COLUMNS)[$idx];
+
+        return $idx !== false ? $schema . '.' . $name : $field;
     }
 }
