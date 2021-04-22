@@ -136,13 +136,13 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
         $repositoryGetList = $this->repositorySourceFactory->create($this->getSourceRepoConfig());
 
         map(function (HyvaGridSourceProcessorInterface $processor) use ($repositoryGetList, $searchCriteria): void {
-            $processor->beforeLoad($this->gridName, $searchCriteria, $repositoryGetList->peek());
+            $processor->beforeLoad($repositoryGetList->peek(), $searchCriteria, $this->gridName);
         }, $this->processors);
 
         $result = reduce(
             $this->processors,
             function ($result, HyvaGridSourceProcessorInterface $processor) use ($searchCriteria) {
-                $processed = $processor->afterLoad($this->gridName, $searchCriteria, $result);
+                $processed = $processor->afterLoad($result, $searchCriteria, $this->gridName);
                 return $processed ?? $result;
             },
             $repositoryGetList($searchCriteria)

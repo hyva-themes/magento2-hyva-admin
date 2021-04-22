@@ -168,7 +168,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         }
 
         map(function (HyvaGridSourceProcessorInterface $processor) use ($collection, $searchCriteria): void {
-            $processor->beforeLoad($this->gridName, $searchCriteria, $collection);
+            $processor->beforeLoad($collection, $searchCriteria, $this->gridName);
         }, $this->processors);
 
         if (is_subclass_of($collection, AbstractEavCollection::class)) {
@@ -183,7 +183,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
                 AbstractDb $collection,
                 HyvaGridSourceProcessorInterface $processor
             ) use ($searchCriteria): AbstractDb {
-                return $processor->afterLoad($this->gridName, $searchCriteria, $collection) ?? $collection;
+                return $processor->afterLoad($collection, $searchCriteria, $this->gridName) ?? $collection;
             },
             $collection
         );

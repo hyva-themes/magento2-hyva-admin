@@ -139,7 +139,7 @@ class QueryGridSourceType implements GridSourceTypeInterface
         $rawGridSourceData = reduce(
             $this->processors,
             function (array $sourceData, HyvaGridSourceProcessorInterface $processor) use ($searchCriteria): array {
-                return $processor->afterLoad($this->gridName, $searchCriteria, $sourceData) ?? $sourceData;
+                return $processor->afterLoad($sourceData, $searchCriteria, $this->gridName) ?? $sourceData;
             },
             ['data' => $data, 'count' => $count]
         );
@@ -268,7 +268,7 @@ class QueryGridSourceType implements GridSourceTypeInterface
         $select = reduce(
             $this->processors,
             function (Select $select, HyvaGridSourceProcessorInterface $processor) use ($searchCriteria): Select {
-                $processor->beforeLoad($this->gridName, $searchCriteria, $select);
+                $processor->beforeLoad($select, $searchCriteria, $this->gridName);
                 return $select;
             },
             $this->getSelect()
