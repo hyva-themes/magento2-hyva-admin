@@ -78,7 +78,7 @@ class DbSelectBuilder
      */
     private function buildTableArg(array $fromConfig)
     {
-        $table = $fromConfig['table'] ?? '';
+        $table = $this->resourceConnection->getConnection()->getTableName($fromConfig['table'] ?? '');
 
         return isset($fromConfig['@as'])
             ? [$fromConfig['@as'] => $table]
