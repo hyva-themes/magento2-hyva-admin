@@ -163,13 +163,14 @@ class CollectionGridSourceType implements GridSourceTypeInterface
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
         $collection = $this->getCollectionInstance();
-        if (method_exists($collection, 'addFieldToSelect')) {
-            $collection->addFieldToSelect('*');
-        }
 
         map(function (HyvaGridSourceProcessorInterface $processor) use ($collection, $searchCriteria): void {
             $processor->beforeLoad($collection, $searchCriteria, $this->gridName);
         }, $this->processors);
+
+        if (method_exists($collection, 'addFieldToSelect')) {
+            $collection->addFieldToSelect('*');
+        }
 
         if (is_subclass_of($collection, AbstractEavCollection::class)) {
             $this->eavCollectionProcessor->process($searchCriteria, $collection);

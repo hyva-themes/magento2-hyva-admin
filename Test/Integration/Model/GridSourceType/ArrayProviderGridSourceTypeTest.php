@@ -118,12 +118,12 @@ class ArrayProviderGridSourceTypeTest extends TestCase
         ];
 
         $processor = new class() implements HyvaGridSourceProcessorInterface {
-            public function beforeLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $source): void
+            public function beforeLoad($source, SearchCriteriaInterface $searchCriteria, string $gridName): void
             {
                 $searchCriteria->setPageSize(1);
             }
 
-            public function afterLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $rawResult)
+            public function afterLoad($rawResult, SearchCriteriaInterface $searchCriteria, string $gridName)
             {
                 $rawResult[0]['aaa'] = $rawResult[0]['aaa'] + 1;
 

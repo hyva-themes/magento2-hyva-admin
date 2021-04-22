@@ -386,17 +386,16 @@ class QueryGridSourceTypeTest extends TestCase
         $processor = new class() implements HyvaGridSourceProcessorInterface
         {
             /**
-             * @param string $gridName
-             * @param SearchCriteriaInterface $searchCriteria
              * @param \Magento\Framework\DB\Select $source
+             * @param SearchCriteriaInterface $searchCriteria
+             * @param string $gridName
              */
-            public function beforeLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $source): void
+            public function beforeLoad($source, SearchCriteriaInterface $searchCriteria, string $gridName): void
             {
-                $searchCriteria->setPageSize(1);
                 $source->columns('a');
             }
 
-            public function afterLoad(string $gridName, SearchCriteriaInterface $searchCriteria, $rawResult)
+            public function afterLoad($rawResult, SearchCriteriaInterface $searchCriteria, string $gridName)
             {
                 $rawResult['data'][0]['a'] = (string) ($rawResult['data'][0]['a'] + 1);
 
@@ -418,7 +417,7 @@ class QueryGridSourceTypeTest extends TestCase
 
         $sut = $this->createQueryGridSourceType($queryConfig, [$processor]);
 
-        $result = $sut->fetchData(new SearchCriteria());
+        $result = $sut->fetchData((new SearchCriteria())->setPageSize(1));
         $this->assertSame(2, $sut->extractTotalRowCount($result));
         $this->assertSame([['a' => '2', 'b' => '2']], $this->unboxGridData($result));
     }

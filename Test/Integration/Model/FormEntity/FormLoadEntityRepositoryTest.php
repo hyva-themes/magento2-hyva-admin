@@ -153,7 +153,6 @@ class FormLoadEntityRepositoryTest extends TestCase
         $fields = $result->getFieldDefinitions();
         $this->assertContainsField('id', $fields);
         $this->assertContainsField('customer', $fields);
-        $this->assertContainsField('pickup_location_code', $fields);
     }
 
     /**
