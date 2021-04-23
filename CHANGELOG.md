@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Allow `as=""` attribute for query grid source join columns
+- Improved grid styling a bit (I hope)
 
 ### Removed
 - No removals.
