@@ -13,6 +13,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - No removals.
 
+## [1.1.10]
+### Added
+- Nothing yet.
+
+### Changed
+- Use `in_array` instead of external dependency that declares `array_contains`.
+  Thanks to Helge Baier who made me aware of this bug.
+
+### Removed
+- No removals.
+
 ## [1.1.9] - 2021-04-23
 ### Added
 - New grid column type website_id.

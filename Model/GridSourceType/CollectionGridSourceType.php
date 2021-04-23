@@ -2,7 +2,6 @@
 
 namespace Hyva\Admin\Model\GridSourceType;
 
-use function array_contains as contains;
 use function array_filter as filter;
 use function array_map as map;
 use function array_merge as merge;
@@ -217,7 +216,7 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     private function isTypeReflectionField(string $key): bool
     {
-        return contains($this->memoizedTypeReflectionFields, $key, true);
+        return in_array($key, $this->memoizedTypeReflectionFields, true);
     }
 
     private function memoizeFieldNames(): void

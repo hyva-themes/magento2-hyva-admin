@@ -13,7 +13,6 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
 
-use function array_contains as contains;
 use function array_filter as filter;
 use function array_keys as keys;
 use function array_map as map;
@@ -268,9 +267,9 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
             case 'nlike':
                 return !preg_match($this->likeExpressionToRegex($filterValue), $fieldValue);
             case 'in':
-                return contains($fieldValue, $filterValue);
+                return in_array($filterValue, $fieldValue);
             case 'nin':
-                return !contains($fieldValue, $filterValue);
+                return !in_array($filterValue, $fieldValue);
             case 'notnull':
                 return isset($fieldValue);
             case 'null':
