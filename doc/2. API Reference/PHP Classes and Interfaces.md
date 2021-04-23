@@ -15,6 +15,9 @@ Currently these are (in alphabetical order, together with the probability you mi
 * `\Hyva\Admin\Api\DataTypeValueToStringConverterInterface` (maybe)
 * `\Hyva\Admin\Api\HyvaGridArrayProviderInterface` (likely)
 * `\Hyva\Admin\Api\HyvaGridFilterTypeInterface` (unlikely)
+* `\Hyva\Admin\Api\HyvaGridSourceProcessorInterface` (unlikely)
+* `\Hyva\Admin\Model\GridExport\Type\AbstractExportType` (maybe)
+* `\Hyva\Admin\Model\GridSource\AbstractGridSourceProcessor` (likely)
 
 
 Each of the above interfaces is document in this section of the API reference.
@@ -33,7 +36,7 @@ These mostly are (in alphabetical order):
 
 These classes are not documented, however, the only point of contact will be inside of template files.
 
- Adding a PHPDoc type hint to the template will allow IDE auto-completion to assist you. Hopefully you will find the method names to be nice and descriptive, and you will always be able to refer to the templates supplied as part of Hyva_Admin as a reference.
+Adding a PHPDoc type hint to the template will allow IDE auto-completion to assist you. Hopefully you will find the method names to be nice and descriptive, and you will always be able to refer to the templates supplied as part of Hyva_Admin as a reference.
 
 
 \
