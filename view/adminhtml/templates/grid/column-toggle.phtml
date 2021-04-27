@@ -3,6 +3,8 @@
 /** @var \Magento\Framework\View\Element\Template $block */
 /** @var \Magento\Framework\Escaper $escaper */
 
+$escaper = $escaper ?? $block;
+
 ?>
 <div class="actions inline-flex mx-2">
     <button @click.prevent="open = !open"

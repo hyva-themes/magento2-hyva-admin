@@ -4,6 +4,8 @@
 /** @var \Magento\Framework\Escaper $escaper */
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
 
+$escaper = $escaper ?? $block;
+
 ?>
 <select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
         form="<?= $filter->getFormId() ?>"

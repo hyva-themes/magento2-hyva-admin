@@ -3,6 +3,8 @@
 /** @var \Hyva\Admin\Block\Adminhtml\HyvaForm $block */
 /** @var \Magento\Framework\Escaper $escaper */
 
+$escaper = $escaper ?? $block;
+
 $form       = $block->getForm();
 $uniqueId   = '_' . md5($form->getFormName());
 $navigation = $form->getNavigation();

@@ -4,6 +4,8 @@
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface[] $exports */
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface $navigation  */
 
+$escaper = $escaper ?? $block;
+
 if ($exports): ?>
     <div class="exports inline-flex mx-2">
         <button @click.prevent="openExport = !openExport"

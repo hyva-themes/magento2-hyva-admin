@@ -4,6 +4,8 @@
 /** @var \Magento\Framework\Escaper $escaper */
 /** @var \Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface $section */
 
+$escaper = $escaper ?? $block;
+
 ?>
 <div>
     <?php foreach ($section->getGroups() as $group): ?>

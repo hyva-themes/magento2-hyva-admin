@@ -2,6 +2,9 @@
 
 /** @var \Magento\Framework\Escaper $escaper */
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface $navigation */
+
+$escaper = $escaper ?? $block;
+
 ?>
 <?php if ($navigation->isPagerEnabled()): ?>
     <div class="self-center">

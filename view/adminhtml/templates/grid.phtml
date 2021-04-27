@@ -3,10 +3,13 @@
 /** @var \Hyva\Admin\Block\Adminhtml\HyvaGrid $block */
 /** @var \Magento\Framework\Escaper $escaper */
 
+$escaper = $escaper ?? $block;
+
 $grid       = $block->getGrid();
 $navigation = $grid->getNavigation();
 $uniqueId   = '_' . md5($grid->getGridName());
 $rows       = $grid->getRows();
+
 ?>
 <div class="hyva-admin-grid"
      x-data="initDataTable<?= /** @noEscape */

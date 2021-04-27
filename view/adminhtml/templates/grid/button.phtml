@@ -4,6 +4,8 @@
 /** @var \Magento\Framework\Escaper $escaper */
 /** @var \Hyva\Admin\ViewModel\HyvaGrid\GridButtonInterface $button */
 
+$escaper = $escaper ?? $block;
+
 if ($button->getOnClick()) {
     $onclickAction = $button->getOnClick();
 } elseif ($button->getUrl()) {

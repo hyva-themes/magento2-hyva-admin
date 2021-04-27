@@ -13,7 +13,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - No removals.
 
-## [1.1.10]
+## [1.1.11] - 2021-04-27
+### Added
+- Added $escaper declaration to templates for Magento 2.3 compatibility.
+
+### Changed
+- Nothing.
+
+### Removed
+- No removals.
+
+## [1.1.10] - 2021-04-23
 ### Added
 - Nothing yet.
 

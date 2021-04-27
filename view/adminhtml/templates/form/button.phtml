@@ -4,6 +4,8 @@
 /** @var \Magento\Framework\Escaper $escaper */
 /** @var \Hyva\Admin\ViewModel\HyvaForm\FormButtonInterface $button */
 
+$escaper = $escaper ?? $block;
+
 ?>
 <button>
     <span><?= $escaper->escapeHtml($button->getLabel()) ?></span>

@@ -4,6 +4,8 @@
 /** @var \Magento\Framework\Escaper $escaper */
 /** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
 
+$escaper = $escaper ?? $block;
+
 ?>
 <select id="<?= $field->getName() ?>" form="<?= $field->getFormName() ?>">
     <?php foreach ($field->getOptions() as $option): ?>
