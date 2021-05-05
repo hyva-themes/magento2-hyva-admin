@@ -228,7 +228,13 @@ $rows       = $grid->getRows();
                                                href="<?= $escaper->escapeUrl($block->getUrl(
                                                    $action->getUrl(),
                                                    $action->getParams($row)
-                                               )) ?>">
+                                               )) ?>"
+                                            <?php foreach ($action->getEvents() as $event): ?>
+                                            <?php $dataJson = $event->getParamsJson($action, $row); ?>
+                                            x-on:<?= $event->getOnTrigger() ?>='
+                                            dispatchRowEvent($event, "<?= $event->getEventName() ?>", <?= $dataJson ?>)'
+                                            <?php endforeach; ?>
+                                            >
                                                 <?= $escaper->escapeHtml($action->getLabel()) ?>
                                             </a>
                                         <?php endforeach; ?>
@@ -245,6 +251,16 @@ $rows       = $grid->getRows();
 </div>
 <script>
     function initDataTable<?= /** @noEscape */ $uniqueId ?>() {
+
+        const closest = function (selector, element, top)
+        {
+            if (! element || element === (top || document)) {
+                return null;
+            }
+            return element.matches(selector)
+                ? element
+                : closest(selector, element.parentElement, top);
+        }
 
         return {
             refs: false,
@@ -423,6 +439,12 @@ $rows       = $grid->getRows();
                         }
                     })
                     .catch(console.error);
+            },
+
+            dispatchRowEvent(event, name, params) {
+                const row = closest('TR', event.target, this.$el);
+                const eventData = {origEvent: event, row: row, viewModel: this};
+                window.dispatchEvent(new CustomEvent(name, {detail: Object.assign(params || {}, eventData)}));
             }
         }
     }

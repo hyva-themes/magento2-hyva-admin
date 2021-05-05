@@ -499,7 +499,9 @@ class GridXmlToArrayConverter
         /*
          * <actions idColumn="name">
          *     <action id="edit" label="Edit" url="*\/*\/edit" idParam="id"/>
-         *     <action id="delete" label="Delete" url="*\/*\/delete"/>
+         *     <action id="delete" label="Delete" url="*\/*\/delete">
+         *         <event on="click"/>
+         *     </action>
          *     <action label="Validate" url="admin/dashboard"/>
          * </actions>
          */
@@ -519,7 +521,16 @@ class GridXmlToArrayConverter
             XmlToArray::getAttributeConfig($actionElement, 'label'),
             XmlToArray::getAttributeConfig($actionElement, 'url'),
             XmlToArray::getAttributeConfig($actionElement, 'idParam'),
+            ['events' => $this->convertJsEventsConfig($actionElement)]
         ));
+    }
+
+    private function convertJsEventsConfig(\DOMElement $parent): array
+    {
+        $eventElements = XmlToArray::getChildrenByName($parent, 'event');
+        return merge([], ...map(function (\DOMElement $eventElement): array {
+            return [$eventElement->getAttribute('on') => []];
+        }, $eventElements));
     }
 
     private function convertMassActionsConfig(\DOMElement $root)

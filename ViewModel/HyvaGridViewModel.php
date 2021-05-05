@@ -13,6 +13,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 
 use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
+use Hyva\Admin\ViewModel\Shared\JsEventInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
@@ -101,6 +102,11 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
      */
     private $memoizedColumnDefinitions;
 
+    /**
+     * @var Shared\GridJsEventFactory
+     */
+    private $gridJsEventFactory;
+
     public function __construct(
         string $gridName,
         HyvaGridDefinitionInterfaceFactory $gridDefinitionFactory,
@@ -111,6 +117,7 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
         HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory,
         HyvaGrid\GridActionInterfaceFactory $actionFactory,
         HyvaGrid\MassActionInterfaceFactory $massActionFactory,
+        Shared\GridJsEventFactory $gridJsEventFactory,
         HyvaGridEventDispatcher $hyvaPrefetchEventDispatcher,
         LayoutInterface $layout
     ) {
@@ -125,6 +132,7 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
         $this->massActionFactory       = $massActionFactory;
         $this->hyvaEventDispatcher     = $hyvaPrefetchEventDispatcher;
         $this->layout                  = $layout;
+        $this->gridJsEventFactory      = $gridJsEventFactory;
     }
 
     private function getGridDefinition(): HyvaGridDefinitionInterface
@@ -266,7 +274,9 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
             $idColumn = $actionsConfig['@idColumn'] ?? null;
             $this->validateActionIdColumnExists((string) $idColumn, 'Action');
 
-            return $this->actionFactory->create(merge($actionConfig, ['idColumn' => $idColumn]));
+            $events       = $this->buildActionJsEvents($actionConfig);
+
+            return $this->actionFactory->create(merge($actionConfig, ['idColumn' => $idColumn, 'events' => $events]));
         }, $actionsConfig['actions'] ?? []);
 
         $actionIds = map(function (HyvaGrid\GridActionInterface $action): string {
@@ -281,6 +291,18 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
         if (isset($idColumn) && !isset($this->getAllColumnDefinitions()[$idColumn])) {
             throw new \OutOfBoundsException(sprintf('%s ID column "%s" not found.', $actionType, $idColumn));
         }
+    }
+
+    private function buildActionJsEvents(array $actionConfig): array
+    {
+        $eventsConfig = $actionConfig['events'] ?? [];
+        return map(function (string $on) use ($actionConfig): JsEventInterface {
+            return $this->gridJsEventFactory->create([
+                'on'       => $on,
+                'gridName' => $this->gridName,
+                'targetId' => $actionConfig['id'] ?? $actionsConfig['label'] ?? '',
+            ]);
+        }, keys($eventsConfig));
     }
 
     public function getRowActionId(): ?string

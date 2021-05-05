@@ -443,7 +443,9 @@ EOXML;
         return <<<EOXML
     <actions idColumn="name">
         <action id="edit" label="Edit" url="*/*/edit" idParam="id"/>
-        <action id="delete" label="Delete" url="*/*/delete"/>
+        <action id="delete" label="Delete" url="*/*/delete">
+            <event on="click"/>
+        </action>
         <action label="Validate" url="admin/dashboard"/>
     </actions>
 EOXML;
@@ -453,7 +455,7 @@ EOXML;
     {
         $actions = [
             ['id' => 'edit', 'label' => 'Edit', 'url' => '*/*/edit', 'idParam' => 'id'],
-            ['id' => 'delete', 'label' => 'Delete', 'url' => '*/*/delete'],
+            ['id' => 'delete', 'label' => 'Delete', 'url' => '*/*/delete', 'events' => ['click' => []]],
             ['label' => 'Validate', 'url' => 'admin/dashboard'],
         ];
         return ['actions' => ['@idColumn' => 'name', 'actions' => $actions]];

@@ -47,6 +47,7 @@
     <preference for="Hyva\Admin\Model\HyvaFormDefinitionInterface" type="Hyva\Admin\Model\HyvaFormDefinition"/>
     <preference for="Hyva\Admin\Model\Config\HyvaFormConfigReaderInterface"
                 type="Hyva\Admin\Model\Config\FormConfigReader"/>
+    <preference for="Hyva\Admin\ViewModel\Shared\JsEventInterface" type="Hyva\Admin\ViewModel\Shared\GridJsEvent"/>
     <type name="Hyva\Admin\Block\Adminhtml\HyvaGrid">
         <arguments>
             <argument name="gridTemplate" xsi:type="string">Hyva_Admin::grid.phtml</argument>

@@ -87,6 +87,9 @@
                 <xs:complexType>
                     <xs:complexContent>
                         <xs:extension base="baseActionType">
+                            <xs:sequence>
+                                <xs:element name="event" type="jsEvent" minOccurs="0" maxOccurs="unbounded"/>
+                            </xs:sequence>
                             <xs:attribute name="idParam">
                                 <xs:simpleType>
                                     <xs:restriction base="xs:string">
@@ -281,6 +284,9 @@
         <xs:sequence>
             <xs:element name="button" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="event" type="jsEvent" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
                     <xs:attribute name="id" type="xs:normalizedString" use="required"/>
                     <xs:attribute name="label" type="xs:string"/>
                     <xs:attribute name="url" type="routeType"/>
@@ -442,5 +448,9 @@
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jsEvent">
+        <xs:attribute name="on" type="xs:normalizedString" use="required"/>
     </xs:complexType>
 </xs:schema>

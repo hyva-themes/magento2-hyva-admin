@@ -31,15 +31,22 @@ class GridAction implements GridActionInterface
      */
     private $idColumn;
 
+    /**
+     * @var array|null
+     */
+    private $events;
+
     public function __construct(
         string $label,
         string $url,
+        ?array $events = null,
         ?string $id = null,
         ?string $idParam = null,
         ?string $idColumn = null
     ) {
         $this->label    = $label;
         $this->url      = $url;
+        $this->events   = $events;
         $this->id       = $id;
         $this->idParam  = $idParam;
         $this->idColumn = $idColumn;
@@ -53,6 +60,11 @@ class GridAction implements GridActionInterface
     public function getLabel(): string
     {
         return $this->label;
+    }
+
+    public function getEvents(): array
+    {
+        return $this->events ?? [];
     }
 
     public function getParams(RowInterface $row): array

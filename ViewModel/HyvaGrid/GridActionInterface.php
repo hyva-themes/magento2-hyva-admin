@@ -2,6 +2,8 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
+use Hyva\Admin\ViewModel\Shared\JsEventInterface;
+
 interface GridActionInterface
 {
     public function getId(): string;
@@ -9,6 +11,11 @@ interface GridActionInterface
     public function getUrl(): string;
 
     public function getLabel(): string;
+
+    /**
+     * @return JsEventInterface[]
+     */
+    public function getEvents(): array;
 
     /**
      * @param RowInterface $row
