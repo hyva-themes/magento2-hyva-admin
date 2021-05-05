@@ -103,7 +103,7 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
     private $memoizedColumnDefinitions;
 
     /**
-     * @var Shared\GridJsEventFactory
+     * @var HyvaGrid\GridJsEventFactory
      */
     private $gridJsEventFactory;
 
@@ -117,7 +117,7 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
         HyvaGrid\EntityDefinitionInterfaceFactory $entityDefinitionFactory,
         HyvaGrid\GridActionInterfaceFactory $actionFactory,
         HyvaGrid\MassActionInterfaceFactory $massActionFactory,
-        Shared\GridJsEventFactory $gridJsEventFactory,
+        HyvaGrid\GridJsEventFactory $gridJsEventFactory,
         HyvaGridEventDispatcher $hyvaPrefetchEventDispatcher,
         LayoutInterface $layout
     ) {

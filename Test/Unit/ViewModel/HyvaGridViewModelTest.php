@@ -20,7 +20,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\RowInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridViewModel;
-use Hyva\Admin\ViewModel\Shared\GridJsEventFactory;
+use Hyva\Admin\ViewModel\HyvaGrid\GridJsEventFactory;
 use Magento\Framework\View\LayoutInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
