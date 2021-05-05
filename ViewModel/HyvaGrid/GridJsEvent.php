@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Hyva\Admin\ViewModel\Shared;
+namespace Hyva\Admin\ViewModel\HyvaGrid;
 
-use Hyva\Admin\ViewModel\HyvaGrid\GridActionInterface;
-use Hyva\Admin\ViewModel\HyvaGrid\RowInterface;
+use Hyva\Admin\ViewModel\Shared\JsEventInterface;
 use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
 
 class GridJsEvent implements JsEventInterface
