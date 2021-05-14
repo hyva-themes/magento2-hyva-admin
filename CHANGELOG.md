@@ -13,6 +13,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - No removals.
 
+## [1.1.14] - 2021-05-14
+### Added
+- New collection grid source type specific processor interface
+  `HyvaGridCollectionProcessorInterface` extending `HyvaGridSourceProcessorInterface`
+
+  If processors implement this interface, an `afterInitSelect` method is called for collections.
+  This allows joining fields before the available grid columns are extracted or the search criteria is applied.
+
+- New method `getGridName` on all grid source types.
+  This might be handy in plugins.
+
+## [1.1.13] - 2021-05-5
+No changes, this is a fix for a botched 1.1.12 release.
+
+## [1.1.12] - 2021-05-5
+### Added
+- New experimental JavaScript events implementation for grid actions.
+
+### Changed
+- Nothing.
+
+### Removed
+- No removals.
+
 ## [1.1.11] - 2021-04-27
 ### Added
 - Added $escaper declaration to templates for Magento 2.3 compatibility.
