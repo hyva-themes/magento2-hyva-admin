@@ -40,7 +40,7 @@ interface HyvaGridSourceProcessorInterface
      * The method must return the new result or null. The $result type depends on the grid configuration.
      * If null is returned, the result value from before afterLoad is used.
      *
-     * Do not mutate $searchCriteria since that will cause multiple loads (because )it's signature change,
+     * Do not mutate $searchCriteria since that will cause multiple loads (because its signature changes,
      * see note on beforeLoad above).
      *
      * @param mixed $rawResult

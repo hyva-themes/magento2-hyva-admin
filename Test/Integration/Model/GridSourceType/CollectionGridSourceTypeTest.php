@@ -2,11 +2,13 @@
 
 namespace Hyva\Admin\Test\Integration\Model\GridSourceType;
 
+use Hyva\Admin\Api\HyvaGridCollectionProcessorInterface;
 use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\DataType\ArrayDataType;
 use Hyva\Admin\Model\DataType\BooleanDataType;
 use Hyva\Admin\Model\DataType\IntDataType;
 use Hyva\Admin\Model\DataType\TextDataType;
+use Hyva\Admin\Model\GridSource\AbstractGridSourceProcessor;
 use Hyva\Admin\Model\GridSourceType\CollectionGridSourceType;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
@@ -14,6 +16,8 @@ use Magento\Cms\Model\ResourceModel\Page\Collection as CmsPageCollection;
 use Magento\Framework\Api\SearchCriteria;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Data\Collection\AbstractDb as AbstractDbCollection;
+use Magento\Framework\DB\Select;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Sales\Model\ResourceModel\Order\Grid\Collection as OrderGridCollection;
 use Magento\Sales\Setup\SalesSetup;
@@ -287,5 +291,42 @@ class CollectionGridSourceTypeTest extends TestCase
         $this->assertSame(['A', 'B'], $spy->calledMethods);
         $records = $sut->extractRecords($rawGridData);
         $this->assertCount(1, $records);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Catalog/_files/products_list.php
+     */
+    public function testAfterInitSelectProcessorCanJoinFieldsForGrid(): void
+    {
+        $processor = new class() extends AbstractGridSourceProcessor implements HyvaGridCollectionProcessorInterface {
+
+            public function afterInitSelect(AbstractDbCollection $source, string $gridName): void
+            {
+                $select = $source->getSelect();
+                // add select expression
+                $select->columns(['foo' => new \Zend_Db_Expr('foo')]);
+                // add field from joined table
+                $source->getSelect()->joinLeft(
+                    'catalog_category_product',
+                    'e.entity_id = catalog_category_product.product_id',
+                    ['test_field' => 'catalog_category_product.entity_id']
+                );
+            }
+        };
+
+        $args = [
+            'gridName'            => 'test',
+            'processors'          => [$processor],
+            'sourceConfiguration' => ['collection' => ProductCollection::class],
+        ];
+        /** @var CollectionGridSourceType $sut */
+        $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
+
+        $columnKeys = $sut->getColumnKeys();
+        $this->assertContains('foo', $columnKeys); // select expression
+        $this->assertContains('test_field', $columnKeys); // joined field
+        $this->assertContains('sku', $columnKeys); // entity table attribute
+        $this->assertContains('color', $columnKeys); // eav attribute
     }
 }

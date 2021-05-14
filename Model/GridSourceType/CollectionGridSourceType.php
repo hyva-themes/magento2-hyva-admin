@@ -9,6 +9,7 @@ use function array_reduce as reduce;
 use function array_unique as unique;
 use function array_values as values;
 
+use Hyva\Admin\Api\HyvaGridCollectionProcessorInterface;
 use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\GridSourceType\CollectionSourceType\GridSourceCollectionFactory;
 use Hyva\Admin\Model\GridTypeReflection;
@@ -211,7 +212,15 @@ class CollectionGridSourceType implements GridSourceTypeInterface
 
     private function getCollectionInstance(): AbstractDb
     {
-        return $this->gridSourceCollectionFactory->create($this->getCollectionConfig());
+        return reduce(
+            $this->processors,
+            function (AbstractDb $collection, HyvaGridSourceProcessorInterface $processor): AbstractDb {
+                if ($processor instanceof HyvaGridCollectionProcessorInterface) {
+                    $processor->afterInitSelect($collection, $this->gridName);
+                }
+                return $collection;
+            },
+            $this->gridSourceCollectionFactory->create($this->getCollectionConfig()));
     }
 
     private function isTypeReflectionField(string $key): bool
