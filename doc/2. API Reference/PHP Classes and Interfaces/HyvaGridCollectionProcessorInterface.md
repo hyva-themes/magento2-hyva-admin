@@ -3,7 +3,7 @@
 This interface extends the regular `HyvaGridSourceProcessorInterface`. It provides an `afterInitSelect` callback that is only applicable to collection grid sources.
 
 
-```javascript
+```php
 public function afterInitSelect(
     \Magento\Framework\Data\Collection\AbstractDb $source,
     string $gridName
