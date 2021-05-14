@@ -238,4 +238,9 @@ class CollectionGridSourceType implements GridSourceTypeInterface
             $this->memoizedSelectInspectionFields = $this->dbSelectColumnExtractor->getSelectColumns($select);
         }
     }
+
+    public function getGridName(): string
+    {
+        return $this->gridName;
+    }
 }

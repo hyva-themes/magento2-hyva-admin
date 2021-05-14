@@ -302,4 +302,9 @@ class QueryGridSourceType implements GridSourceTypeInterface
 
         return $idx !== false  && is_string($column) ? $expression : $maybeAlias;
     }
+
+    public function getGridName(): string
+    {
+        return $this->gridName;
+    }
 }

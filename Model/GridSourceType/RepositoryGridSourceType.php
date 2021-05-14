@@ -204,4 +204,9 @@ class RepositoryGridSourceType implements GridSourceTypeInterface
     {
         return $this->typeReflection->isExtensionAttribute($this->getRecordType(), $key);
     }
+
+    public function getGridName(): string
+    {
+        return $this->gridName;
+    }
 }

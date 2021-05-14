@@ -303,4 +303,9 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
         return '/^(?:' . implode('|', $matchOptions) . ')$/i';
     }
+
+    public function getGridName(): string
+    {
+        return $this->gridName;
+    }
 }

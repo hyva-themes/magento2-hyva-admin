@@ -33,4 +33,6 @@ interface GridSourceTypeInterface
     public function extractValue($record, string $key);
 
     public function extractTotalRowCount(RawGridSourceContainer $rawGridData): int;
+
+    public function getGridName(): string;
 }
