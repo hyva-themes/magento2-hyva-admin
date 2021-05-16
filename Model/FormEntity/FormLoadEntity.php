@@ -207,6 +207,9 @@ class FormLoadEntity
      */
     private function getFieldValue(string $code)
     {
+        if (! isset($this->value)) {
+            return null;
+        }
         if (in_array($code, $this->customAttributes, true)) {
             return $this->customAttributesExtractor->getValue($this->value, $code);
         }
