@@ -106,7 +106,9 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
     private function getIncludeFieldsConfig(): array
     {
         $fieldConfigs = map(function (array $config): array {
-            $config['joinColumns'] = ($config['joinColumns'] ?? false) === 'true'; // cast string 'true'|'false' -> bool
+            // todo: add any type casts from config values
+            // example from grids:
+            //$config['joinColumns'] = ($config['joinColumns'] ?? false) === 'true'; // cast string 'true'|'false' -> bool
             return $config;
         }, $this->getFormConfig()['fields']['include'] ?? []);
 

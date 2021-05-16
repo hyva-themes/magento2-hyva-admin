@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="form">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="load" type="loadType" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="save" type="saveType" minOccurs="0"/>
+                <xs:element name="sections" type="sectionsType" minOccurs="0"/>
+                <xs:element name="fields" type="fieldsType" minOccurs="0"/>
+                <xs:element name="navigation" type="navigationType" minOccurs="0"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="loadType"></xs:complexType>
+</xs:schema>
