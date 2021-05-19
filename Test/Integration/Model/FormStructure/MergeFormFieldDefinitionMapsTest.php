@@ -4,6 +4,7 @@ namespace Hyva\Admin\Test\Integration\Model\FormStructure;
 
 use Hyva\Admin\Model\FormStructure\MergeFormFieldDefinitionMaps;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
+use Magento\Config\Model\Config\Source\Yesno as YesnoSourceModel;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -60,7 +61,7 @@ class MergeFormFieldDefinitionMapsTest extends TestCase
             'foo' => $this->createField([
                 'name'    => 'foo',
                 'groupId' => 'groupB',
-                'options' => [['label' => 'Test', 'value' => 1]],
+                'source' => SourceModelStub::class,
             ]),
         ];
 
@@ -70,7 +71,8 @@ class MergeFormFieldDefinitionMapsTest extends TestCase
         $this->assertSame('foo', $result['foo']->getName());
         $this->assertSame('groupB', $result['foo']->getGroupId());
         $this->assertSame('text', $result['foo']->getInputType());
-        $this->assertSame([['label' => 'Test', 'value' => 1]], $result['foo']->getOptions());
+        $expectedOptions = (new SourceModelStub())->toOptionArray();
+        $this->assertSame($expectedOptions, $result['foo']->getOptions());
     }
 
     public function testMergesDifferentAndSameFields(): void

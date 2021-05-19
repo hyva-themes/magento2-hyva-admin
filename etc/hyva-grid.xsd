@@ -173,7 +173,7 @@
     <xs:simpleType name="templateType">
         <xs:annotation>
             <xs:documentation>A fully qualified module name and a template file path within a modules
-                view/[are]/templates/ folder, separeted by two colons.
+                view/[area]/templates/ folder, separeted by two colons.
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:normalizedString">

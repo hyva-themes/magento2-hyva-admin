@@ -1,0 +1,29 @@
+<?php declare(strict_types=1);
+
+/**
+ * Form field template for input types supporting min, max, required and step restrictions.
+ * Namely number, date, datetime, and time.
+ */
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+$escaper = $escaper ?? $block;
+
+?>
+<input form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+       type="<?= $field->getInputType() ?>>"
+       value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"
+    <?= $field->isRequired() ? 'required' : '' ?>
+    <?= $field->isDisabled() ? 'disabled' : '' ?>
+    <?php if ($field->getMin() !== null) {
+        printf('min="%s"', $escaper->escapeHtmlAttr($field->getMin()));
+    } ?>
+    <?php if ($field->getMax() !== null) {
+        printf('max="%s"', $escaper->escapeHtmlAttr($field->getMax()));
+    } ?>
+    <?php if ($field->getStep() !== null) {
+        printf('step="%s"', $escaper->escapeHtmlAttr($field->getStep()));
+    } ?>
+       class="w-5/6 text-base"/>

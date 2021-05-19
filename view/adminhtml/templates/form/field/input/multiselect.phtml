@@ -6,14 +6,19 @@
 
 $escaper = $escaper ?? $block;
 
+$values = null !== $field->getValue()
+    ? (is_array($field->getValue()) ? $field->getValue() : [$field->getValue()])
+    : [];
+
 ?>
-<select id="<?= $field->getName() ?>" form="<?= $field->getFormName() ?>"
+<select multiple id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+        form="<?= $field->getFormName() ?>"
         <?= $field->isRequired() ? 'required' : '' ?>
         <?= $field->isDisabled() ? 'disabled' : '' ?>
         class="w-5/6 text-base">
     <?php foreach ($field->getOptions() as $option): ?>
     <option value="<?= $escaper->escapeHtmlAttr($option['value']) ?>" <?=
-    $option['value'] === $field->getValue() ? 'selected' : ''
+    in_array($option['value'], $values, true) ? 'selected' : ''
     ?>><?= $escaper->escapeHtml($option['label']) ?></option>
     <?php endforeach; ?>
 </select>

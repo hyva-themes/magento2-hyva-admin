@@ -1,0 +1,15 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+$escaper = $escaper ?? $block;
+
+if (null === $field->getValue()) {
+    return;
+}
+
+?>
+<input form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>" type="hidden" value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"/>
+<div class="w-5/6 text-base"><?= $escaper->escapeHtml($field->getValue()) ?></div>

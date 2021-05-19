@@ -74,51 +74,51 @@ class FormXmlToArrayConverter
 
     private function convertFields(?\DOMElement $fieldsElement): array
     {
-        $includeElement      = $fieldsElement ? XmlToArray::getChildByName($fieldsElement, 'include') : null;
-        $keepAllSourceFields = $includeElement ?
-            XmlToArray::getAttributeConfig($includeElement, 'keepAllSourceFields', '@keepAllSourceFields') :
-            [];
+        /*
+         * <fields keepAllSourceFields="true">
+         *     <field name="identifier" type="text" group="important-things" pattern=".*" required="true" minlength="1" maxlength="11"/>
+         *     <field name="title" template="My_Module::form/title-field.phtml" renderAsSingleColumn="true"/>
+         *     <field name="content" type="wysiwyg"/>
+         *     <field name="creation_time" type="datetime" min="2020-01-01T00:00:00" max="2030-01-01T00:00:00" step="3600"/>
+         *     <field name="is_active" type="boolean" disabled="false"/>
+         *     <field name="comment" hidden="false" sortOrder="10"/>
+         *     <field name="store_ids" type="select" source="\Magento\Eav\Model\Entity\Attribute\Source\Store"/>
+         *     <field name="admin" valueProcessor="\My\Module\Form\AdminLinkProcessor"/>
+         * </fields>
+         */
         return $fieldsElement
             ? filter(merge(
-                $keepAllSourceFields,
-                ['include' => $this->convertIncludeFields(XmlToArray::getChildByName($fieldsElement, 'include'))],
-                ['exclude' => $this->convertExcludeFields(XmlToArray::getChildByName($fieldsElement, 'exclude'))]
+                XmlToArray::getAttributeConfig($fieldsElement, 'keepAllSourceFields', '@keepAllSourceFields'),
+                [
+                    'fields' => filter(map(
+                        [$this, 'convertField'],
+                        XmlToArray::getChildrenByName($fieldsElement, 'field')
+                    )),
+                ]
             ))
             : [];
     }
 
-    private function convertIncludeFields(?\DOMElement $includeElement): array
-    {
-        /*
-         * <fields>
-         *     <include keepAllSourceFields="true">
-         *         <field name="identifier" group="important-things"/>
-         *         <field name="title" template="My_Module::form/title-field.phtml" joinColumns="true"/>
-         *         <field name="content" type="wysiwyg"/>
-         *         <field name="creation_time" type="datetime"/>
-         *         <field name="is_active" type="boolean"/>
-         *         <field name="comment" enabled="false" sortOrder="10"/>
-         *         <field name="store_ids" type="select" source="\Magento\Eav\Model\Entity\Attribute\Source\Store"/>
-         *         <field name="admin" valueProcessor="\My\Module\Form\AdminLinkProcessor"/>
-         *     </include>
-         * </fields>
-         */
-        return $includeElement
-            ? filter(map([$this, 'convertIncludeField'], XmlToArray::getChildrenByName($includeElement, 'field')))
-            : [];
-    }
-
-    private function convertIncludeField(\DOMElement $fieldElement): array
+    private function convertField(\DOMElement $fieldElement): array
     {
         return filter(merge(
             XmlToArray::getAttributeConfig($fieldElement, 'name'),
-            XmlToArray::getAttributeConfig($fieldElement, 'group', 'groupId'),
-            XmlToArray::getAttributeConfig($fieldElement, 'template'),
-            XmlToArray::getAttributeConfig($fieldElement, 'joinColumns'),
             XmlToArray::getAttributeConfig($fieldElement, 'type'),
-            XmlToArray::getAttributeConfig($fieldElement, 'enabled'),
-            XmlToArray::getAttributeConfig($fieldElement, 'source'),
+            XmlToArray::getAttributeConfig($fieldElement, 'group', 'groupId'),
+            XmlToArray::getAttributeConfig($fieldElement, 'pattern'),
+            XmlToArray::getAttributeConfig($fieldElement, 'required'),
+            XmlToArray::getAttributeConfig($fieldElement, 'minlength'),
+            XmlToArray::getAttributeConfig($fieldElement, 'maxlength'),
+            XmlToArray::getAttributeConfig($fieldElement, 'min'),
+            XmlToArray::getAttributeConfig($fieldElement, 'max'),
+            XmlToArray::getAttributeConfig($fieldElement, 'step'),
+            XmlToArray::getAttributeConfig($fieldElement, 'label'),
+            XmlToArray::getAttributeConfig($fieldElement, 'template'),
+            XmlToArray::getAttributeConfig($fieldElement, 'renderAsSingleColumn'),
+            XmlToArray::getAttributeConfig($fieldElement, 'disabled'),
+            XmlToArray::getAttributeConfig($fieldElement, 'hidden'),
             XmlToArray::getAttributeConfig($fieldElement, 'sortOrder'),
+            XmlToArray::getAttributeConfig($fieldElement, 'source'),
             XmlToArray::getAttributeConfig($fieldElement, 'valueProcessor'),
         ));
     }

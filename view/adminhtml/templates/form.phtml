@@ -34,8 +34,7 @@ $buttons    = $navigation->getButtons();
 
             <div class="flex flex-col md:flex-row">
                 <?php if ($form->hasDeclaredSections()): ?>
-                    <div class="w-screen max-w-sm mr-10 flex flex-col">
-                        <!-- One day this is supposed to render as tabs to click on -->
+                    <div class="w-screen max-w-sm mr-10">
                         <?php foreach ($form->getSections() as $section): ?>
                             <div class="border border-gray-400 -mb-px py-2 px-10 text-center cursor-pointer"
                                 @click="activeSection = '<?= $section->getId() ?>'"
@@ -46,7 +45,7 @@ $buttons    = $navigation->getButtons();
                     </div>
                 <?php endif; ?>
 
-                <div>
+                <div class="flex-grow">
                     <?php foreach ($form->getSections() as $section): ?>
                         <div class="section-<?= $section->getId() ?>"
                              x-show="activeSection === '<?= $section->getId()?>'">

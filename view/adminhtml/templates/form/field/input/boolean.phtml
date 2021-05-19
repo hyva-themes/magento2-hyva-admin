@@ -1,0 +1,20 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+$escaper = $escaper ?? $block;
+
+?>
+<div class="w-16 h-10 rounded-full p-1 flex-shrink-0 cursor-pointer"
+     x-data="{isActive: <?= $field->getValue() ? 'true' : 'false' ?>}"
+     x-bind:class="{'bg-gray-400': !isActive, 'bg-gray-600': isActive}"
+     <?php if (! $field->isDisabled()): ?>x-on:click="isActive = !isActive"<?php endif; ?>
+>
+    <div class="bg-white w-8 h-8 rounded-full shadow-md transform" x-bind:class="{'translate-x-6': isActive}"></div>
+    <input form="<?= $field->getFormName() ?>"
+           id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+           type="hidden"
+           x-bind:value="isActive ? 1 : 0"/>
+</div>

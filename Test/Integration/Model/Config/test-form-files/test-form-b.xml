@@ -14,13 +14,7 @@
         </bindArguments>
     </save>
     <fields>
-        <include>
-            <field name="bbb" group="important-things" template="Some_Module::bbb.phtml"/>
-            <field name="ccc"/>
-        </include>
-        <exclude>
-            <field name="ccc"/>
-            <field name="ddd"/>
-        </exclude>
+        <field name="bbb" group="important-things" template="Some_Module::bbb.phtml"/>
+        <field name="ccc"/>
     </fields>
 </form>

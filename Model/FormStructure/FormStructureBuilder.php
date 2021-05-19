@@ -2,10 +2,12 @@
 
 namespace Hyva\Admin\Model\FormStructure;
 
+use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterfaceFactory;
 use Hyva\Admin\Model\FormEntity\FormLoadEntity;
 use Hyva\Admin\Model\HyvaFormDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
+use function array_filter as filter;
 
 class FormStructureBuilder
 {
@@ -70,11 +72,18 @@ class FormStructureBuilder
     ): FormStructure {
         $fieldsFromEntity = $formEntity->getFieldDefinitions($formName);
         $fieldsFromConfig = $formDefinition->getFieldDefinitions();
-        $fields           = $this->mergeFormFieldDefinitionMaps->merge($fieldsFromEntity, $fieldsFromConfig);
+        $allFields        = $this->mergeFormFieldDefinitionMaps->merge($fieldsFromEntity, $fieldsFromConfig);
 
-        $groups   = $this->formGroupsBuilder->buildGroups($fields, $formDefinition->getGroupsFromSections());
+        $enabledFields = filter($allFields, [$this, 'isVisible']);
+
+        $groups   = $this->formGroupsBuilder->buildGroups($enabledFields, $formDefinition->getGroupsFromSections());
         $sections = $this->formSectionsBuilder->buildSections($formName, $formDefinition->getSectionsConfig(), $groups);
 
         return $this->formStructureFactory->create(['formName' => $formName, 'sections' => $sections]);
+    }
+
+    private function isVisible(FormFieldDefinitionInterface $field): bool
+    {
+        return ! $field->isHidden();
     }
 }
