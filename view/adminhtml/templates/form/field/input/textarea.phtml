@@ -7,6 +7,14 @@
 $escaper = $escaper ?? $block;
 
 ?>
-<textarea form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>">
+<textarea form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+          <?= $field->isDisabled() ? 'disabled' : '' ?>
+      <?php if ($field->getMinlength() !== null) {
+          printf('minlength="%s"', $escaper->escapeHtmlAttr($field->getMinlength()));
+      } ?>
+      <?php if ($field->getMaxlength() !== null) {
+          printf('maxlength="%s"', $escaper->escapeHtmlAttr($field->getMaxlength()));
+      } ?>
+          class="w-5/6 h-44 text-base">
     <?= $escaper->escapeHtml($field->getValue()) ?>
 </textarea>

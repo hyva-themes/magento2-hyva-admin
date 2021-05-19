@@ -18,7 +18,7 @@ interface FormFieldDefinitionInterface
     public function getValue();
 
     /**
-     * @return FormFieldOptionInterface[]
+     * @return array[]
      */
     public function getOptions(): array;
 
@@ -26,7 +26,7 @@ interface FormFieldDefinitionInterface
 
     public function getInputType(): string;
 
-    public function isEnabled(): bool;
+    public function isDisabled(): bool;
 
     public function getFormName(): string;
 
@@ -35,4 +35,20 @@ interface FormFieldDefinitionInterface
     public function toArray(): array;
 
     public function merge(FormFieldDefinitionInterface $field): FormFieldDefinitionInterface;
+
+    public function getPattern(): ?string;
+
+    public function isRequired(): bool;
+
+    public function getMinlength(): ?int;
+
+    public function getMaxlength(): ?int;
+
+    public function getMin(): ?string;
+
+    public function getMax(): ?string;
+
+    public function getStep(): ?int;
+
+    public function isHidden(): ?bool;
 }

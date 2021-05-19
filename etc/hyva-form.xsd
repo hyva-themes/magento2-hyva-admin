@@ -1,15 +1,300 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
+           elementFormDefault="qualified"
+           vc:minVersion="1.1">
     <xs:element name="form">
         <xs:complexType>
             <xs:all>
-                <xs:element name="load" type="loadType" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="save" type="saveType" minOccurs="0"/>
+                <xs:element name="load" type="loadMethodType" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="save" type="saveMethodType" minOccurs="0"/>
                 <xs:element name="sections" type="sectionsType" minOccurs="0"/>
                 <xs:element name="fields" type="fieldsType" minOccurs="0"/>
                 <xs:element name="navigation" type="navigationType" minOccurs="0"/>
             </xs:all>
         </xs:complexType>
     </xs:element>
-    <xs:complexType name="loadType"></xs:complexType>
+
+    <xs:complexType name="loadMethodType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="bindArguments" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="argument" type="loadMethodArgumentType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="method" type="phpTypeAndMethod" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="saveMethodType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="bindArguments" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="argument" type="saveMethodArgumentType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="method" type="phpTypeAndMethod" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="loadMethodArgumentType">
+        <xs:attribute name="name" type="xs:normalizedString" use="required"/>
+        <xs:attribute name="requestParam" type="xs:normalizedString"/>
+        <xs:attribute name="method" type="phpTypeAndMethod"/>
+        <xs:attribute name="param" type="xs:normalizedString"/>
+        <xs:attribute name="property" type="xs:normalizedString"/>
+        <xs:attribute name="value" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="saveMethodArgumentType">
+        <xs:complexContent>
+            <xs:extension base="loadMethodArgumentType">
+                <xs:attribute name="formData" type="boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="sectionsType">
+        <xs:sequence>
+            <xs:element name="section" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="group" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:attribute name="id" type="xs:normalizedString" use="required"/>
+                                <xs:attribute name="label" type="xs:normalizedString"/>
+                                <xs:attribute name="sortOrder" type="xs:int"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="id" use="required" type="xs:normalizedString"/>
+                    <xs:attribute name="label" type="xs:normalizedString"/>
+                    <xs:attribute name="sortOrder" type="xs:int"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="fieldsType">
+        <xs:sequence>
+            <!-- unable to use XSD 1.1 alternative type assignment due to -->
+            <!-- https://youtrack.jetbrains.com/issue/IDEA-236805 -->
+            <xs:element name="field" minOccurs="0" maxOccurs="unbounded" type="constrainedField"/>
+<!--            <xs:element name="field" minOccurs="0" maxOccurs="unbounded">-->
+<!--                <xs:alternative test="@†ype='text'" type="textConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='search'" type="textConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='url'" type="textConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='tel'" type="textConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='email'" type="textConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='password'" type="textConstrainedField"/>-->
+
+<!--                <xs:alternative test="@†ype='wysiwyg'" type="unconstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='boolean'" type="unconstrainedField"/>-->
+
+<!--                <xs:alternative test="@†ype='range'" type="rangeConstrainedField"/>-->
+
+<!--                <xs:alternative test="@†ype='number'" type="numericConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='date'" type="numericConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='datetime'" type="numericConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='time'" type="numericConstrainedField"/>-->
+
+<!--                <xs:alternative test="@†ype='month'" type="partOfYearConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='week'" type="partOfYearConstrainedField"/>-->
+
+<!--                <xs:alternative test="@†ype='checkbox'" type="requiredConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='radio'" type="requiredConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='file'" type="requiredConstrainedField"/>-->
+<!--                <xs:alternative test="@†ype='select'" type="requiredConstrainedField"/>-->
+
+<!--                <xs:alternative test="@†ype='textarea'" type="textareaConstrainedField"/>-->
+<!--            </xs:element>-->
+        </xs:sequence>
+        <xs:attribute name="keepAllSourceFields" type="boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="unconstrainedField">
+        <xs:attribute name="name" use="required" type="xs:normalizedString"/>
+        <xs:attribute name="type" type="fieldTypeEnum"/>
+        <xs:attribute name="template" type="templateType"/>
+        <xs:attribute name="renderAsSingleColumn" type="boolean"/>
+        <xs:attribute name="source" type="phpType"/>
+        <xs:attribute name="group" type="xs:normalizedString"/>
+        <xs:attribute name="disabled" type="boolean"/>
+        <xs:attribute name="hidden" type="boolean"/>
+        <xs:attribute name="sortOrder" type="xs:int"/>
+        <xs:attribute name="valueProcessor" type="phpType"/>
+    </xs:complexType>
+
+    <!-- unable to use XSD 1.1 alternative type assignment due to -->
+    <!-- https://youtrack.jetbrains.com/issue/IDEA-236805 -->
+    <xs:complexType name="constrainedField">
+        <xs:complexContent>
+            <xs:extension base="unconstrainedField">
+                <xs:attribute name="pattern" type="xs:string"/>
+                <xs:attribute name="required" type="boolean"/>
+                <xs:attribute name="minlength" type="xs:positiveInteger"/>
+                <xs:attribute name="maxlength" type="xs:positiveInteger"/>
+                <xs:attribute name="min" type="xs:integer"/>
+                <xs:attribute name="max" type="xs:integer"/>
+                <xs:attribute name="step" type="xs:positiveInteger"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+<!--    <xs:complexType name="textConstrainedField">-->
+<!--        <xs:complexContent>-->
+<!--            <xs:extension base="unconstrainedField">-->
+<!--                <xs:attribute name="pattern" type="xs:string"/>-->
+<!--                <xs:attribute name="required" type="boolean"/>-->
+<!--                <xs:attribute name="minlength" type="xs:positiveInteger"/>-->
+<!--                <xs:attribute name="maxlength" type="xs:positiveInteger"/>-->
+<!--            </xs:extension>-->
+<!--        </xs:complexContent>-->
+<!--    </xs:complexType>-->
+
+<!--    <xs:complexType name="rangeConstrainedField">-->
+<!--        <xs:complexContent>-->
+<!--            <xs:extension base="unconstrainedField">-->
+<!--                <xs:attribute name="min" type="xs:integer"/>-->
+<!--                <xs:attribute name="max" type="xs:integer"/>-->
+<!--                <xs:attribute name="step" type="xs:positiveInteger"/>-->
+<!--            </xs:extension>-->
+<!--        </xs:complexContent>-->
+<!--    </xs:complexType>-->
+
+<!--    <xs:complexType name="numericConstrainedField">-->
+<!--        <xs:complexContent>-->
+<!--            <xs:extension base="unconstrainedField">-->
+<!--                <xs:attribute name="required" type="boolean"/>-->
+<!--                <xs:attribute name="min" type="xs:integer"/>-->
+<!--                <xs:attribute name="max" type="xs:integer"/>-->
+<!--                <xs:attribute name="step" type="xs:positiveInteger"/>-->
+<!--            </xs:extension>-->
+<!--        </xs:complexContent>-->
+<!--    </xs:complexType>-->
+
+<!--    <xs:complexType name="partOfYearConstrainedField">-->
+<!--        <xs:complexContent>-->
+<!--            <xs:extension base="unconstrainedField">-->
+<!--                <xs:attribute name="required" type="boolean"/>-->
+<!--                <xs:attribute name="min" type="xs:integer"/>-->
+<!--                <xs:attribute name="max" type="xs:integer"/>-->
+<!--            </xs:extension>-->
+<!--        </xs:complexContent>-->
+<!--    </xs:complexType>-->
+
+<!--    <xs:complexType name="requiredConstrainedField">-->
+<!--        <xs:complexContent>-->
+<!--            <xs:extension base="unconstrainedField">-->
+<!--                <xs:attribute name="required" type="boolean"/>-->
+<!--            </xs:extension>-->
+<!--        </xs:complexContent>-->
+<!--    </xs:complexType>-->
+
+<!--    <xs:complexType name="textareaConstrainedField">-->
+<!--        <xs:complexContent>-->
+<!--            <xs:extension base="unconstrainedField">-->
+<!--                <xs:attribute name="required" type="boolean"/>-->
+<!--                <xs:attribute name="minlength" type="xs:positiveInteger"/>-->
+<!--                <xs:attribute name="maxlength" type="xs:positiveInteger"/>-->
+<!--            </xs:extension>-->
+<!--        </xs:complexContent>-->
+<!--    </xs:complexType>-->
+
+    <xs:complexType name="navigationType">
+        <xs:all>
+            <xs:element name="buttons" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="button" type="buttonType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="buttonType">
+        <xs:attribute name="id" type="xs:normalizedString" use="required"/>
+        <xs:attribute name="label" type="xs:normalizedString"/>
+        <xs:attribute name="url" type="routeType"/>
+        <xs:attribute name="enabled" type="boolean"/>
+        <xs:attribute name="hiddenForNewEntity" type="boolean"/>
+    </xs:complexType>
+
+    <xs:simpleType name="routeType">
+        <xs:annotation>
+            <xs:documentation>The Magento three-part route/controller/action syntax. A * indicates the current value.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(\*|[a-zA-Z0-9_]+)/((\*|[a-zA-Z0-9_/]+)/)?(\*|[a-zA-Z0-9/]+)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="phpTypeAndMethod">
+        <xs:annotation>
+            <xs:documentation>A PHP Class or Interface name and a method name, separated by two colons.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="\\?[A-Z][a-zA-Z0-9]*(\\[A-Z][A-Za-z0-9]*)*::[a-z][A-Za-z]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="phpType">
+        <xs:annotation>
+            <xs:documentation>A PHP Class or Interface name, with or without the leading backslash.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="\\?[A-Z][a-zA-Z0-9]*(\\[A-Z][A-Za-z0-9]*)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="boolean">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="templateType">
+        <xs:annotation>
+            <xs:documentation>A fully qualified module name and a template file path within a modules
+                view/[area]/templates/ folder, separeted by two colons.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*::[a-zA-Z/.-]+\.phtml"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="fieldTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="id"/>
+            <xs:enumeration value="wysiwyg"/>
+            <xs:enumeration value="boolean"/>
+            <xs:enumeration value="text"/>
+            <xs:enumeration value="textarea"/>
+            <xs:enumeration value="select"/>
+            <xs:enumeration value="search"/>
+            <xs:enumeration value="url"/>
+            <xs:enumeration value="tel"/>
+            <xs:enumeration value="email"/>
+            <xs:enumeration value="password"/>
+            <xs:enumeration value="range"/>
+            <xs:enumeration value="number"/>
+            <xs:enumeration value="date"/>
+            <xs:enumeration value="datetime"/>
+            <xs:enumeration value="month"/>
+            <xs:enumeration value="week"/>
+            <xs:enumeration value="time"/>
+            <xs:enumeration value="checkbox"/>
+            <xs:enumeration value="radio"/>
+<!--            <xs:enumeration value="file"/>-->
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

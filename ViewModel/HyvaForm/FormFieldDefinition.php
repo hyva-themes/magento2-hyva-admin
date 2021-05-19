@@ -4,6 +4,7 @@ namespace Hyva\Admin\ViewModel\HyvaForm;
 
 use Hyva\Admin\Model\FormEntity\FormFieldValueProcessorFactory;
 use Hyva\Admin\Model\FormEntity\FormFieldValueProcessorInterface;
+use Hyva\Admin\Model\SourceModelFactory;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 use function array_filter as filter;
@@ -32,9 +33,9 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     private $label;
 
     /**
-     * @var array|null
+     * @var string|null
      */
-    private $options;
+    private $source;
 
     /**
      * @var string|null
@@ -59,12 +60,12 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     /**
      * @var bool|null
      */
-    private $enabled;
+    private $disabled;
 
     /**
      * @var bool|null
      */
-    private $excluded;
+    private $hidden;
 
     /**
      * @var string|null
@@ -74,7 +75,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     /**
      * @var bool
      */
-    private $joinColumns;
+    private $renderAsSingleColumn;
 
     /**
      * @var LayoutInterface
@@ -93,7 +94,13 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
      */
     private $sortOrder;
 
+    /**
+     * @var SourceModelFactory
+     */
+    private $sourceModelFactory;
+
     private $valueTypeToInputTypeMap = [
+        'id'      => 'id',
         'string'  => 'text',
         'decimal' => 'text',
         'int'     => 'number',
@@ -102,61 +109,135 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         'array'   => 'select',
     ];
 
+    private $inputTypeToTemplateMap = [
+        'text'     => 'text',
+        'search'   => 'text',
+        'url'      => 'text',
+        'tel'      => 'text',
+        'email'    => 'text',
+        'password' => 'text',
+        'range'    => 'range',
+        'number'   => 'number',
+        'date'     => 'number',
+        'datetime' => 'number',
+        'time'     => 'number',
+        'month'    => 'date-interval',
+        'week'     => 'date-interval',
+    ];
+
+    /**
+     * @var string|null
+     */
+    private $pattern;
+
+    /**
+     * @var bool|null
+     */
+    private $required;
+
+    /**
+     * @var int|null
+     */
+    private $minlength;
+
+    /**
+     * @var int|null
+     */
+    private $maxlength;
+
+    /**
+     * @var string|null
+     */
+    private $min;
+
+    /**
+     * @var string|null
+     */
+    private $max;
+
+    /**
+     * @var int|null
+     */
+    private $step;
+
     public function __construct(
         LayoutInterface $layout,
         FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
         FormFieldValueProcessorFactory $fieldValueProcessorFactory,
+        SourceModelFactory $sourceModelFactory,
         string $formName,
         string $name,
         ?string $valueType = null,
         $value = null,
         ?string $label = null,
-        ?array $options = [],
+        ?string $source = null,
         ?string $inputType = null,
         ?string $groupId = null,
+        ?string $pattern = null,
+        ?bool $required = null,
+        ?int $minlength = null,
+        ?int $maxlength = null,
+        ?string $min = null,
+        ?string $max = null,
+        ?int $step = null,
         ?string $template = null,
-        ?bool $isEnabled = null,
-        ?bool $isExcluded = null,
-        bool $joinColumns = false,
+        ?bool $disabled = null,
+        ?bool $hidden = null,
+        bool $renderAsSingleColumn = null,
         ?string $valueProcessor = null,
         ?int $sortOrder = null
     ) {
         $this->layout                     = $layout;
         $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
         $this->fieldValueProcessorFactory = $fieldValueProcessorFactory;
+        $this->sourceModelFactory         = $sourceModelFactory;
         $this->formName                   = $formName;
         $this->name                       = $name;
         $this->valueType                  = $valueType;
         $this->value                      = $value;
         $this->label                      = $label;
-        $this->options                    = $options;
+        $this->source                     = $source;
         $this->inputType                  = $inputType;
         $this->groupId                    = $groupId;
         $this->template                   = $template;
-        $this->enabled                    = $isEnabled;
-        $this->excluded                   = $isExcluded;
-        $this->joinColumns                = $joinColumns;
+        $this->disabled                   = $disabled;
+        $this->hidden                     = $hidden;
+        $this->renderAsSingleColumn       = $renderAsSingleColumn;
         $this->valueProcessor             = $valueProcessor;
         $this->sortOrder                  = $sortOrder;
+        $this->pattern                    = $pattern;
+        $this->required                   = $required;
+        $this->minlength                  = $minlength;
+        $this->maxlength                  = $maxlength;
+        $this->min                        = $min;
+        $this->max                        = $max;
+        $this->step                       = $step;
     }
 
     public function toArray(): array
     {
         return filter([
-            'formName'       => $this->formName,
-            'name'           => $this->name,
-            'value'          => $this->value,
-            'valueType'      => $this->valueType,
-            'label'          => $this->label,
-            'options'        => $this->options,
-            'inputType'      => $this->inputType,
-            'groupId'        => $this->groupId,
-            'template'       => $this->template,
-            'isEnabled'      => $this->enabled,
-            'isExcluded'     => $this->excluded,
-            'joinColumns'    => $this->joinColumns,
-            'valueProcessor' => $this->valueProcessor,
-            'sortOrder'      => $this->sortOrder,
+            'formName'             => $this->formName,
+            'name'                 => $this->name,
+            'valueType'            => $this->valueType,
+            'value'                => $this->value,
+            'label'                => $this->label,
+            'source'               => $this->source,
+            'inputType'            => $this->inputType,
+            'groupId'              => $this->groupId,
+            'template'             => $this->template,
+            'disabled'             => $this->disabled,
+            'hidden'               => $this->hidden,
+            'renderAsSingleColumn' => $this->renderAsSingleColumn,
+            'valueProcessor'       => $this->valueProcessor,
+            'sortOrder'            => $this->sortOrder,
+            'pattern'              => $this->pattern,
+            'required'             => $this->required,
+            'minlength'            => $this->minlength,
+            'maxlength'            => $this->maxlength,
+            'min'                  => $this->min,
+            'max'                  => $this->max,
+            'step'                 => $this->step,
         ]);
     }
 
@@ -203,7 +284,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     public function getOptions(): array
     {
-        return $this->options;
+        return $this->source ? $this->sourceModelFactory->get($this->source)->toOptionArray() : [];
     }
 
     public function getGroupId(): string
@@ -216,9 +297,9 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         return $this->inputType ?? $this->determineInputType();
     }
 
-    public function isEnabled(): bool
+    public function isDisabled(): bool
     {
-        return (bool) $this->enabled;
+        return (bool) $this->disabled;
     }
 
     public function getFormName(): string
@@ -233,7 +314,7 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     private function determineFieldContainerTemplate(): string
     {
-        return $this->joinColumns
+        return $this->renderAsSingleColumn
             ? 'Hyva_Admin::form/field/one-col.phtml'
             : 'Hyva_Admin::form/field/two-col.phtml';
     }
@@ -250,21 +331,46 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
 
     private function determineInputType(): string
     {
-        if (in_array($this->valueType, ['string', 'float', 'decimal'], true)) {
-            return 'text';
-        }
-        if ($this->valueType === 'text') {
-            return 'textarea';
-        }
-        if ($this->valueType === 'array') {
-            return 'select';
-        }
-        if ($this->valueType === 'bool') {
-            return 'bool';
-        }
-        if ($this->valueType === 'int') {
-            return 'number';
-        }
-        return 'text';
+        return $this->valueTypeToInputTypeMap[$this->valueType] ?? 'text';
+    }
+
+    public function getPattern(): ?string
+    {
+        return $this->pattern;
+    }
+
+    public function isRequired(): bool
+    {
+        return (bool) $this->required;
+    }
+
+    public function getMinlength(): ?int
+    {
+        return $this->minlength;
+    }
+
+    public function getMaxlength(): ?int
+    {
+        return $this->maxlength;
+    }
+
+    public function getMin(): ?string
+    {
+        return $this->min;
+    }
+
+    public function getMax(): ?string
+    {
+        return $this->max;
+    }
+
+    public function getStep(): ?int
+    {
+        return $this->step;
+    }
+
+    public function isHidden(): ?bool
+    {
+        return $this->hidden;
     }
 }

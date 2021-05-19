@@ -49,11 +49,10 @@ class FormConfigReaderTest extends TestCase
         $this->assertSame('false', $result['save']['bindArguments']['foo']['formData']);
         $this->assertSame('true', $result['save']['bindArguments']['bar']['formData']);
         $this->assertSame('true', $result['save']['bindArguments']['bar']['formData']);
-        $this->assertSame(['name' => 'aaa'], $result['fields']['include'][0]);
+        $this->assertSame(['name' => 'aaa'], $result['fields']['fields'][0]);
         $this->assertSame(
             ['name' => 'bbb', 'groupId' => 'important-things', 'template' => 'Some_Module::bbb.phtml'],
-            $result['fields']['include'][1]
+            $result['fields']['fields'][1]
         );
-        $this->assertSame(['ccc', 'ddd'], $result['fields']['exclude']);
     }
 }

@@ -7,6 +7,7 @@ use Hyva\Admin\Model\TypeReflection\CustomAttributesExtractor;
 use Hyva\Admin\Model\TypeReflection\EavAttributeGroups;
 use Hyva\Admin\Model\TypeReflection\ExtensionAttributeTypeExtractor;
 use Hyva\Admin\Model\TypeReflection\GetterMethodsExtractor;
+use Hyva\Admin\Model\TypeReflection\MagentoOrmReflection;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
 
@@ -73,6 +74,11 @@ class FormLoadEntity
      */
     private $formFieldDefinitionFactory;
 
+    /**
+     * @var MagentoOrmReflection
+     */
+    private $magentoOrmReflection;
+
     public function __construct(
         $value,
         string $valueType,
@@ -81,7 +87,8 @@ class FormLoadEntity
         GetterMethodsExtractor $getterMethodsExtractor,
         ArrayValueExtractor $arrayValueExtractor,
         EavAttributeGroups $eavAttributeGroups,
-        FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory
+        FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
+        MagentoOrmReflection $magentoOrmReflection
     ) {
         $this->value                           = $value;
         $this->valueType                       = $valueType;
@@ -91,6 +98,7 @@ class FormLoadEntity
         $this->arrayValueExtractor             = $arrayValueExtractor;
         $this->eavAttributeGroups              = $eavAttributeGroups;
         $this->formFieldDefinitionFactory      = $formFieldDefinitionFactory;
+        $this->magentoOrmReflection            = $magentoOrmReflection;
     }
 
     public function getValue()
@@ -112,20 +120,21 @@ class FormLoadEntity
 
     private function buildFieldDefinitionForAttribute(string $formName, string $code): FormFieldDefinitionInterface
     {
+        $fieldValue = $this->getFieldValue($code);
         return $this->formFieldDefinitionFactory->create([
-            'formName'   => $formName,
-            'name'       => $code,
-            'value'      => $this->getFieldValue($code),
-            'valueType'  => $this->valueType,
-            'label'      => $this->getFieldLabel($code),
-            'options'    => $this->getFieldOptions($code),
-            'inputType'  => $this->getFieldInputType($code),
-            'groupId'    => $this->getFieldGroup($code),
-            'isExcluded' => false,
-            'isEnabled'  => true,
+            'formName'  => $formName,
+            'name'      => $code,
+            'value'     => $fieldValue,
+            'valueType' => $this->getFieldValueType($code, $fieldValue),
+            'label'     => $this->getFieldLabel($code),
+            'options'   => $this->getFieldOptions($code),
+            'inputType' => $this->getFieldInputType($code),
+            'groupId'   => $this->getFieldGroup($code),
+            //'hidden' => null,
+            //'disabled'  => null,
             //'sortOrder'      => null,
             //'valueProcessor' => null,
-            'template'   => null,
+            'template'  => null,
         ]);
     }
 
@@ -207,7 +216,7 @@ class FormLoadEntity
      */
     private function getFieldValue(string $code)
     {
-        if (! isset($this->value)) {
+        if (!isset($this->value)) {
             return null;
         }
         if (in_array($code, $this->customAttributes, true)) {
@@ -222,5 +231,13 @@ class FormLoadEntity
         if (in_array($code, $this->arrayKeyAttributes, true)) {
             return $this->arrayValueExtractor->getValue($this->value, $code);
         }
+    }
+
+    private function getFieldValueType(string $code, $value): string
+    {
+        if (in_array($code, ['id', $this->magentoOrmReflection->getIdFieldNameForType($this->valueType)], true)) {
+            return 'id';
+        }
+        return isset($value) ? gettype($value) : 'string';
     }
 }

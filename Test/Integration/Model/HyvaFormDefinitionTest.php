@@ -33,7 +33,7 @@ class HyvaFormDefinitionTest extends TestCase
             {
                 return [
                     'fields' => [
-                        'include' => [
+                        'fields' => [
                             ['label' => 'Field One', 'name' => 'foo'],
                             ['label' => 'Field Two', 'name' => 'bar'],
                         ],
@@ -52,7 +52,7 @@ class HyvaFormDefinitionTest extends TestCase
 
     /**
      * @magentoAppArea adminhtml
-     * @dataProvider joinColumnsTestDataProvider
+     * @dataProvider renderAsSingleColumnTestDataProvider
      */
     public function testCastsJoinFieldPropertyToBool(array $columnConfig, bool $expectsJoinedColumns): void
     {
@@ -68,7 +68,7 @@ class HyvaFormDefinitionTest extends TestCase
             {
                 return [
                     'fields' => [
-                        'include' => [$this->columnConfig],
+                        'fields' => [$this->columnConfig],
                     ],
                 ];
             }
@@ -85,11 +85,11 @@ class HyvaFormDefinitionTest extends TestCase
         }
     }
 
-    public function joinColumnsTestDataProvider(): array
+    public function renderAsSingleColumnTestDataProvider(): array
     {
         return [
-            'explicit-true'  => [['name' => 'foo', 'joinColumns' => 'true'], true],
-            'explicit-false' => [['name' => 'foo', 'joinColumns' => 'false'], false],
+            'explicit-true'  => [['name' => 'foo', 'renderAsSingleColumn' => 'true'], true],
+            'explicit-false' => [['name' => 'foo', 'renderAsSingleColumn' => 'false'], false],
             'implicit-false' => [['name' => 'foo'], false],
         ];
     }

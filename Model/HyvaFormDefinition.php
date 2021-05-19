@@ -67,14 +67,14 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
      */
     public function getFieldDefinitions(): array
     {
-        $fieldCodes = keys($this->getIncludeFieldsConfig());
+        $fieldCodes = keys($this->getFieldsConfig());
         $fields     = map(function (string $fieldName): FormFieldDefinitionInterface {
             return $this->formFieldDefinitionFactory->create(merge([
                 'name'       => $fieldName,
                 'formName'   => $this->getFormName(),
-                'isExcluded' => in_array($fieldName, $this->getExcludeFieldsConfig(), true),
-            ], $this->getIncludeFieldsConfig()[$fieldName]));
+            ], $this->getFieldsConfig()[$fieldName]));
         }, $fieldCodes);
+
         return zip($fieldCodes, $fields);
     }
 
@@ -103,14 +103,14 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
         return $this->getFormConfig()['fields']['exclude'] ?? [];
     }
 
-    private function getIncludeFieldsConfig(): array
+    private function getFieldsConfig(): array
     {
-        $fieldConfigs = map(function (array $config): array {
-            // todo: add any type casts from config values
-            // example from grids:
-            //$config['joinColumns'] = ($config['joinColumns'] ?? false) === 'true'; // cast string 'true'|'false' -> bool
+        $fieldConfigs = filter(map(function (array $config): array {
+            // cast 'true'|'false' -> bool
+            $config['renderAsSingleColumn'] = ($config['renderAsSingleColumn'] ?? false) === 'true';
+            $config['inputType'] = $config['type'] ?? null;
             return $config;
-        }, $this->getFormConfig()['fields']['include'] ?? []);
+        }, $this->getFormConfig()['fields']['fields'] ?? []));
 
         return $this->buildIdToConfigMap($fieldConfigs, 'name');
     }

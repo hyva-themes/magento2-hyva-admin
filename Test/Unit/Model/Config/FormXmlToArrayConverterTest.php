@@ -34,13 +34,9 @@ class FormXmlToArrayConverterTest extends TestCase
                 $this->getSaveSimpleXml(),
                 $this->getSaveSimpleExpected(),
             ],
-            'include-fields'     => [
-                $this->getIncludeFieldsXml(),
-                $this->getIncludeFieldsExpected(),
-            ],
-            'exclude-fields'     => [
-                $this->getExcludeFieldsXml(),
-                $this->getExcludeFieldsExpected(),
+            'fields'             => [
+                $this->getFieldsXml(),
+                $this->getFieldsExpected(),
             ],
             'sections'           => [
                 $this->getSectionsXml(),
@@ -125,36 +121,52 @@ EOXML;
         return ['save' => ['method' => '\Magento\Cms\Model\ResourceModel\Block::save']];
     }
 
-    private function getIncludeFieldsXml(): string
+    private function getFieldsXml(): string
     {
         return <<<EOXML
-<fields>
-    <include keepAllSourceFields="true">
-        <field name="identifier" group="important-things"/>
-        <field name="title" template="My_Module::form/title-field.phtml" joinColumns="true"/>
-        <field name="content" type="wysiwyg"/>
-        <field name="creation_time" type="datetime"/>
-        <field name="is_active" type="boolean"/>
-        <field name="comment" enabled="false" sortOrder="10"/>
-        <field name="store_ids" type="select" source="\Magento\Eav\Model\Entity\Attribute\Source\Store"/>
-        <field name="admin" valueProcessor="\My\Module\Form\AdminLinkProcessor"/>
-    </include>
+<fields keepAllSourceFields="true">
+    <field name="identifier" type="text" group="important-things" pattern=".*" required="true" minlength="1" maxlength="11"/>
+    <field name="title" template="My_Module::form/title-field.phtml" renderAsSingleColumn="true"/>
+    <field name="content" type="wysiwyg"/>
+    <field name="creation_time" type="datetime" min="2020-01-01T00:00:00" max="2030-01-01T00:00:00" step="3600"/>
+    <field name="is_active" label="Active?" type="boolean" disabled="false"/>
+    <field name="comment" hidden="false" sortOrder="10"/>
+    <field name="store_ids" type="select" source="\Magento\Eav\Model\Entity\Attribute\Source\Store"/>
+    <field name="admin" valueProcessor="\My\Module\Form\AdminLinkProcessor"/>
 </fields>
 EOXML;
     }
 
-    private function getIncludeFieldsExpected(): array
+    private function getFieldsExpected(): array
     {
         return [
             'fields' => [
                 '@keepAllSourceFields' => 'true',
-                'include'              => [
-                    ['name' => 'identifier', 'groupId' => 'important-things'],
-                    ['name' => 'title', 'template' => 'My_Module::form/title-field.phtml', 'joinColumns' => 'true'],
+                'fields'               => [
+                    [
+                        'name'      => 'identifier',
+                        'type'      => 'text',
+                        'groupId'   => 'important-things',
+                        'pattern'   => '.*',
+                        'required'  => 'true',
+                        'minlength' => '1',
+                        'maxlength' => '11',
+                    ],
+                    [
+                        'name'                 => 'title',
+                        'template'             => 'My_Module::form/title-field.phtml',
+                        'renderAsSingleColumn' => 'true',
+                    ],
                     ['name' => 'content', 'type' => 'wysiwyg'],
-                    ['name' => 'creation_time', 'type' => 'datetime'],
-                    ['name' => 'is_active', 'type' => 'boolean'],
-                    ['name' => 'comment', 'enabled' => 'false', 'sortOrder' => "10"],
+                    [
+                        'name' => 'creation_time',
+                        'type' => 'datetime',
+                        'min'  => '2020-01-01T00:00:00',
+                        'max'  => '2030-01-01T00:00:00',
+                        'step' => '3600',
+                    ],
+                    ['name' => 'is_active', 'type' => 'boolean', 'label' => 'Active?', 'disabled' => 'false'],
+                    ['name' => 'comment', 'hidden' => 'false', 'sortOrder' => "10"],
                     [
                         'name'   => 'store_ids',
                         'type'   => 'select',
@@ -162,27 +174,6 @@ EOXML;
                     ],
                     ['name' => 'admin', 'valueProcessor' => '\My\Module\Form\AdminLinkProcessor'],
                 ],
-            ],
-        ];
-    }
-
-    private function getExcludeFieldsXml(): string
-    {
-        return <<<EOXML
-<fields>
-    <exclude>
-        <field name="created_at"/>
-        <field name="updated_at"/>
-    </exclude>
-</fields>
-EOXML;
-    }
-
-    private function getExcludeFieldsExpected(): array
-    {
-        return [
-            'fields' => [
-                'exclude' => ['created_at', 'updated_at'],
             ],
         ];
     }

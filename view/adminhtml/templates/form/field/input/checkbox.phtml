@@ -1,0 +1,17 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+$escaper = $escaper ?? $block;
+
+?>
+<input form="<?= $field->getFormName() ?>"
+           id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+           type="checkbox"
+           value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"
+           <?= $field->isRequired() ? 'required' : '' ?>
+           <?= $field->isDisabled() ? 'disabled' : '' ?>
+           <?= $field->getValue() !== null ? 'checked' : '' ?>
+/>
