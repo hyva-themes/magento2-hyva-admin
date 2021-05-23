@@ -16,6 +16,7 @@ class TextDataType implements DataTypeInterface
         self::TYPE_TRUNCATED_TEXT,
         'text',
         'string',
+        'varchar'
     ];
 
     public function valueToTypeCode($value): ?string
