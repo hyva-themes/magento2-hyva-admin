@@ -13,6 +13,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - No removals.
 
+## [1.1.15] - 2021-05-26
+### Added
+- Nothing
+
+### Changed
+- Removed Umlaut from file name in documentation, because it breaks composer package building.  
+  Thanks to [Pieter Hoste](https://github.com/hyva-themes/magento2-hyva-admin/issues/50) for letting me know.
+
+### Removed
+- Nothing
+
 ## [1.1.14] - 2021-05-14
 ### Added
 - New collection grid source type specific processor interface
