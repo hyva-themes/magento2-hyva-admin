@@ -111,14 +111,14 @@ class GetterMethodsExtractor
      * @param string[] $prefixes
      * @return string
      */
-    private function getMethodNameFromKey($type, string $key, array $prefixes = ['get', 'has', 'is']): string
+    private function getMethodNameFromKey($type, string $key, array $prefixes = ['is', 'has', 'get']): string
     {
         $prefix = array_shift($prefixes);
         if (!$prefix) {
             return '';
         }
         $method = $prefix . SimpleDataObjectConverter::snakeCaseToUpperCamelCase($key);
-        return method_exists($type, $method) || method_exists($type, '__call')
+        return method_exists($type, $method) || ($prefix === 'get' && method_exists($type, '__call'))
             ? $method
             : $this->getMethodNameFromKey($type, $key, $prefixes);
     }
