@@ -48,7 +48,10 @@ abstract class HyvaConfigDirs
 
     private function moduleDir(string $module): string
     {
-        return $this->componentRegistrar->getPath(ComponentRegistrar::MODULE, $module);
+        // The component registrar might be asked for a module that is enabled in app/etc/config.php
+        // but not installed by composer because it is a dev dependency:
+        // For unknown modules the registrar returns null, which needs a string cast to satisfy the return type.
+        return (string) $this->componentRegistrar->getPath(ComponentRegistrar::MODULE, $module);
     }
 
     private function getActiveModules(): array
