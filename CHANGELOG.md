@@ -5,10 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Nothing yet.
+- Support grid column data types `smallint` and `mediumint`
 
 ### Changed
-- Nothing.
+- Bugfix: modules enabled in app/etc/config.php but not installed no longer throw an exception.  
+  Thanks to [Mirko Cesaro](https://github.com/hyva-themes/magento2-hyva-admin/issues/53) for reporting!
+  
+- Bugfix: grid sources with an accessor methods starting with `is` (e.g. `isActive`) no longer always 
+  return `null` if the object also implements magic getters.
 
 ### Removed
 - No removals.
