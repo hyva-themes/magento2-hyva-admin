@@ -8,6 +8,8 @@ class IntDataType implements DataTypeInterface
 {
     public const TYPE_INT = 'int';
 
+    public const INT_TYPES = [self::TYPE_INT, 'tinyint', 'smallint', 'mediumint'];
+
     public function valueToTypeCode($value): ?string
     {
         return is_int($value) || (is_string($value) && preg_match('/^\d+$/', $value))
@@ -17,7 +19,7 @@ class IntDataType implements DataTypeInterface
 
     public function typeToTypeCode(string $type): ?string
     {
-        return $type === self::TYPE_INT
+        return in_array($type, self::INT_TYPES, true)
             ? self::TYPE_INT
             : null;
     }

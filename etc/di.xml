@@ -70,6 +70,9 @@
                 <item name="array" xsi:type="string">Hyva\Admin\Model\DataType\ArrayDataType</item>
                 <item name="bool" xsi:type="string">Hyva\Admin\Model\DataType\BooleanDataType</item>
                 <item name="int" xsi:type="string">Hyva\Admin\Model\DataType\IntDataType</item>
+                <item name="tinyint" xsi:type="string">Hyva\Admin\Model\DataType\IntDataType</item>
+                <item name="smallint" xsi:type="string">Hyva\Admin\Model\DataType\IntDataType</item>
+                <item name="mediumint" xsi:type="string">Hyva\Admin\Model\DataType\IntDataType</item>
                 <item name="scalar_null" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
                 <item name="price" xsi:type="string">Hyva\Admin\Model\DataType\PriceDataType</item>
                 <item name="decimal" xsi:type="string">Hyva\Admin\Model\DataType\ScalarAndNullDataType</item>
