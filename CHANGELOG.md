@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Nothing
+
+### Changed
+- Nothing
+
+### Removed
+- No removals.
+
+## [1.1.16] - 2021-07-01
+### Added
 - Support grid column data types `smallint` and `mediumint`
 
 ### Changed
@@ -13,6 +23,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   
 - Bugfix: grid sources with an accessor methods starting with `is` (e.g. `isActive`) no longer always 
   return `null` if the object also implements magic getters.
+  
+- Bugfix: for ajax grids, grid action URLs with `*` as part of the new path will now resolve to the original route instead of using the ajax route.
+  This closes the issue #56.
+  
+- Use TailwindCSS forms plugin strategy `class`. This will improve compatibility with
+  existing Magento forms. Some modules that relied on the automatic form styles resets might need to be updated.
+  More information can be found at https://github.com/tailwindlabs/tailwindcss-forms#using-classes-instead-of-element-selectors
 
 ### Removed
 - No removals.
