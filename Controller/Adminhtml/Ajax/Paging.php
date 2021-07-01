@@ -42,6 +42,7 @@ class Paging extends Action implements HttpGetActionInterface
     public function execute()
     {
         try {
+            $this->setOrigRoute($this->request);
             $result = [
                 'grid_html' => $this->gridBlockRenderer->renderGrid($this->request->getParam('gridName', '')),
                 'message'   => null,
@@ -56,5 +57,21 @@ class Paging extends Action implements HttpGetActionInterface
         $json->setData($result);
 
         return $json;
+    }
+
+    private function setOrigRoute(RequestInterface $request): void
+    {
+        if ($request instanceof \Magento\Framework\App\Request\Http) {
+            $origRoute = explode('/', $request->getParam('origRoute', ''));
+            if ($origRoute[0] ?? false) {
+                $request->setRouteName($origRoute[0]);
+            }
+            if ($origRoute[1] ?? false) {
+                $request->setControllerName($origRoute[1]);
+            }
+            if ($origRoute[2] ?? false) {
+                $request->setActionName($origRoute[2]);
+            }
+        }
     }
 }
