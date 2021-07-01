@@ -2,9 +2,6 @@
 
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
-use Magento\Framework\HTTP\PhpEnvironment\Request as HttpRequest;
-use Magento\Framework\View\Element\Template;
-use Magento\Framework\View\LayoutInterface;
 use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
@@ -20,7 +17,10 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
 use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\HTTP\PhpEnvironment\Request as HttpRequest;
 use Magento\Framework\UrlInterface as UrlBuilder;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\LayoutInterface;
 
 class Navigation implements NavigationInterface
 {
@@ -227,7 +227,7 @@ class Navigation implements NavigationInterface
     {
         $nonNsQueryParams = filter([
             'ajax'     => $this->isAjaxEnabled() ? '1' : null,
-            'origRoute' => $this->getCurrentRoute(),
+            'origRoute' => $this->getCurrentRoute($this->request),
             'gridName' => $this->isAjaxEnabled() ? $this->gridName : null,
         ]);
         return $this->buildUrl($route, $params, $nonNsQueryParams);
@@ -510,10 +510,16 @@ class Navigation implements NavigationInterface
         return $renderer->toHtml();
     }
 
-    private function getCurrentRoute(): string
+    private function getCurrentRoute(RequestInterface $request): string
     {
-        return ($this->request instanceof HttpRequest ? $this->request->getRouteName() : '') . '/' .
-            $this->request->getControllerName() . '/' .
-            $this->request->getActionName();
+        return $request instanceof HttpRequest
+            ? $this->buildCurrentRoute($request)
+            : '';
+
+    }
+
+    private function buildCurrentRoute(HttpRequest $request): string
+    {
+        return $request->getRouteName() . '/' . $request->getControllerName() . '/' . $request->getActionName();
     }
 }
