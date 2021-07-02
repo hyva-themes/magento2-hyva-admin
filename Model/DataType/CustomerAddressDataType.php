@@ -7,6 +7,7 @@ use Magento\Customer\Api\Data\AddressInterface;
 
 use Magento\Customer\Model\Address\AddressModelInterface;
 use function array_filter as filter;
+use function array_map as map;
 
 class CustomerAddressDataType implements DataTypeInterface
 {
@@ -66,6 +67,6 @@ class CustomerAddressDataType implements DataTypeInterface
             $value->getPostcode(),
             $value->getCountryId(),
         ];
-        return implode(', ', filter($parts));
+        return implode(', ', filter(map('trim', $parts)));
     }
 }
