@@ -173,8 +173,14 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         }
 
         if (is_subclass_of($collection, AbstractEavCollection::class)) {
+            /**
+             * Todo: fix filtering joined attributes
+             */
             $this->eavCollectionProcessor->process($searchCriteria, $collection);
         } else {
+            /**
+             * Todo: map aliases to real field names in the filter conditions.
+             */
             $this->defaultCollectionProcessor->process($searchCriteria, $collection);
         }
 

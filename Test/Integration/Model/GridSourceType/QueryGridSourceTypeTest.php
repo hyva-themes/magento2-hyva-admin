@@ -421,4 +421,9 @@ class QueryGridSourceTypeTest extends TestCase
         $this->assertSame(2, $sut->extractTotalRowCount($result));
         $this->assertSame([['a' => '2', 'b' => '2']], $this->unboxGridData($result));
     }
+
+    public function testFiltersJoinedFields(): void
+    {
+        $this->markTestIncomplete('TODO implement test. Not sure if problem. See issue #55 regarding db collections');
+    }
 }

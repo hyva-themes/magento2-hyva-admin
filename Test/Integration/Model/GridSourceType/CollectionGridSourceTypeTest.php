@@ -12,8 +12,10 @@ use Hyva\Admin\Model\GridSource\AbstractGridSourceProcessor;
 use Hyva\Admin\Model\GridSourceType\CollectionGridSourceType;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Cms\Model\ResourceModel\Block\Collection as CmsBlockCollection;
 use Magento\Cms\Model\ResourceModel\Page\Collection as CmsPageCollection;
 use Magento\Framework\Api\SearchCriteria;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Data\Collection\AbstractDb as AbstractDbCollection;
@@ -327,5 +329,88 @@ class CollectionGridSourceTypeTest extends TestCase
         $this->assertContains('test_field', $columnKeys); // joined field
         $this->assertContains('sku', $columnKeys); // entity table attribute
         $this->assertContains('color', $columnKeys); // eav attribute
+    }
+
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Catalog/_files/products_list.php
+     */
+    public function testFilterJoinedAttributeOnEavCollection(): void
+    {
+        $this->markTestIncomplete('UNRESOLVED: Join real columns to EAV collection select instance');
+        $processor = new class() extends AbstractGridSourceProcessor implements HyvaGridCollectionProcessorInterface {
+
+            /**
+             * @param ProductCollection $source
+             * @param string $gridName
+             */
+            public function afterInitSelect(AbstractDbCollection $source, string $gridName): void
+            {
+                $source->joinField(
+                    'test_field',
+                    'catalog_category_product',
+                    'product_id',
+                    'e.entity_id = test_field'
+                );
+            }
+        };
+
+        $args = [
+            'gridName'            => 'test',
+            'processors'          => [$processor],
+            'sourceConfiguration' => ['collection' => ProductCollection::class],
+        ];
+        /** @var CollectionGridSourceType $sut */
+        $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
+
+        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
+        $searchCriteriaBuilder = ObjectManager::getInstance()->get(SearchCriteriaBuilder::class);
+        $searchCriteriaBuilder->addFilter('test_field', '1');
+
+        $rawGridData = $sut->fetchData($searchCriteriaBuilder->create());
+        $records = $sut->extractRecords($rawGridData);
+        $this->assertGreaterThan(0, count($records));
+    }
+
+    /**
+     * @magentoDataFixture Magento/Cms/_files/block.php
+     * @magentoDataFixture Magento/Cms/_files/blocks.php
+     */
+    public function testFilterJoinedFieldOnFlatTableCollection(): void
+    {
+        $this->markTestIncomplete('UNRESOLVED: Filter on joined flat table fields');
+        $processor = new class() extends AbstractGridSourceProcessor implements HyvaGridCollectionProcessorInterface {
+
+            /**
+             * @param CmsBlockCollection $source
+             * @param string $gridName
+             */
+            public function afterInitSelect(AbstractDbCollection $source, string $gridName): void
+            {
+                $select = $source->getSelect();
+                // add field from joined table
+                $source->getSelect()->joinLeft(
+                    'cms_block_store',
+                    'main_table.block_id = cms_block_store.block_id',
+                    ['test_field' => 'cms_block_store.store_id']
+                );
+            }
+        };
+
+        $args = [
+            'gridName'            => 'test',
+            'processors'          => [$processor],
+            'sourceConfiguration' => ['collection' => CmsBlockCollection::class],
+        ];
+        /** @var CollectionGridSourceType $sut */
+        $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
+
+        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
+        $searchCriteriaBuilder = ObjectManager::getInstance()->get(SearchCriteriaBuilder::class);
+        $searchCriteriaBuilder->addFilter('test_field', '1');
+
+        $rawGridData = $sut->fetchData($searchCriteriaBuilder->create());
+        $records = $sut->extractRecords($rawGridData);
+        $this->assertGreaterThan(0, count($records));
     }
 }
