@@ -11,4 +11,4 @@ The default sort order can be configured in the `<navigation><sorting/></navigat
 
 Users can change the sort order by clicking on the column titles. Clicking on a title multiple times reverses the sort order.
 
-For more detailed information about which columns are sortable and how sorting works, please refer to the **Sorting Columns** documentation in the deep docs.
+For more detailed information about which columns are sortable and how sorting works, please refer to the [Sorting Columns](../design-docs/sorting-columns.md) documentation in the design docs.

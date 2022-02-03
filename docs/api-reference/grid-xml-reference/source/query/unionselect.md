@@ -10,4 +10,4 @@ The specified select will be combined with the primary select configuration in a
 
 The type of the union select (`UNION DISTINCT` or `UNION ALL`) can be set with the `unionSelectType` attribute on the `<query>` element. If no unionSelectType is configured, the default `UNION ALL` is used.
 
-Please refer to the ***grid > source > query > select*** documentation for more information on the allowed children elements.
+Please refer to the [grid > source > query > select](select/index.md) documentation for more information on the allowed children elements.

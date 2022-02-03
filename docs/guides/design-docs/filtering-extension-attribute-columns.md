@@ -2,7 +2,7 @@
 
 By default no columns have filters.
 
-To enable filtering for a column, add a **grid > navigation > filters > filter** element to the grid definition.
+To enable filtering for a column, add a [grid > navigation > filters > filter](../../api-reference/grid-xml-reference/navigation/filters/index.md) element to the grid definition.
 
 The type of filter depends on the column type.
 

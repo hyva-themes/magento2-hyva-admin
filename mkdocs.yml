@@ -82,76 +82,76 @@ nav:
             -   'Grid XML Reference':
                     -   'Overview': 'api-reference/grid-xml-reference/index.md'
                     -   'grid > source':
-                            -   'Overview': 'api-reference/grid-xml-reference/grid-source/index.md'
+                            -   'Overview': 'api-reference/grid-xml-reference/source/index.md'
                             -   'grid > source > processors':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-processors/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-processors/grid-source-processors-processor.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/source/processors/index.md'
+                                    - 'api-reference/grid-xml-reference/source/processors/processor.md'
                             -   'grid > source > query':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-query/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-unionselect.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/source/query/index.md'
+                                    - 'api-reference/grid-xml-reference/source/query/unionselect.md'
                                     -   'grid > source > query > select':
-                                            -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/index.md'
-                                            - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-groupby.md'
+                                            -   'Overview': 'api-reference/grid-xml-reference/source/query/select/index.md'
+                                            - 'api-reference/grid-xml-reference/source/query/select/groupby.md'
                                             -   'grid > source > query > select > join':
-                                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-join/index.md'
-                                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-join/grid-source-query-select-join-columns.md'
-                                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-join/grid-source-query-select-join-on.md'
+                                                    -   'Overview': 'api-reference/grid-xml-reference/source/query/select/join/index.md'
+                                                    - 'api-reference/grid-xml-reference/source/query/select/join/columns.md'
+                                                    - 'api-reference/grid-xml-reference/source/query/select/join/on.md'
                                             -   'grid > source > query > select > columns':
-                                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-columns/index.md'
-                                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-columns/grid-source-query-select-columns-expression.md'
-                                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-columns/grid-source-query-select-columns-column.md'
-                                            - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-from.md'
-                            - 'api-reference/grid-xml-reference/grid-source/grid-source-repositorylistmethod.md'
-                            - 'api-reference/grid-xml-reference/grid-source/grid-source-arrayprovider.md'
-                            - 'api-reference/grid-xml-reference/grid-source/grid-source-collection.md'
+                                                    -   'Overview': 'api-reference/grid-xml-reference/source/query/select/columns/index.md'
+                                                    - 'api-reference/grid-xml-reference/source/query/select/columns/expression.md'
+                                                    - 'api-reference/grid-xml-reference/source/query/select/columns/column.md'
+                                            - 'api-reference/grid-xml-reference/source/query/select/from.md'
+                            - 'api-reference/grid-xml-reference/source/repositorylistmethod.md'
+                            - 'api-reference/grid-xml-reference/source/arrayprovider.md'
+                            - 'api-reference/grid-xml-reference/source/collection.md'
                             -   'grid > source > defaultSearchCriteriaBindings':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-defaultsearchcriteriabindings/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-defaultsearchcriteriabindings/grid-source-defaultsearchcriteriabindings-field.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/source/defaultsearchcriteriabindings/index.md'
+                                    - 'api-reference/grid-xml-reference/source/defaultsearchcriteriabindings/field.md'
                     -   'grid > columns':
-                            -   'Overview': 'api-reference/grid-xml-reference/grid-columns/index.md'
+                            -   'Overview': 'api-reference/grid-xml-reference/columns/index.md'
                             -   'grid > columns > include':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-columns/grid-columns-include/index.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/columns/include/index.md'
                                     -   'grid > columns > include > column':
-                                            -   'Overview': 'api-reference/grid-xml-reference/grid-columns/grid-columns-include/grid-columns-include-column/index.md'
-                                            - 'api-reference/grid-xml-reference/grid-columns/grid-columns-include/grid-columns-include-column/grid-columns-include-column-option.md'
+                                            -   'Overview': 'api-reference/grid-xml-reference/columns/include/column/index.md'
+                                            - 'api-reference/grid-xml-reference/columns/include/column/option.md'
                             -   'grid > columns > exclude':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-columns/grid-columns-exclude/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-columns/grid-columns-exclude/grid-columns-exclude-column.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/columns/exclude/index.md'
+                                    - 'api-reference/grid-xml-reference/columns/exclude/column.md'
                     -   'grid > actions':
-                            -   'Overview': 'api-reference/grid-xml-reference/grid-actions/index.md'
+                            -   'Overview': 'api-reference/grid-xml-reference/actions/index.md'
                             -   'grid > actions > action':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-actions/grid-actions-action/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-actions/grid-actions-action/grid-actions-action-event.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/actions/action/index.md'
+                                    - 'api-reference/grid-xml-reference/actions/action/event.md'
                     -   'grid > massActions':
-                            -   'Overview': 'api-reference/grid-xml-reference/grid-massactions/index.md'
-                            - 'api-reference/grid-xml-reference/grid-massactions/grid-massactions-action.md'
+                            -   'Overview': 'api-reference/grid-xml-reference/massactions/index.md'
+                            - 'api-reference/grid-xml-reference/massactions/action.md'
                     -   'grid > entityConfig':
-                            -   'Overview': 'api-reference/grid-xml-reference/grid-entityconfig/index.md'
+                            -   'Overview': 'api-reference/grid-xml-reference/entityconfig/index.md'
                             -   'grid > entityConfig > label':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-entityconfig/grid-entityconfig-label/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-entityconfig/grid-entityconfig-label/grid-entityconfig-label-plural.md'
-                                    - 'api-reference/grid-xml-reference/grid-entityconfig/grid-entityconfig-label/grid-entityconfig-label-singluar.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/entityconfig/label/index.md'
+                                    - 'api-reference/grid-xml-reference/entityconfig/label/plural.md'
+                                    - 'api-reference/grid-xml-reference/entityconfig/label/singluar.md'
                     -   'grid > navigation':
-                            -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/index.md'
+                            -   'Overview': 'api-reference/grid-xml-reference/navigation/index.md'
                             -   'grid > navigation > exports':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-exports/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-exports/grid-navigation-exports-export.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/navigation/exports/index.md'
+                                    - 'api-reference/grid-xml-reference/navigation/exports/export.md'
                             -   'grid > navigation > pager':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-pager/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-pager/grid-navigation-pager-defaultpagesize.md'
-                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-pager/grid-navigation-pager-pagesizes.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/navigation/pager/index.md'
+                                    - 'api-reference/grid-xml-reference/navigation/pager/defaultpagesize.md'
+                                    - 'api-reference/grid-xml-reference/navigation/pager/pagesizes.md'
                             -   'grid > navigation > sorting':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-sorting/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-sorting/grid-navigation-sorting-defaultsortbycolumn.md'
-                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-sorting/grid-navigation-sorting-defaultsortdirection.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/navigation/sorting/index.md'
+                                    - 'api-reference/grid-xml-reference/navigation/sorting/defaultsortbycolumn.md'
+                                    - 'api-reference/grid-xml-reference/navigation/sorting/defaultsortdirection.md'
                             -   'grid > navigation > filters':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-filters/index.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/navigation/filters/index.md'
                                     -   'grid > navigation > filters > filter':
-                                            -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-filters/grid-navigation-filters-filter/index.md'
-                                            - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-filters/grid-navigation-filters-filter/grid-navigation-filters-filter-option.md'
+                                            -   'Overview': 'api-reference/grid-xml-reference/navigation/filters/filter/index.md'
+                                            - 'api-reference/grid-xml-reference/navigation/filters/filter/option.md'
                             -   'grid > navigation > buttons':
-                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-buttons/index.md'
-                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-buttons/grid-navigation-buttons-button.md'
+                                    -   'Overview': 'api-reference/grid-xml-reference/navigation/buttons/index.md'
+                                    - 'api-reference/grid-xml-reference/navigation/buttons/button.md'
             -   'Event Reference':
                     -   'Overview': 'api-reference/event-reference/index.md'
                     - 'api-reference/event-reference/grid-query-before-event.md'

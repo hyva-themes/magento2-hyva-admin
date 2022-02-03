@@ -38,7 +38,7 @@ For custom types an export class needs to be specified. The custom export class 
 
 `public function createFileToDownload()`.
 
-More information about custom export types can be found in the PHP API reference at **Grid AbstractExportType**.
+More information about custom export types can be found in the PHP API reference at [Grid AbstractExportType](../../api-reference/php-classes-and-interfaces/grid-abstractexporttype.md).
 
-More information about the export XML configuration can be found in the XML API reference at **grid > navigation > exports**.
+More information about the export XML configuration can be found in the XML API reference at [grid > navigation > exports](../../api-reference/grid-xml-reference/navigation/exports/index.md).
 

@@ -13,4 +13,4 @@ The mass action can be selected with a select input above the grid.
 
 When one or more mass actions are configured, a column with a checkbox is rendered on the left side of the grid for each row.
 
-For more details on mass actions and available attributes, please check out the **massActions** Grid XML api reference.
+For more details on mass actions and available attributes, please check out the [massActions](../../api-reference/grid-xml-reference/massactions/index.md) Grid XML api reference.

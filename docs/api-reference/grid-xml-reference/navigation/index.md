@@ -26,12 +26,13 @@ There is one attribute, `useAjax`.
 
 By default, grids use Ajax navigation. The `useAjax` attribute can be used to disable Ajax navigation for a grid.
 
-**Note**: if a grid uses a column with a cell renderer via `rendererBlockName` Ajax paging will be automatically disabled for the grid, too, because the layout XML that defines the renderer block will not be loaded during Ajax navigation request processing.
+!!! info
+    If a grid uses a column with a cell renderer via `rendererBlockName` Ajax paging will be automatically disabled for the grid, too, because the layout XML that defines the renderer block will not be loaded during Ajax navigation request processing.
 
-For example:
+    For example:
 
-```html
-<column name="activity" rendererBlockName="myRendererBlock"/>
-```
-
-A column like this will disable Ajax navigation.
+    ```html
+    <column name="activity" rendererBlockName="myRendererBlock"/>
+    ```
+    
+    A column like this will disable Ajax navigation.

@@ -8,7 +8,7 @@ This allows customizing grids that are declared in other modules.
 
 The API reference documents are sorted in alphabetical order.
 
-If you want to read them all that’s fine, but if you only want to dip your toes into Hyva_Admin grids, I suggest you start with the **grid > source** configuration, followed by the **grid > columns > includes** config.
+If you want to read them all that’s fine, but if you only want to dip your toes into Hyva_Admin grids, I suggest you start with the [grid > source](source/index.md) configuration, followed by the [grid > columns > includes](columns/include/index.md) config.
 
 Everything else can then be loaded into your brain when it is needed.
 

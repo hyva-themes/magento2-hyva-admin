@@ -38,6 +38,6 @@ In many cases the default will be good enough and no further configuration beyon
 
 Grid row actions, mass actions, paging and filtering can also be configured as needed.
 
-If this quick start was a bit too terse, check out the **walkthrough**.
+If this quick start was a bit too terse, check out the [walkthrough](../hyva-admin-grid-walkthrough/prerequisites-for-a-grid.md).
 
 Also, maybe have a look at the Examples documentation and the Grid XML reference for more information.

@@ -25,4 +25,4 @@ To make grid rows clickable, an action can be assigned as the default action by 
 </columns>
 ```
 
-For more information on the available attributes please head over to the **action** element Grid XML API reference.
+For more information on the available attributes please head over to the [action](../../api-reference/grid-xml-reference/actions/index.md) element Grid XML API reference.
