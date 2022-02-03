@@ -75,7 +75,7 @@ It should work with pretty much any Magento 2 version, as long as the `$escaper`
 
 ## Quickstart
 
-**Note:** Both an overview with a step by step walkthrough and an API reference can be found in the [doc/](./doc/) folder.
+**Note:** Both an overview with a step by step walkthrough and an API reference can be found in the [docs](https://hyva-themes.github.io/magento2-hyva-admin/) folder.
 
 Once installed, grids can be added to any admin page by adding a bit of layout XML and a grid configuration file.  
 The layout XML has to contain two things:
@@ -95,7 +95,7 @@ In many cases the default will be good enough and no further configuration beyon
 
 Grid row actions, mass actions, paging and filtering can also be configured as needed.
 
-More information can be found in the [Hyva Admin documentation](./doc/).
+More information can be found in the [Hyva Admin documentation](https://hyva-themes.github.io/magento2-hyva-admin/).
 
 
 ## Stability
