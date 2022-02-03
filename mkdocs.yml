@@ -4,147 +4,156 @@ copyright: Copyright &copy; Vinai Kopp 2021-present. All rights reserved.
 repo_url: https://github.com/hyva-themes/magento2-hyva-admin
 use_directory_urls: false
 theme:
-  name: material
-  favicon: images/hyva-logo-192x192.png
-  logo: images/hyva-logo-192x192.png
-  palette:
-    primary: indigo
+    name: material
+    favicon: images/hyva-logo-192x192.png
+    logo: images/hyva-logo-192x192.png
+    palette:
+        -   media: '(prefers-color-scheme: light)'
+            scheme: default
+            toggle:
+                icon: material/toggle-switch-off-outline
+                name: Switch to dark mode
+        -   media: '(prefers-color-scheme: dark)'
+            scheme: slate
+            toggle:
+                icon: material/toggle-switch
+                name: Switch to light mode
+
 extra:
-  generator: true
+    generator: true
+    social:
+        -   icon: fontawesome/brands/twitter
+            link: https://twitter.com/hyva_io
+
 markdown_extensions:
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-  - admonition
-  - pymdownx.details
+    -   pymdownx.highlight:
+            anchor_linenums: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences
+    - admonition
+    - pymdownx.details
 nav:
-- 'Overview': 'index.md'
-- '1. Overview':
-  - 'Overview': '1-overview/index.md'
-  - '1-overview/1-installation.md'
-  - '2. Quickstart':
-    - 'Overview': '1-overview/2-quickstart/index.md'
-    - 'Examples':
-      - 'Overview': '1-overview/2-quickstart/examples/index.md'
-      - '1-overview/2-quickstart/examples/1-adding-a-hyvagrid-block-in-layout-xml.md'
-      - '1-overview/2-quickstart/examples/2-array-grid-provider-configuration.md'
-      - '1-overview/2-quickstart/examples/3-array-grid-data-provider.md'
-      - '1-overview/2-quickstart/examples/4-repository-getlist-grid-data-provider.md'
-  - '3. Hyva Admin Grid Walkthrough':
-    - 'Overview': '1-overview/3-hyva-admin-grid-walkthrough/index.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/01-prerequisites-for-a-grid.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/02-declaring-the-grid-block.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/03-the-grid-xml-file.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/04-0-setting-a-grid-data-source.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/04-1-declaring-source-search-bindings.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/04-2-using-grid-source-processors.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/05-configuring-columns.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/06-configuring-row-actions.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/07-configuring-mass-actions.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/08-pagination.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/09-default-sort-order.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/10-filtering.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/11-buttons.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/12-exports.md'
-    - '1-overview/3-hyva-admin-grid-walkthrough/13-entity-config.md'
-  - '5. Deep Docs':
-    - 'Overview': '1-overview/5-deep-docs/index.md'
-    - '1-overview/5-deep-docs/1-rationale.md'
-    - '1-overview/5-deep-docs/2-design-principles.md'
-    - '1-overview/5-deep-docs/10-sorting-columns.md'
-    - '1-overview/5-deep-docs/20-filtering-extension-attribute-columns.md'
-    - '1-overview/5-deep-docs/60-hyva-admin-forms-wip.md'
-- '2. API Reference':
-  - 'Overview': '2-api-reference/index.md'
-  - 'PHP Classes and Interfaces':
-    - 'Overview': '2-api-reference/php-classes-and-interfaces/index.md'
-    - '2-api-reference/php-classes-and-interfaces/hyvagridcollectionprocessorinterface.md'
-    - '2-api-reference/php-classes-and-interfaces/hyvagridsourceprocessorinterface.md'
-    - '2-api-reference/php-classes-and-interfaces/abstractgridsourceprocessor.md'
-    - '2-api-reference/php-classes-and-interfaces/grid-abstractexporttype.md'
-    - '2-api-reference/php-classes-and-interfaces/datatypeguesserinterface.md'
-    - '2-api-reference/php-classes-and-interfaces/datatypeinterface.md'
-    - '2-api-reference/php-classes-and-interfaces/datatypevaluetostringconverterinterface.md'
-    - '2-api-reference/php-classes-and-interfaces/hyvagridarrayproviderinterface.md'
-    - '2-api-reference/php-classes-and-interfaces/hyvagridfiltertypeinterface.md'
-  - 'Grid XML Reference':
-    - 'Overview': '2-api-reference/grid-xml-reference/index.md'
-    - 'grid > source':
-      - 'Overview': '2-api-reference/grid-xml-reference/grid-source/index.md'
-      - 'grid > source > processors':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-source/grid-source-processors/index.md'
-        - '2-api-reference/grid-xml-reference/grid-source/grid-source-processors/grid-source-processors-processor.md'
-      - 'grid > source > query':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-source/grid-source-query/index.md'
-        - '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-unionselect.md'
-        - 'grid > source > query > select':
-          - 'Overview': '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/index.md'
-          - '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-groupby.md'
-          - 'grid > source > query > select > join':
-            - 'Overview': '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-join/index.md'
-            - '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-join/grid-source-query-select-join-columns.md'
-            - '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-join/grid-source-query-select-join-on.md'
-          - 'grid > source > query > select > columns':
-            - 'Overview': '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-columns/index.md'
-            - '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-columns/grid-source-query-select-columns-expression.md'
-            - '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-columns/grid-source-query-select-columns-column.md'
-          - '2-api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-from.md'
-      - '2-api-reference/grid-xml-reference/grid-source/grid-source-repositorylistmethod.md'
-      - '2-api-reference/grid-xml-reference/grid-source/grid-source-arrayprovider.md'
-      - '2-api-reference/grid-xml-reference/grid-source/grid-source-collection.md'
-      - 'grid > source > defaultSearchCriteriaBindings':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-source/grid-source-defaultsearchcriteriabindings/index.md'
-        - '2-api-reference/grid-xml-reference/grid-source/grid-source-defaultsearchcriteriabindings/grid-source-defaultsearchcriteriabindings-field.md'
-    - 'grid > columns':
-      - 'Overview': '2-api-reference/grid-xml-reference/grid-columns/index.md'
-      - 'grid > columns > include':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-columns/grid-columns-include/index.md'
-        - 'grid > columns > include > column':
-          - 'Overview': '2-api-reference/grid-xml-reference/grid-columns/grid-columns-include/grid-columns-include-column/index.md'
-          - '2-api-reference/grid-xml-reference/grid-columns/grid-columns-include/grid-columns-include-column/grid-columns-include-column-option.md'
-      - 'grid > columns > exclude':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-columns/grid-columns-exclude/index.md'
-        - '2-api-reference/grid-xml-reference/grid-columns/grid-columns-exclude/grid-columns-exclude-column.md'
-    - 'grid > actions':
-      - 'Overview': '2-api-reference/grid-xml-reference/grid-actions/index.md'
-      - 'grid > actions > action':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-actions/grid-actions-action/index.md'
-        - '2-api-reference/grid-xml-reference/grid-actions/grid-actions-action/grid-actions-action-event.md'
-    - 'grid > massActions':
-      - 'Overview': '2-api-reference/grid-xml-reference/grid-massactions/index.md'
-      - '2-api-reference/grid-xml-reference/grid-massactions/grid-massactions-action.md'
-    - 'grid > entityConfig':
-      - 'Overview': '2-api-reference/grid-xml-reference/grid-entityconfig/index.md'
-      - 'grid > entityConfig > label':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-entityconfig/grid-entityconfig-label/index.md'
-        - '2-api-reference/grid-xml-reference/grid-entityconfig/grid-entityconfig-label/grid-entityconfig-label-plural.md'
-        - '2-api-reference/grid-xml-reference/grid-entityconfig/grid-entityconfig-label/grid-entityconfig-label-singluar.md'
-    - 'grid > navigation':
-      - 'Overview': '2-api-reference/grid-xml-reference/grid-navigation/index.md'
-      - 'grid > navigation > exports':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-exports/index.md'
-        - '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-exports/grid-navigation-exports-export.md'
-      - 'grid > navigation > pager':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-pager/index.md'
-        - '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-pager/grid-navigation-pager-defaultpagesize.md'
-        - '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-pager/grid-navigation-pager-pagesizes.md'
-      - 'grid > navigation > sorting':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-sorting/index.md'
-        - '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-sorting/grid-navigation-sorting-defaultsortbycolumn.md'
-        - '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-sorting/grid-navigation-sorting-defaultsortdirection.md'
-      - 'grid > navigation > filters':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-filters/index.md'
-        - 'grid > navigation > filters > filter':
-          - 'Overview': '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-filters/grid-navigation-filters-filter/index.md'
-          - '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-filters/grid-navigation-filters-filter/grid-navigation-filters-filter-option.md'
-      - 'grid > navigation > buttons':
-        - 'Overview': '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-buttons/index.md'
-        - '2-api-reference/grid-xml-reference/grid-navigation/grid-navigation-buttons/grid-navigation-buttons-button.md'
-  - 'Event Reference':
-    - 'Overview': '2-api-reference/event-reference/index.md'
-    - '2-api-reference/event-reference/grid-query-before-event.md'
-    - '2-api-reference/event-reference/grid-source-prefetch-events.md'
-    - '2-api-reference/event-reference/grid-column-definition-build-after-event.md'
-    - 'index.md'
+    -   'Welcome': 'index.md'
+    -   '1. Guides':
+            - 'guides/installation.md'
+            -   'Quickstart':
+                    -   'Intro': 'guides/quickstart/index.md'
+                    -   'Examples':
+                            - 'guides/quickstart/examples/adding-a-hyvagrid-block-in-layout-xml.md'
+                            - 'guides/quickstart/examples/array-grid-provider-configuration.md'
+                            - 'guides/quickstart/examples/array-grid-data-provider.md'
+                            - 'guides/quickstart/examples/repository-getlist-grid-data-provider.md'
+            -   'Admin Grid Walkthrough':
+                    - 'guides/hyva-admin-grid-walkthrough/prerequisites-for-a-grid.md'
+                    - 'guides/hyva-admin-grid-walkthrough/declaring-the-grid-block.md'
+                    - 'guides/hyva-admin-grid-walkthrough/the-grid-xml-file.md'
+                    - 'guides/hyva-admin-grid-walkthrough/setting-a-grid-data-source.md'
+                    - 'guides/hyva-admin-grid-walkthrough/declaring-source-search-bindings.md'
+                    - 'guides/hyva-admin-grid-walkthrough/using-grid-source-processors.md'
+                    - 'guides/hyva-admin-grid-walkthrough/configuring-columns.md'
+                    - 'guides/hyva-admin-grid-walkthrough/configuring-row-actions.md'
+                    - 'guides/hyva-admin-grid-walkthrough/configuring-mass-actions.md'
+                    - 'guides/hyva-admin-grid-walkthrough/pagination.md'
+                    - 'guides/hyva-admin-grid-walkthrough/default-sort-order.md'
+                    - 'guides/hyva-admin-grid-walkthrough/filtering.md'
+                    - 'guides/hyva-admin-grid-walkthrough/buttons.md'
+                    - 'guides/hyva-admin-grid-walkthrough/exports.md'
+                    - 'guides/hyva-admin-grid-walkthrough/entity-config.md'
+            -   'Design Docs':
+                    -   'Overview': 'guides/design-docs/index.md'
+                    - 'guides/design-docs/rationale.md'
+                    - 'guides/design-docs/design-principles.md'
+                    - 'guides/design-docs/sorting-columns.md'
+                    - 'guides/design-docs/filtering-extension-attribute-columns.md'
+                    - 'guides/design-docs/hyva-admin-forms-wip.md'
+    -   '2. API Reference':
+            -   'PHP Classes and Interfaces':
+                    -   'Overview': 'api-reference/php-classes-and-interfaces/index.md'
+                    - 'api-reference/php-classes-and-interfaces/hyvagridcollectionprocessorinterface.md'
+                    - 'api-reference/php-classes-and-interfaces/hyvagridsourceprocessorinterface.md'
+                    - 'api-reference/php-classes-and-interfaces/abstractgridsourceprocessor.md'
+                    - 'api-reference/php-classes-and-interfaces/grid-abstractexporttype.md'
+                    - 'api-reference/php-classes-and-interfaces/datatypeguesserinterface.md'
+                    - 'api-reference/php-classes-and-interfaces/datatypeinterface.md'
+                    - 'api-reference/php-classes-and-interfaces/datatypevaluetostringconverterinterface.md'
+                    - 'api-reference/php-classes-and-interfaces/hyvagridarrayproviderinterface.md'
+                    - 'api-reference/php-classes-and-interfaces/hyvagridfiltertypeinterface.md'
+            -   'Grid XML Reference':
+                    -   'Overview': 'api-reference/grid-xml-reference/index.md'
+                    -   'grid > source':
+                            -   'Overview': 'api-reference/grid-xml-reference/grid-source/index.md'
+                            -   'grid > source > processors':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-processors/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-processors/grid-source-processors-processor.md'
+                            -   'grid > source > query':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-query/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-unionselect.md'
+                                    -   'grid > source > query > select':
+                                            -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/index.md'
+                                            - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-groupby.md'
+                                            -   'grid > source > query > select > join':
+                                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-join/index.md'
+                                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-join/grid-source-query-select-join-columns.md'
+                                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-join/grid-source-query-select-join-on.md'
+                                            -   'grid > source > query > select > columns':
+                                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-columns/index.md'
+                                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-columns/grid-source-query-select-columns-expression.md'
+                                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-columns/grid-source-query-select-columns-column.md'
+                                            - 'api-reference/grid-xml-reference/grid-source/grid-source-query/grid-source-query-select/grid-source-query-select-from.md'
+                            - 'api-reference/grid-xml-reference/grid-source/grid-source-repositorylistmethod.md'
+                            - 'api-reference/grid-xml-reference/grid-source/grid-source-arrayprovider.md'
+                            - 'api-reference/grid-xml-reference/grid-source/grid-source-collection.md'
+                            -   'grid > source > defaultSearchCriteriaBindings':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-source/grid-source-defaultsearchcriteriabindings/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-source/grid-source-defaultsearchcriteriabindings/grid-source-defaultsearchcriteriabindings-field.md'
+                    -   'grid > columns':
+                            -   'Overview': 'api-reference/grid-xml-reference/grid-columns/index.md'
+                            -   'grid > columns > include':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-columns/grid-columns-include/index.md'
+                                    -   'grid > columns > include > column':
+                                            -   'Overview': 'api-reference/grid-xml-reference/grid-columns/grid-columns-include/grid-columns-include-column/index.md'
+                                            - 'api-reference/grid-xml-reference/grid-columns/grid-columns-include/grid-columns-include-column/grid-columns-include-column-option.md'
+                            -   'grid > columns > exclude':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-columns/grid-columns-exclude/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-columns/grid-columns-exclude/grid-columns-exclude-column.md'
+                    -   'grid > actions':
+                            -   'Overview': 'api-reference/grid-xml-reference/grid-actions/index.md'
+                            -   'grid > actions > action':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-actions/grid-actions-action/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-actions/grid-actions-action/grid-actions-action-event.md'
+                    -   'grid > massActions':
+                            -   'Overview': 'api-reference/grid-xml-reference/grid-massactions/index.md'
+                            - 'api-reference/grid-xml-reference/grid-massactions/grid-massactions-action.md'
+                    -   'grid > entityConfig':
+                            -   'Overview': 'api-reference/grid-xml-reference/grid-entityconfig/index.md'
+                            -   'grid > entityConfig > label':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-entityconfig/grid-entityconfig-label/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-entityconfig/grid-entityconfig-label/grid-entityconfig-label-plural.md'
+                                    - 'api-reference/grid-xml-reference/grid-entityconfig/grid-entityconfig-label/grid-entityconfig-label-singluar.md'
+                    -   'grid > navigation':
+                            -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/index.md'
+                            -   'grid > navigation > exports':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-exports/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-exports/grid-navigation-exports-export.md'
+                            -   'grid > navigation > pager':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-pager/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-pager/grid-navigation-pager-defaultpagesize.md'
+                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-pager/grid-navigation-pager-pagesizes.md'
+                            -   'grid > navigation > sorting':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-sorting/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-sorting/grid-navigation-sorting-defaultsortbycolumn.md'
+                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-sorting/grid-navigation-sorting-defaultsortdirection.md'
+                            -   'grid > navigation > filters':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-filters/index.md'
+                                    -   'grid > navigation > filters > filter':
+                                            -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-filters/grid-navigation-filters-filter/index.md'
+                                            - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-filters/grid-navigation-filters-filter/grid-navigation-filters-filter-option.md'
+                            -   'grid > navigation > buttons':
+                                    -   'Overview': 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-buttons/index.md'
+                                    - 'api-reference/grid-xml-reference/grid-navigation/grid-navigation-buttons/grid-navigation-buttons-button.md'
+            -   'Event Reference':
+                    -   'Overview': 'api-reference/event-reference/index.md'
+                    - 'api-reference/event-reference/grid-query-before-event.md'
+                    - 'api-reference/event-reference/grid-source-prefetch-events.md'
+                    - 'api-reference/event-reference/grid-column-definition-build-after-event.md'
