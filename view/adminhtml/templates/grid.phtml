@@ -67,7 +67,7 @@ $rows       = $grid->getRows();
                         <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>"
                                 class="<?= $massAction->getId() /* refactor: don't use the mass action id as css class*/ ?>"
                                 value="<?= $escaper->escapeUrl($massActionUrl) ?>">
-                            <?= $escaper->escapeHtml($massAction->getLabel()) ?>
+                            <?= $escaper->escapeHtml(__($massAction->getLabel())) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -121,10 +121,9 @@ $rows       = $grid->getRows();
                                     x-ref="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>"
                                     x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>')"
                                     <?php if ($column->isSortable()): ?>
-                                        @click="updateGrid('<?= $escaper->escapeUrl($navigation->getSortByUrl($column->getKey(),
-                                            $newDirection)) ?>')"
+                                        @click="updateGrid('<?= $escaper->escapeUrl($navigation->getSortByUrl($column->getKey(), $newDirection)) ?>')"
                                     <?php endif; ?>>
-                                    <?= $escaper->escapeHtml($column->getLabel()) ?>
+                                    <?= $escaper->escapeHtml(__($column->getLabel())) ?>
                                     <?php if ($isSortedByColumn && $navigation->isSortOrderAscending()): ?>
                                         <span class="absolute right-0 w-6 h-6 my-1 mr-2 align-middle">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -234,7 +233,7 @@ $rows       = $grid->getRows();
                                             dispatchRowEvent($event, "<?= $event->getEventName() ?>", <?= $dataJson ?>)'
                                             <?php endforeach; ?>
                                             >
-                                                <?= $escaper->escapeHtml($action->getLabel()) ?>
+                                                <?= $escaper->escapeHtml(__($action->getLabel())) ?>
                                             </a>
                                         <?php endforeach; ?>
                                     </td>
@@ -279,7 +278,7 @@ $rows       = $grid->getRows();
                 <?php foreach ($grid->getColumnDefinitions() as $column): ?>
                 {
                     'key': 'col-<?= $escaper->escapeJs($column->getKey()) ?>',
-                    'value': '<?= $escaper->escapeHtml($column->getLabel()) ?>'
+                    'value': '<?= $escaper->escapeHtml(__($column->getLabel())) ?>'
                 },
                 <?php endforeach; ?>
             ],
