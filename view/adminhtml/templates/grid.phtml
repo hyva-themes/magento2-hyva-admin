@@ -121,8 +121,7 @@ $rows       = $grid->getRows();
                                     x-ref="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>"
                                     x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>')"
                                     <?php if ($column->isSortable()): ?>
-                                        @click="updateGrid('<?= $escaper->escapeUrl($navigation->getSortByUrl($column->getKey(),
-                                            $newDirection)) ?>')"
+                                        @click="updateGrid('<?= $escaper->escapeUrl($navigation->getSortByUrl($column->getKey(), $newDirection)) ?>')"
                                     <?php endif; ?>>
                                     <?= $escaper->escapeHtml(__($column->getLabel())) ?>
                                     <?php if ($isSortedByColumn && $navigation->isSortOrderAscending()): ?>
@@ -216,7 +215,7 @@ $rows       = $grid->getRows();
                                         $rowActionAttribute ?>
                                         x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()) ?>')"
                                     >
-                                        <?= __($cell->getHtml()) ?>
+                                        <?= $cell->getHtml() ?>
                                     </td>
                                 <?php endforeach; ?>
                                 <?php if ($actions): ?>
