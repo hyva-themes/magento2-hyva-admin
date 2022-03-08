@@ -13,6 +13,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - No removals.
 
+## [1.1.17] - 2022-03-08
+### Added
+- French Translation  
+  Thanks to Frederic Martinez for the [PR](https://github.com/hyva-themes/magento2-hyva-admin/pull/64)!
+
+### Changed
+- Grid Labels are now translated  
+  Thanks to Frederic Martinez for the [PR](https://github.com/hyva-themes/magento2-hyva-admin/pull/63)!
+
+### Removed
+ - Nothing
+
 ## [1.1.16] - 2021-07-01
 ### Added
 - Support grid column data types `smallint` and `mediumint`
