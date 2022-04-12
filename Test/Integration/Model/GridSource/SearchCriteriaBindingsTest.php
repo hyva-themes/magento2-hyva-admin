@@ -299,22 +299,23 @@ class SearchCriteriaBindingsTest extends TestCase
                 'field'    => $field,
                 'method'   => __CLASS__ . '::getTestMethodValue',
                 'param'    => new class() implements \ArrayAccess {
-                    public function offsetExists($offset)
+
+                    public function offsetExists($offset): bool
                     {
                         return $offset === 'prop';
                     }
-
-                    public function offsetGet($offset)
+                    #[\ReturnTypeWillChange]
+                    public function offsetGet($offset) // ArrayAccess::offsetGet() 8.1 return type is `mixed` (the `mixed` type is available since 8.0)
                     {
                         return $offset === 'prop' ? 'ok' : 'not ok';
                     }
 
-                    public function offsetSet($offset, $value)
+                    public function offsetSet($offset, $value): void
                     {
                         // not needed for test
                     }
 
-                    public function offsetUnset($offset)
+                    public function offsetUnset($offset): void
                     {
                         // not needed for test
                     }
