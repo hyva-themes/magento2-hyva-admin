@@ -13,6 +13,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - No removals.
 
+## [1.1.18] - 2022-04-12
+### Added
+
+- Nothing
+
+### Changed
+
+- PHP 8.1 compatibility changes. All changes are backward compatible.
+
+- Dropping PHP 7.3 support
+
+### Removed
+
+- Nothing
+
 ## [1.1.17] - 2022-03-08
 ### Added
 - French Translation  

@@ -27,7 +27,7 @@ Hyva_Admin is a Magento 2 module that offers a new way to create admin grids.
 All existing grids and forms are not affected. They remain unchanged.  
 Hyva_Admin exists to improve the developer experience while creating new grids.
 
-In future, Hyva_Admin will support creating forms, too (this [issue](https://github.com/hyva-themes/magento2-hyva-admin/issues/36) tracks progress).
+In the future, Hyva_Admin will support creating forms, too (this [issue](https://github.com/hyva-themes/magento2-hyva-admin/issues/36) tracks progress).
 
 
 ## Relationship with frontend Hyvä-Themes
@@ -107,7 +107,7 @@ New features will be added in a backward compatible manner.
 ## Contributions
 
 PR's are very welcome.  
-Please submit contributions based on the main branch. Currently the oldest supported PHP version is 7.3.
+Please submit contributions based on the main branch. Currently, the oldest supported PHP version is 7.4.
 
 ## Copyright & License
 
