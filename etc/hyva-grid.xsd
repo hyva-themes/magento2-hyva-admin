@@ -441,7 +441,7 @@
 
     <xs:complexType name="gridProcessorsType">
         <xs:sequence>
-            <xs:element name="processor" minOccurs="0" maxOccurs="1">
+            <xs:element name="processor" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:attribute name="class" type="phpType"/>
                     <xs:attribute name="enabled" type="boolean"/>
