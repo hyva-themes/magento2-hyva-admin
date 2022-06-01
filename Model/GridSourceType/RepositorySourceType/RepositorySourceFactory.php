@@ -52,6 +52,14 @@ class RepositorySourceFactory
         $method = $this->getSourceRepoMethod($sourceConfig);
         $resultType      = $this->reflectionMethodsMap->getMethodReturnType($class, $method);
         $resultItemsType = $this->reflectionMethodsMap->getMethodReturnType($resultType, 'getItems');
+        
+        $resultItemsType = $this->reflectionMethodsMap->getMethodReturnType($resultType, 'getItems');
+        if (strpos($resultItemsType, "\\") === false) {
+            $typeData = explode("\\", $resultType);
+            unset($typeData[count($typeData) - 1]);
+
+            $resultItemsType = join("\\", $typeData) . "\\$resultItemsType";
+        }
 
         return substr($resultItemsType, -2) === '[]'
             ? substr($resultItemsType, 0, -2)
