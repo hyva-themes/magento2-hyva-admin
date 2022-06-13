@@ -51,7 +51,6 @@ class RepositorySourceFactory
         $class  = $this->getSourceRepoClass($sourceConfig);
         $method = $this->getSourceRepoMethod($sourceConfig);
         $resultType      = $this->reflectionMethodsMap->getMethodReturnType($class, $method);
-        $resultItemsType = $this->reflectionMethodsMap->getMethodReturnType($resultType, 'getItems');
         
         $resultItemsType = $this->reflectionMethodsMap->getMethodReturnType($resultType, 'getItems');
         if (strpos($resultItemsType, "\\") === false) {
