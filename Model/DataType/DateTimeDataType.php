@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Model\DataType;
 
 use Hyva\Admin\Api\DataTypeInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Stdlib\DateTime\DateTimeFormatterInterface;
 
 class DateTimeDataType implements DataTypeInterface
@@ -14,9 +15,18 @@ class DateTimeDataType implements DataTypeInterface
      */
     private $dateTimeFormatter;
 
-    public function __construct(DateTimeFormatterInterface $dateTimeFormatter)
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    public function __construct(
+        DateTimeFormatterInterface $dateTimeFormatter,
+        ScopeConfigInterface $scopeConfig
+    )
     {
         $this->dateTimeFormatter = $dateTimeFormatter;
+        $this->scopeConfig = $scopeConfig;
     }
 
     public function valueToTypeCode($value): ?string
@@ -34,7 +44,11 @@ class DateTimeDataType implements DataTypeInterface
     public function toString($value): ?string
     {
         return $this->valueToTypeCode($value)
-            ? $this->dateTimeFormatter->formatObject(new \DateTimeImmutable($value))
+            ? $this->dateTimeFormatter->formatObject(
+                (new \DateTimeImmutable($value))->setTimezone(
+                    new \DateTimeZone($this->scopeConfig->getValue('general/locale/timezone'))
+                )
+            )
             : null;
     }
 
