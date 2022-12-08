@@ -2,6 +2,7 @@
 
 namespace Hyva\Admin\Model\GridFilter;
 
+use Hyva\Admin\Model\DataType\DateDataType;
 use Hyva\Admin\Model\DataType\DateTimeDataType;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
@@ -23,7 +24,11 @@ class DateRangeFilter implements ColumnDefinitionMatchingFilterInterface
 
     public function isMatchingFilter(GridFilterInterface $filter): bool
     {
-        return $filter->getColumnDefinition()->getType() === DateTimeDataType::TYPE_DATETIME;
+        return in_array(
+            $filter->getColumnDefinition()->getType(),
+            [DateTimeDataType::TYPE_DATETIME, DateDataType::TYPE_DATE],
+            true
+        );
     }
 
     public function getRenderer(ColumnDefinitionInterface $columnDefinition): Template
