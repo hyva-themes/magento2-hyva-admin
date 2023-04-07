@@ -1,24 +1,24 @@
 # Grid AbstractExportType
 
-`HyvaAdminModelGridExportTypeAbstractExportType` is the base class for all grid export format implementations.
+`Hyva\Admin\Model\GridExport\Type\AbstractExportType` is the base class for all grid export format implementations.
 
 At the time of writing, there are three built in export types:
 
-* CSV - `HyvaAdminModelGridExportTypeCsv`
-* XML - `HyvaAdminModelGridExportTypeXml`
-* XLSX - `HyvaAdminModelGridExportTypeXlsx`
+* CSV - `Hyva\Admin\Model\GridExport\Type\Csv`
+* XML - `Hyva\Admin\Model\GridExport\Type\Xml`
+* XLSX - `Hyva\Admin\Model\GridExport\Type\Xlsx`
 
 Custom export types can be created by extending the `AbstractExportType` and setting the `class` attribute on the grid XML export configuration.
 
 Alternatively, the mapping from export type code to class can be extended via `di.xml` like the default types.
 
 ```html
-<type name="HyvaAdminModelGridExportGridExportTypeLocator">
+<type name="Hyva\Admin\Model\GridExport\GridExportTypeLocator">
     <arguments>
         <argument name="gridExportTypes" xsi:type="array">
-            <item name="csv" xsi:type="string">HyvaAdminModelGridExportTypeCsv</item>
-            <item name="xml" xsi:type="string">HyvaAdminModelGridExportTypeXml</item>
-            <item name="xlsx" xsi:type="string">HyvaAdminModelGridExportTypeXlsx</item>
+            <item name="csv" xsi:type="string">Hyva\Admin\Model\GridExport\Type\Csv</item>
+            <item name="xml" xsi:type="string">Hyva\Admin\Model\GridExport\Type\Xml</item>
+            <item name="xlsx" xsi:type="string">Hyva\Admin\Model\GridExport\Type\Xlsx</item>
         </argument>
     </arguments>
 </type>
@@ -76,7 +76,7 @@ Usually the content type does not need to be changed for export type implementat
 
 This method returns the code for the Magento directory in which the file name returned by `getFileName()` return value is created. It defaults to the Magento var/ directory, which should be fine for almost all cases.
 
-(See `MagentoFrameworkAppFilesystemDirectoryList` for a list of all Magento directory codes.
+(See `Magento\Framework\App\Filesystem\DirectoryList` for a list of all Magento directory codes.
 
 #### protected function getGrid(): HyvaGridExportInterface
 

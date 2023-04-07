@@ -14,7 +14,7 @@ The grid configuration then is read from `view/adminhtml/hyva-grid/some-grid.xml
     <update handle="hyva_admin_grid"/>
     <body>
         <referenceContainer name="content">
-            <block class="HyvaAdminBlockAdminhtmlHyvaGrid" name="some-grid"/>
+            <block class="Hyva\Admin\Block\Adminhtml\HyvaGrid" name="some-grid"/>
         </referenceContainer>
     </body>
 </page>
@@ -29,7 +29,7 @@ The grid name can also be specified with a block argument. The following example
     <update handle="hyva_admin_grid"/>
     <body>
         <referenceContainer name="content">
-            <block class="HyvaAdminBlockAdminhtmlHyvaGrid" name="demo-grid">
+            <block class="Hyva\Admin\Block\Adminhtml\HyvaGrid" name="demo-grid">
                 <arguments>
                     <argument name="grid_name" xsi:type="string">some-grid</argument>
                 </arguments>

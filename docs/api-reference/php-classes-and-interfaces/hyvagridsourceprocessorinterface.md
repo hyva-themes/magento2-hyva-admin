@@ -12,7 +12,7 @@ Grid source processors are an advanced tool that is only rarely needed.
  *   <source>
  *     ... other source config ...
  *     <processors>
- *       <processor class="YourModuleHyvaGridProcessorMyGridQueryProcessor"/>
+ *       <processor class="Your\Module\HyvaGridProcessor\MyGridQueryProcessor"/>
  *     </processors>
  *   </source>
  * </grid>

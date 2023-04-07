@@ -6,4 +6,10 @@ Often a grid is embedded in a page with additional data, e.g. on a customer deta
 
 In a nutshell, there needs to be some default limitation of the displayed data, that is, I want to show the orders related to the current product. This is what `defaultSearchCriteriaBindings` is for.
 
+If multiple default bindings are declared, they all have to match (that is, the filters are combined with `AND`). 
+Combining them with `OR` so that one or more have to match, but not all, is possible by specifying the attribute `combineConditionsWith`.  
+```
+<defaultSearchCriteriaBindings combineConditionsWith="or">
+```
+
 The element can contain zero or more `<field>` nodes.

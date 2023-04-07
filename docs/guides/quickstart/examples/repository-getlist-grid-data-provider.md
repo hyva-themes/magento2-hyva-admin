@@ -11,7 +11,7 @@ The configuration can be as simple as the previous minimalist array provider exa
 <grid xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:module:Hyva_Admin:etc/hyva-grid.xsd">
     <source>
-        <repositoryListMethod>MagentoCatalogApiProductRepositoryInterface::getList</repositoryListMethod>
+        <repositoryListMethod>\Magento\Catalog\Api\ProductRepositoryInterface</repositoryListMethod>
     </source>
     <columns>
         <include>

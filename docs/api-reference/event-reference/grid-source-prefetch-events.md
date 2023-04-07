@@ -26,7 +26,7 @@ The event arguments are
 
 The container is an instance of
 
-`HyvaAdminModelGridSourceTypeRepositorySourceTypeSearchCriteriaEventContainer`.
+`Hyva\Admin\Model\GridSourceType\RepositorySourceType\SearchCriteriaEventContainer`.
 
 The record type argument is the type for the grid records. It will either be a PHP class or interface, or the string `array`, or a database table name, depending on the grid configuration.
 

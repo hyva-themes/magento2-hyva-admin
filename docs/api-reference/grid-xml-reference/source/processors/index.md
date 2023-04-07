@@ -7,7 +7,7 @@ The `<processors>` element has no arguments.
 ```html
 <source>
     <processors>
-        <processor class="HyvaAdminTestHyvaGridProcessorProductGridQueryProcessor"/>
+        <processor class="Hyva\AdminTest\HyvaGridProcessor\ProductGridQueryProcessor"/>
     </processors>
 </source>
 ```

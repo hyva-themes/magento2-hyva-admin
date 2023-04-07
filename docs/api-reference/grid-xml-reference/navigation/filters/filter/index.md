@@ -39,7 +39,7 @@ The filter instance is injected in the template automatically with the variable 
 A PHPDoc type hint can be added with the following code to supply IDE auto-completion:
 
 ```php
-/** @varHyvaAdminViewModelHyvaGridGridFilterInterface $filter */
+/** @var Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface $filter */
 ```
 
 The included templates can be used as a reference and can be found in the Hyva_Admin module directory `view/adminhtml/templates/filter`.
@@ -58,12 +58,12 @@ The filterType attribute is used to specify a custom filter type class.
 
 ```html
 <filter column="category_links"
-        filterType="MyModuleAdmihtmlGridFilterCategoryLinksGridFilter"/>
+        filterType="My\Module\Admihtml\GridFilter\CategoryLinksGridFilter"/>
 ```
 
 Filter types are responsible for supplying the filter renderer (a template block instance) and for applying filter values to a `SearchCriteria` instance.
 
-All filter types implement the interface `HyvaAdminApiGridFilterTypeInterface`.
+All filter types implement the interface `Hyva\Admin\Api\GridFilterTypeInterface`.
 
 More information can be found in the Hyva_Admin PHP Classes and Interfaces reference.
 
@@ -78,6 +78,6 @@ The only requirement for the source class is it has a `toOptionArray` method (al
 Currently a source model overrides filter options specified in the grid XML, but this behavior is not guaranteed to be stable.
 
 ```html
-<filter column="store_id" source="MagentoConfigModelConfigSourceStore"/>
+<filter column="store_id" source="Magento\Config\Model\Config\Source\Store"/>
 ```
 

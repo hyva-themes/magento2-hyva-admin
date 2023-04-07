@@ -11,25 +11,25 @@ Currently supported data providers are:
 * collection
 * query
 
-More data provider types will be added in future. The next provider type will likely be a SQL query provider.
+More data provider types will be added in future.
 
 ## Examples:
 
 ```html
 <source>
-    <arrayProvider>HyvaAdminTestModelLogFileListProvider</arrayProvider>
+    <arrayProvider>Hyva\AdminTest\Model\LogFileListProvider</arrayProvider>
 </source>
 ```
 
 ```html
 <source>
-    <repositoryListMethod>MagentoCatalogApiProductRepositoryInterface::getList</repositoryListMethod>
+    <repositoryListMethod>Magento\Catalog\Api\ProductRepositoryInterface::getList</repositoryListMethod>
 </source>
 ```
 
 ```html
 <source>
-    <collection>MagentoCatalogModelResourceModelProductCollection</collection>
+    <collection>Magento\Catalog\Model\ResourceModel\Product\Collection</collection>
 </source>
 ```
 

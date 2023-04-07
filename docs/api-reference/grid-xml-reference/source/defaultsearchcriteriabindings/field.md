@@ -9,9 +9,9 @@ This is mainly useful for showing grids that are embedded in pages of another en
   ...
   <defaultSearchCriteriaBindings>
     <field name="entity_id" requestParam="id">
-    <field name="entity_id" method="MagentoFrameworkAppRequestInterface::getParam" param="id"/>
-    <field name="store_id" method="MagentoStoreModelStoreManagerInterface::getStore" property="id"/>
-    <field name="customer_ids" condition="finset" method="MagentoCustomerModelSession::getCustomerId"/>
+    <field name="entity_id" method="Magento\Framework\App\RequestInterface::getParam" param="id"/>
+    <field name="store_id" method="Magento\Store\Model\StoreManagerInterface::getStore" property="id"/>
+    <field name="customer_ids" condition="finset" method="Magento\Customer\Model\Session::getCustomerId"/>
   </defaultSearchCriteriaBindings>
 </source>
 ```
@@ -26,14 +26,14 @@ The `name` attribute specifies the field name for the filter.
 
 This attribute is used to bind the filter to a request value. This is the most common binding type.
 
-It is a shorthand for specifying `class="MagentoFrameworkAppRequestInterface"` and `method="getParam"` together with a `param` attribute.
+It is a shorthand for specifying `class="Magento\Framework\App\RequestInterface"` and `method="getParam"` together with a `param` attribute.
 
 ### method
 
 The `method` attribute is used to specify the class and method to call to product the filter value.
 
 ```html
-<field name="customer_id" method="MagentoCustomerModelSession::getCustomerId"/>
+<field name="customer_id" method="Magento\Customer\Model\Session::getCustomerId"/>
 ```
 
 ### param
@@ -41,7 +41,7 @@ The `method` attribute is used to specify the class and method to call to produc
 If the `method` requires a string parameter to produce the desired value, it can be specified with the `param` attribute. This is sometimes handy for use with the generic `getData($key)` method.
 
 ```html
-<field name="entity_id" method="MagentoFrameworkAppRequestInterface::getParam" param="id"/>
+<field name="entity_id" method="Magento\Framework\App\RequestInterface::getParam" param="id"/>
 ```
 
 ### property
@@ -49,7 +49,7 @@ If the `method` requires a string parameter to produce the desired value, it can
 Should the method return an array or an object, the property attribute can be used to retrieve a singe value.
 
 ```html
-<field name="store_id" method="MagentoStoreModelStoreManagerInterface::getStore" property="id"/>
+<field name="store_id" method="Magento\Store\Model\StoreManagerInterface::getStore" property="id"/>
 ```
 
 The way the `property` is retrieved depends on the type of value the `method` returns.

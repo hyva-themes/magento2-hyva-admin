@@ -1,6 +1,6 @@
 # HyvaGridFilterTypeInterface
 
-Filter types are responsible for supplying the filter renderer block and for applying the posted values to a SearchCriteria instance.
+Filter types are responsible for supplying the filter renderer block and for applying the posted values to a `SearchCriteria` instance.
 
 ## Overview
 
@@ -19,10 +19,10 @@ Chances are these are all you will ever need. But if there is a column data type
 
 namespace HyvaAdminApi;
 
-use HyvaAdminViewModelHyvaGridColumnDefinitionInterface;
-use HyvaAdminViewModelHyvaGridGridFilterInterface;
-use MagentoFrameworkApiSearchCriteriaBuilder;
-use MagentoFrameworkViewElementTemplate;
+use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
+use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\View\Element\Template;
 
 interface HyvaGridFilterTypeInterface
 {
@@ -52,11 +52,11 @@ The custom filter type then is used by specifying it in the grid configuration:
 
 This method returns the template block instance that will be used to render the filter above the column.
 
-The `HyvaAdminViewModelHyvaGridGridFilterInterface` instance that is currently being rendered will automatically be set on the template block in the variable `$filter` before the blocks `toHtml()` method is called.
+The `Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface` instance that is currently being rendered will automatically be set on the template block in the variable `$filter` before the blocks `toHtml()` method is called.
 
 Example:
 
-```js
+```php
 public function getRenderer(ColumnDefinitionInterface $columnDefinition): Template
 {
     /** @var Template $templateBlock */

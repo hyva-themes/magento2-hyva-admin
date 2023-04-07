@@ -31,7 +31,7 @@ The grid name is passed along with the event for informational purposes, changin
 
 The data container is an instance of
 
-`HyvaAdminModelGridSourceTypeRepositorySourceTypeHyvaGridEventContainer`.
+`Hyva\Admin\Model\GridSourceType\RepositorySourceType\HyvaGridEventContainer`.
 
 The container instance contains an associative array with all grid columns definition instances; the array keys being the column IDs.
 
@@ -42,8 +42,8 @@ To update a column definition follow this pattern:
 ```php
 public function execute(Observer $observer)
 {
-    /** @varHyvaAdminModelGridSourceTypeRepositorySourceTypeHyvaGridEventContainer $container */
-    /** @varHyvaAdminViewModelHyvaGridColumnDefinitionInterface[] $columnsMap */
+    /** @var \Hyva\Admin\Model\GridSourceType\RepositorySourceType\HyvaGridEventContainer $container */
+    /** @var \Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface[] $columnsMap */
     $container = $observer->getData('data_container');
     $columnsMap = $container->getContainerData(); // map of keys to column definitions
     $columnsMap['example'] = $columnsMap['example']->merge(['initiallyHidden' => 'true']);

@@ -13,13 +13,13 @@ To load alpine.js and tailwind, use an update layout directive for the handle `h
 </page>
 ```
 
-The block usually is added to the content area container, and has to be a `HyvaAdminBlockAdminhtmlHyvaGrid` instance.
+The block usually is added to the content area container, and has to be a `Hyva\Admin\Block\Adminhtml\HyvaGrid` instance.
 
 Specify the grid name as the block name, or as a block argument `grid_name`.
 
 ```html
 <referenceContainer name="content">
-    <block class="HyvaAdminBlockAdminhtmlHyvaGrid" name="demo-grid"/>
+    <block class="Hyva\Admin\Block\Adminhtml\HyvaGrid" name="demo-grid"/>
 </referenceContainer>
 ```
 
@@ -27,7 +27,7 @@ This is what it looks like to specify the block name as an argument:
 
 ```html
 <referenceContainer name="content">
-    <block class="HyvaAdminBlockAdminhtmlHyvaGrid" name="walkthrough-demo-grid">
+    <block class="Hyva\Admin\Block\Adminhtml\HyvaGrid" name="walkthrough-demo-grid">
         <arguments>
             <argument name="grid_name" xsi:type="string">demo-grid</argument>
         </arguments>

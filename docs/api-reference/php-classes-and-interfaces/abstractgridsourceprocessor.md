@@ -1,6 +1,6 @@
 # AbstractGridSourceProcessor
 
-The  `HyvaAdminModelGridSourceAbstractGridSourceProcessor` can be extended to allow low level access to the grid source and the grid result.
+The  `Hyva\Admin\Model\GridSource\AbstractGridSourceProcessor` can be extended to allow low level access to the grid source and the grid result.
 
 ```php
 /**

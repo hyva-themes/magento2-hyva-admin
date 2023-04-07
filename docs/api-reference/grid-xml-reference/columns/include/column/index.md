@@ -49,7 +49,7 @@ If the simply string cast is not sufficient, for example, a decimal value repres
 
 If a record contains PHP custom objects that can’t be cast to a string, then a custom type is required.
 
-There are many existing types you can use as an example. The existing types can be found in the `Hyva_Admin` module directory `Hyva/Admin/Model/DataType`. Each type class has to implement the interface `HyvaAdminApiDataTypeValueToStringConverterInterface` (or `HyvaAdminApiDataTypeInterface` which inherits the former).
+There are many existing types you can use as an example. The existing types can be found in the `Hyva_Admin` module directory `Hyva/Admin/Model/DataType`. Each type class has to implement the interface `Hyva\Admin\Api\DataType\ValueToStringConverterInterface` (or `Hyva\Admin\Api\DataTypeInterface` which inherits the former).
 
 More information on the interfaces can be found in the Hyva_Admin PHP type reference.
 
@@ -68,7 +68,7 @@ In the template, the cell instance that is currently being rendered is automatic
 This type hint can be added to the `.phtml` file to allow autocompletion in IDEs:
 
 ```php
-/** @varHyvaAdminViewModelHyvaGridCellInterface $cell */
+/** @var \Hyva\Admin\ViewModel\HyvaGridCellInterface $cell */
 ```
 
 ### renderAsUnsecureHtml
@@ -81,11 +81,11 @@ If a cell content needs to be rendered as HTML (for example an image or a link),
 <column name="image" type="magento_product_image" renderAsUnsecureHtml="true"/>
 ```
 
-If `renderAsUnsecure` is set to `true`, the data type method `DataTypeValueToStringConverterInterface::toHtmlRecursive()`
+If `renderAsUnsecure` is set to `true`, the data type method `DataType\ValueToStringConverterInterface::toHtmlRecursive()`
 
 is used to fetch a cells content for rendering.
 
-If `renderAsUnsecure` is set to `false`, the data type method `DataTypeValueToStringConverterInterface::toString()`
+If `renderAsUnsecure` is set to `false`, the data type method `DataType\ValueToStringConverterInterface::toString()`
 
 is used to fetch a cells content for rendering.
 
@@ -154,12 +154,12 @@ For EAV attributes that use a `select` or `multiselect` frontend input, the attr
 But if you need to, you can specify an attribute source model with the source column attribute.
 
 ```html
-<column name="websites" source="MagentoCustomerModelCustomerAttributeSourceWebsite"/>
+<column name="websites" source="Magento\Customer\Model\Customer\Attribute\Source\Website"/>
 ```
 
 The class will then be used to map the column values to the display label.
 
-The class has to implement the `MagentoEavModelEntityAttributeSourceSourceInterface` interface.
+The class has to implement the `Magento\Eav\Model\Entity\Attribute\Source\SourceInterface` interface.
 
 Note that for simple cases attribute options can also be configured using option child elements. Please refer to the grid:columns:include:column:option documentation for more information.
 

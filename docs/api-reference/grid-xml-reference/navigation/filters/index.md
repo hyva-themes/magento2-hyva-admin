@@ -16,6 +16,6 @@ By default no filters are rendered.
 
 The filter type is determined automatically based on a columns type.
 
-More information on filter types can be found on the PHP class documentation for `HyvaAdminApiGridFilterTypeInterface`.
+More information on filter types can be found on the PHP class documentation for `Hyva\Admin\Api\GridFilterTypeInterface`.
 
 Not all column types can automatically be mapped to a filter type. In such cases a `filterType` class needs to be set on a `filter`.

@@ -59,8 +59,8 @@ For example:
 
 The button instance is assigned as a template variable. It is helpful to add it to the template as a PHPDoc type hint:
 
-```js
-/** @varHyvaAdminViewModelHyvaGridGridButtonInterface $button */
+```php
+/** @var Hyva\Admin\ViewModel\HyvaGrid\GridButtonInterface $button */
 ```
 
 

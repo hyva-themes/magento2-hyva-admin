@@ -24,11 +24,11 @@ All DataTypeGuesser implementations are registered with the `DataTypeFacade` in 
 Excerpt of the Hyva_Admin `etc/adminhtml/di.xml` configuration:
 
 ```html
-<type name="HyvaAdminModelDataTypeDataTypeFacade">
+<type name="Hyva\Admin\Model\DataType\DataTypeFacade">
     <arguments>
         <argument name="dataTypeClassMap" xsi:type="array">
-            <item name="datetime" xsi:type="string">HyvaAdminModelDataTypeDateTimeDataType</item>
-            <item name="magento_product" xsi:type="string">HyvaAdminModelDataTypeProductDataType</item>
+            <item name="datetime" xsi:type="string">Hyva\Admin\Model\DataType\DateTimeDataType</item>
+            <item name="magento_product" xsi:type="string">Hyva\Admin\Model\DataType\ProductDataType</item>
             ...
         </argument>
     </arguments>

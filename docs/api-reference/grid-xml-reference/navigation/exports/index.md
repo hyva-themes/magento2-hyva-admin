@@ -10,7 +10,7 @@ The `<exports>` node is used configure available export types for a grid.
         <export type="xlsx" label="Export as XLSX"/>
         <export type="custom"
                 label="Export as my custom format"
-                class="MyModuleModelCustomGridExport"
+                class="My\Module\Model\CustomGridExport"
                 fileName="example.foo"
                 sortOrder="1"
         />

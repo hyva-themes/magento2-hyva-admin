@@ -21,11 +21,11 @@ To set an array provider, use the `<arrayProvider>` element:
 
 ```html
 <source>
-    <arrayProvider>HyvaAdminTestModelLogFileListProvider</arrayProvider>
+    <arrayProvider>Hyva\AdminTest\Model\LogFileListProvider</arrayProvider>
 </source>
 ```
 
-Array providers have to implement the interface `HyvaAdminApiHyvaGridArrayProviderInterface`.
+Array providers have to implement the interface `Hyva\Admin\Api\HyvaGridArrayProviderInterface`.
 
 More details on array providers can be found in the PHP Class API reference documentation.
 
@@ -39,11 +39,11 @@ To set a repository source type, use the `<repositoryListMethod>` element:
 
 ```html
 <source>
-    <repositoryListMethod>MagentoCustomerApiCustomerRepositoryInterface::getList</repositoryListMethod>
+    <repositoryListMethod>\Magento\Customer\Api\CustomerRepositoryInterface::getList</repositoryListMethod>
 </source>
 ```
 
-The name of the method doesn’t have to be `getList`. The important thing here is that the specified method takes a `MagentoFrameworkApiSearchCriteriaInterface` as an argument, and returns a `MagentoFrameworkApiSearchResultsInterface` like thing.
+The name of the method doesn’t have to be `getList`. The important thing here is that the specified method takes a `Magento\Framework\Api\SearchCriteriaInterface` as an argument, and returns a `Magento\Framework\Api\SearchResultsInterface` like thing.
 
 In the core code convention is to name these methods `getList`, but you can use whatever name you want on custom repositories, as long as the input and output are the same.
 
@@ -53,7 +53,7 @@ Next there is the collection source type. It is specified with the collection el
 
 ```html
 <source>
-    <collection>MagentoCustomerModelResourceModelCustomerCollection</collection>
+    <collection>Magento\Customer\Model\ResourceModel\Customer\Collection</collection>
 </source>
 ```
 
@@ -93,9 +93,9 @@ Pagination and sorting can be applied by configuring default search criteria bin
 
 Often we can choose between a repository list method, a collection and maybe even another grid  collection. For example, for Magento orders the choices are:
 
-* `MagentoSalesApiOrderRepositoryInterface::getList`
-* `MagentoSalesModelResourceModelOrderCollection`
-* `MagentoSalesModelResourceModelOrderGridCollection`
+* `Magento\Sales\Api\OrderRepositoryInterface::getList`
+* `Magento\Sales\Model\ResourceModel\Order\Collection`
+* `Magento\Sales\Model\ResourceModel\OrderGridCollection`
 
 Which is best?
 

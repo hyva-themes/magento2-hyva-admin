@@ -1,6 +1,6 @@
 # Using Grid Source Processors
 
-Grid source processors are rarely needed. They allow low level access to the grid data load process, in case the declarative nature of Hyv# admin grids is not sufficient.
+Grid source processors are rarely needed. They allow low level access to the grid data load process, in case the declarative nature of Hyvä admin grids is not sufficient.
 
 If you are only just beginning to use Hyvä admin grids, feel free to skip this page and come back to it later if you are bumping against the boundaries of what can be done in configuration only.
 
@@ -11,12 +11,12 @@ In such cases it’s possible to declare grid source processors. A grid can have
 ```html
 <source>
     <processors>
-        <processor class="HyvaAdminTestHyvaGridProcessorProductGridQueryProcessor"/>
+        <processor class="Hyva\AdminTest\HyvaGridProcessor\ProductGridQueryProcessor"/>
     </processors>
 </source>
 ```
 
-Processors implement the interface `HyvaAdminApiHyvaGridSourceProcessorInterface`.
+Processors implement the interface `Hyva\Admin\Api\HyvaGridSourceProcessorInterface`.
 
 (There is one extended processor interface for use with collections, the `HyvaGridCollectionProcessorInterface`.  More on that further below).
 ```php
@@ -45,7 +45,7 @@ interface HyvaGridSourceProcessorInterface
 
 If only one of the methods is needed, a processor can also extend from
 
-`HyvaAdminModelGridSourceAbstractGridSourceProcessor` and override only the needed method.
+`Hyva\Admin\Model\Grid\Source\AbstractGridSourceProcessor` and override only the needed method.
 
 The effect of processors could also be achieved using events or plugins, but processors are designed to require the least amount of boilerplate code.
 
@@ -59,22 +59,29 @@ As you can see in the interface show above, the `$source` and `$rawResult` argum
 
 This is because they depends on the grid source type that is being used.
 
-* Repository Grid source
+*Repository Grid source*
+
   * `$source`: instance of the class on which the getList method is called
   * `$rawResult`:  `MagentoFrameworkApiSearchResultsInterface` instance
-* Collection Grid source
+  
+*Collection Grid source*
+
   * `$source`: Collection instance before the search criteria are applied
   * `$rawResult`: Collection instance after the search criteria has been applied (it may already be loaded)
-* Array Grid source
+
+*Array Grid source*
+
   * `$source`: array provider instance
   * `$rawResult`: array result after filtering but before pagination or sorting has been applied
-* Query Grid source
+
+*Query Grid source*
+
   * `$source`: `MagentoFrameworkDBSelect` instance after search criteria is applied
   * `$rawResult`: Query result array with the structure `['data' => $rows, 'count' => $count]`
 
 ### SearchCriteriaInterface $searchCriteria
 
-The SearchCriteriaInterface instance with all the filters, pagination and sorting values that should be applied for the current grid view.
+The `SearchCriteriaInterface` instance with all the filters, pagination and sorting values that should be applied for the current grid view.
 
 The search criteria is only provided for informational purposes - do not change any values on it, as that would cause the grid source to be queried multiple times.
 
@@ -92,15 +99,22 @@ The use case for afterLoad don’t really depend on the grid source type. afterL
 
 But what can be done in the beforeLoad method depends a lot on the grid source type. Use cases for the beforeLoad processor method include (but are not limited to):
 
-* Repository Grid source
+*Repository Grid source*
   * Set properties on the repository to influence how the search criteria is applied, for example, the store ID. This will probably only be useful for custom repositories, not for repositories that are provided by the core.
-* Collection Grid source
+
+*Collection Grid source*
+
   * Setting additional filters and flags on the collection.
-* Array Grid source
+
+*Array Grid source*
+ 
   * It really depends on what influence the array grid source provider class allows.
-* Query Grid source
+
+*Query Grid source*
+
   * Set bind values on the select instance, remove and alter any part of the query
-At the time of writing grid source processors are called in module load order - there is no way to apply a sort order.
+
+  * At the time of writing grid source processors are called in module load order - there is no way to apply a sort order.
 
 ## HyvaGridCollectionProcessorInterface
 

@@ -8,14 +8,14 @@ Chances are you will never need to do this. But if you do, well, you can.
 
 Currently these are (in alphabetical order, together with the probability you might want to implement them):
 
-* `HyvaAdminApiDataTypeGuesserInterface` (very unlikely)
-* `HyvaAdminApiDataTypeInterface` (very unlikely)
-* `HyvaAdminApiDataTypeValueToStringConverterInterface` (maybe)
-* `HyvaAdminApiHyvaGridArrayProviderInterface` (likely)
-* `HyvaAdminApiHyvaGridFilterTypeInterface` (unlikely)
-* `HyvaAdminApiHyvaGridSourceProcessorInterface` (unlikely)
-* `HyvaAdminModelGridExportTypeAbstractExportType` (maybe)
-* `HyvaAdminModelGridSourceAbstractGridSourceProcessor` (likely)
+* `Hyva\Admin\Api\DataTypeGuesserInterface` (very unlikely)
+* `Hyva\Admin\Api\DataTypeInterface` (very unlikely)
+* `Hyva\Admin\Api\DataType\ValueToStringConverterInterface` (maybe)
+* `Hyva\Admin\Api\HyvaGridArrayProviderInterface` (likely)
+* `Hyva\Admin\Api\HyvaGridFilterTypeInterface` (unlikely)
+* `Hyva\Admin\Api\HyvaGridSourceProcessorInterface` (unlikely)
+* `Hyva\Admin\Model\Grid\ExportType\AbstractExportType` (maybe)
+* `Hyva\Admin\Model\Grid\Source\AbstractGridSourceProcessor` (likely)
 
 Each of the above interfaces is document in this section of the API reference.
 
@@ -23,10 +23,10 @@ There also are a number of classes and interfaces that are not intended to be im
 
 These mostly are (in alphabetical order):
 
-* `HyvaAdminBlockAdminhtmlHyvaGrid` (only when declaring the grid block in layout XML)
-* `HyvaAdminViewModelHyvaGridCellInterface` (in cell templates)
-* `HyvaAdminViewModelHyvaGridColumnDefinitionInterface` (in cell and filter templates)
-* `HyvaAdminViewModelHyvaGridGridFilterInterface` (in filter templates)
+* `Hyva\Admin\Block\Adminhtml\HyvaGrid` (only when declaring the grid block in layout XML)
+* `Hyva\Admin\ViewModel\HyvaGrid\CellInterface` (in cell templates)
+* `Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface` (in cell and filter templates)
+* `Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface` (in filter templates)
 
 These classes are not documented, however, the only point of contact will be inside of template files.
 

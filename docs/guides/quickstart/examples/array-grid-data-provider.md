@@ -2,7 +2,7 @@
 
 This is an example for simple array grid data provider.
 
-The class needs to implement `HyvaAdminApiHyvaGridArrayProviderInterface`
+The class needs to implement `Hyva\Admin\Api\HyvaGridArrayProviderInterface`
 
 The `getHyvaGridData` method returns an array with all the records.
 
@@ -13,11 +13,11 @@ The grid columns are taken from the array keys of the first record in the return
 ```php
 <?php declare(strict_types=1);
 
-namespace HyvaAdminTestModel;
+namespace Hyva\AdminTest\Model;
 
-use HyvaAdminApiHyvaGridArrayProviderInterface;
-use MagentoFrameworkAppFilesystemDirectoryList;
-use MagentoFrameworkFilesystemIoFileFactory;
+use Hyva\Admin\Api\HyvaGridArrayProviderInterface;
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Filesystem\Io\FileFactory;
 
 class LogFileListProvider implements HyvaGridArrayProviderInterface
 {

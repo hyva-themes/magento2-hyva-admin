@@ -30,13 +30,13 @@ A array provider implementations are then configured as source of a grid in the 
 
 ```html
 <source>
-    <arrayProvider>HyvaAdminTestModelLogFileListProvider</arrayProvider>
+    <arrayProvider>Hyva\AdminTest\Model\LogFileListProvider</arrayProvider>
 </source>
 ```
 
 It is super simple to create array grid data providers.
 
-There are some helpful methods to covert things into arrays in the Magento framework, for example `MagentoFrameworkReflectionDataObjectProcessor::buildOutputDataArray`. They can be useful sometimes, but of course anything can be used as long as the interface contract is fulfilled.
+There are some helpful methods to covert things into arrays in the Magento framework, for example `Magento\Framework\Reflection\DataObjectProcessor::buildOutputDataArray`. They can be useful sometimes, but of course anything can be used as long as the interface contract is fulfilled.
 
 ## Interface Methods
 
@@ -68,9 +68,9 @@ Example grid array provider that lists all files in the Magento `var/log/` direc
 
 namespace HyvaAdminTestModel;
 
-use HyvaAdminApiHyvaGridArrayProviderInterface;
-use MagentoFrameworkAppFilesystemDirectoryList;
-use MagentoFrameworkFilesystemIoFileFactory;
+use Hyva\Admin\Api\HyvaGridArrayProviderInterface;
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Filesystem\Io\FileFactory;
 
 class LogFileListProvider implements HyvaGridArrayProviderInterface
 {

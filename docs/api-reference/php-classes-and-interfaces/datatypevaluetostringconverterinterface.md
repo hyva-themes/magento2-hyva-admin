@@ -31,8 +31,8 @@ Excerpt of the Hyva_Admin `etc/adminhtml/di.xml` configuration, mapping column t
 <type name="HyvaAdminModelDataTypeDataTypeFacade">
     <arguments>
         <argument name="dataTypeClassMap" xsi:type="array">
-            <item name="datetime" xsi:type="string">HyvaAdminModelDataTypeDateTimeDataType</item>
-            <item name="price" xsi:type="string">HyvaAdminModelDataTypePriceDataType</item>
+            <item name="datetime" xsi:type="string">Hyva\Admin\Model\Data\TypeDate\TimeDataType</item>
+            <item name="price" xsi:type="string">Hyva\Admin\Model\DataType\PriceDataType</item>
             ...
         </argument>
     </arguments>

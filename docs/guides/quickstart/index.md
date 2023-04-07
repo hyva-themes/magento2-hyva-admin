@@ -6,7 +6,7 @@ Once installed, grids can be added to any admin page by adding a bit of layout X
 The layout XML has to contain two things:
 
 * A `<update handle="hyva_admin_grid"/>` declaration to load alpine.js and tailwind.
-* A `HyvaAdminBlockAdminhtmlHyvaGrid` block, with the name of the grid configuration as a the block name or a `grid_name` block argument or as the blocks name-in-layout.
+* A `Hyva\Admin\Block\Adminhtml\HyvaGrid` block, with the name of the grid configuration as a the block name or a `grid_name` block argument or as the blocks name-in-layout.
 
 An example file `view/adminhtml/layout/example.xml` could look as follows:
 
@@ -16,7 +16,7 @@ An example file `view/adminhtml/layout/example.xml` could look as follows:
     <update handle="hyva_admin_grid"/>
     <body>
         <referenceContainer name="content">
-            <block class="HyvaAdminBlockAdminhtmlHyvaGrid" name="example-grid"/>
+            <block class="Hyva\Admin\Block\Adminhtml\HyvaGrid" name="example-grid"/>
         </referenceContainer>
     </body>
 </page>
@@ -28,7 +28,7 @@ After that, a grid configuration has to be created in a directory `[Your_Module]
 
 When writing the grid configuration, any good IDE will allow for auto-completion and validation of the XML thanks to the XSD schema found in the Hyva_Admin module at `etc/hyva-grid.xsd`.
 
-The grid configuration will need contain a grid source specification. Currently that can be a repository list method, or a`HyvaAdminApiHyvaGridArrayProviderInterface` implementation.
+The grid configuration will need contain a grid source specification. Currently that can be a repository list method, or a`\Hyva\Admin\Api\HyvaGridArrayProviderInterface` implementation.
 
 With no further configuration, all fields of the provided records are shown as grid columns.
 

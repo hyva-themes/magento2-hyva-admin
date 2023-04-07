@@ -12,7 +12,7 @@ This callback is triggered every time the collection grid source is instantiated
 
 These fields then will be available as grid columns.
 
-To use it, configure a grid source processor as usual and implement the interface in addition to extending the processor from `HyvaAdminModelGridSourceAbstractGridSourceProcessor`.
+To use it, configure a grid source processor as usual and implement the interface in addition to extending the processor from `Hyva\Admin\Model\GridSource\AbstractGridSourceProcessor`.
 
 ### Example:
 

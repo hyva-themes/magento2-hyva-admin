@@ -2,7 +2,7 @@
 
 This query is dispatched for grids using an grid source type.
 
-First, a `MagentoFrameworkDBSelect` instance is created and the query configuration from the grid XML configuration is applied. (Note: `MagentoFrameworkDBSelect` is just a small wrapper for `Zend_Db_Select`, the API is the same).
+First, a `Magento\Framework\DB\Select` instance is created and the query configuration from the grid XML configuration is applied. (Note: `Magento\Framework\DB\Select` is just a small wrapper for `Zend_Db_Select`, the API is the same).
 
 Then then filters, sorting and pagination are applied.
 
@@ -27,7 +27,7 @@ The event arguments are:
 
 The container is an instance of
 
-`HyvaAdminModelGridSourceTypeQueryGridSourceTypeDbSelectEventContainer`.
+`Hyva\Admin\Model\Grid\Source\Type\QueryGridSource\Type\DbSelectEventContainer`.
 
 ### Observers
 

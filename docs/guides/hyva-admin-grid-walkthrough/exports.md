@@ -34,7 +34,7 @@ For the known export types `csv`, `xml` and `xlsx` no `class` declaration is nec
 
 For custom types an export class needs to be specified. The custom export class has to extend from
 
-`HyvaAdminModelGridExportTypeAbstractExportType`.and implement the method
+`Hyva\Admin\Model\Grid\ExportType\AbstractExportType`.and implement the method
 
 `public function createFileToDownload()`.
 

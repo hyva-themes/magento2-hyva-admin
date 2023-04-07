@@ -4,7 +4,7 @@ The <processor> node defines the class name of HyvaGridSourceProcessorInterface 
 
 ```html
 <processors>
-    <processor class="HyvaAdminTestHyvaGridProcessorProductGridQueryProcessor" enabled="false"/>
+    <processor class="Hyva\AdminTest\HyvaGridProcessor\ProductGridQueryProcessor" enabled="false"/>
 </processors>
 ```
 
@@ -14,7 +14,7 @@ The <processor> node defines the class name of HyvaGridSourceProcessorInterface 
 
 The `class` attribute takes the fully qualified class name or the 
 
-`HyvaAdminApiHyvaGridSourceProcessorInterface` implementation. Often the classes don’t implement the interface directly, but instead extend from `HyvaAdminModelGridSourceAbstractGridSourceProcessor`. More information on grid source processors can be found in the grid walkthrough documentation.
+`Hyva\Admin\Api\HyvaGridSourceProcessorInterface` implementation. Often the classes don’t implement the interface directly, but instead extend from `Hyva\Admin\Model\GridSource\AbstractGridSourceProcessor`. More information on grid source processors can be found in the grid walkthrough documentation.
 
 ### enabled
 

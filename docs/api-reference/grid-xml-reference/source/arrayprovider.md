@@ -2,7 +2,7 @@
 
 The `arrayProvider` node content has to be a fully qualified PHP the class name.
 
-The class has to implement the `HyvaAdminApiHyvaGridArrayProviderInterface` interface.
+The class has to implement the `Hyva\Admin\Api\HyvaGridArrayProviderInterface` interface.
 
 ```php
 interface HyvaGridArrayProviderInterface
@@ -22,7 +22,7 @@ The columns are determined based on the array keys of the first record.
 
 ```html
 <source>
-    <arrayProvider>HyvaAdminTestModelLogFileListProvider</arrayProvider>
+    <arrayProvider>Hyva\AdminTest\Model\LogFileListProvider</arrayProvider>
 </source>
 ```
 
