@@ -5,10 +5,11 @@ namespace Hyva\Admin\Model;
 use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\GridSource\GridSourceProcessorBuilder;
 use Hyva\Admin\Model\GridSource\SearchCriteriaBindings;
-use function array_merge as merge;
 use Hyva\Admin\Model\GridSourceType\SourceTypeClassLocator;
-
 use Magento\Framework\ObjectManagerInterface;
+use function array_filter as filter;
+use function array_merge as merge;
+
 
 class HyvaGridSourceFactory
 {
@@ -54,10 +55,11 @@ class HyvaGridSourceFactory
             $this->sourceTypeClassLocator->getFor($gridDefinition->getName(), $gridSourceConfiguration),
             merge($sharedConstructorArguments, ['processors' => $this->buildProcessors($gridSourceConfiguration)])
         );
-        $bindingsConfig             = $gridSourceConfiguration['defaultSearchCriteriaBindings'] ?? [];
+        $defaultBindingsConfig      = $gridSourceConfiguration['defaultSearchCriteriaBindings']['fields'] ?? [];
+        $andOr = $gridSourceConfiguration['defaultSearchCriteriaBindings']['combineConditionsWith'] ?? null;
         $searchCriteriaBindings     = $this->objectManager->create(
             SearchCriteriaBindings::class,
-            merge(['bindingsConfig' => $bindingsConfig], $sharedConstructorArguments)
+            filter(merge(['bindingsConfig' => $defaultBindingsConfig, 'combineConditionsWith' => $andOr], $sharedConstructorArguments))
         );
 
         $dependencies = ['gridSourceType' => $gridSourceType, 'searchCriteriaBindings' => $searchCriteriaBindings];

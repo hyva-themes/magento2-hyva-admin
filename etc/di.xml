@@ -62,6 +62,7 @@
             <!-- note: order matters - generic DataTypes (e.g. object, unknown) come after more specific ones -->
             <argument name="dataTypeClassMap" xsi:type="array">
                 <item name="datetime" xsi:type="string">Hyva\Admin\Model\DataType\DateTimeDataType</item>
+                <item name="timestamp" xsi:type="string">Hyva\Admin\Model\DataType\DateTimeDataType</item>
                 <item name="date" xsi:type="string">Hyva\Admin\Model\DataType\DateDataType</item>
                 <item name="long_text" xsi:type="string">Hyva\Admin\Model\DataType\LongTextDataType</item>
                 <item name="text" xsi:type="string">Hyva\Admin\Model\DataType\TextDataType</item>

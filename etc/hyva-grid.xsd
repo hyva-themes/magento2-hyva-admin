@@ -34,10 +34,10 @@
 
     <xs:simpleType name="paramName">
         <xs:annotation>
-            <xs:documentation>Zero or more letters or numbers or underscore, starting with a letter.</xs:documentation>
+            <xs:documentation>Zero or more letters or numbers, underscore or period, starting with a letter.</xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:normalizedString">
-            <xs:pattern value="[a-z]?[A-Za-z0-9_]*"/>
+            <xs:pattern value="[a-z]?[A-Za-z0-9_.]*"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -49,8 +49,7 @@
                 <xs:element name="collection" type="phpType"/>
                 <xs:element name="query" type="queryType"/>
             </xs:choice>
-            <xs:element name="defaultSearchCriteriaBindings" type="searchCriteriaBindingsType" minOccurs="0"
-                        maxOccurs="1"/>
+            <xs:element name="defaultSearchCriteriaBindings" type="searchCriteriaBindingsType" minOccurs="0" maxOccurs="1"/>
             <xs:element name="processors" type="gridProcessorsType" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="type">
@@ -328,7 +327,15 @@
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
+        <xs:attribute name="combineConditionsWith" type="conditionApplicationType" default="and"/>
     </xs:complexType>
+
+    <xs:simpleType name="conditionApplicationType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="and"/>
+            <xs:enumeration value="or"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:simpleType name="conditionType">
         <xs:restriction base="xs:string">

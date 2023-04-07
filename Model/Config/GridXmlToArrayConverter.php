@@ -242,7 +242,7 @@ class GridXmlToArrayConverter
     private function getDefaultSourceCriteriaBindingFieldsConfig(\DOMElement $bindingsElement): array
     {
         /*
-         * <defaultSearchCriteriaBindings>
+         * <defaultSearchCriteriaBindings combineConditionsWith="or">
          *     <field name="my_id" requestParam="id"/>
          *     <field name="entity_id" method="Magento\Framework\App\RequestInterface::getParam" param="id"/>
          *     <field name="store_id" method="Magento\Store\Model\StoreManagerInterface::getStore" property="id"/>
@@ -250,7 +250,8 @@ class GridXmlToArrayConverter
          *     <field name="foo" value="FOO" condition="neq"/>
          * </defaultSearchCriteriaBindings>
          */
-        return map(function (\DOMElement $fieldElement): array {
+        $combineConditionsWith = XmlToArray::getAttributeConfig($bindingsElement, 'combineConditionsWith');
+        $fields = map(function (\DOMElement $fieldElement): array {
             return filter(merge(
                 XmlToArray::getAttributeConfig($fieldElement, 'name', 'field'),
                 XmlToArray::getAttributeConfig($fieldElement, 'requestParam'),
@@ -261,6 +262,7 @@ class GridXmlToArrayConverter
                 XmlToArray::getAttributeConfig($fieldElement, 'value'),
             ));
         }, XmlToArray::getChildrenByName($bindingsElement, 'field'));
+        return filter(merge($combineConditionsWith, ['fields' => $fields]));
     }
 
     private function getSourceProcessorsConfig(\DOMElement $sourceElement): array

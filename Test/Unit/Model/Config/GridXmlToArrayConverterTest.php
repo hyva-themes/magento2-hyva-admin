@@ -583,7 +583,7 @@ EOXML;
         return <<<EOXML
     <source type="array">
         <arrayProvider>ArrayProviderInterface</arrayProvider>
-        <defaultSearchCriteriaBindings>
+        <defaultSearchCriteriaBindings combineConditionsWith="or">
             <field name="my_id" requestParam="id"/>
             <field name="entity_id" method="Magento\Framework\App\RequestInterface::getParam" param="id"/>
             <field name="store_id" method="Magento\Store\Model\StoreManagerInterface::getStore" property="id"/>
@@ -601,23 +601,26 @@ EOXML;
                 '@type'                         => 'array',
                 'arrayProvider'                 => 'ArrayProviderInterface',
                 'defaultSearchCriteriaBindings' => [
-                    ['field' => 'my_id', 'requestParam' => 'id'],
-                    [
-                        'field'  => 'entity_id',
-                        'method' => 'Magento\Framework\App\RequestInterface::getParam',
-                        'param'  => 'id',
-                    ],
-                    [
-                        'field'    => 'store_id',
-                        'method'   => 'Magento\Store\Model\StoreManagerInterface::getStore',
-                        'property' => 'id',
-                    ],
-                    [
-                        'field'     => 'customer_ids',
-                        'method'    => 'Magento\Customer\Model\Session::getCustomerId',
-                        'condition' => 'finset',
-                    ],
-                    ['field' => 'foo', 'condition' => 'neq', 'value' => 'FOO'],
+                    'combineConditionsWith' => 'or',
+                    'fields' => [
+                        ['field' => 'my_id', 'requestParam' => 'id'],
+                        [
+                            'field'  => 'entity_id',
+                            'method' => 'Magento\Framework\App\RequestInterface::getParam',
+                            'param'  => 'id',
+                        ],
+                        [
+                            'field'    => 'store_id',
+                            'method'   => 'Magento\Store\Model\StoreManagerInterface::getStore',
+                            'property' => 'id',
+                        ],
+                        [
+                            'field'     => 'customer_ids',
+                            'method'    => 'Magento\Customer\Model\Session::getCustomerId',
+                            'condition' => 'finset',
+                        ],
+                        ['field' => 'foo', 'condition' => 'neq', 'value' => 'FOO'],
+                    ]
                 ],
             ],
         ];
