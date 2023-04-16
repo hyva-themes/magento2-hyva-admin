@@ -23,15 +23,14 @@ class DateTimeDataType implements DataTypeInterface
     public function __construct(
         DateTimeFormatterInterface $dateTimeFormatter,
         ScopeConfigInterface $scopeConfig
-    )
-    {
+    ) {
         $this->dateTimeFormatter = $dateTimeFormatter;
         $this->scopeConfig = $scopeConfig;
     }
 
     public function valueToTypeCode($value): ?string
     {
-        return is_string($value) && preg_match('/^\d{4}-\d\d-\d\d[ T]\d\d:\d\d:\d\d$/', $value)
+        return is_string($value) && preg_match('/^\d{4}-\d\d-\d\d[ T]\d\d:\d\d:\d\d(?:\+\d\d:\d\d)?/', $value)
             ? self::TYPE_DATETIME
             : null;
     }
