@@ -405,11 +405,11 @@ $rows       = $grid->getRows();
             },
 
             getFormUriEncoded(form) {
-                const url = form.action;
-                const encodedFields = Array.from(form.elements)
-                    .map(input => encodeURIComponent(input.name) + '=' + encodeURIComponent(input.value))
-                    .join('&');
-                return url + (url.includes('?') ? '&' : '?') + encodedFields;
+                const url = new URL(form.action);
+                Array.from(form.elements).forEach(
+                    input => url.searchParams.set(input.name, input.value)
+                );
+                return url.toString();
             },
 
             updateGrid(url) {
