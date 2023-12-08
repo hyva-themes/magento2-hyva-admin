@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+[Unreleased]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.22..main
+
 ### Added
 - Nothing
 
@@ -13,7 +16,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - No removals.
 
+## [1.1.22] - 2023-12-08
+[1.1.22]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.21..1.1.22
+### Added
+
+- Nothing
+
+### Changed
+
+- Fixed: Ajax Grid: after filtering all mass actions redirect to admin dashboard 
+
+### Removed
+
+- Nothing
+
+
 ## [1.1.18] - 2022-04-12
+[1.1.18]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.17..1.1.18
 ### Added
 
 - Nothing
@@ -29,6 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Nothing
 
 ## [1.1.17] - 2022-03-08
+[1.1.17]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.16..1.1.17
 ### Added
 - French Translation  
   Thanks to Frederic Martinez for the [PR](https://github.com/hyva-themes/magento2-hyva-admin/pull/64)!
@@ -41,6 +61,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
  - Nothing
 
 ## [1.1.16] - 2021-07-01
+[1.1.16]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.15..1.1.16
 ### Added
 - Support grid column data types `smallint` and `mediumint`
 
@@ -62,6 +83,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - No removals.
 
 ## [1.1.15] - 2021-05-26
+[1.1.15]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.14..1.1.15
 ### Added
 - Nothing
 
@@ -73,6 +95,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Nothing
 
 ## [1.1.14] - 2021-05-14
+[1.1.14]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.13..1.1.14
 ### Added
 - New collection grid source type specific processor interface
   `HyvaGridCollectionProcessorInterface` extending `HyvaGridSourceProcessorInterface`
@@ -84,9 +107,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   This might be handy in plugins.
 
 ## [1.1.13] - 2021-05-5
+[1.1.13]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.12..1.1.13
 No changes, this is a fix for a botched 1.1.12 release.
 
 ## [1.1.12] - 2021-05-5
+[1.1.12]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.11..1.1.12
 ### Added
 - New experimental JavaScript events implementation for grid actions.
 
@@ -97,6 +122,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.11] - 2021-04-27
+[1.1.11]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.10..1.1.11
 ### Added
 - Added $escaper declaration to templates for Magento 2.3 compatibility.
 
@@ -107,6 +133,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.10] - 2021-04-23
+[1.1.10]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.9..1.1.10
 ### Added
 - Nothing yet.
 
@@ -118,6 +145,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.9] - 2021-04-23
+[1.1.9]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.8..1.1.9
 ### Added
 - New grid column type website_id.
 - New low level grid customization technique via \Hyva\Admin\Api\HyvaGridSourceProcessorInterface
@@ -131,6 +159,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.8] - 2021-04-17
+[1.1.8]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.7..1.1.8
 ### Added
 - Nothing currently.
 
@@ -141,6 +170,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.7] - 2021-04-11
+[1.1.7]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.6..1.1.7
 ### Added
 - It's now possible to configure Exports for grids, thanks to https://github.com/pointia!
 
@@ -151,6 +181,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.6] - 2021-04-09
+[1.1.6]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.5..1.1.6
 ### Added
 - A new Query Grid Source Type is now available to display DB table data without using ORM models.
 
@@ -161,6 +192,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.5] - 2021-04-06
+[1.1.5]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.4..1.1.5
 ### Added
 - Add composer dependency on laminas/laminas-code:^3.0.0 for Magento 2.3 compatibility.
 - Read return type from method declaration on interfaces if present.
@@ -175,6 +207,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 
 
 ## [1.1.4] - 2021-03-15
+[1.1.4]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.3..1.1.4
 ### Added
 - Add polyfill for `\Magento\Framework\View\Helper\SecureHtmlRenderer` for
   `view/adminhtml/templates/page/js/require_js.phtml` Magento 2.3 compatibility.
@@ -191,6 +224,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.3] - 2021-02-05
+[1.1.3]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.2..1.1.3
 ### Added
 - New event to customize column definitions conditionally:  
   `'hyva_grid_column_definition_build_after_' . $gridNameSuffix`  
@@ -203,6 +237,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.2] - 2021-01-28
+[1.1.2]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.1..1.1.2
 ### Added
 - Filters now can have source models:
   `<filter column="store_id" source="\Magento\Config\Model\Config\Source\Store"/>`
@@ -214,6 +249,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.1] - 2021-01-26
+[1.1.1]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.0..1.1.1
 ### Added
 - Support collections that use the generic entity type
   `\Magento\Framework\View\Element\UiComponent\DataProvider\Document`
@@ -227,6 +263,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.1.0] - 2021-01-19
+[1.1.0]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.0.8..1.1.0
 ### Added
 - Add feature to declare default search criteria bindings for embedded grids.
   More information can be found in the [docs](./doc/1.%20Overview/3.%20Walkthrough/4.1%20Declaring%20source%20search%20bindings.md).
@@ -238,6 +275,7 @@ No changes, this is a fix for a botched 1.1.12 release.
 - No removals.
 
 ## [1.0.8] - 2021-01-15
+[1.0.8]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.0.7..1.0.8
 ### Added
 - Add this CHANGELOG.md file.
 - New column attribute `initiallyHidden`. When set to `true`, a column will be rendered
