@@ -26,6 +26,7 @@ class GridBlockRenderer
     public function renderGrid(string $gridName): string
     {
         $this->layout->getUpdate()->load('formkey');
+        $this->layout->generateXml();
         $this->layout->generateElements();
         $arguments = ['data' => ['grid_name' => $gridName]];
         $block     = $this->layout->createBlock($this->gridClass, 'hyva_grid_block', $arguments);
