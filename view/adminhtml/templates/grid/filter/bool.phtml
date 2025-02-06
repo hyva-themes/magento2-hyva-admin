@@ -11,8 +11,10 @@ $value = $filter->getValue();
 ?>
 <select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
         form="<?= $filter->getFormId() ?>"
-        class="form-select w-full">
+        class="form-select w-full"
+        @change="formGridUpdate($event.target.form)"
+>
     <option value=""> </option>
     <option value="1"<?= isset($value) && $value ? ' selected' : '' ?>><?= __('Yes') ?></option>
-    <option value="0"<?= isset($value) && !$value ? ' selected' : '' ?>><?= __('No') ?></option>
+    <option value="0"<?= isset($value) && !$value && $value !== '' ? ' selected' : '' ?>><?= __('No') ?></option>
 </select>
