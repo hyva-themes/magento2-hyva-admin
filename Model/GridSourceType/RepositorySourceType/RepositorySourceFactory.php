@@ -129,7 +129,16 @@ class RepositorySourceFactory
         $class  = $this->getSourceRepoClass($sourceConfig);
         $method = $this->getSourceRepoMethod($sourceConfig);
 
-        $returnType      = $this->reflectionMethodsMap->getMethodReturnType($class, $method);
+        try {
+            $returnNamedType = (new \ReflectionClass($class))->getMethod($method)->getReturnType();
+
+            if ($returnNamedType instanceof \ReflectionNamedType) {
+                $returnType = $returnNamedType->getName();
+            }
+        } catch (\ReflectionException) {
+        }
+
+        $returnType    ??= $this->reflectionMethodsMap->getMethodReturnType($class, $method);
         $resultInterface = SearchResultsInterface::class;
         if (!is_subclass_of($returnType, $resultInterface)) {
             $msg = sprintf('The repository source "%s" does not return a %s instance', $sourceConfig, $resultInterface);
