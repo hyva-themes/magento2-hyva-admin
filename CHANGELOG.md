@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.22..main
+[Unreleased]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.23..main
 
 ### Added
 - Nothing
@@ -15,6 +15,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 - No removals.
+
+## [1.1.23] - 2025-02-06
+[1.1.23]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.22..1.1.23
+### Added
+
+- Nothing
+
+### Changed
+
+- Fixed: Boolean filter behavior in grids with multiple filters (thanks to Andreas von Studnitz)
+
+### Removed
+
+- Nothing
 
 ## [1.1.22] - 2023-12-08
 [1.1.22]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.21..1.1.22
