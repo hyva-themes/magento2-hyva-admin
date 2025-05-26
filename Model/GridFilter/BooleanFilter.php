@@ -24,7 +24,7 @@ class BooleanFilter implements ColumnDefinitionMatchingFilterInterface
 
     public function __construct(
         LayoutInterface $layout,
-        FilterBuilder $filterBuilder,
+        FilterBuilder $filterBuilder
     ) {
         $this->layout = $layout;
         $this->filterBuilder = $filterBuilder;
