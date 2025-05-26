@@ -51,7 +51,7 @@ class BooleanFilter implements ColumnDefinitionMatchingFilterInterface
     ): void {
         if ($this->isValue($filterValue)) {
             $key = $gridFilter->getColumnDefinition()->getKey();
-            if ((int) ($filterValue > 0)) {
+            if (((int) $filterValue) > 0) {
                 $searchCriteriaBuilder->addFilter($key, (int) $filterValue, 'eq');
             } else {
                 $integerFilter = $this->filterBuilder
