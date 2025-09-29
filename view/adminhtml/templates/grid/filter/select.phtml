@@ -13,10 +13,10 @@ $escaper = $escaper ?? $block;
         @change="formGridUpdate($event.target.form)"
 >
     <option value=""> </option>
-<?php foreach ($filter->getOptions() as $option): ?>
-<?php $isSelected = $filter->getValue() === $option->getValueId() ?>
-<option value="<?= $escaper->escapeHtmlAttr($option->getValueId()) ?>"
-        <?= $isSelected ? 'selected' : '' ?>
-><?= $escaper->escapeHtml($option->getLabel()) ?></option>
-<?php endforeach; ?>
+    <?php foreach ($filter->getOptions() as $option): ?>
+        <?php $isSelected = $filter->getValue() === $option->getValueId() ?>
+        <option value="<?= $escaper->escapeHtmlAttr($option->getValueId()) ?>"
+            <?= $isSelected ? 'selected' : '' ?>
+        ><?= $escaper->escapeHtml($option->getLabel()) ?></option>
+    <?php endforeach; ?>
 </select>
