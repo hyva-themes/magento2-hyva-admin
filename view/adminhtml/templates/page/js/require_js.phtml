@@ -3,11 +3,12 @@
 /** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
 
 $escaper        = $escaper ?? $block;
-$secureRenderer = $secureRenderer ?? $block->getData('secure_html_renderer_polyfill')
-
+$secureRenderer = $secureRenderer ?? $block->getData('secure_html_renderer_polyfill');
+$alpineJsPath   = $block->getData('alpinejs_path');
 ?>
-
-<script src="<?php echo $block->getViewFileUrl('Hyva_Admin::js/alpine.js'); ?>"></script>
+<?php if ($alpineJsPath): ?>
+    <script src="<?php echo $block->getViewFileUrl($alpineJsPath); ?>"></script>
+<?php endif; ?>
 
 <?php
 $scriptString = '
