@@ -12,7 +12,7 @@ $rows       = $grid->getRows();
 
 ?>
 <div class="hyva-admin-grid"
-     x-data="initDataTable<?= /** @noEscape */ $uniqueId ?>()"
+     x-data="initDataTable()"
      x-init="refs=$refs; initState();">
     <div class="max-w-full px-0 py-6 mx-auto">
         <div class="flex items-center justify-between mb-4">
