@@ -10,7 +10,7 @@ $escaper = $escaper ?? $block;
 <select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
         form="<?= $escaper->escapeHtmlAttr($filter->getFormId()) ?>"
         class="form-select w-full"
-        @change="formGridUpdate($event.target.form)"
+        @change="formGridUpdate"
 >
     <option value=""> </option>
     <?php foreach ($filter->getOptions() as $option): ?>

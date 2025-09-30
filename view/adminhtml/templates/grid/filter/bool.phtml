@@ -12,7 +12,7 @@ $value = $filter->getValue();
 <select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
         form="<?= $escaper->escapeHtmlAttr($filter->getFormId()) ?>"
         class="form-select w-full"
-        @change="formGridUpdate($event.target.form)"
+        @change="formGridUpdate"
 >
     <option value=""> </option>
     <option value="1"<?= isset($value) && $value ? ' selected' : '' ?>><?= $escaper->escapeHtml(__('Yes')) ?></option>

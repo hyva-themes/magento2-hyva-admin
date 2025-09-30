@@ -177,7 +177,7 @@ use Magento\Framework\Escaper;
             },
 
             formGridUpdate() {
-                const form = this.$event.target;
+                const form = this.$event.target.form ?? this.$event.target;
 
                 this.filterUri = this.getFormUriEncoded(form);
                 this.updateGrid(this.filterUri);
