@@ -7,7 +7,7 @@ $secureRenderer = $secureRenderer ?? $block->getData('secure_html_renderer_polyf
 $alpineJsPath   = $block->getData('alpinejs_path');
 ?>
 <?php if ($alpineJsPath): ?>
-    <script src="<?php echo $block->getViewFileUrl($alpineJsPath); ?>"></script>
+    <script src="<?php echo $block->getViewFileUrl($alpineJsPath); ?>" defer></script>
 <?php endif; ?>
 
 <?php
