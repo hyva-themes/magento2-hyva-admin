@@ -34,7 +34,6 @@ class FormLoadEntityRepositoryTest extends TestCase
         $blockRepository = ObjectManager::getInstance()->get(BlockRepositoryInterface::class);
         $searchCriteriaBuilder = ObjectManager::getInstance()->create(SearchCriteriaBuilder::class);
         $searchCriteriaBuilder->addFilter(BlockInterface::IDENTIFIER, 'enabled_block');
-        $v = values($blockRepository->getList($searchCriteriaBuilder->create())->getItems());
         return (int) values($blockRepository->getList($searchCriteriaBuilder->create())->getItems())[0]->getId();
     }
 
