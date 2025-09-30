@@ -92,7 +92,7 @@ class ExportTypesTest extends TestCase
         return $fileSystem->getDirectoryRead($export->getExportDir())->getAbsolutePath($export->getFileName());
     }
 
-    private function createStubGrid(array $gridData, array $columns = null): HyvaGridViewModel
+    private function createStubGrid(array $gridData, ?array $columns = null): HyvaGridViewModel
     {
         $columns  = $columns ?? $this->createColumnsFromGrid($gridData);
         $stubGrid = $this->createMock(HyvaGridViewModel::class);

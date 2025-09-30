@@ -40,7 +40,7 @@ class NavigationTest extends TestCase
     private function createNavigation(
         array $gridData,
         array $navigationConfig,
-        RequestInterface $request = null
+        ?RequestInterface $request = null
     ): Navigation {
         $hyvaGridSource = $this->createArrayGridSource($gridData);
         return ObjectManager::getInstance()->create(NavigationInterface::class, filter([

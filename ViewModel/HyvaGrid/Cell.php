@@ -51,7 +51,7 @@ class Cell implements CellInterface
         DataTypeToStringConverterLocatorInterface $dataTypeToStringConverter,
         LayoutInterface $layout,
         Escaper $escaper,
-        RowInterface $row = null
+        ?RowInterface $row = null
     ) {
         $this->value                            = $value;
         $this->columnDefinition                 = $columnDefinition;

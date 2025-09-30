@@ -164,7 +164,7 @@ class GridFilter implements GridFilterInterface
         return $this->filterOptionFactory->create($arguments);
     }
 
-    public function getInputName(string $aspect = null): string
+    public function getInputName(?string $aspect = null): string
     {
         $key = $this->getColumnDefinition()->getKey();
         return isset($aspect)
@@ -172,7 +172,7 @@ class GridFilter implements GridFilterInterface
             : sprintf('%s[_filter][%s]', $this->gridName, $key);
     }
 
-    public function getValue(string $aspect = null)
+    public function getValue(?string $aspect = null)
     {
         $gridQueryParams = $this->request->getParam($this->gridName);
         $value           = $gridQueryParams['_filter'][$this->getColumnDefinition()->getKey()] ?? null;

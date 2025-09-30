@@ -17,13 +17,13 @@ interface GridFilterInterface
      */
     public function getOptions(): ?array;
 
-    public function getInputName(string $aspect = null): string;
+    public function getInputName(?string $aspect = null): string;
 
     /**
      * @param string|null $aspect
      * @return mixed
      */
-    public function getValue(string $aspect = null);
+    public function getValue(?string $aspect = null);
 
     public function getFormId(): string;
 

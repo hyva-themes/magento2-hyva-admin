@@ -25,7 +25,7 @@ class CellTest extends TestCase
         return ObjectManager::getInstance()->create(ColumnDefinitionInterface::class, $arguments);
     }
 
-    private function createCellWithValue($value, string $type = null): Cell
+    private function createCellWithValue($value, ?string $type = null): Cell
     {
         $arguments = ['value' => $value, 'columnDefinition' => $this->createColumnDefinition($type)];
         return ObjectManager::getInstance()->create(CellInterface::class, $arguments);

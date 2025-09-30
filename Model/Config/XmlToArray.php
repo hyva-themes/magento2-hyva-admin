@@ -43,7 +43,7 @@ class XmlToArray
      * @param string $name
      * @return string[]
      */
-    public static function getAttributeConfig(\DOMElement $element, string $name, string $withIndexKey = null): array
+    public static function getAttributeConfig(\DOMElement $element, string $name, ?string $withIndexKey = null): array
     {
         $idx = $withIndexKey ?? $name;
         $value = $element->getAttribute($name);

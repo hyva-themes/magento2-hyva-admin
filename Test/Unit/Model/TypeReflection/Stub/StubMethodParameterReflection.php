@@ -29,7 +29,7 @@ class StubMethodParameterReflection extends StubMethodParameterReflectionParent
 
     }
 
-    public function optionalType(string $arg = null)
+    public function optionalType(?string $arg = null)
     {
 
     }
