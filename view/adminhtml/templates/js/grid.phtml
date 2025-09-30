@@ -129,11 +129,13 @@ use Magento\Framework\Escaper;
                 }
 
                 if (checked.length === 0) {
-                    alert('<?= __("Please select the records to apply the mass action to.")?>');
+                    alert('<?= $escaper->escapeJs(
+                        __('Please select the records to apply the mass action to.')
+                    ); ?>');
                     select.selectedIndex = 0;
                     return;
                 }
-                if (option.dataset.requireConfirm === 'true' && !confirm('<?= __("Are you sure?")?>')) {
+                if (option.dataset.requireConfirm === 'true' && !confirm('<?= $escaper->escapeJs(__('Are you sure?')); ?>')) {
                     select.selectedIndex = 0;
                     return;
                 }

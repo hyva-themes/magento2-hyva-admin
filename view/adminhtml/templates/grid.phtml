@@ -55,8 +55,7 @@ $hiddenCols = $grid->getInitiallyHiddenColumns();
                   x-ref="massaction-form"
                   method="post">
                 <?= $block->getBlockHtml('formkey'); ?>
-                <label for="massAction<?= /** @noEscape */
-                $uniqueId ?>"
+                <label for="massAction<?= $escaper->escapeHtmlAttr($uniqueId); ?>"
                        class="font-medium text-md mr-4">
                     <?= $escaper->escapeHtml(__('Mass Actions:')) ?>
                 </label>
@@ -73,7 +72,7 @@ $hiddenCols = $grid->getInitiallyHiddenColumns();
                     <?php foreach ($massActions as $massAction): ?>
                         <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
                         <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>"
-                                class="<?= $massAction->getId() /* refactor: don't use the mass action id as css class*/ ?>"
+                                class="<?= $escaper->escapeHtmlAttr($massAction->getId()) /* refactor: don't use the mass action id as css class*/ ?>"
                                 value="<?= $escaper->escapeUrl($massActionUrl) ?>">
                             <?= $escaper->escapeHtml(__($massAction->getLabel())) ?>
                         </option>
@@ -124,7 +123,7 @@ $hiddenCols = $grid->getInitiallyHiddenColumns();
                                     $navigation->getSortByColumn() === $column->getKey() ?>
                                 <?php $newDirection = $isSortedByColumn &&
                                 $navigation->isSortOrderAscending() ? 'desc' : 'asc' ?>
-                                <th class="relative pr-12 col-<?= $escaper->escapeHtml($column->getKey()) ?>
+                                <th class="relative pr-12 col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>
                                         <?php if ($column->isSortable()): ?> sortable<?php endif; ?>"
                                     x-ref="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>"
                                     x-show="isColumnVisible"
@@ -179,7 +178,7 @@ $hiddenCols = $grid->getInitiallyHiddenColumns();
                                     <th class="sticky top-0 px-3 py-2 border border-gray-200"></th>
                                 <?php endif; ?>
                                 <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-                                    <th class="col-<?= $escaper->escapeHtml($column->getKey()) ?> sticky top-0 border
+                                    <th class="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?> sticky top-0 border
                                 border-gray-200 px-6 py-2 text-gray-600 tracking-wider text-xl table-cell align-left"
                                         x-show="isColumnVisible"
                                         data-col-key="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>">

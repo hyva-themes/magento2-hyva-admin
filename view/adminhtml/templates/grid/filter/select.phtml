@@ -8,7 +8,7 @@ $escaper = $escaper ?? $block;
 
 ?>
 <select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
-        form="<?= $filter->getFormId() ?>"
+        form="<?= $escaper->escapeHtmlAttr($filter->getFormId()) ?>"
         class="form-select w-full"
         @change="formGridUpdate($event.target.form)"
 >
