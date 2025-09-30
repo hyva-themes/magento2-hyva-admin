@@ -38,33 +38,25 @@ class SearchCriteriaBindingsTest extends TestCase
 
     private function assertHasFilter($field, $value, $condition, SearchCriteriaInterface $searchCriteria): void
     {
-        $groups     = $searchCriteria->getFilterGroups();
+        $groups = $searchCriteria->getFilterGroups();
         $getFilters = function (FilterGroup $group): array {
             return $group->getFilters();
         };
-        $filters    = merge([], ...values(map($getFilters, $groups)));
+        $filters = merge([], ...values(map($getFilters, $groups)));
 
         /** @var Filter[] $filtersForField */
-        $isField         = function (Filter $filter) use ($field): bool {
+        $isField = function (Filter $filter) use ($field): bool {
             return $filter->getField() === $field;
         };
         $filtersForField = values(filter($filters, $isField));
         if (!$filtersForField) {
             $this->fail(sprintf('No filter found for field: "%s"', $field));
         }
-        $match    = $filtersForField[0];
+        $match = $filtersForField[0];
         $expected = ['field' => $field, 'value' => $value, 'condition' => $condition];
-        $actual   = ['field' => $field, 'value' => $match->getValue(), 'condition' => $match->getConditionType()];
+        $actual = ['field' => $field, 'value' => $match->getValue(), 'condition' => $match->getConditionType()];
 
         $this->assertSame($expected, $actual, sprintf('Filter does not match expectation.'));
-    }
-
-    /**
-     * This method is used as a getter in tests
-     */
-    public function getTestMethodValue($arg = 'no argument')
-    {
-        return $arg;
     }
 
     public function testNoBindingConfigIsHandledGracefully(): void
@@ -79,39 +71,39 @@ class SearchCriteriaBindingsTest extends TestCase
 
     public function testGetterWithNoArguments(): void
     {
-        $field          = 'test';
+        $field = 'test';
         $bindingsConfig = [
             'field'  => $field,
-            'method' => __CLASS__ . '::getTestMethodValue',
+            'method' => __CLASS__ . 'Class::getTestMethodValue',
         ];
         $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings([$bindingsConfig]);
         $sut->apply($searchCriteria);
-        $this->assertHasFilter($field, $this->getTestMethodValue(), 'eq', $searchCriteria);
+        $this->assertHasFilter($field, (new SearchCriteriaBindingsTestClass)->getTestMethodValue(), 'eq', $searchCriteria);
     }
 
     public function testGetterWithArgument(): void
     {
-        $field          = 'test';
+        $field = 'test';
         $bindingsConfig = [
             'field'  => $field,
-            'method' => __CLASS__ . '::getTestMethodValue',
+            'method' => __CLASS__ . 'Class::getTestMethodValue',
             'param'  => 123,
         ];
         $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings([$bindingsConfig]);
         $sut->apply($searchCriteria);
-        $this->assertHasFilter($field, $this->getTestMethodValue(123), 'eq', $searchCriteria);
+        $this->assertHasFilter($field, (new SearchCriteriaBindingsTestClass)->getTestMethodValue(123), 'eq', $searchCriteria);
     }
 
     public function testGetterWithArgumentAndProperty(): void
     {
-        $field          = 'test';
+        $field = 'test';
         $bindingsConfig = [
             'field'    => $field,
-            'method'   => __CLASS__ . '::getTestMethodValue',
+            'method'   => __CLASS__ . 'Class::getTestMethodValue',
             'param'    => ['foo' => 'bar'],
             'property' => 'foo',
         ];
@@ -125,8 +117,8 @@ class SearchCriteriaBindingsTest extends TestCase
     public function testFetchesRequestParam(): void
     {
         $requestParamValue = 'foo';
-        $field             = 'test';
-        $bindingsConfig    = [
+        $field = 'test';
+        $bindingsConfig = [
             'field'        => $field,
             'requestParam' => 'id',
         ];
@@ -145,11 +137,11 @@ class SearchCriteriaBindingsTest extends TestCase
     public function testClassWithMethodOverrideRequestParam(): void
     {
         $requestParamValue = 'requestParamValue';
-        $field             = 'test';
-        $bindingsConfig    = [
+        $field = 'test';
+        $bindingsConfig = [
             'field'        => $field,
             'requestParam' => 'id',
-            'method'       => __CLASS__ . '::getTestMethodValue',
+            'method'       => __CLASS__ . 'Class::getTestMethodValue',
             'param'        => 'class method value',
         ];
 
@@ -166,30 +158,30 @@ class SearchCriteriaBindingsTest extends TestCase
 
     public function testUsesConditionTypeFromConfig(): void
     {
-        $field          = 'test';
+        $field = 'test';
         $bindingsConfig = [
             'field'     => $field,
-            'method'    => __CLASS__ . '::getTestMethodValue',
+            'method'    => __CLASS__ . 'Class::getTestMethodValue',
             'condition' => 'finset',
         ];
         $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings([$bindingsConfig]);
         $sut->apply($searchCriteria);
-        $this->assertHasFilter($field, $this->getTestMethodValue(), 'finset', $searchCriteria);
+        $this->assertHasFilter($field, (new SearchCriteriaBindingsTestClass)->getTestMethodValue(), 'finset', $searchCriteria);
     }
 
     public function testAppliesMultipleFieldBindings(): void
     {
         $requestParamValue = 111;
-        $bindingsConfigs   = [
+        $bindingsConfigs = [
             [
                 'field'        => 'field_a',
                 'requestParam' => 'id',
             ],
             [
                 'field'     => 'field_b',
-                'method'    => __CLASS__ . '::getTestMethodValue',
+                'method'    => __CLASS__ . 'Class::getTestMethodValue',
                 'param'     => '%abc%',
                 'condition' => 'like',
             ],
@@ -209,10 +201,10 @@ class SearchCriteriaBindingsTest extends TestCase
 
     public function testThrowsExceptionForNonArrayOrObjectPropertyConfiguration(): void
     {
-        $field          = 'test';
+        $field = 'test';
         $bindingsConfig = [
             'field'    => $field,
-            'method'   => __CLASS__ . '::getTestMethodValue',
+            'method'   => __CLASS__ . 'Class::getTestMethodValue',
             'param'    => 'a string has no properties to access here',
             'property' => 'prop',
         ];
@@ -225,18 +217,18 @@ class SearchCriteriaBindingsTest extends TestCase
 
     public function testThrowsExceptionForNonExistingObjectPropertyAccessor(): void
     {
-        $field           = 'test';
+        $field = 'test';
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'method'   => __CLASS__ . '::getTestMethodValue',
+                'method'   => __CLASS__ . 'Class::getTestMethodValue',
                 'param'    => new class() {
 
                 },
                 'property' => 'prop',
             ],
         ];
-        $searchCriteria  = new SearchCriteria();
+        $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings($bindingsConfigs);
         $this->expectException(UnableToFetchPropertyFromValueException::class);
@@ -245,11 +237,11 @@ class SearchCriteriaBindingsTest extends TestCase
 
     public function testFetchesObjectPropertiesByGetter(): void
     {
-        $field           = 'test';
+        $field = 'test';
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'method'   => __CLASS__ . '::getTestMethodValue',
+                'method'   => __CLASS__ . 'Class::getTestMethodValue',
                 'param'    => new class() {
                     public function getProp(): string
                     {
@@ -259,7 +251,7 @@ class SearchCriteriaBindingsTest extends TestCase
                 'property' => 'prop',
             ],
         ];
-        $searchCriteria  = new SearchCriteria();
+        $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings($bindingsConfigs);
         $sut->apply($searchCriteria);
@@ -268,11 +260,11 @@ class SearchCriteriaBindingsTest extends TestCase
 
     public function testFetchesObjectPropertiesByGetData(): void
     {
-        $field           = 'test';
+        $field = 'test';
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'method'   => __CLASS__ . '::getTestMethodValue',
+                'method'   => __CLASS__ . 'Class::getTestMethodValue',
                 'param'    => new class() {
                     public function getData($key): string
                     {
@@ -284,7 +276,7 @@ class SearchCriteriaBindingsTest extends TestCase
                 'property' => 'prop',
             ],
         ];
-        $searchCriteria  = new SearchCriteria();
+        $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings($bindingsConfigs);
         $sut->apply($searchCriteria);
@@ -293,17 +285,18 @@ class SearchCriteriaBindingsTest extends TestCase
 
     public function testFetchesObjectPropertiesByArrayAccess(): void
     {
-        $field           = 'test';
+        $field = 'test';
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'method'   => __CLASS__ . '::getTestMethodValue',
+                'method'   => __CLASS__ . 'Class::getTestMethodValue',
                 'param'    => new class() implements \ArrayAccess {
 
                     public function offsetExists($offset): bool
                     {
                         return $offset === 'prop';
                     }
+
                     #[\ReturnTypeWillChange]
                     public function offsetGet($offset) // ArrayAccess::offsetGet() 8.1 return type is `mixed` (the `mixed` type is available since 8.0)
                     {
@@ -323,7 +316,7 @@ class SearchCriteriaBindingsTest extends TestCase
                 'property' => 'prop',
             ],
         ];
-        $searchCriteria  = new SearchCriteria();
+        $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings($bindingsConfigs);
         $sut->apply($searchCriteria);
@@ -332,21 +325,32 @@ class SearchCriteriaBindingsTest extends TestCase
 
     public function testFetchesObjectPropertiesByProperty(): void
     {
-        $field           = 'test';
+        $field = 'test';
         $bindingsConfigs = [
             [
                 'field'    => $field,
-                'method'   => __CLASS__ . '::getTestMethodValue',
+                'method'   => __CLASS__ . 'Class::getTestMethodValue',
                 'param'    => new class() {
                     public $prop = 'fine :)';
                 },
                 'property' => 'prop',
             ],
         ];
-        $searchCriteria  = new SearchCriteria();
+        $searchCriteria = new SearchCriteria();
 
         $sut = $this->createSearchCriteriaBindings($bindingsConfigs);
         $sut->apply($searchCriteria);
         $this->assertHasFilter($field, 'fine :)', 'eq', $searchCriteria);
+    }
+}
+
+class SearchCriteriaBindingsTestClass
+{
+    /**
+     * This method is used as a getter in tests
+     */
+    public function getTestMethodValue($arg = 'no argument')
+    {
+        return $arg;
     }
 }

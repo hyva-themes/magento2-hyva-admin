@@ -29,94 +29,50 @@ class TypeMethodTest extends TestCase
         return $sut;
     }
 
-    public function throwNoSuchEntityException(): void
-    {
-        throw new NoSuchEntityException();
-    }
-
-    public function returnEmptyArray(): array
-    {
-        return [];
-    }
-
-    public function returnZero(): int
-    {
-        return 0;
-    }
-
-    public function returnOne(): int
-    {
-        return 1;
-    }
-
-    public function expectsSecondArgToBeZero($foo, $bar): bool
-    {
-        if ($bar !== 0) {
-            $this->fail('Expected $bar to be zero, got "' . $bar . '"');
-        }
-        return true;
-    }
-
-    public function expectsFirstArgToBeNull($foo, $bar): bool
-    {
-        if (!is_null($foo)) {
-            $this->fail('Expected $foo to be null, got "' . $foo . '"');
-        }
-        return true;
-    }
-
-    public function expectsFirstArgToBeDefault($foo = 'default', $bar = 0): bool
-    {
-        if ($foo !== 'default') {
-            $this->fail('Expected $foo to be "default", got "' . $foo . '"');
-        }
-        return true;
-    }
-
     // --------------------------- tests -------------------------------
 
     public function testNoSuchEntityExceptionReturnsNull(): void
     {
-        $this->assertNull($this->createSut()->invoke(__CLASS__, 'throwNoSuchEntityException', []));
+        $this->assertNull($this->createSut()->invoke(__CLASS__ . 'Class', 'throwNoSuchEntityException', []));
     }
 
     public function testModelLoadNonExistentIdReturnsNull(): void
     {
         $this->assertNull($this->createSut()->invoke(Product::class, 'load', [
             'modelId' => [
-                'method' => __CLASS__ . '::returnZero',
+                'method' => __CLASS__ . 'Class::returnZero',
             ],
         ]));
     }
 
     public function testEmptyArrayResultReturnsNull(): void
     {
-        $this->assertNull($this->createSut()->invoke(__CLASS__, 'returnEmptyArray', []));
+        $this->assertNull($this->createSut()->invoke(__CLASS__ . 'Class', 'returnEmptyArray', []));
     }
 
     public function testPassesArgumentsInPositionBasedOnParameterName(): void
     {
-        $this->assertTrue($this->createSut()->invoke(__CLASS__, 'expectsSecondArgToBeZero', [
+        $this->assertTrue($this->createSut()->invoke(__CLASS__ . 'Class', 'expectsSecondArgToBeZero', [
             'bar' => [
-                'method' => __CLASS__ . '::returnZero',
+                'method' => __CLASS__ . 'Class::returnZero',
             ],
         ]));
     }
 
     public function testPassesNullForNotConfiguredArgumentsBetweenConfiguredValues(): void
     {
-        $this->assertTrue($this->createSut()->invoke(__CLASS__, 'expectsFirstArgToBeNull', [
+        $this->assertTrue($this->createSut()->invoke(__CLASS__ . 'Class', 'expectsFirstArgToBeNull', [
             'bar' => [
-                'method' => __CLASS__ . '::returnZero',
+                'method' => __CLASS__ . 'Class::returnZero',
             ],
         ]));
     }
 
     public function testPassesDefaultForNotConfiguredArgumentsBetweenConfiguredValues(): void
     {
-        $this->assertTrue($this->createSut()->invoke(__CLASS__, 'expectsFirstArgToBeDefault', [
+        $this->assertTrue($this->createSut()->invoke(__CLASS__ . 'Class', 'expectsFirstArgToBeDefault', [
             'bar' => [
-                'method' => __CLASS__ . '::returnZero',
+                'method' => __CLASS__ . 'Class::returnZero',
             ],
         ]));
     }
@@ -129,7 +85,7 @@ class TypeMethodTest extends TestCase
         $result = $this->createSut()->invoke(
             ProductRepositoryInterface::class,
             'getById',
-            ['productId' => ['method' => __CLASS__ . '::returnOne']]
+            ['productId' => ['method' => __CLASS__ . 'Class::returnOne']]
         );
         $this->assertInstanceOf(ProductInterface::class, $result);
         $this->assertEquals(1, $result->getId());
@@ -140,18 +96,18 @@ class TypeMethodTest extends TestCase
      */
     public function testCanLoadProductViaDeprecatedLoadOnModels(): void
     {
-        $sut    = $this->createSut();
-        $result = $sut->invoke(Product::class, 'load', ['modelId' => ['method' => __CLASS__ . '::returnOne']]);
+        $sut = $this->createSut();
+        $result = $sut->invoke(Product::class, 'load', ['modelId' => ['method' => __CLASS__ . 'Class::returnOne']]);
         $this->assertInstanceOf(Product::class, $result);
         $this->assertEquals(1, $result->getId());
     }
 
     public function testCanReturnArrayFromArrayProvider()
     {
-        $data          = [['foo' => 'bar'], ['foo' => 'baz'], ['foo' => 'qux']];
+        $data = [['foo' => 'bar'], ['foo' => 'baz'], ['foo' => 'qux']];
         $providerClass = TestingGridDataProvider::withArray($data);
-        $sut           = $this->createSut();
-        $result        = $sut->invoke($providerClass, 'getHyvaGridData', []);
+        $sut = $this->createSut();
+        $result = $sut->invoke($providerClass, 'getHyvaGridData', []);
         $this->assertEquals($data, $result);
     }
 
@@ -163,7 +119,7 @@ class TypeMethodTest extends TestCase
         $result = $this->createSut()->invoke(
             PageRepositoryInterface::class,
             'getById',
-            ['pageId' => ['method' => __CLASS__ . '::returnOne']]
+            ['pageId' => ['method' => __CLASS__ . 'Class::returnOne']]
         );
         $this->assertInstanceOf(PageInterface::class, $result);
         $this->assertEquals(1, $result->getId());
@@ -177,7 +133,7 @@ class TypeMethodTest extends TestCase
         $result = $this->createSut()->invoke(
             ProductResourceModel::class,
             'load',
-            ['entityId' => ['method' => __CLASS__ . '::returnOne']]
+            ['entityId' => ['method' => __CLASS__ . 'Class::returnOne']]
         );
         $this->assertInstanceOf(Product::class, $result);
         $this->assertEquals(1, $result->getId());
@@ -191,7 +147,7 @@ class TypeMethodTest extends TestCase
         $result = $this->createSut()->invoke(
             ProductResourceModel::class,
             'load',
-            ['entityId' => ['method' => __CLASS__ . '::returnZero']]
+            ['entityId' => ['method' => __CLASS__ . 'Class::returnZero']]
         );
         $this->assertNull($result);
     }
@@ -204,7 +160,7 @@ class TypeMethodTest extends TestCase
         $result = $this->createSut()->invoke(
             PageResourceModel::class,
             'load',
-            ['value' => ['method' => __CLASS__ . '::returnOne']]
+            ['value' => ['method' => __CLASS__ . 'Class::returnOne']]
         );
         $this->assertInstanceOf(Page::class, $result);
         $this->assertEquals(1, $result->getId());
@@ -235,7 +191,7 @@ class TypeMethodTest extends TestCase
         $result = $this->createSut()->invoke(
             CustomerResourceModel::class,
             'load',
-            ['entityId' => ['method' => __CLASS__ . '::returnOne']]
+            ['entityId' => ['method' => __CLASS__ . 'Class::returnOne']]
         );
         $this->assertInstanceOf(CustomerModel::class, $result);
         $this->assertEquals(1, $result->getId());
@@ -249,7 +205,7 @@ class TypeMethodTest extends TestCase
         $result = $this->createSut()->invoke(
             CustomerModel::class,
             'load',
-            ['modelId' => ['method' => __CLASS__ . '::returnOne']]
+            ['modelId' => ['method' => __CLASS__ . 'Class::returnOne']]
         );
         $this->assertInstanceOf(CustomerModel::class, $result);
         $this->assertEquals(1, $result->getId());
@@ -263,9 +219,56 @@ class TypeMethodTest extends TestCase
         $result = $this->createSut()->invoke(
             CustomerRepositoryInterface::class,
             'getById',
-            ['customerId' => ['method' => __CLASS__ . '::returnOne']]
+            ['customerId' => ['method' => __CLASS__ . 'Class::returnOne']]
         );
         $this->assertInstanceOf(CustomerInterface::class, $result);
         $this->assertEquals(1, $result->getId());
+    }
+}
+
+class TypeMethodTestClass
+{
+    public function returnEmptyArray(): array
+    {
+        return [];
+    }
+
+    public function returnZero(): int
+    {
+        return 0;
+    }
+
+    public function returnOne(): int
+    {
+        return 1;
+    }
+
+    public function throwNoSuchEntityException(): void
+    {
+        throw new NoSuchEntityException();
+    }
+
+    public function expectsSecondArgToBeZero($foo, $bar): bool
+    {
+        if ($bar !== 0) {
+            $this->fail('Expected $bar to be zero, got "' . $bar . '"');
+        }
+        return true;
+    }
+
+    public function expectsFirstArgToBeNull($foo, $bar): bool
+    {
+        if (!is_null($foo)) {
+            $this->fail('Expected $foo to be null, got "' . $foo . '"');
+        }
+        return true;
+    }
+
+    public function expectsFirstArgToBeDefault($foo = 'default', $bar = 0): bool
+    {
+        if ($foo !== 'default') {
+            $this->fail('Expected $foo to be "default", got "' . $foo . '"');
+        }
+        return true;
     }
 }
