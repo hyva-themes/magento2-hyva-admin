@@ -172,11 +172,11 @@
     <xs:simpleType name="templateType">
         <xs:annotation>
             <xs:documentation>A fully qualified module name and a template file path within a modules
-                view/[are]/templates/ folder, separeted by two colons.
+                view/[are]/templates/ folder, separated by two colons.
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:normalizedString">
-            <xs:pattern value="[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*::[a-zA-Z/.-]+\.phtml"/>
+            <xs:pattern value="[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*::[a-zA-Z/.-_]+\.phtml"/>
         </xs:restriction>
     </xs:simpleType>
 
