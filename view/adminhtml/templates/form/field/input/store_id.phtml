@@ -9,7 +9,6 @@ $escaper = $escaper ?? $block;
 $values = null !== $field->getValue()
     ? (is_array($field->getValue()) ? $field->getValue() : [$field->getValue()])
     : [];
-var_dump($values);
 ?>
 <select multiple id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
         form="<?= $field->getFormName() ?>"

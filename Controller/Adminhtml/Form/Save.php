@@ -88,12 +88,11 @@ class Save extends Action implements HttpPostActionInterface
     // Value processors
     // -------------------------------------------------------------------------
 
-    /**
-     * Pour chaque field déclaré dans le XML avec un valueProcessor,
-     * appelle fromFieldValue() sur la valeur POST.
-     * C'est la responsabilité du valueProcessor de gérer les transformations
-     * métier (cast de type, renommage de clé, etc.)
-     */
+	/**
+	* For each field declared in the XML with a valueProcessor,
+	* calls fromFieldValue() on the POST value.
+	* It is the valueProcessor's responsibility to handle business transformations (type casting, key renaming, etc.).
+	*/
     private function applyValueProcessors(array $data, $formDefinition): array
     {
         foreach ($formDefinition->getFieldDefinitions() as $fieldName => $field) {
@@ -168,19 +167,19 @@ class Save extends Action implements HttpPostActionInterface
     {
         $entity = $this->createOrLoadEntity($entityData, $entityType);
 
-        // populateWithArray gère les setters déclarés dans l'interface
+        // populateWithArray handles the setters declared in the interface
         $this->dataObjectHelper->populateWithArray($entity, $entityData, $entityType);
 
-        // Applique les setters magic (__call) pour les données hors interface
-        // ex: setStores() sur CMS Block qui n'est pas dans BlockInterface
+        // Applies magic setters (__call) for data outside the interface
+		// e.g., setStores() on CMS Block that is not in BlockInterface
         $this->applyUnmappedSetters($entity, $entityData);
 
         return $entity;
     }
 
     /**
-     * Appelle les setters via __call pour les clés que populateWithArray ignore
-     * car non déclarées dans l'interface.
+		* Calls setters via __call for keys that populateWithArray ignores
+		* because they are not declared in the interface.
      */
     private function applyUnmappedSetters(object $entity, array $data): void
     {
@@ -191,13 +190,13 @@ class Save extends Action implements HttpPostActionInterface
         foreach ($data as $key => $value) {
             $setter = 'set' . str_replace('_', '', ucwords($key, '_'));
 
-            // Appelle uniquement les setters qui ne sont pas de vraies méthodes
-            // (ceux-là sont déjà gérés par populateWithArray)
+            // Only calls setters that are not true methods
+			// (those are already handled by populateWithArray)
             if (!method_exists($entity, $setter)) {
                 try {
                     $entity->$setter($value);
                 } catch (\Exception $e) {
-                    // Setter non supporté sur cette entité, on ignore
+                   
                 }
             }
         }
@@ -217,7 +216,7 @@ class Save extends Action implements HttpPostActionInterface
                 try {
                     return $repository->getById((int) $id);
                 } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                    // Entité non trouvée → on crée
+                    
                 }
             }
         }
@@ -243,8 +242,8 @@ class Save extends Action implements HttpPostActionInterface
     }
 
     /**
-     * Cherche uniquement les clés explicites 'id' et 'entity_id'.
-     * Pas de regex sur _id pour éviter les faux positifs (store_id, website_id...).
+     * Only searches for explicit 'id' and 'entity_id' keys.
+     * No regular expressions on _id to avoid false positives (store_id, website_id...).
      */
     private function findIdInData(array $data): ?string
     {
