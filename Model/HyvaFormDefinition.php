@@ -90,6 +90,11 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
         return $this->getFormConfig()['navigation'] ?? [];
     }
 
+    public function isKeepAllSourceFields(): bool
+    {
+        return 'true' === ($this->getFormConfig()['fields']['@keepAllSourceFields'] ?? 'false');
+    }
+
     private function getFormConfig(): array
     {
         if (!isset($this->memoizedGridConfig)) {

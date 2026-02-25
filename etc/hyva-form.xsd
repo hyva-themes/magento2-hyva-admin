@@ -117,6 +117,8 @@
     </xs:complexType>
 
     <xs:complexType name="unconstrainedField">
+        <xs:attribute name="label" type="xs:string"/>
+        <xs:attribute name="class" type="xs:string"/>
         <xs:attribute name="name" use="required" type="xs:normalizedString"/>
         <xs:attribute name="type" type="fieldTypeEnum"/>
         <xs:attribute name="template" type="templateType"/>
@@ -221,6 +223,8 @@
         <xs:attribute name="id" type="xs:normalizedString" use="required"/>
         <xs:attribute name="label" type="xs:normalizedString"/>
         <xs:attribute name="url" type="routeType"/>
+        <xs:attribute name="onclick" type="xs:string"/>
+        <xs:attribute name="useajax" type="boolean"/>
         <xs:attribute name="enabled" type="boolean"/>
         <xs:attribute name="hiddenForNewEntity" type="boolean"/>
     </xs:complexType>
@@ -280,6 +284,7 @@
             <xs:enumeration value="text"/>
             <xs:enumeration value="textarea"/>
             <xs:enumeration value="select"/>
+            <xs:enumeration value="multiselect"/>
             <xs:enumeration value="search"/>
             <xs:enumeration value="url"/>
             <xs:enumeration value="tel"/>
@@ -289,12 +294,13 @@
             <xs:enumeration value="number"/>
             <xs:enumeration value="date"/>
             <xs:enumeration value="datetime"/>
+            <xs:enumeration value="store_id"/>
             <xs:enumeration value="month"/>
             <xs:enumeration value="week"/>
             <xs:enumeration value="time"/>
             <xs:enumeration value="checkbox"/>
             <xs:enumeration value="radio"/>
-<!--            <xs:enumeration value="file"/>-->
+            <xs:enumeration value="file"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>

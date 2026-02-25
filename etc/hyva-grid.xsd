@@ -78,6 +78,7 @@
         </xs:sequence>
         <xs:attribute name="idColumn" type="xs:normalizedString"/>
         <xs:attribute name="idsParam" type="xs:normalizedString"/>
+        <xs:attribute name="namespace" type="xs:normalizedString"/>
     </xs:complexType>
 
     <xs:complexType name="actions">

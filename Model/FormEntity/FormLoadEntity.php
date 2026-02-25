@@ -78,6 +78,10 @@ class FormLoadEntity
      * @var MagentoOrmReflection
      */
     private $magentoOrmReflection;
+    /**
+     * @var array
+     */
+    private $dataObjectAttributes;
 
     public function __construct(
         $value,
@@ -90,15 +94,15 @@ class FormLoadEntity
         FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
         MagentoOrmReflection $magentoOrmReflection
     ) {
-        $this->value                           = $value;
-        $this->valueType                       = $valueType;
-        $this->customAttributesExtractor       = $customAttributesExtractor;
+        $this->value = $value;
+        $this->valueType = $valueType;
+        $this->customAttributesExtractor = $customAttributesExtractor;
         $this->extensionAttributeTypeExtractor = $extensionAttributeTypeExtractor;
-        $this->getterMethodsExtractor          = $getterMethodsExtractor;
-        $this->arrayValueExtractor             = $arrayValueExtractor;
-        $this->eavAttributeGroups              = $eavAttributeGroups;
-        $this->formFieldDefinitionFactory      = $formFieldDefinitionFactory;
-        $this->magentoOrmReflection            = $magentoOrmReflection;
+        $this->getterMethodsExtractor = $getterMethodsExtractor;
+        $this->arrayValueExtractor = $arrayValueExtractor;
+        $this->eavAttributeGroups = $eavAttributeGroups;
+        $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
+        $this->magentoOrmReflection = $magentoOrmReflection;
     }
 
     public function getValue()
@@ -122,19 +126,19 @@ class FormLoadEntity
     {
         $fieldValue = $this->getFieldValue($code);
         return $this->formFieldDefinitionFactory->create([
-            'formName'  => $formName,
-            'name'      => $code,
-            'value'     => $fieldValue,
+            'formName' => $formName,
+            'name' => $code,
+            'value' => $fieldValue,
             'valueType' => $this->getFieldValueType($code, $fieldValue),
-            'label'     => $this->getFieldLabel($code),
-            'options'   => $this->getFieldOptions($code),
+            'label' => $this->getFieldLabel($code),
+            'options' => $this->getFieldOptions($code),
             'inputType' => $this->getFieldInputType($code),
-            'groupId'   => $this->getFieldGroup($code),
+            'groupId' => $this->getFieldGroup($code),
             //'hidden' => null,
             //'disabled'  => null,
             //'sortOrder'      => null,
             //'valueProcessor' => null,
-            'template'  => null,
+            'template' => null,
         ]);
     }
 
@@ -144,7 +148,8 @@ class FormLoadEntity
             $this->customAttributes,
             $this->extensionAttributes,
             $this->getterMethodAttributes,
-            $this->arrayKeyAttributes
+            $this->arrayKeyAttributes,
+            $this->dataObjectAttributes  // ← ajout
         );
     }
 
@@ -203,7 +208,28 @@ class FormLoadEntity
                 ? $this->arrayValueExtractor->forArray($this->value)
                 : [];
         }
+
+        // Adds the getData() keys of the DataObject that are not already detected 
+        // Covers cases like 'stores', 'is_active' not present in the interface getters
+        if (!isset($this->dataObjectAttributes)) {
+            $this->dataObjectAttributes = [];
+            if ($this->value instanceof \Magento\Framework\DataObject) {
+                $existingCodes = merge(
+                    $this->customAttributes,
+                    $this->extensionAttributes,
+                    $this->getterMethodAttributes,
+                    $this->arrayKeyAttributes
+                );
+                foreach ($this->value->getData() as $key => $val) {
+                    if (!in_array($key, $existingCodes, true)) {
+                        $this->dataObjectAttributes[] = $key;
+                    }
+                }
+            }
+        }
     }
+
+
 
     private function isCustomAttribute(string $code): bool
     {
@@ -226,11 +252,21 @@ class FormLoadEntity
             return $this->extensionAttributeTypeExtractor->getValue($this->valueType, $code, $this->value);
         }
         if (in_array($code, $this->getterMethodAttributes, true)) {
-            return $this->getterMethodsExtractor->getValue($this->value, $code);
+            $value = $this->getterMethodsExtractor->getValue($this->value, $code);
+            // Fallback getData if getter return null (magic __call, is_ prefix, etc.)
+            if ($value === null && $this->value instanceof \Magento\Framework\DataObject) {
+                $value = $this->value->getData($code) ?? $this->value->getData('is_' . $code);
+            }
+            return $value;
         }
         if (in_array($code, $this->arrayKeyAttributes, true)) {
             return $this->arrayValueExtractor->getValue($this->value, $code);
         }
+        // dataObjectAttributes : read getData
+        if (in_array($code, $this->dataObjectAttributes, true)) {
+            return $this->value->getData($code);
+        }
+        return null;
     }
 
     private function getFieldValueType(string $code, $value): string

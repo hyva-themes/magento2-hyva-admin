@@ -11,6 +11,7 @@ $escaper = $escaper ?? $block;
            id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
            type="checkbox"
            value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"
+           name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
            <?= $field->isRequired() ? 'required' : '' ?>
            <?= $field->isDisabled() ? 'disabled' : '' ?>
            <?= $field->getValue() !== null ? 'checked' : '' ?>

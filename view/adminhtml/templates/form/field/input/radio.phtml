@@ -12,6 +12,7 @@ $escaper = $escaper ?? $block;
     <?php $id = $escaper->escapeHtmlAttr($field->getName() . $i); ?>
 
 <input type="radio" name="<?= $escaper->escapeHtmlAttr($field->getName())?>" id="<?= $id ?>"
+form="<?= $field->getFormName() ?>"
        value="<?= $escaper->escapeHtmlAttr($option['value'])?>"
        <?= $field->getValue() === $option['value'] ? 'checked' : '' ?>
        <?= $field->isDisabled() ? 'disabled' : '' ?> />

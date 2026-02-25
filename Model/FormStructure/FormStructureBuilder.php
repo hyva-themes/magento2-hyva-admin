@@ -8,6 +8,7 @@ use Hyva\Admin\Model\FormEntity\FormLoadEntity;
 use Hyva\Admin\Model\HyvaFormDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
 use function array_filter as filter;
+use function array_intersect_key as intersectKeys;
 
 class FormStructureBuilder
 {
@@ -72,6 +73,11 @@ class FormStructureBuilder
     ): FormStructure {
         $fieldsFromEntity = $formEntity->getFieldDefinitions($formName);
         $fieldsFromConfig = $formDefinition->getFieldDefinitions();
+
+        if (! $formDefinition->isKeepAllSourceFields()) {
+            $fieldsFromEntity = intersectKeys($fieldsFromEntity, $fieldsFromConfig);
+        }
+
         $allFields        = $this->mergeFormFieldDefinitionMaps->merge($fieldsFromEntity, $fieldsFromConfig);
 
         $enabledFields = filter($allFields, [$this, 'isVisible']);

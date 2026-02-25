@@ -103,6 +103,7 @@ class FormXmlToArrayConverter
     {
         return filter(merge(
             XmlToArray::getAttributeConfig($fieldElement, 'name'),
+            XmlToArray::getAttributeConfig($fieldElement, 'class'),
             XmlToArray::getAttributeConfig($fieldElement, 'type'),
             XmlToArray::getAttributeConfig($fieldElement, 'group', 'groupId'),
             XmlToArray::getAttributeConfig($fieldElement, 'pattern'),
@@ -211,6 +212,8 @@ class FormXmlToArrayConverter
             XmlToArray::getAttributeConfig($buttonElement, 'label'),
             XmlToArray::getAttributeConfig($buttonElement, 'url'),
             XmlToArray::getAttributeConfig($buttonElement, 'enabled'),
+            XmlToArray::getAttributeConfig($buttonElement, 'onclick'),
+            XmlToArray::getAttributeConfig($buttonElement, 'useajax'),
             XmlToArray::getAttributeConfig($buttonElement, 'hiddenForNewEntity'),
         ));
     }

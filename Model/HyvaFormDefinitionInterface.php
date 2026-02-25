@@ -37,4 +37,6 @@ interface HyvaFormDefinitionInterface
      * @return mixed[]
      */
     public function getNavigationConfig(): array;
+
+    public function isKeepAllSourceFields(): bool;
 }

@@ -15,6 +15,7 @@ $escaper = $escaper ?? $block;
 <input form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
        type="<?= $field->getInputType() ?>>"
        value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"
+       name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
     <?= $field->isRequired() ? 'required' : '' ?>
     <?= $field->isDisabled() ? 'disabled' : '' ?>
     <?php if ($field->getMin() !== null) {

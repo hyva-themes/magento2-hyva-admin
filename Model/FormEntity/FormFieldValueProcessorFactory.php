@@ -23,7 +23,7 @@ class FormFieldValueProcessorFactory
         return $processor;
     }
 
-    private function validateInstance(string $processor, string $fieldName): void
+    private function validateInstance(FormFieldValueProcessorInterface $processor, string $fieldName): void
     {
         if (!$processor instanceof FormFieldValueProcessorInterface) {
             $message = sprintf(
