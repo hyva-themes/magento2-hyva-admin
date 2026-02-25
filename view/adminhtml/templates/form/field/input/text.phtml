@@ -12,8 +12,10 @@
 $escaper = $escaper ?? $block;
 
 ?>
+
 <input form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
-       type="<?= $field->getInputType() ?>>"
+       name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+       type="<?= $field->getInputType() ?>"
        value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"
        <?= $field->isRequired() ? 'required' : '' ?>
        <?= $field->isDisabled() ? 'disabled' : '' ?>
@@ -26,4 +28,4 @@ $escaper = $escaper ?? $block;
        <?php if ($field->getPattern() !== null) {
            printf('pattern="%s"', $escaper->escapeHtmlAttr($field->getPattern()));
        } ?>
-       class="w-5/6 text-base"/>
+       class="w-5/6 text-base block rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"/>

@@ -101,6 +101,9 @@ class FormGroup implements FormGroupInterface
         return $this->sortOrder;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isOnlyDefaultGroup(): bool
     {
         return $this->isOnlyDefaultGroup;

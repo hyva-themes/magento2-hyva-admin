@@ -13,6 +13,7 @@ $escaper = $escaper ?? $block;
 
 ?>
 <input form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
        type="<?= $field->getInputType() ?>>"
        value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"
     <?= $field->isRequired() ? 'required' : '' ?>

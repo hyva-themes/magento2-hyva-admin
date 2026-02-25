@@ -58,6 +58,11 @@ class HyvaFormViewModel implements HyvaFormInterface
      */
     private $memoizedFormStructure;
 
+    /**
+     * @var FormLoadEntity|null
+     */
+    private $saveEntity;
+
     public function __construct(
         string $formName,
         HyvaFormDefinitionInterfaceFactory $formDefinitionFactory,
@@ -117,6 +122,23 @@ class HyvaFormViewModel implements HyvaFormInterface
             );
         }
         return $this->loadedEntity;
+    }
+
+    public function getSaveEntity(): FormLoadEntity
+    {
+        if (!isset($this->saveEntity)) {
+            $this->saveEntity = $this->formEntityRepository->fetchTypeAndMethod(
+                $this->getFormSource()->getSaveMethodName(),
+                $this->getFormSource()->getSaveBindArgumentConfig(),
+                $this->getFormSource()->getSaveType()
+            );
+        }
+        return $this->saveEntity;
+    }
+
+    public function getSaveConfig(): array
+    {
+        return $this->getFormDefinition()->getSaveConfig();
     }
 
     private function getFormDefinition(): HyvaFormDefinitionInterface

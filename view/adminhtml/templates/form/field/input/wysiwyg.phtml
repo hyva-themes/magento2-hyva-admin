@@ -1,10 +1,53 @@
 <?php declare(strict_types=1);
+use Hyva\Admin\ViewModel\HyvaForm\Field\Wysiwyg;
 
-/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Backend\Block\Template $block */
 /** @var \Magento\Framework\Escaper $escaper */
 /** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+/** @var \Hyva\Theme\Model\ViewModelRegistry $viewModels */
 
 $escaper = $escaper ?? $block;
-
+$fieldName = $field->getName();
+$fieldId   = $fieldName . '_wysiwyg';
+$wysiwyg = $viewModels->require(Wysiwyg::class);
+$wysiwygConfig = $wysiwyg->getWysiwygConfig($fieldId);
 ?>
-The wysiwyg input type is not yet implemented.
+<div class="wysiwyg-container w-full" id="<?= $escaper->escapeHtmlAttr($fieldId) ?>_container">
+    <textarea
+        id="<?= $escaper->escapeHtmlAttr($fieldId) ?>"
+        name="<?= $escaper->escapeHtmlAttr($fieldName) ?>"
+        form="<?= $field->getFormName() ?>"
+        class="w-full admin__control-textarea"
+        rows="20"
+        <?= $field->isDisabled() ? 'disabled' : '' ?>
+    ><?= $escaper->escapeHtml($field->getValue()) ?></textarea>
+</div>
+<script>
+require([
+    'jquery',
+    'mage/adminhtml/wysiwyg/tiny_mce/setup',
+    'mage/translate'
+], function ($, tinyMceWysiwygSetup) {
+    'use strict';
+
+    var config = <?= /* @noEscape */ json_encode($wysiwygConfig->getData()) ?>;
+    config.textarea_id = '<?= $escaper->escapeJs($fieldId) ?>';
+
+    var wysiwygSetup = new tinyMceWysiwygSetup(
+        '<?= $escaper->escapeJs($fieldId) ?>',
+        config
+    );
+
+    wysiwygSetup.setup('exact');
+
+    var formId = '<?= $escaper->escapeJs($field->getFormName()) ?>';
+    $('#' + formId).on('submit', function () {
+        if (typeof tinyMCE !== 'undefined') {
+            tinyMCE.triggerSave();
+        }
+    });
+
+    window.wysiwygEditors = window.wysiwygEditors || {};
+    window.wysiwygEditors['<?= $escaper->escapeJs($fieldId) ?>'] = wysiwygSetup;
+});
+</script>

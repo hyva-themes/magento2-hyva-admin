@@ -44,9 +44,10 @@ $rows       = $grid->getRows();
         <div class="flex items-center mb-4 gap-x-8">
             <?php if ($massActions = $grid->getMassActions()): ?>
                 <?php $massActionFormId = 'hyva-grid-massaction-' . $grid->getGridName() ?>
-            <form id="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>"
+                <form id="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>"
                   x-ref="massaction-form"
-                  method="post">
+                  method="post"
+                  data-namespace="<?= $escaper->escapeHtmlAttr($grid->getMassActionNamespace() ?? '') ?>">
                 <?= $block->getBlockHtml('formkey'); ?>
                 <label for="massAction<?= /** @noEscape */
                 $uniqueId ?>"
@@ -379,6 +380,16 @@ $rows       = $grid->getRows();
                     form.append(input);
                 });
 
+                // Add namespace parameter if configured
+                const namespace = form.getAttribute('data-namespace');
+                if (namespace) {
+                    const namespaceInput = document.createElement('input');
+                    namespaceInput.type = 'hidden';
+                    namespaceInput.name = 'namespace';
+                    namespaceInput.value = namespace;
+                    form.append(namespaceInput);
+                }
+                
                 form.action = url;
 
                 this.resetFormState();
@@ -405,11 +416,11 @@ $rows       = $grid->getRows();
             },
 
             getFormUriEncoded(form) {
-                const url = new URL(form.action);
-                Array.from(form.elements).forEach(
-                    input => url.searchParams.set(input.name, input.value)
-                );
-                return url.toString();
+                const url = form.action;
+                const encodedFields = Array.from(form.elements)
+                    .map(input => encodeURIComponent(input.name) + '=' + encodeURIComponent(input.value))
+                    .join('&');
+                return url + (url.includes('?') ? '&' : '?') + encodedFields;
             },
 
             updateGrid(url) {

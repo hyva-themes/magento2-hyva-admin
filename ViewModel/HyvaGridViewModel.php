@@ -346,6 +346,11 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
         return $this->getGridDefinition()->getMassActionConfig()['@idsParam'] ?? $this->getMassActionIdColumn();
     }
 
+    public function getMassActionNamespace(): ?string
+    {
+        return $this->getGridDefinition()->getMassActionConfig()['@namespace'] ?? 'hyva_massaction';
+    }
+
     public function getColumnToggleHtml(): string
     {
         $renderer = $this->createRenderer();

@@ -9,48 +9,137 @@ $form       = $block->getForm();
 $uniqueId   = '_' . md5($form->getFormName());
 $navigation = $form->getNavigation();
 $buttons    = $navigation->getButtons();
+   
 ?>
 <script>
     function init_form_<?= $uniqueId ?>() {
         return {
+            formKey: '',
             activeSection: '<?= $form->getDefaultActiveSectionId() ?>',
-            activeGroups: <?= json_encode($form->getDefaultActiveGroupsMap()) ?>,
-            isActiveGroup: function(section, group) {
+            activeGroups: <?= json_encode($form -> getDefaultActiveGroupsMap()) ?>,
+            isActiveGroup: function (section, group) {
                 return this.activeGroups[section] === group;
+            },
+            init() {
+                this.formKey = window.FORM_KEY;
+            },
+            submitForm: function (event, action) {
+                const formElement = this.$el;
+                const button = event?.target || event?.currentTarget;
+
+                if (!formElement) { return; }
+                if (button && button.getAttribute && button.getAttribute('attr-ajax') === 'true') {
+                    this.ajaxFormUpdate(action || formElement.action);
+                } else {
+                    if (action && typeof action === 'string') {
+                        if (action.indexOf('/') !== -1 || action.indexOf(':') !== -1) {
+                            formElement.action = action;
+                        }
+                    }
+                    formElement.submit();
+                }
+            },
+
+            ajaxFormUpdate(url) {
+                this.loading = true;
+                const msgId = 'ajax-form-message<?= $uniqueId ?>';
+                let div = document.getElementById(msgId);
+                const formElement = this.$el;
+
+                // hide the dedicated container if present (fade out previous message)
+                const container = document.getElementById('ajax-form-messages<?= $uniqueId ?>');
+                if (container) {
+                    container.classList.replace('opacity-100', 'opacity-0');
+                } else if (div) {
+                    div.classList.replace('opacity-100', 'opacity-0');
+                }
+                // Sync tous les éditeurs TinyMCE du formulaire avant de sérialiser
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.triggerSave();
+                }
+
+                const formData = new FormData(formElement);
+                formData.append('is_ajax', 'true');
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(responseBody => {
+                        this.loading = false;
+                        const container = document.getElementById('ajax-form-messages<?= $uniqueId ?>');
+                        const type = responseBody.success ? 'success' : 'error';
+                        if (container) {
+                            container.className = `message message-${type} ${type} opacity-0 transition-all duration-500 ease-out  py-2`;
+                            container.innerHTML = `<div data-ui-id="message-${type}">${responseBody.message}</div>`;
+                            setTimeout(() => {
+                                container.classList.replace('opacity-0', 'opacity-100');
+                            }, 200);
+                        } else {
+                            let msgDiv = document.getElementById(msgId);
+                            if (!msgDiv) {
+                                msgDiv = document.createElement('div');
+                                msgDiv.id = msgId;
+                                document.body.insertBefore(msgDiv, formElement);
+                            }
+                            msgDiv.className = `message message-${type} ${type} opacity-0 transition-all duration-500 ease-out`;
+                            msgDiv.innerHTML = `<div data-ui-id="message-${type}">${responseBody.message}</div>`;
+                            setTimeout(() => {
+                                msgDiv.classList.replace('opacity-0', 'opacity-100');
+                            }, 200);
+                        }
+                        if (responseBody.grid_html) {
+                            const gridContainer = document.querySelector('.ajaxGridContainer');
+                            if (gridContainer && typeof ajaxGridUpdate === 'function') {
+                                ajaxGridUpdate(url);
+                            }
+                        }
+                    })
+                    .catch(console.error);
             }
         }
     }
 </script>
-<!-- Hyva_Admin form "<?= $escaper->escapeHtml($form->getFormName()) ?>" -->
-<form x-data="init_form_<?= $uniqueId ?>()">
+<form x-data="init_form_<?= $uniqueId ?>()" x-init="init()" method="POST"
+    id="<?= $escaper->escapeHtml($form->getFormName()) ?>">
+    <!-- CSRF Token -->
+    <input type="hidden" name="form_key" x-model="formKey">
+    <input type="hidden" name="form_name" value="<?= $escaper->escapeHtml($form->getFormName()) ?>">
+
     <div class="hyva-admin-form">
         <div class="max-w-full px-0 py-6 mx-auto">
 
-            <div>
+            <div class="mb-6 flex justify-end gap-4">
+                <!-- container for ajax messages; always present above the form -->
+                <div id="ajax-form-messages<?= $uniqueId ?>" class="messages"></div>
                 <?php foreach ($navigation->getButtons() as $button): ?>
-                    <?= $button->getHtml() ?>
+                <?= $button->getHtml() ?>
                 <?php endforeach; ?>
             </div>
 
             <div class="flex flex-col md:flex-row">
-                <?php if ($form->hasDeclaredSections()): ?>
-                    <div class="w-screen max-w-sm mr-10">
-                        <?php foreach ($form->getSections() as $section): ?>
-                            <div class="border border-gray-400 -mb-px py-2 px-10 text-center cursor-pointer"
-                                @click="activeSection = '<?= $section->getId() ?>'"
-                                 x-bind:class="{ 'font-bold': activeSection === '<?= $section->getId() ?>' }">
-                                <?= $escaper->escapeHtml($section->getLabel()) ?>
-                            </div>
-                        <?php endforeach; ?>
+                <?php if ($form->hasDeclaredSections() && count($form->getSections()) > 1): ?>
+                <div class="w-screen max-w-sm mr-10">
+                    <?php foreach ($form->getSections() as $section): ?>
+                    <div class="border border-gray-400 -mb-px py-2 px-10 text-center cursor-pointer"
+                        @click="activeSection = '<?= $section->getId() ?>'"
+                        x-bind:class="{ 'font-bold': activeSection === '<?= $section->getId() ?>' }">
+                        <?= $escaper->escapeHtml($section->getLabel()) ?>
                     </div>
+                    <?php endforeach; ?>
+                </div>
                 <?php endif; ?>
 
                 <div class="flex-grow">
                     <?php foreach ($form->getSections() as $section): ?>
                         <div class="section-<?= $section->getId() ?>"
                              x-show="activeSection === '<?= $section->getId()?>'">
-                            <?= $section->getHtml() ?>
-                        </div>
+                        <?= $section->getHtml() ?>
+                    </div>
                     <?php endforeach; ?>
                 </div>
             </div>

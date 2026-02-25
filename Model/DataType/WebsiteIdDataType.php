@@ -26,10 +26,10 @@ class WebsiteIdDataType implements DataTypeValueToStringConverterInterface
     {
         $websiteIds = is_array($value) ? $value : [$value];
 
-        return in_array(0, $websiteIds) && count($websiteIds) === 1
+		return in_array(0, $websiteIds) && count($websiteIds) === 1
             ? $this->getAllWebsitesLabel()
             : implode(', ', map(function ($websiteId): string {
-                return $this->systemStore->getWebsiteName($websiteId);
+                return $this->systemStore->getWebsiteName($websiteId) ?? (string) $websiteId;
             }, $websiteIds));
     }
 

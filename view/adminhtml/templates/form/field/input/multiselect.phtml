@@ -13,9 +13,10 @@ $values = null !== $field->getValue()
 ?>
 <select multiple id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
         form="<?= $field->getFormName() ?>"
+        name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
         <?= $field->isRequired() ? 'required' : '' ?>
         <?= $field->isDisabled() ? 'disabled' : '' ?>
-        class="w-5/6 text-base">
+        class="w-5/6 text-base rounded-md">
     <?php foreach ($field->getOptions() as $option): ?>
     <option value="<?= $escaper->escapeHtmlAttr($option['value']) ?>" <?=
     in_array($option['value'], $values, true) ? 'selected' : ''

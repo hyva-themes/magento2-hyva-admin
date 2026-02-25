@@ -16,5 +16,6 @@ $escaper = $escaper ?? $block;
     <input form="<?= $field->getFormName() ?>"
            id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
            type="hidden"
+           name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
            x-bind:value="isActive ? 1 : 0"/>
 </div>

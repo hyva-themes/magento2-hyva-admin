@@ -5,6 +5,7 @@ namespace Hyva\Admin\ViewModel\HyvaForm;
 interface FormFieldDefinitionInterface
 {
     public function getName(): string;
+    public function getClass(): ?string;
 
     public function getLabel(): string;
 

@@ -79,6 +79,12 @@ This is because they depends on the grid source type that is being used.
   * `$source`: `MagentoFrameworkDBSelect` instance after search criteria is applied
   * `$rawResult`: Query result array with the structure `['data' => $rows, 'count' => $count]`
 
+> **Note:** a single processor class may be used on different kinds of grids (see the
+> sample project where the same `ProductGridQueryProcessor` is wired to both a query
+> grid and a repository grid). Because the concrete type of `$source` varies you
+> should always guard against incorrect assumptions – typically by checking the
+> instance before touching the object (e.g. `if ($source instanceof \Magento\Framework\DB\Select)`).
+
 ### SearchCriteriaInterface $searchCriteria
 
 The `SearchCriteriaInterface` instance with all the filters, pagination and sorting values that should be applied for the current grid view.

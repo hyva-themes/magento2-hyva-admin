@@ -28,6 +28,11 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
     private $name;
 
     /**
+     * @var string
+     */
+    private $class;
+
+    /**
      * @var string|null
      */
     private $label;
@@ -185,60 +190,63 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         ?bool $hidden = null,
         bool $renderAsSingleColumn = null,
         ?string $valueProcessor = null,
-        ?int $sortOrder = null
+        ?int $sortOrder = null,
+        ?string $class = null
     ) {
-        $this->layout                     = $layout;
+        $this->layout = $layout;
         $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
         $this->fieldValueProcessorFactory = $fieldValueProcessorFactory;
-        $this->sourceModelFactory         = $sourceModelFactory;
-        $this->formName                   = $formName;
-        $this->name                       = $name;
-        $this->valueType                  = $valueType;
-        $this->value                      = $value;
-        $this->label                      = $label;
-        $this->source                     = $source;
-        $this->inputType                  = $inputType;
-        $this->groupId                    = $groupId;
-        $this->template                   = $template;
-        $this->disabled                   = $disabled;
-        $this->hidden                     = $hidden;
-        $this->renderAsSingleColumn       = $renderAsSingleColumn;
-        $this->valueProcessor             = $valueProcessor;
-        $this->sortOrder                  = $sortOrder;
-        $this->pattern                    = $pattern;
-        $this->required                   = $required;
-        $this->minlength                  = $minlength;
-        $this->maxlength                  = $maxlength;
-        $this->min                        = $min;
-        $this->max                        = $max;
-        $this->step                       = $step;
+        $this->sourceModelFactory = $sourceModelFactory;
+        $this->formName = $formName;
+        $this->name = $name;
+        $this->valueType = $valueType;
+        $this->value = $value;
+        $this->label = $label;
+        $this->source = $source;
+        $this->inputType = $inputType;
+        $this->groupId = $groupId;
+        $this->template = $template;
+        $this->disabled = $disabled;
+        $this->hidden = $hidden;
+        $this->renderAsSingleColumn = $renderAsSingleColumn;
+        $this->valueProcessor = $valueProcessor;
+        $this->sortOrder = $sortOrder;
+        $this->pattern = $pattern;
+        $this->required = $required;
+        $this->minlength = $minlength;
+        $this->maxlength = $maxlength;
+        $this->min = $min;
+        $this->max = $max;
+        $this->step = $step;
+        $this->class = $class;
     }
 
     public function toArray(): array
     {
-        return filter([
-            'formName'             => $this->formName,
-            'name'                 => $this->name,
-            'valueType'            => $this->valueType,
-            'value'                => $this->value,
-            'label'                => $this->label,
-            'source'               => $this->source,
-            'inputType'            => $this->inputType,
-            'groupId'              => $this->groupId,
-            'template'             => $this->template,
-            'disabled'             => $this->disabled,
-            'hidden'               => $this->hidden,
+        return array_filter([
+            'formName' => $this->formName,
+            'name' => $this->name,
+            'valueType' => $this->valueType,
+            'value' => $this->value,
+            'label' => $this->label,
+            'source' => $this->source,
+            'inputType' => $this->inputType,
+            'groupId' => $this->groupId,
+            'template' => $this->template,
+            'disabled' => $this->disabled,
+            'hidden' => $this->hidden,
             'renderAsSingleColumn' => $this->renderAsSingleColumn,
-            'valueProcessor'       => $this->valueProcessor,
-            'sortOrder'            => $this->sortOrder,
-            'pattern'              => $this->pattern,
-            'required'             => $this->required,
-            'minlength'            => $this->minlength,
-            'maxlength'            => $this->maxlength,
-            'min'                  => $this->min,
-            'max'                  => $this->max,
-            'step'                 => $this->step,
-        ]);
+            'valueProcessor' => $this->valueProcessor,
+            'sortOrder' => $this->sortOrder,
+            'pattern' => $this->pattern,
+            'required' => $this->required,
+            'minlength' => $this->minlength,
+            'maxlength' => $this->maxlength,
+            'min' => $this->min,
+            'max' => $this->max,
+            'step' => $this->step,
+            'class' => $this->class,
+        ], fn($v) => $v !== null);
     }
 
     public function merge(FormFieldDefinitionInterface $field): FormFieldDefinitionInterface
@@ -256,6 +264,10 @@ class FormFieldDefinition implements FormFieldDefinitionInterface
         return $this->label ?? ucwords(str_replace('_', ' ', $this->getName()));
     }
 
+    public function getClass(): ?string
+    {
+        return $this->class;
+    }
     public function getValue()
     {
         return $this->valueProcessor

@@ -7,6 +7,7 @@
         <!-- overridden to add AlpineJs before requireJs loads -->
         <referenceBlock name="require.js" template="Hyva_Admin::page/js/require_js.phtml">
             <arguments>
+                <argument name="alpinejs_path" xsi:type="string">Hyva_Admin::js/alpine.js</argument>
                 <argument name="secure_html_renderer_polyfill" xsi:type="object">\Hyva\Admin\Model\Polyfill\SecureHtmlRenderer</argument>
             </arguments>
         </referenceBlock>

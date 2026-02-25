@@ -90,10 +90,10 @@ class FormGroupsBuilder
         $fieldsInGroup = filter($fields, function (FormFieldDefinitionInterface $field) use ($groupConfig): bool {
             return in_array($field->getName(), $groupConfig['fieldIds'], true);
         });
-        return $this->formGroupFactory->create(merge($groupConfig, [
-            'fields'    => $fieldsInGroup,
-            'label'     => $groupConfig['label'] ?? null,
-            'sectionId' => $groupConfig['sectionId'] ?? FormSectionInterface::DEFAULT_SECTION_ID,
+            return $this->formGroupFactory->create(merge($groupConfig, [
+                'fields'    => $fieldsInGroup,
+                'label'     => $groupConfig['label'] ?? null,
+                'sectionId' => $groupConfig['sectionId'] ?? FormSectionInterface::DEFAULT_SECTION_ID,
         ]));
     }
 
@@ -142,16 +142,14 @@ class FormGroupsBuilder
 
     private function hasOnlyDefaultGroup(array $groupIdToConfigsMap): bool
     {
-        return count($groupIdToConfigsMap) == 1
-            && isset($groupIdToConfigsMap[FormGroupInterface::DEFAULT_GROUP_ID])
-            && !$this->isGroupWithConfiguration($groupIdToConfigsMap[FormGroupInterface::DEFAULT_GROUP_ID]);
+        return count($groupIdToConfigsMap) === 1;
     }
 
     private function addOnlyDefaultGroupFlagToGroupConfig(array $groupIdToConfigsMap): array
     {
         $hasOnlyDefaultGroup = $this->hasOnlyDefaultGroup($groupIdToConfigsMap);
         return map(function (array $config) use ($hasOnlyDefaultGroup): array {
-            $config['isOnlyDefaultGroup'] = $hasOnlyDefaultGroup;
+                $config['isOnlyDefaultGroup'] = $hasOnlyDefaultGroup;
             return $config;
         }, $groupIdToConfigsMap);
     }
