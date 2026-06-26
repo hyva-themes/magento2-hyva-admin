@@ -176,7 +176,7 @@
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:normalizedString">
-            <xs:pattern value="[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*::[a-zA-Z/.-_]+\.phtml"/>
+            <xs:pattern value="[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*::[a-zA-Z/._-]+\.phtml"/>
         </xs:restriction>
     </xs:simpleType>
 
