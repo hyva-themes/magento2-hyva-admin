@@ -27,6 +27,13 @@ use function array_values as values;
  */
 class FormLoadEntityRepositoryTest extends TestCase
 {
+    const TEST_FORM_NAME = 'test';
+
+    public function aTestMethod()
+    {
+        return 0;
+    }
+
     private function getCmsBlockFixtureBlockId(): int
     {
         /** @var BlockRepositoryInterface $blockRepository */
@@ -48,10 +55,10 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsLoadedEntity(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
-        $result = $sut->fetchTypeAndMethod(__CLASS__ . 'Class::aTestMethod', [], 'int');
+        $sut    = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $result = $sut->fetchTypeAndMethod(__CLASS__ . '::aTestMethod', [], 'int');
         $this->assertSame(0, $result->getValue());
-        $this->assertSame([], $result->getFieldDefinitions());
+        $this->assertSame([], $result->getFieldDefinitions(self::TEST_FORM_NAME));
     }
 
     /**
@@ -60,15 +67,15 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsCustomerAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut           = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = ['customerId' => ['value' => 1]];
-        $result = $sut->fetchTypeAndMethod(
+        $result        = $sut->fetchTypeAndMethod(
             CustomerRepositoryInterface::class . '::getById',
             $bindArguments,
             CustomerInterface::class
         );
         $this->assertInstanceOf(CustomerInterface::class, $result->getValue());
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
 
         // system attribute
         $this->assertContainsField('firstname', $fields);
@@ -86,15 +93,15 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsCmsBlockAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut     = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = ['blockId' => ['value' => $this->getCmsBlockFixtureBlockId()]];
-        $result = $sut->fetchTypeAndMethod(
+        $result        = $sut->fetchTypeAndMethod(
             BlockRepositoryInterface::class . '::getById',
             $bindArguments,
             BlockInterface::class
         );
         $this->assertInstanceOf(BlockInterface::class, $result->getValue());
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
 
         $this->assertContainsField(BlockInterface::IDENTIFIER, $fields);
         $this->assertContainsField(BlockInterface::TITLE, $fields);
@@ -106,15 +113,15 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsProductAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut     = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = ['sku' => ['value' => 'simple']];
-        $result = $sut->fetchTypeAndMethod(
+        $result        = $sut->fetchTypeAndMethod(
             ProductRepositoryInterface::class . '::get',
             $bindArguments,
             ProductInterface::class
         );
         $this->assertInstanceOf(ProductInterface::class, $result->getValue());
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
 
         // system attribute
         $this->assertContainsField('sku', $fields);
@@ -133,19 +140,19 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsOrderAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut     = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = [
             'value' => ['value' => '100000001'],
-            'field' => ['value' => 'increment_id'],
+            'field' => ['value' => 'increment_id']
         ];
-        $result = $sut->fetchTypeAndMethod(
+        $result        = $sut->fetchTypeAndMethod(
             OrderResourceModel::class . '::load',
             $bindArguments,
             OrderModel::class
         );
         $this->assertInstanceOf(OrderModel::class, $result->getValue());
 
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
         $this->assertContainsField('id', $fields);
         $this->assertContainsField('customer', $fields);
     }
@@ -156,28 +163,20 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsStoreAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut     = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = [
             'code' => ['value' => 'test'],
         ];
-        $result = $sut->fetchTypeAndMethod(
+        $result        = $sut->fetchTypeAndMethod(
             StoreRepositoryInterface::class . '::get',
             $bindArguments,
             StoreInterface::class
         );
         $this->assertInstanceOf(StoreInterface::class, $result->getValue());
 
-        $fields = $result->getFieldDefinitions();
+        $fields = $result->getFieldDefinitions(self::TEST_FORM_NAME);
         $this->assertContainsField('id', $fields);
         $this->assertContainsField('name', $fields);
         $this->assertContainsField('store_group_id', $fields);
-    }
-}
-
-class FormLoadEntityRepositoryTestClass
-{
-    public function aTestMethod()
-    {
-        return 0;
     }
 }

@@ -133,6 +133,7 @@ class FormSource
         $formDataArguments     = filter($this->getSaveBindArgumentConfig(), $isFormDataArgument);
         $formDataArgumentNames = keys($formDataArguments);
         // TODO: ignore optional arguments, see \Hyva\Admin\Model\TypeReflection\MethodsMap::isMethodValidSetter
+        // revisit when implementing the form post/save process
         if (count($formDataArguments) > 1) {
             $msg = sprintf(
                 'Error on form "%s": only one formData save argument allowed but found: %s',

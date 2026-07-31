@@ -2,17 +2,13 @@
 
 namespace Hyva\Admin\Model\FormStructure;
 
+use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
+use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterfaceFactory;
 use Hyva\Admin\Model\FormEntity\FormLoadEntity;
 use Hyva\Admin\Model\HyvaFormDefinitionInterface;
-use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface as FieldDefinition;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
-
-use function array_column as pick;
 use function array_filter as filter;
-use function array_keys as keys;
-use function array_map as map;
-use function array_merge as merge;
-use function array_values as values;
+use function array_intersect_key as intersectKeys;
 
 class FormStructureBuilder
 {
@@ -21,74 +17,79 @@ class FormStructureBuilder
      */
     private $formFieldDefinitionFactory;
 
-    public function __construct(FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory)
-    {
-        $this->formFieldDefinitionFactory = $formFieldDefinitionFactory;
-    }
+    /**
+     * @var MergeFormFieldDefinitionMaps
+     */
+    private $mergeFormFieldDefinitionMaps;
 
-    public function buildStructure(
-        HyvaFormDefinitionInterface $formDefinition,
-        FormLoadEntity $formEntity
-    ): FormStructure {
-        // This is the outline for algorithm to build the form structure of sections, groups and fields.
-        // It is likely this might be moved to a different location once it's done.
-        $fieldsFromEntity = $formEntity->getFieldDefinitions();
-        $fieldsFromConfig = $formDefinition->getFieldDefinitions();
+    /**
+     * @var FormSectionInterfaceFactory
+     */
+    private $formSectionFactory;
 
-        $fields = $this->mergeFieldDefinitions($fieldsFromEntity, $fieldsFromConfig);
+    /**
+     * @var FormStructureFactory
+     */
+    private $formStructureFactory;
 
-        $groupIdsFromFields   = map(function (FieldDefinition $f): ?string {
-            return $f->getGroupId();
-        }, $fields);
-        $groupIdsFromSections = $this->getGroupIdsFromSections($formDefinition->getSectionsConfig());
+    /**
+     * @var FormGroupsBuilder
+     */
+    private $formGroupsBuilder;
 
-        $fieldToGroupMap  = $this->buildFieldToGroupMap($fields);
-        $groupToFieldsMap = $this->buildGroupToFieldsMap($fieldToGroupMap);
+    /**
+     * @var FormSectionsBuilder
+     */
+    private $formSectionsBuilder;
 
-        $sectionsFromConfig = $this->getSectionsFromConfig($formDefinition->getSectionsConfig());
-
-        $groupToSectionMap = $this->buildGroupToSectionMap($sectionsFromConfig, $groupToFieldsMap);
-
-        $sectionToGroupsMap = $this->buildSectionToGroupsMap($groupToSectionMap);
-
+    public function __construct(
+        FormFieldDefinitionInterfaceFactory $formFieldDefinitionFactory,
+        MergeFormFieldDefinitionMaps $mergeFormFieldDefinitionMaps,
+        FormGroupsBuilder $formGroupsBuilder,
+        FormSectionsBuilder $formSectionsBuilder,
+        FormSectionInterfaceFactory $formSectionFactory,
+        FormStructureFactory $formStructureFactory
+    ) {
+        $this->formFieldDefinitionFactory   = $formFieldDefinitionFactory;
+        $this->mergeFormFieldDefinitionMaps = $mergeFormFieldDefinitionMaps;
+        $this->formGroupsBuilder            = $formGroupsBuilder;
+        $this->formSectionsBuilder          = $formSectionsBuilder;
+        $this->formSectionFactory           = $formSectionFactory;
+        $this->formStructureFactory         = $formStructureFactory;
     }
 
     /**
-     * @param FieldDefinition[] $fieldsFromEntity
-     * @param FieldDefinition[] $fieldsFromConfig
-     * @return FieldDefinition[]
+     * This is the algorithm to build the form structure of sections, groups and fields.
+     *
+     * Any groups without fields are dropped.
+     * Any sections without groups are dropped.
+     * If a field has no group, it is assigned to a group with an empty string id ''.
+     * If a group has no section, it is assigned to a section with an empty string id ''.
      */
-    private function mergeFieldDefinitions(array $fieldsFromEntity, array $fieldsFromConfig): array
-    {
-        $fieldsOnlyInEntity = array_diff_key($fieldsFromEntity, $fieldsFromConfig);
-        $fieldsOnlyInConfig = array_diff_key($fieldsFromConfig, $fieldsFromEntity);
-        $fieldsInBoth       = array_intersect(keys($fieldsFromEntity), keys($fieldsFromConfig));
+    public function buildStructure(
+        string $formName,
+        HyvaFormDefinitionInterface $formDefinition,
+        FormLoadEntity $formEntity
+    ): FormStructure {
+        $fieldsFromEntity = $formEntity->getFieldDefinitions($formName);
+        $fieldsFromConfig = $formDefinition->getFieldDefinitions();
 
-        return merge(
-            $fieldsOnlyInConfig,
-            map(
-                [$this, 'mergeFieldDefinition'],
-                filter($fieldsOnlyInEntity, function (FieldDefinition $f) use ($fieldsInBoth) {
-                    return in_array($f->getName(), $fieldsInBoth);
-                }),
-                filter($fieldsOnlyInConfig, function (FieldDefinition $f) use ($fieldsInBoth) {
-                    return in_array($f->getName(), $fieldsInBoth);
-                })
-            ),
-            $fieldsOnlyInEntity
-        );
+        if (! $formDefinition->isKeepAllSourceFields()) {
+            $fieldsFromEntity = intersectKeys($fieldsFromEntity, $fieldsFromConfig);
+        }
+
+        $allFields        = $this->mergeFormFieldDefinitionMaps->merge($fieldsFromEntity, $fieldsFromConfig);
+
+        $enabledFields = filter($allFields, [$this, 'isVisible']);
+
+        $groups   = $this->formGroupsBuilder->buildGroups($enabledFields, $formDefinition->getGroupsFromSections());
+        $sections = $this->formSectionsBuilder->buildSections($formName, $formDefinition->getSectionsConfig(), $groups);
+
+        return $this->formStructureFactory->create(['formName' => $formName, 'sections' => $sections]);
     }
 
-    private function mergeFieldDefinition(FieldDefinition $entityField, FieldDefinition $configField): FieldDefinition
+    private function isVisible(FormFieldDefinitionInterface $field): bool
     {
-        return $entityField->merge($configField);
+        return ! $field->isHidden();
     }
-
-    private function getGroupIdsFromSections(array $sectionsConfig): array
-    {
-        return merge([], ...values(map(function (array $section): array {
-            return pick($section['groups'] ?? [], 'id');
-        }, $sectionsConfig)));
-    }
-
 }

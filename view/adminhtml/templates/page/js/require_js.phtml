@@ -7,7 +7,9 @@ $secureRenderer = $secureRenderer ?? $block->getData('secure_html_renderer_polyf
 $alpineJsPath   = $block->getData('alpinejs_path');
 ?>
 <?php if ($alpineJsPath): ?>
-    <script src="<?php echo $block->getViewFileUrl($alpineJsPath); ?>" defer></script>
+<!-- I remove defer cause Alpine must load synchronously before RequireJS sets up define/require
+         to prevent "Mismatched anonymous define" errors. -->
+<script src="<?php echo $block->getViewFileUrl($alpineJsPath); ?>"></script>
 <?php endif; ?>
 
 <?php

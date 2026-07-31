@@ -3,7 +3,7 @@
 namespace Hyva\Admin\ViewModel\HyvaGrid;
 
 use Hyva\Admin\Api\HyvaGridFilterTypeInterface;
-use Hyva\Admin\Model\GridFilter\FilterSourceModelFactory;
+use Hyva\Admin\Model\SourceModelFactory;
 use Hyva\Admin\Model\GridFilter\GridFilterTypeLocator;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\RequestInterface;
@@ -33,7 +33,7 @@ class GridFilter implements GridFilterInterface
     private $filterOptionFactory;
 
     /**
-     * @var FilterSourceModelFactory
+     * @var SourceModelFactory
      */
     private $filterSourceModelFactory;
 
@@ -78,7 +78,7 @@ class GridFilter implements GridFilterInterface
         ColumnDefinitionInterface $columnDefinition,
         GridFilterTypeLocator $gridFilterTypeLocator,
         FilterOptionInterfaceFactory $filterOptionFactory,
-        FilterSourceModelFactory $filterSourceModelFactory,
+        SourceModelFactory $filterSourceModelFactory,
         RequestInterface $request,
         ?string $enabled = null,
         ?string $filterType = null,
@@ -151,7 +151,7 @@ class GridFilter implements GridFilterInterface
     private function getSourceOptions(): ?array
     {
         return $this->source
-            ? $this->filterSourceModelFactory->create($this->source)->toOptionArray()
+            ? $this->filterSourceModelFactory->get($this->source)->toOptionArray()
             : null;
     }
 

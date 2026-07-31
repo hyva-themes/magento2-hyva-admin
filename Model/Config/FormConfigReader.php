@@ -36,8 +36,7 @@ class FormConfigReader implements HyvaFormConfigReaderInterface
         '/form/save/bindArguments/argument' => 'name',
         '/form/tabs/tab'                    => 'id',
         '/form/tabs/tab/group'              => 'id',
-        '/form/fields/include/field'        => 'name',
-        '/form/fields/exclude/field'        => 'name',
+        '/form/fields/field'                => 'name',
         '/form/navigation/buttons/button'   => 'id',
     ];
 
@@ -58,7 +57,7 @@ class FormConfigReader implements HyvaFormConfigReaderInterface
         $this->formXmlToArrayConverter   = $formXmlToArrayConverter;
         $this->appValidationState        = $appValidationState;
         $this->moduleDirReader           = $moduleDirReader;
-        $this->perFileSchema             = null;//'hyva-form.xsd';
+        $this->perFileSchema             = 'hyva-form.xsd';
         $this->mergedSchema              = null;
     }
 

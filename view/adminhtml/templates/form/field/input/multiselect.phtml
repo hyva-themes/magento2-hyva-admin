@@ -1,0 +1,25 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+$escaper = $escaper ?? $block;
+
+$values = null !== $field->getValue()
+    ? (is_array($field->getValue()) ? $field->getValue() : [$field->getValue()])
+    : [];
+
+?>
+<select multiple id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+        form="<?= $field->getFormName() ?>"
+        name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+        <?= $field->isRequired() ? 'required' : '' ?>
+        <?= $field->isDisabled() ? 'disabled' : '' ?>
+        class="w-5/6 text-base rounded-md">
+    <?php foreach ($field->getOptions() as $option): ?>
+    <option value="<?= $escaper->escapeHtmlAttr($option['value']) ?>" <?=
+    in_array($option['value'], $values, true) ? 'selected' : ''
+    ?>><?= $escaper->escapeHtml($option['label']) ?></option>
+    <?php endforeach; ?>
+</select>

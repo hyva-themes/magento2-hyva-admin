@@ -1,0 +1,21 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+$escaper = $escaper ?? $block;
+
+?>
+<textarea form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>" 
+    name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+    <?= $field->isRequired() ? 'required' : '' ?>
+       <?= $field->isDisabled() ? 'disabled' : '' ?>
+          <?= $field->isDisabled() ? 'disabled' : '' ?>
+      <?php if ($field->getMinlength() !== null) {
+          printf('minlength="%s"', $escaper->escapeHtmlAttr($field->getMinlength()));
+      } ?>
+      <?php if ($field->getMaxlength() !== null) {
+          printf('maxlength="%s"', $escaper->escapeHtmlAttr($field->getMaxlength()));
+      } ?>
+          class="w-5/6 h-44 text-base rounded-md"><?= $escaper->escapeHtml($field->getValue()) ?></textarea>

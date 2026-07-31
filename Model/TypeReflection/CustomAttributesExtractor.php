@@ -206,12 +206,12 @@ class CustomAttributesExtractor
 
     private function extractAttributeSetId($object): ?int
     {
-        if (method_exists($object, 'getAttributeSetId')) {
+        if ($object && method_exists($object, 'getAttributeSetId')) {
             $attributeSetId = $object->getAttributeSetId();
         } elseif ($object instanceof DataObject) {
             $attributeSetId = $object->getData('attribute_set_id');
         }
-        if (!isset($attributeSetId)) {
+        if ($object && !isset($attributeSetId)) {
             $entityType     = $this->getEntityTypeCodeForType(get_class($object));
             $attributeSetId = $this->eavConfig->getEntityType($entityType)->getDefaultAttributeSetId();
         }

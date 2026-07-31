@@ -12,4 +12,10 @@ interface HyvaFormInterface
      * @return HyvaForm\FormSectionInterface[]
      */
     public function getSections(): array;
+
+    public function hasDeclaredSections(): bool;
+
+    public function getDefaultActiveSectionId(): string;
+
+    public function getDefaultActiveGroupsMap(): array;
 }

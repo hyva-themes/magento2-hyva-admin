@@ -23,8 +23,11 @@ class FormLoadEntityRepository
         $this->objectManager = $objectManager;
     }
 
-    public function fetchTypeAndMethod(string $typeAndMethod, array $bindArguments, string $valueType): FormLoadEntity
-    {
+    public function fetchTypeAndMethod(
+        string $typeAndMethod,
+        array $bindArguments,
+        string $valueType
+    ): FormLoadEntity {
         [$type, $method] = $this->typeMethod->split($typeAndMethod);
         return $this->fetch($type, $method, $bindArguments, $valueType);
     }
@@ -33,14 +36,14 @@ class FormLoadEntityRepository
     {
         $value = $this->typeMethod->invoke($type, $method, $bindArguments);
 
-        if ($value && (interface_exists($valueType) || class_exists($valueType)) && ! $value instanceof $valueType) {
+        if ($value && (interface_exists($valueType) || class_exists($valueType)) && !$value instanceof $valueType) {
             $msg = sprintf('Form entity type mismatch: "%s" is not a %s', $this->typeStr($value), $valueType);
             throw new \RuntimeException($msg);
         }
 
         return $this->objectManager->create(FormLoadEntity::class, [
-            'value' => $value,
-            'valueType' => $valueType
+            'value'     => $value,
+            'valueType' => $valueType,
         ]);
     }
 

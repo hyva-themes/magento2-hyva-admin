@@ -1,0 +1,38 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+$escaper = $escaper ?? $block;
+
+?> 
+<input form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+    name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+    type="text" class="admin__control-text"
+    readonly="readonly" />
+<button type="button" class="action-default scalable btn-chooser" id="choose-file-btn-<?= $escaper->escapeHtmlAttr($field->getName()) ?>">
+    <span>
+        <?= __('Choose File') ?>
+    </span>
+</button>
+<div class="file-uploader-preview" style="display:none"><a target="_blank" href=""><img class="preview-image"
+            tabindex="0" src=""></a>
+    <div class="actions"><button type="button" class="action-remove"><span>Delete file</span></button></div>
+</div>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'mage/adminhtml/browser'
+    ], function ($) {
+        $(document).ready(function () {
+            $('#choose-file-btn-<?= $escaper->escapeHtmlAttr($field->getName()) ?>').click(function () {
+                var targetElementId = '<?= $escaper->escapeHtmlAttr($field->getName()) ?>';
+                var baseUrl = '<?= $this->getUrl('cms/wysiwyg_images/index') ?>';
+                var url = baseUrl + 'target_element_id/' + targetElementId + '/';
+
+                MediabrowserUtility.openDialog(url);
+            });
+        });
+    });
+</script>

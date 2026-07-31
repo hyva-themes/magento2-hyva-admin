@@ -2,6 +2,9 @@
 
 namespace Hyva\Admin\ViewModel;
 
+use function array_keys as keys;
+use function array_reduce as reduce;
+
 use Hyva\Admin\Model\FormEntity\FormLoadEntity;
 use Hyva\Admin\Model\FormEntity\FormLoadEntityRepository;
 use Hyva\Admin\Model\FormSource;
@@ -11,13 +14,7 @@ use Hyva\Admin\Model\FormStructure\FormStructureBuilder;
 use Hyva\Admin\Model\HyvaFormDefinitionInterface;
 use Hyva\Admin\Model\HyvaFormDefinitionInterfaceFactory;
 use Hyva\Admin\ViewModel\HyvaForm\FormNavigationInterfaceFactory;
-use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterfaceFactory;
-
-use function array_column as pick;
-use function array_filter as filter;
-use function array_map as map;
-use function array_merge as merge;
-use function array_values as values;
+use Hyva\Admin\ViewModel\HyvaForm\FormSectionInterface;
 
 class HyvaFormViewModel implements HyvaFormInterface
 {
@@ -56,6 +53,16 @@ class HyvaFormViewModel implements HyvaFormInterface
      */
     private $formStructureBuilder;
 
+    /**
+     * @var FormStructure
+     */
+    private $memoizedFormStructure;
+
+    /**
+     * @var FormLoadEntity|null
+     */
+    private $saveEntity;
+
     public function __construct(
         string $formName,
         HyvaFormDefinitionInterfaceFactory $formDefinitionFactory,
@@ -85,14 +92,24 @@ class HyvaFormViewModel implements HyvaFormInterface
         ]);
     }
 
+    /**
+     * @return HyvaForm\FormSectionInterface[]
+     */
     public function getSections(): array
     {
-        $this->getFormStructure()->getSections();
+        return $this->getFormStructure()->getSections();
     }
 
     private function getFormStructure(): FormStructure
     {
-        return $this->formStructureBuilder->buildStructure($this->getFormDefinition(), $this->getLoadedEntity());
+        if (!isset($this->memoizedFormStructure)) {
+            $this->memoizedFormStructure = $this->formStructureBuilder->buildStructure(
+                $this->formName,
+                $this->getFormDefinition(),
+                $this->getLoadedEntity()
+            );
+        }
+        return $this->memoizedFormStructure;
     }
 
     private function getLoadedEntity(): FormLoadEntity
@@ -107,6 +124,23 @@ class HyvaFormViewModel implements HyvaFormInterface
         return $this->loadedEntity;
     }
 
+    public function getSaveEntity(): FormLoadEntity
+    {
+        if (!isset($this->saveEntity)) {
+            $this->saveEntity = $this->formEntityRepository->fetchTypeAndMethod(
+                $this->getFormSource()->getSaveMethodName(),
+                $this->getFormSource()->getSaveBindArgumentConfig(),
+                $this->getFormSource()->getSaveType()
+            );
+        }
+        return $this->saveEntity;
+    }
+
+    public function getSaveConfig(): array
+    {
+        return $this->getFormDefinition()->getSaveConfig();
+    }
+
     private function getFormDefinition(): HyvaFormDefinitionInterface
     {
         return $this->formDefinitionFactory->create(['formName' => $this->formName]);
@@ -119,5 +153,27 @@ class HyvaFormViewModel implements HyvaFormInterface
             'loadConfig' => $this->getFormDefinition()->getLoadConfig(),
             'saveConfig' => $this->getFormDefinition()->getSaveConfig(),
         ]);
+    }
+
+    public function hasDeclaredSections(): bool
+    {
+        $sections = $this->getSections();
+        return count($sections) > 1
+            || (!isset($sections[FormSectionInterface::DEFAULT_SECTION_ID]))
+            || $sections[FormSectionInterface::DEFAULT_SECTION_ID]->isDeclaredInConfig();
+    }
+
+    public function getDefaultActiveSectionId(): string
+    {
+        return keys($this->getSections())[0];
+    }
+
+    public function getDefaultActiveGroupsMap(): array
+    {
+        $sections = $this->getSections();
+        return reduce(keys($sections), function (array $map, string $sectionId) use ($sections): array {
+            $map[$sectionId] = keys($sections[$sectionId]->getGroups())[0];
+            return $map;
+        }, []);
     }
 }

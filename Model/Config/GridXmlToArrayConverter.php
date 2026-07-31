@@ -617,6 +617,7 @@ class GridXmlToArrayConverter
             XmlToArray::getAttributeConfig($buttonsElement, 'label'),
             XmlToArray::getAttributeConfig($buttonsElement, 'template'),
             XmlToArray::getAttributeConfig($buttonsElement, 'url'),
+            XmlToArray::getAttributeConfig($buttonsElement, 'useAjax'),
             XmlToArray::getAttributeConfig($buttonsElement, 'onclick'),
             XmlToArray::getAttributeConfig($buttonsElement, 'sortOrder'),
             XmlToArray::getAttributeConfig($buttonsElement, 'enabled'),

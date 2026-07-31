@@ -6,6 +6,7 @@ use Hyva\Admin\Model\Config\HyvaFormConfigReaderInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterfaceFactory;
 
+use function array_column as pick;
 use function array_combine as zip;
 use function array_filter as filter;
 use function array_keys as keys;
@@ -61,27 +62,37 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
         return $this->getFormConfig()['save'] ?? [];
     }
 
+    /**
+     * @return FormFieldDefinitionInterface[]
+     */
     public function getFieldDefinitions(): array
     {
-        $fieldCodes = keys($this->getIncludeFieldsConfig());
+        $fieldCodes = keys($this->getFieldsConfig());
         $fields     = map(function (string $fieldName): FormFieldDefinitionInterface {
             return $this->formFieldDefinitionFactory->create(merge([
                 'name'       => $fieldName,
                 'formName'   => $this->getFormName(),
-                'isExcluded' => in_array($fieldName, $this->getExcludeFieldsConfig(), true),
-            ], $this->getIncludeFieldsConfig()[$fieldName]));
+            ], $this->getFieldsConfig()[$fieldName]));
         }, $fieldCodes);
+
         return zip($fieldCodes, $fields);
     }
 
     public function getSectionsConfig(): array
     {
-        return $this->getFormConfig()['sections'] ?? [];
+        $sectionConfig = $this->getFormConfig()['sections'] ?? [];
+        $sectionIds = pick($sectionConfig, 'id');
+        return zip($sectionIds, $sectionConfig);
     }
 
     public function getNavigationConfig(): array
     {
         return $this->getFormConfig()['navigation'] ?? [];
+    }
+
+    public function isKeepAllSourceFields(): bool
+    {
+        return 'true' === ($this->getFormConfig()['fields']['@keepAllSourceFields'] ?? 'false');
     }
 
     private function getFormConfig(): array
@@ -97,37 +108,68 @@ class HyvaFormDefinition implements HyvaFormDefinitionInterface
         return $this->getFormConfig()['fields']['exclude'] ?? [];
     }
 
-    private function getIncludeFieldsConfig(): array
+    private function getFieldsConfig(): array
     {
-        return $this->getFormConfig()['fields']['include'] ?? [];
+        $fieldConfigs = filter(map(function (array $config): array {
+            // cast 'true'|'false' -> bool
+            $config['renderAsSingleColumn'] = ($config['renderAsSingleColumn'] ?? false) === 'true';
+            $config['inputType'] = $config['type'] ?? null;
+            return $config;
+        }, $this->getFormConfig()['fields']['fields'] ?? []));
+
+        return $this->buildIdToConfigMap($fieldConfigs, 'name');
     }
 
     private function frequencies(array $a): array
     {
-        return reduce($a, function (array $f, $x): array {
-            $f[$x] = ($f[$x] ?? 0) + 1;
-            return $f;
+        return reduce($a, function (array $freq, $x): array {
+            $freq[$x] = ($freq[$x] ?? 0) + 1;
+            return $freq;
         }, []);
     }
 
+    /**
+     * Return map of group id => group config.
+     *
+     * @return array[]
+     */
     public function getGroupsFromSections(): array
     {
-        $sectionConfig = $this->getSectionsConfig();
         $groupsConfig  = values(filter(merge([], ...map(function (array $s): array {
-            return $s['groups'] ?? [];
-        }, $sectionConfig))));
+            $groups = $s['groups'] ?? [];
+            return $this->addSectionIdToGroups($groups, $s['id']);
+        }, values($this->getSectionsConfig())))));
 
-        $this->validateGroupIdsAreUniquePerSection($groupsConfig);
+        $groupIds = pick($groupsConfig, 'id');
 
-        return $groupsConfig;
+        $this->validateGroupIdsAreUniquePerSection($groupIds);
+
+        return $this->buildIdToConfigMap($groupsConfig, 'id');
     }
 
-    private function validateGroupIdsAreUniquePerSection(array $groupsConfig): void
+    private function buildIdToConfigMap(array $configs, string $idField): array
     {
-        $groupIds     = map(function (array $groupConfig): string {
-            return $groupConfig['id'];
-        }, $groupsConfig);
-        $dupeGroupIds = keys(filter($this->frequencies($groupIds), function(int $n): bool { return $n > 1; }));
+        return reduce($configs, function (array $map, array $config) use ($idField): array {
+            $map[$config[$idField]] = $config;
+            return $map;
+        }, []);
+    }
+
+    private function addSectionIdToGroups(array $groupConfigs, string $sectionId): array
+    {
+        return map(function (array $groupConfig) use ($sectionId): array {
+            if (! empty($groupConfig)) {
+                $groupConfig['sectionId'] = $sectionId;
+            }
+            return $groupConfig;
+        }, $groupConfigs);
+    }
+
+    private function validateGroupIdsAreUniquePerSection($groupIds): void
+    {
+        $dupeGroupIds = keys(filter($this->frequencies($groupIds), function (int $n): bool {
+            return $n > 1;
+        }));
         if (count($dupeGroupIds) > 0) {
             $this->throwGroupIdInMultipleSectionsException($dupeGroupIds);
         }

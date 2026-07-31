@@ -12,13 +12,8 @@
             <argument name="passwordHash" method="\My\Module\Model\CustomerPassword::hash"/>
         </bindArguments>
     </save>
-    <fields>
-        <include keepAllSourceFields="true">
-            <field name="aaa"/>
-            <field name="bbb" group="important-things"/>
-        </include>
-        <exclude>
-            <field name="ccc"/>
-        </exclude>
+    <fields keepAllSourceFields="true">
+        <field name="aaa"/>
+        <field name="bbb" group="important-things"/>
     </fields>
 </form>

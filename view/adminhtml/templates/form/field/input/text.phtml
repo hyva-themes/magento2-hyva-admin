@@ -1,0 +1,31 @@
+<?php declare(strict_types=1);
+
+/**
+ * Form field template for input types supporting pattern, required, minlength and maxlength restrictions.
+ * Namely text, search, url, tel, email and password.
+ */
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaForm\FormFieldDefinitionInterface $field */
+
+$escaper = $escaper ?? $block;
+
+?>
+
+<input form="<?= $field->getFormName() ?>" id="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+       name="<?= $escaper->escapeHtmlAttr($field->getName()) ?>"
+       type="<?= $field->getInputType() ?>"
+       value="<?= $escaper->escapeHtmlAttr($field->getValue()) ?>"
+       <?= $field->isRequired() ? 'required' : '' ?>
+       <?= $field->isDisabled() ? 'disabled' : '' ?>
+       <?php if ($field->getMinlength() !== null) {
+           printf('minlength="%s"', $escaper->escapeHtmlAttr($field->getMinlength()));
+       } ?>
+       <?php if ($field->getMaxlength() !== null) {
+           printf('maxlength="%s"', $escaper->escapeHtmlAttr($field->getMaxlength()));
+       } ?>
+       <?php if ($field->getPattern() !== null) {
+           printf('pattern="%s"', $escaper->escapeHtmlAttr($field->getPattern()));
+       } ?>
+       class="w-5/6 text-base block rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"/>
