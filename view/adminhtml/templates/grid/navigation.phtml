@@ -25,7 +25,7 @@ $escaper = $escaper ?? $block;
         <label for="pageSize" class="font-medium text-md mr-4">
             <?= $escaper->escapeHtml(__('Rows Per Page:')) ?>
         </label>
-        <select id="pageSize" @change="updateGrid($event.target.selectedOptions[0].value)"
+        <select id="pageSize" @change="updatePageSize"
                 class="form-select">
             <?php foreach ($navigation->getPageSizes() as $pageSize): ?>
                 <?php $currentPageSize = $navigation->getPageSize() === $pageSize ?>
@@ -40,7 +40,8 @@ $escaper = $escaper ?? $block;
     <div class="relative z-0 inline-flex rounded-md shadow-sm">
         <?php if ($navigation->hasPreviousPage()): ?>
             <a href="<?= $escaper->escapeUrl($navigation->getFirstPageUrl()) ?>"
-               @click.prevent="updateGrid($event.target.href)"
+               data-grid-update-url="<?= $escaper->escapeUrl($navigation->getFirstPageUrl()) ?>"
+               @click.prevent="updateGrid"
                class="relative inline-flex items-center px-4 py-2 font-medium text-gray-700 bg-white
                                 border border-gray-300 rounded-l-md hover:bg-gray-50 focus:z-10 focus:outline-none
                                 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
@@ -48,7 +49,8 @@ $escaper = $escaper ?? $block;
                 <?= $escaper->escapeHtml(__('First Page')) ?>
             </a>
             <a href="<?= $escaper->escapeUrl($navigation->getPreviousPageUrl()) ?>"
-               @click.prevent="updateGrid($event.target.href)"
+               data-grid-update-url="<?= $escaper->escapeUrl($navigation->getPreviousPageUrl()) ?>"
+               @click.prevent="updateGrid"
                class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-700 bg-white
                                 border border-gray-300 hover:bg-gray-50 focus:z-10 focus:outline-none
                                 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
@@ -67,7 +69,8 @@ $escaper = $escaper ?? $block;
         <?php endif; ?>
         <?php if ($navigation->hasNextPage()): ?>
             <a href="<?= $escaper->escapeUrl($navigation->getNextPageUrl()) ?>"
-               @click.prevent="updateGrid($event.target.href)"
+               data-grid-update-url="<?= $escaper->escapeUrl($navigation->getNextPageUrl()) ?>"
+               @click.prevent="updateGrid"
                class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-700 bg-white
                                 border border-gray-300 rounded-r-md hover:bg-gray-50 focus:z-10 focus:outline-none
                                 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
@@ -75,7 +78,8 @@ $escaper = $escaper ?? $block;
                 <?= $escaper->escapeHtml(__('Next Page')) ?>
             </a>
             <a href="<?= $escaper->escapeUrl($navigation->getLastPageUrl()) ?>"
-               @click.prevent="updateGrid($event.target.href)"
+               data-grid-update-url="<?= $escaper->escapeUrl($navigation->getLastPageUrl()) ?>"
+               @click.prevent="updateGrid"
                class="relative inline-flex items-center px-4 py-2 -ml-px font-medium text-gray-700 bg-white
                                 border border-gray-300 rounded-r-md hover:bg-gray-50 focus:z-10 focus:outline-none
                                 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
@@ -100,7 +104,8 @@ $escaper = $escaper ?? $block;
 <?php if ($navigation->hasAppliedFilters()): ?>
     <div>
         <a href="<?= $escaper->escapeUrl($navigation->getResetFiltersUrl()) ?>"
-           @click.prevent="updateGrid($event.target.href)"
+           data-grid-update-url="<?= $escaper->escapeUrl($navigation->getResetFiltersUrl()) ?>"
+           @click.prevent="updateGrid"
            class="btn btn-primary">
             <?= $escaper->escapeHtml(__('Reset filters')) ?>
         </a>

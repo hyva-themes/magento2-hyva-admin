@@ -8,7 +8,7 @@ $escaper = $escaper ?? $block;
 
 if ($exports): ?>
     <div class="exports inline-flex mx-2">
-        <button @click.prevent="openExport = !openExport"
+        <button @click.prevent="toggleOpenExport"
                 class="inline-flex items-center px-2 py-2 font-semibold text-gray-500 bg-white
                                     rounded-lg hover:text-blue-500 focus:outline-none focus:shadow-outline md:px-4"
         >
@@ -36,13 +36,13 @@ if ($exports): ?>
         </button>
 
         <div x-show="openExport"
-             @click.away="openExport = false"
+             @click.outside="closeExport"
              class="absolute top-0 z-40 block p-4 mt-16 -mr-1 overflow-y-auto bg-white
                     rounded-lg shadow-lg flex flex-col"
              style="max-height: 75vh;">
             <?php foreach ($exports as $export): ?>
                 <a href="<?= $escaper->escapeHtmlAttr($navigation->getExportUrl($export->getType())) ?>"
-                   @click="openExport = false"
+                   @click="closeExport"
                    class="text-gray-700 inline-flex mx-2 cursor-pointer my-2">
                     <span><?= $escaper->escapeHtml($export->getLabel()) ?></span>
                 </a>

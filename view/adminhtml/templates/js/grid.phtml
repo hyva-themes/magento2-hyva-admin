@@ -1,0 +1,266 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
+// phpcs:ignore Generic.Files.LineLength.TooLong
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+?>
+<script>
+    function initDataTable()
+    {
+        const closest = function (selector, element, top)
+        {
+            if (! element || element === (top || document)) {
+                return null;
+            }
+
+            return element.matches(selector)
+                ? element
+                : closest(selector, element.parentElement, top);
+        }
+
+        return {
+            ajaxNavigationEnabled: this.$root.dataset.ajaxNavigationEnabled,
+            gridName: this.$root.dataset.gridName,
+            refs: false,
+            loading: false,
+            selectedRows: [],
+            columns: JSON.parse(this.$root.dataset.cols || '[]'),
+            hiddenCols: JSON.parse(this.$root.dataset.hiddenCols || '[]'),
+            massActionStorageName: this.gridName + '-selectedRows',
+            hiddenColsStorageName: this.gridName + '-hiddenCols',
+            open: false,
+            openExport: false,
+            hasFilters: this.$root.dataset.hasFilters,
+            filterUri: window.location.href,
+
+            init() {
+                this.refs = this.$refs;
+                this.columns.forEach(column => column.key = 'col-' + column.key);
+                this.hiddenCols.forEach(column => column.key = 'col-' + column.key);
+                this.initState();
+            },
+
+            initState() {
+                this.$watch('selectedRows', this.storeSelectedRows.bind(this));
+                this.selectedRows = this.getSelectedRows();
+                this.hiddenCols = this.getHiddenCols();
+
+                if (this.hasFilters) {
+                    this.filterUri = this.getFormUriEncoded(document.getElementById(this.$root.dataset.filterFormId));
+                }
+            },
+
+            getSelectedRows() {
+                const selectedRowsJson = window.sessionStorage.getItem(this.massActionStorageName);
+                return selectedRowsJson ? JSON.parse(selectedRowsJson) : [];
+            },
+
+            getHiddenCols() {
+                const hiddenColsJson = window.sessionStorage.getItem(this.hiddenColsStorageName);
+                return hiddenColsJson ? JSON.parse(hiddenColsJson) : this.hiddenCols;
+            },
+
+            toggleColumn() {
+                const key = this.$el.dataset.colKey;
+                const index = this.hiddenCols.indexOf(key);
+                if (index !== -1) {
+                    this.hiddenCols.splice(index, 1);
+                } else {
+                    this.hiddenCols.push(key);
+                }
+                this.storeHiddenColumns();
+            },
+
+            isColumnVisible() {
+                return !this.hiddenCols.includes(this.$el.dataset.colKey);
+            },
+
+            storeHiddenColumns() {
+                this.storeValues(this.hiddenColsStorageName, this.hiddenCols);
+            },
+
+            storeSelectedRows() {
+                this.storeValues(this.massActionStorageName, this.selectedRows);
+            },
+
+            storeValues(key, values) {
+                window.sessionStorage.setItem(key, JSON.stringify(values.filter(value => null !== value)));
+            },
+
+            isRowSelected() {
+                return this.selectedRows.includes(this.$el.value);
+            },
+
+            toggleRow () {
+                const index = this.selectedRows.indexOf(this.$el.value);
+
+                if (index === -1) {
+                    this.selectedRows.push(this.$el.value);
+                } else {
+                    this.selectedRows.splice(index, 1);
+                }
+            },
+
+            selectAllCheckbox() {
+                const checked = !!this.$event.target.checked;
+                document.querySelectorAll('.rowCheckbox').forEach(checkbox => {
+                    const index = this.selectedRows.indexOf(checkbox.value);
+                    if (checked && index === -1) {
+                        this.selectedRows.push(checkbox.value);
+                    } else if (!checked && index > -1) {
+                        this.selectedRows.splice(index, 1);
+                    }
+                });
+            },
+            doMassAction() {
+                const option = this.$event.target.selectedOptions[0];
+                const url = option.value;
+                const form = this.refs['massaction-form'];
+                const checked = this.getSelectedRows();
+                const select = this.refs['massaction-select'];
+
+                if (!url || !form || !select) {
+                    return;
+                }
+
+                if (checked.length === 0) {
+                    alert('<?= $escaper->escapeJs(
+                        __('Please select the records to apply the mass action to.')
+                    ); ?>');
+                    select.selectedIndex = 0;
+                    return;
+                }
+                if (option.dataset.requireConfirm === 'true' && !confirm('<?= $escaper->escapeJs(__('Are you sure?')); ?>')) {
+                    select.selectedIndex = 0;
+                    return;
+                }
+                const rowCheckboxName = this.$el.dataset.massActionsId + '[]';
+
+                const alreadyPresent = Array.from(form.elements)
+                    .filter(element => element.name === rowCheckboxName)
+                    .filter(element => element.checked)
+                    .map(element => element.value);
+
+                const missing = checked.filter(value => !alreadyPresent.includes(value));
+
+                missing.forEach(value => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = rowCheckboxName;
+                    input.value = value;
+                    form.append(input);
+                });
+
+                form.action = url;
+
+                this.resetFormState();
+
+                this.loading = true;
+                form.submit();
+            },
+
+            resetFormState() {
+                this.selectedRows = [];
+
+                if (this.refs && this.refs['select-all']) {
+                    this.refs['select-all'].checked = false;
+                }
+
+                if (this.refs && this.refs['massaction-select']) {
+                    this.refs['massaction-select'].value = 0;
+                }
+            },
+
+            formGridUpdate() {
+                const form = this.$event.target.form ?? this.$event.target;
+
+                this.filterUri = this.getFormUriEncoded(form);
+                this.updateGrid(this.filterUri);
+            },
+
+            getFormUriEncoded(form) {
+                const url = new URL(form.action);
+                Array.from(form.elements).forEach(
+                    input => url.searchParams.set(input.name, input.value)
+                );
+                return url.toString();
+            },
+
+            updatePageSize() {
+                this.updateGrid(this.$el.value);
+            },
+
+            updateGrid(url) {
+                if (typeof url !== 'string') {
+                    url = this.$el.dataset.gridUpdateUrl;
+                }
+
+                if (this.ajaxNavigationEnabled) {
+                    this.ajaxGridUpdate(url);
+                } else {
+                    window.location.href = url;
+                }
+            },
+
+            ajaxGridUpdate(url) {
+                this.loading = true;
+                fetch(url, {
+                    method: 'get',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                    .then(response => response.json())
+                    .then(responseBody => {
+                        this.loading = false;
+                        if (responseBody.message) alert(responseBody.message);
+                        if (responseBody.grid_html) {
+                            const tmpContainer = document.createElement('div');
+                            tmpContainer.innerHTML = responseBody.grid_html;
+                            this.$root.replaceWith(tmpContainer.querySelector('.hyva-admin-grid'));
+                        }
+                    })
+                    .catch(console.error);
+            },
+
+            dispatchRowEvent() {
+                const event = this.$event;
+                const row = closest('TR', event.target, this.$el);
+                const eventData = {origEvent: event, row: row, viewModel: this};
+                const name = this.$el.dataset.eventName;
+                const params = this.$el.dataset.eventJson;
+
+                window.dispatchEvent(new CustomEvent(name, {detail: Object.assign(params || {}, eventData)}));
+            },
+
+            getRowCount() {
+                return this.selectedRows.length;
+            },
+
+            hasRows() {
+                return this.getRowCount() > 0;
+            },
+
+            toggleOpen() {
+                this.open = !this.open;
+            },
+
+            toggleOpenExport() {
+                this.openExport = !this.openExport;
+            },
+
+            close() {
+                this.open = false;
+            },
+
+            closeExport() {
+                this.openExport = false;
+            },
+        }
+    }
+
+    window.addEventListener('alpine:init', () => Alpine.data('initDataTable', initDataTable), {once: true});
+</script>

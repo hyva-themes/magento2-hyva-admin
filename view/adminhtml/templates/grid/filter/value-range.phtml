@@ -12,7 +12,7 @@ $escaper = $escaper ?? $block;
         <?= $escaper->escapeHtml(__('From:')) ?>
     </span>
     <span class="w-1/2 max-w-full" style="min-width: 80px;">
-        <input type="text" form="<?= $filter->getFormId() ?>" class="form-input"
+        <input type="text" form="<?= $escaper->escapeHtmlAttr($filter->getFormId()) ?>" class="form-input"
                name="<?= $escaper->escapeHtmlAttr($filter->getInputName('from')) ?>"
                value="<?= $escaper->escapeHtmlAttr($filter->getValue('from')) ?>"
         />
@@ -23,7 +23,7 @@ $escaper = $escaper ?? $block;
     <?= $escaper->escapeHtml(__('To:')) ?>
     </span>
     <span class="w-1/2 max-w-full" style="min-width: 80px;">
-        <input type="text" form="<?= $filter->getFormId() ?>" class="form-input"
+        <input type="text" form="<?= $escaper->escapeHtmlAttr($filter->getFormId()) ?>" class="form-input"
                name="<?= $escaper->escapeHtmlAttr($filter->getInputName('to')) ?>"
                value="<?= $escaper->escapeHtmlAttr($filter->getValue('to')) ?>"
         />
