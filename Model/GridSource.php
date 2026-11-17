@@ -135,7 +135,7 @@ class GridSource implements HyvaGridSourceInterface
         return $this->gridSourcePrefetchEventDispatcher->dispatch(
             $this->gridName,
             $this->gridSourceType->getRecordType(),
-            $this->defaultSearchCriteriaBindings->apply($searchCriteria)
+            $this->defaultSearchCriteriaBindings->apply(clone $searchCriteria)
         );
     }
 
