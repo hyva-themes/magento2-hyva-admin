@@ -16,7 +16,7 @@ class ColumnDefinitionTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('columnKeyLabelProvider')]
     public function testDerivesDefaultLabelFromColumnKey($key, $expectedLabel): void
     {
-        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $dummyObjectManager = $this->createStub(ObjectManagerInterface::class);
         $this->assertSame($expectedLabel, (new ColumnDefinition($dummyObjectManager, $key))->getLabel());
     }
 
@@ -35,7 +35,7 @@ class ColumnDefinitionTest extends TestCase
 
     public function testToArrayAndReinstantiate(): void
     {
-        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $dummyObjectManager = $this->createStub(ObjectManagerInterface::class);
         $original           = [
             'key'                  => 'the_key',
             'label'                => 'The label',
@@ -63,7 +63,7 @@ class ColumnDefinitionTest extends TestCase
 
     public function testRendersSecureHtmlByDefault(): void
     {
-        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $dummyObjectManager = $this->createStub(ObjectManagerInterface::class);
         $this->assertFalse(
             (new ColumnDefinition($dummyObjectManager, 'test'))->getRenderAsUnsecureHtml()
         );
@@ -80,7 +80,7 @@ class ColumnDefinitionTest extends TestCase
 
     public function testRendersSecureHtmlByDefaultIfSpecified(): void
     {
-        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $dummyObjectManager = $this->createStub(ObjectManagerInterface::class);
         $this->assertTrue(
             (new ColumnDefinition($dummyObjectManager, 'test', null, null, null, 'true'))->getRenderAsUnsecureHtml()
         );
@@ -88,7 +88,7 @@ class ColumnDefinitionTest extends TestCase
 
     public function testIsSortableByDefault(): void
     {
-        $dummyDi  = $this->createMock(ObjectManagerInterface::class);
+        $dummyDi  = $this->createStub(ObjectManagerInterface::class);
         $sortable = null;
         $sut      = new ColumnDefinition($dummyDi, 'test', null, null, null, null, null, null, $sortable);
         $this->assertTrue($sut->isSortable());
@@ -96,7 +96,7 @@ class ColumnDefinitionTest extends TestCase
 
     public function testIsSortableWhenSetToTrue(): void
     {
-        $dummyDi  = $this->createMock(ObjectManagerInterface::class);
+        $dummyDi  = $this->createStub(ObjectManagerInterface::class);
         $sortable = 'true';
         $sut      = new ColumnDefinition($dummyDi, 'test', null, null, null, null, null, null, $sortable);
         $this->assertTrue($sut->isSortable());
@@ -104,7 +104,7 @@ class ColumnDefinitionTest extends TestCase
 
     public function testIsNotSortableWhenSetToFalse(): void
     {
-        $dummyDi  = $this->createMock(ObjectManagerInterface::class);
+        $dummyDi  = $this->createStub(ObjectManagerInterface::class);
         $sortable = 'false';
         $sut      = new ColumnDefinition($dummyDi, 'test', null, null, null, null, null, null, $sortable);
         $this->assertFalse($sut->isSortable());

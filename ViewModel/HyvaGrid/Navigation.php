@@ -503,8 +503,9 @@ class Navigation implements NavigationInterface
 
     public function getHtml(): string
     {
-        $renderer = $this->layout->createBlock(Template::class);
-        $renderer->setTemplate('Hyva_Admin::grid/navigation.phtml');
+        $renderer = $this->layout->createBlock(Template::class, '', [
+            'data' => ['template' => 'Hyva_Admin::grid/navigation.phtml'],
+        ]);
         $renderer->assign('navigation', $this);
 
         return $renderer->toHtml();

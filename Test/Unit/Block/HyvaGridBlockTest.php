@@ -13,8 +13,8 @@ class HyvaGridBlockTest extends TestCase
 {
     public function testThrowsMeaningfulExceptionIfGridNameIsNotSet(): void
     {
-        $stubGridFactory = $this->createMock(HyvaGridInterfaceFactory::class);
-        $stubContext     = $this->createMock(TemplateBlockContext::class);
+        $stubGridFactory = $this->createStub(HyvaGridInterfaceFactory::class);
+        $stubContext     = $this->createStub(TemplateBlockContext::class);
         $sut             = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory);
 
         $this->expectException(\LogicException::class);
@@ -33,9 +33,9 @@ class HyvaGridBlockTest extends TestCase
         $stubGridFactory->expects($this->once())
                         ->method('create')
                         ->with(['gridName' => $testGridName])
-                        ->willReturn($this->createMock(HyvaGridInterface::class));
+                        ->willReturn($this->createStub(HyvaGridInterface::class));
 
-        $stubContext = $this->createMock(TemplateBlockContext::class);
+        $stubContext = $this->createStub(TemplateBlockContext::class);
         $blockData   = ['grid_name' => $testGridName];
         $sut         = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory, $blockData);
         $sut->setNameInLayout('bar');
@@ -50,9 +50,9 @@ class HyvaGridBlockTest extends TestCase
         $stubGridFactory->expects($this->once())
                         ->method('create')
                         ->with(['gridName' => $testGridName])
-                        ->willReturn($this->createMock(HyvaGridInterface::class));
+                        ->willReturn($this->createStub(HyvaGridInterface::class));
 
-        $stubContext = $this->createMock(TemplateBlockContext::class);
+        $stubContext = $this->createStub(TemplateBlockContext::class);
         $sut         = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory);
         $sut->setNameInLayout($testGridName);
 
@@ -61,11 +61,11 @@ class HyvaGridBlockTest extends TestCase
 
     public function testReturnsGridInstance(): void
     {
-        $stubGrid        = $this->createMock(HyvaGridInterface::class);
-        $stubGridFactory = $this->createMock(HyvaGridInterfaceFactory::class);
+        $stubGrid        = $this->createStub(HyvaGridInterface::class);
+        $stubGridFactory = $this->createStub(HyvaGridInterfaceFactory::class);
         $stubGridFactory->method('create')->willReturn($stubGrid);
         $arguments   = ['grid_name' => 'dummy-grid-name'];
-        $stubContext = $this->createMock(TemplateBlockContext::class);
+        $stubContext = $this->createStub(TemplateBlockContext::class);
 
         $sut = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory, $arguments);
 
@@ -74,14 +74,14 @@ class HyvaGridBlockTest extends TestCase
 
     public function testPassesGridNameToViewModelGrid(): void
     {
-        $stubGrid        = $this->createMock(HyvaGridInterface::class);
+        $stubGrid        = $this->createStub(HyvaGridInterface::class);
         $stubGridFactory = $this->createMock(HyvaGridInterfaceFactory::class);
         $stubGridFactory->expects($this->once())
                         ->method('create')
                         ->with(['gridName' => 'dummy-grid-name'])
                         ->willReturn($stubGrid);
         $arguments   = ['grid_name' => 'dummy-grid-name'];
-        $stubContext = $this->createMock(TemplateBlockContext::class);
+        $stubContext = $this->createStub(TemplateBlockContext::class);
 
         $sut = new HyvaGridBlock($stubContext, 'dummy-template.phtml', $stubGridFactory, $arguments);
 

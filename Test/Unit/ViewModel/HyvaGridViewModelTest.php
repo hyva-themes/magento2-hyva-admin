@@ -22,30 +22,30 @@ use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridViewModel;
 use Hyva\Admin\ViewModel\HyvaGrid\GridJsEventFactory;
 use Magento\Framework\View\LayoutInterface;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 class HyvaGridViewModelTest extends TestCase
 {
     /**
      * @param string $key
-     * @return ColumnDefinitionInterface|MockObject
+     * @return ColumnDefinitionInterface|Stub
      */
     private function createStubColumn(string $key, bool $isVisible = true): ColumnDefinitionInterface
     {
-        $column = $this->createMock(ColumnDefinitionInterface::class);
+        $column = $this->createStub(ColumnDefinitionInterface::class);
         $column->method('getKey')->willReturn($key);
         $column->method('isVisible')->willReturn($isVisible);
         return $column;
     }
 
     /**
-     * @return HyvaGridSourceFactory|MockObject
+     * @return HyvaGridSourceFactory|Stub
      */
     private function createStubGridSourceFactory(): HyvaGridSourceFactory
     {
-        $stubGridSource        = $this->createMock(HyvaGridSourceInterface::class);
-        $stubGridSourceFactory = $this->createMock(HyvaGridSourceFactory::class);
+        $stubGridSource        = $this->createStub(HyvaGridSourceInterface::class);
+        $stubGridSourceFactory = $this->createStub(HyvaGridSourceFactory::class);
         $stubGridSourceFactory->method('createFor')->willReturn($stubGridSource);
 
         return $stubGridSourceFactory;
@@ -53,87 +53,87 @@ class HyvaGridViewModelTest extends TestCase
 
     private function createStubGridDefinitionFactory(): HyvaGridDefinitionInterfaceFactory
     {
-        $stubGridDefinition        = $this->createMock(HyvaGridDefinitionInterface::class);
-        $stubGridDefinitionFactory = $this->createMock(HyvaGridDefinitionInterfaceFactory::class);
+        $stubGridDefinition        = $this->createStub(HyvaGridDefinitionInterface::class);
+        $stubGridDefinitionFactory = $this->createStub(HyvaGridDefinitionInterfaceFactory::class);
         $stubGridDefinitionFactory->method('create')->willReturn($stubGridDefinition);
 
         return $stubGridDefinitionFactory;
     }
 
     /**
-     * @return MockObject|RowInterfaceFactory
+     * @return Stub|RowInterfaceFactory
      */
-    private function createStubRowFactory(): MockObject
+    private function createStubRowFactory(): Stub
     {
-        return $this->createMock(RowInterfaceFactory::class);
+        return $this->createStub(RowInterfaceFactory::class);
     }
 
     /**
-     * @return MockObject|CellInterfaceFactory
+     * @return Stub|CellInterfaceFactory
      */
-    private function createStubCellFactory(): MockObject
+    private function createStubCellFactory(): Stub
     {
-        return $this->createMock(CellInterfaceFactory::class);
+        return $this->createStub(CellInterfaceFactory::class);
     }
 
     /**
-     * @return MockObject|LayoutInterface
+     * @return Stub|LayoutInterface
      */
-    private function createStubLayout(): MockObject
+    private function createStubLayout(): Stub
     {
-        return $this->createMock(LayoutInterface::class);
+        return $this->createStub(LayoutInterface::class);
     }
 
     /**
-     * @return MockObject|NavigationInterfaceFactory
+     * @return Stub|NavigationInterfaceFactory
      */
-    private function createStubNavigationFactory(): MockObject
+    private function createStubNavigationFactory(): Stub
     {
-        $dummyNavigation = $this->createMock(NavigationInterface::class);
-        $stubFactory     = $this->createMock(NavigationInterfaceFactory::class);
+        $dummyNavigation = $this->createStub(NavigationInterface::class);
+        $stubFactory     = $this->createStub(NavigationInterfaceFactory::class);
         $stubFactory->method('create')->willReturn($dummyNavigation);
 
         return $stubFactory;
     }
 
     /**
-     * @return MockObject|EntityDefinitionInterfaceFactory
+     * @return Stub|EntityDefinitionInterfaceFactory
      */
-    private function createStubEntityDefinitionFactory(): MockObject
+    private function createStubEntityDefinitionFactory(): Stub
     {
-        return $this->createMock(EntityDefinitionInterfaceFactory::class);
+        return $this->createStub(EntityDefinitionInterfaceFactory::class);
     }
 
     /**
-     * @return MockObject|GridActionInterfaceFactory
+     * @return Stub|GridActionInterfaceFactory
      */
-    private function createStubActionFactory(): MockObject
+    private function createStubActionFactory(): Stub
     {
-        return $this->createMock(GridActionInterfaceFactory::class);
+        return $this->createStub(GridActionInterfaceFactory::class);
     }
 
     /**
-     * @return MockObject|MassActionInterfaceFactory
+     * @return Stub|MassActionInterfaceFactory
      */
-    private function createStubMassActionFactory(): MockObject
+    private function createStubMassActionFactory(): Stub
     {
-        return $this->createMock(MassActionInterfaceFactory::class);
+        return $this->createStub(MassActionInterfaceFactory::class);
     }
 
     /**
-     * @return MockObject|GridJsEventFactory
+     * @return Stub|GridJsEventFactory
      */
-    private function createStubGridJsEventsFactory(): MockObject
+    private function createStubGridJsEventsFactory(): Stub
     {
-        return $this->createMock(GridJsEventFactory::class);
+        return $this->createStub(GridJsEventFactory::class);
     }
 
     /**
-     * @return MockObject|HyvaGridEventDispatcher
+     * @return Stub|HyvaGridEventDispatcher
      */
-    private function createStubHyvaEventDispatcher(): MockObject
+    private function createStubHyvaEventDispatcher(): Stub
     {
-        $dispatcher = $this->createMock(HyvaGridEventDispatcher::class);
+        $dispatcher = $this->createStub(HyvaGridEventDispatcher::class);
         $dispatcher->method('dispatch')->willReturnArgument(2);
         return $dispatcher;
     }
@@ -142,8 +142,8 @@ class HyvaGridViewModelTest extends TestCase
         HyvaGridSourceFactory $stubGridSourceFactory,
         array $columnDefinitions
     ): void {
-        /** @var MockObject $stubGridSource */
-        $stubGridSource = $stubGridSourceFactory->createFor($this->createMock(HyvaGridDefinitionInterface::class));
+        /** @var Stub $stubGridSource */
+        $stubGridSource = $stubGridSourceFactory->createFor($this->createStub(HyvaGridDefinitionInterface::class));
         $stubGridSource->method('extractColumnDefinitions')->willReturn($columnDefinitions);
     }
 
@@ -155,7 +155,7 @@ class HyvaGridViewModelTest extends TestCase
         HyvaGridDefinitionInterfaceFactory $stubGridDefinitionFactory,
         array $excludedColumnKeys
     ): void {
-        /** @var MockObject $stubGridDefinition */
+        /** @var Stub $stubGridDefinition */
         $stubGridDefinition = $stubGridDefinitionFactory->create();
         $stubGridDefinition->method('getExcludedColumnKeys')->willReturn($excludedColumnKeys);
     }
@@ -312,8 +312,8 @@ class HyvaGridViewModelTest extends TestCase
         $columnQux = $this->createStubColumn('qux');
 
         $stubGridSourceFactory = $this->createStubGridSourceFactory();
-        /** @var MockObject $stubGridSource */
-        $stubGridSource = $stubGridSourceFactory->createFor($this->createMock(HyvaGridDefinitionInterface::class));
+        /** @var Stub $stubGridSource */
+        $stubGridSource = $stubGridSourceFactory->createFor($this->createStub(HyvaGridDefinitionInterface::class));
         $stubGridSource->method('getRecords')->willReturn([
             ['baz' => 111, 'qux' => 111],
             ['baz' => 222, 'qux' => 222],
@@ -324,11 +324,11 @@ class HyvaGridViewModelTest extends TestCase
         $this->setColumnDefinitionOnFactory($stubGridSourceFactory, [$columnBaz, $columnQux]);
         $stubGridRowFactory = $this->createStubRowFactory();
         $stubGridRowFactory->method('create')->willReturnCallback(function ($cells) {
-            return $this->createMock(RowInterface::class);
+            return $this->createStub(RowInterface::class);
         });
         $stubGridCellFactory = $this->createStubCellFactory();
         $stubGridCellFactory->method('create')->willReturnCallback(function ($value) {
-            return $this->createMock(CellInterface::class);
+            return $this->createStub(CellInterface::class);
         });
         $stubNavigationFactory        = $this->createStubNavigationFactory();
         $dummyEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
@@ -366,7 +366,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyGridRowFactory        = $this->createStubRowFactory();
         $dummyGridCellFactory       = $this->createStubCellFactory();
         $stubNavigationFactory      = $this->createStubNavigationFactory();
-        $stubNavigationFactory->method('create')->willReturn($this->createMock(NavigationInterface::class));
+        $stubNavigationFactory->method('create')->willReturn($this->createStub(NavigationInterface::class));
         $dummyEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
         $dummyActionFactory           = $this->createStubActionFactory();
         $dummyMassActionFactory       = $this->createStubMassActionFactory();
@@ -400,7 +400,7 @@ class HyvaGridViewModelTest extends TestCase
         $dummyGridCellFactory        = $this->createStubCellFactory();
         $dummyNavigationFactory      = $this->createStubNavigationFactory();
         $stubEntityDefinitionFactory = $this->createStubEntityDefinitionFactory();
-        $stubEntityDefinitionFactory->method('create')->willReturn($this->createMock(EntityDefinitionInterface::class));
+        $stubEntityDefinitionFactory->method('create')->willReturn($this->createStub(EntityDefinitionInterface::class));
         $dummyActionFactory       = $this->createStubActionFactory();
         $dummyMassActionFactory   = $this->createStubMassActionFactory();
         $dummyGridJsEventsFactory = $this->createStubGridJsEventsFactory();
