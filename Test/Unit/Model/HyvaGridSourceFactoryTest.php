@@ -12,10 +12,10 @@ class HyvaGridSourceFactoryTest extends TestCase
 {
     public function testThrowsExceptionIfSourceConfigIsEmpty(): void
     {
-        $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
-        $dummySourceTypeLocator = $this->createMock(SourceTypeClassLocator::class);
-        $dummyProcessorBuilder = $this->createMock(\Hyva\Admin\Model\GridSource\GridSourceProcessorBuilder::class);
-        $stubGridDefinition = $this->createMock(HyvaGridDefinitionInterface::class);
+        $dummyObjectManager = $this->createStub(ObjectManagerInterface::class);
+        $dummySourceTypeLocator = $this->createStub(SourceTypeClassLocator::class);
+        $dummyProcessorBuilder = $this->createStub(\Hyva\Admin\Model\GridSource\GridSourceProcessorBuilder::class);
+        $stubGridDefinition = $this->createStub(HyvaGridDefinitionInterface::class);
         $stubGridDefinition->method('getSourceConfig')->willReturn([]);
         $stubGridDefinition->method('getName')->willReturn('test-grid');
         $sut = new HyvaGridSourceFactory($dummyObjectManager, $dummySourceTypeLocator, $dummyProcessorBuilder);

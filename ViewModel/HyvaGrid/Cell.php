@@ -151,8 +151,9 @@ class Cell implements CellInterface
     private function createTemplateBlock(string $template): AbstractBlock
     {
         /** @var Template $renderer */
-        $renderer = $this->layout->createBlock(Template::class);
-        $renderer->setTemplate($template);
+        $renderer = $this->layout->createBlock(Template::class, '', [
+            'data' => ['template' => $template],
+        ]);
         $renderer->assign('cell', $this);
 
         return $renderer;

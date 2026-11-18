@@ -300,7 +300,7 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
             return $this->gridJsEventFactory->create([
                 'on'       => $on,
                 'gridName' => $this->gridName,
-                'targetId' => $actionConfig['id'] ?? $actionsConfig['label'] ?? '',
+                'targetId' => $actionConfig['id'] ?? $actionConfig['label'] ?? '',
             ]);
         }, keys($eventsConfig));
     }
@@ -348,23 +348,21 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
 
     public function getColumnToggleHtml(): string
     {
-        $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::grid/column-toggle.phtml');
+        $renderer = $this->createRenderer('Hyva_Admin::grid/column-toggle.phtml');
         return $renderer->toHtml();
     }
 
     public function getExportsHtml(): string
     {
-        $renderer = $this->createRenderer();
-        $renderer->setTemplate('Hyva_Admin::grid/exports.phtml');
+        $renderer = $this->createRenderer('Hyva_Admin::grid/exports.phtml');
         $renderer->assign('navigation', $this->getNavigation());
         $renderer->assign('exports', $this->getNavigation()->getExports());
         return $renderer->toHtml();
     }
 
-    private function createRenderer(): Template
+    private function createRenderer(string $template): Template
     {
-        return $this->layout->createBlock(Template::class);
+        return $this->layout->createBlock(Template::class, '', ['data' => ['template' => $template]]);
     }
 
     public function getSearchCriteria(): SearchCriteriaInterface

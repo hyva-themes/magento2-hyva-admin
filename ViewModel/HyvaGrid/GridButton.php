@@ -78,8 +78,9 @@ class GridButton implements GridButtonInterface
     private function createTemplateBlock(): Template
     {
         /** @var Template $block */
-        $block = $this->layout->createBlock(Template::class);
-        $block->setTemplate($this->getTemplate() ?? 'Hyva_Admin::grid/button.phtml');
+        $block = $this->layout->createBlock(Template::class, '', [
+            'data' => ['template' => $this->getTemplate() ?? 'Hyva_Admin::grid/button.phtml'],
+        ]);
         $block->assign('button', $this);
 
         return $block;

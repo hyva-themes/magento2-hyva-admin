@@ -4,6 +4,7 @@ namespace Hyva\Admin\Test\Unit\Model;
 
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use PHPUnit\Framework\Constraint\Constraint;
+use SebastianBergmann\Exporter\Exporter;
 
 use function array_filter as filter;
 use function array_values as values;
@@ -32,7 +33,7 @@ class ConstraintContainsColumn extends Constraint
         return false;
     }
 
-    final protected function hasColumnWithKey(string $key): bool
+    protected function hasColumnWithKey(string $key): bool
     {
         foreach ($this->actualColumns as $actual) {
             if ($actual->getKey() === $key) {
@@ -60,8 +61,8 @@ class ConstraintContainsColumn extends Constraint
         return $actual
             ? sprintf(
                 "column '%s' properties match expected\n%s\nActual %s", $other->getKey(),
-                $this->exporter()->export($other->toArray()),
-                $this->exporter()->export($actual->toArray())
+                (new Exporter())->export($other->toArray()),
+                (new Exporter())->export($actual->toArray())
             )
             : sprintf('column "%s" exists', $other->getKey());
     }

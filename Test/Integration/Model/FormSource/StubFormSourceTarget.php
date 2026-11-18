@@ -19,6 +19,6 @@ class StubFormSourceTarget
 
     public function saveOnlyReturnType($arg): ProductInterface
     {
-
+        return $arg;
     }
 }
