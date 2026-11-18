@@ -13,13 +13,14 @@ class ColumnDefinitionTest extends TestCase
     /**
      * @dataProvider columnKeyLabelProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('columnKeyLabelProvider')]
     public function testDerivesDefaultLabelFromColumnKey($key, $expectedLabel): void
     {
         $dummyObjectManager = $this->createMock(ObjectManagerInterface::class);
         $this->assertSame($expectedLabel, (new ColumnDefinition($dummyObjectManager, $key))->getLabel());
     }
 
-    public function columnKeyLabelProvider(): array
+    public static function columnKeyLabelProvider(): array
     {
         return [
             ['foo', 'Foo'],

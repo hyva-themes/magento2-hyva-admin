@@ -343,7 +343,7 @@ class Navigation implements NavigationInterface
     private function getRequestedSortByColumn(): ?string
     {
         $sortBy = $this->getQueryParam('sortBy');
-        return isset($this->columnDefinitions[$sortBy]) ? $sortBy : null;
+        return is_string($sortBy) && isset($this->columnDefinitions[$sortBy]) ? $sortBy : null;
     }
 
     public function getSortDirection(): ?string

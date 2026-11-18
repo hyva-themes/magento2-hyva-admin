@@ -107,6 +107,7 @@ class GridSourceTest extends TestCase
     /**
      * @dataProvider repeatedReadCriteriaProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('repeatedReadCriteriaProvider')]
     public function testRepeatedReadsReuseDataWithoutChangingCallerCriteria(
         string $combineConditionsWith,
         array $bindingsConfig,

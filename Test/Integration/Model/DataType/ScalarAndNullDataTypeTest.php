@@ -13,6 +13,7 @@ class ScalarAndNullDataTypeTest extends TestCase
     /**
      * @dataProvider notMatchingTypeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('notMatchingTypeProvider')]
     public function testReturnsNullForNonMatchingTypes($nonMatchingType): void
     {
         $sut = new ScalarAndNullDataType();
@@ -20,7 +21,7 @@ class ScalarAndNullDataTypeTest extends TestCase
         $this->assertNull($sut->toHtmlRecursive($nonMatchingType));
     }
 
-    public function notMatchingTypeProvider(): array
+    public static function notMatchingTypeProvider(): array
     {
         return [
             'array'    => [[]],
@@ -32,6 +33,7 @@ class ScalarAndNullDataTypeTest extends TestCase
     /**
      * @dataProvider  matchingTypeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('matchingTypeProvider')]
     public function testReturnsStringForMatchingTypes($matchingType): void
     {
         $sut = new ScalarAndNullDataType();
@@ -39,7 +41,7 @@ class ScalarAndNullDataTypeTest extends TestCase
         $this->assertSame((string) $matchingType, $sut->toHtmlRecursive($matchingType));
     }
 
-    public function matchingTypeProvider(): array
+    public static function matchingTypeProvider(): array
     {
         return [
             'int'    => [1],
