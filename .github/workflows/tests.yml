@@ -33,14 +33,18 @@ jobs:
             # Also test the same Magento version on PHP 8.5, which Magento 2.4.9 supports, too.
             # Only the include list is kept: with the top level "magento" key of the computed matrix, the second
             # include entry would replace the PHP version of the first one instead of adding a job.
-            -   name: Add PHP 8.5
+            #
+            # The jobs run on ubuntu-24.04 instead of ubuntu-latest (Ubuntu 26.04), which ships the MySQL 8.4 client.
+            # The Magento integration test framework only adds --column-statistics=0 to mysqldump for client
+            # version 8.0, so the setup DB dump fails against MariaDB with the 8.4 client.
+            -   name: Add PHP 8.5 and pin the runner image
                 id: matrix
                 env:
                     MATRIX: ${{ steps.supported-version.outputs.matrix }}
                 run: |
-                    matrix=$(jq -c '{include: (.include + [.include[0] + {php: 8.5}])}' <<< "$MATRIX")
+                    matrix=$(jq -c '{include: ((.include + [.include[0] + {php: 8.5}]) | map(.os = "ubuntu-24.04"))}' <<< "$MATRIX")
                     echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
-                    jq '.include[] | {magento, php, composer}' <<< "$matrix"
+                    jq '.include[] | {magento, php, composer, os}' <<< "$matrix"
 
     tests:
         name: Tests
