@@ -131,7 +131,7 @@ class Cell implements CellInterface
         }, []);
 
         $labels = filter(map(function ($value) use ($valueToLabel): ?string {
-            return $valueToLabel[$value] ?? null;
+            return $valueToLabel[$value ?? ''] ?? null;
         }, is_array($value) ? $value : [$value]));
         return $labels
             ? implode(', ', $labels)

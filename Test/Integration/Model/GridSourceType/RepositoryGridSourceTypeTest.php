@@ -121,7 +121,7 @@ class RepositoryGridSourceTypeTest extends TestCase
         $records        = $sut->extractRecords($sut->fetchData($searchCriteria));
         $this->assertIsArray($records);
         $this->assertNotEmpty($records);
-        $this->assertContainsOnly(CustomerInterface::class, $records);
+        $this->assertContainsOnlyInstancesOf(CustomerInterface::class, $records);
     }
 
     /**

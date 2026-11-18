@@ -184,7 +184,7 @@ $rows       = $grid->getRows();
                         </thead>
                         <tbody>
                         <?php foreach ($rows as $row): ?>
-                            <?php if ($rowAction = $actions[$grid->getRowActionId()] ?? false) {
+                            <?php if ($rowAction = $actions[(string) $grid->getRowActionId()] ?? false) {
                                 $rowActionUrl       = $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row));
                                 $rowActionAttribute = sprintf("onclick=\"window.location.href='%s'\"",
                                     $escaper->escapeJs($rowActionUrl));

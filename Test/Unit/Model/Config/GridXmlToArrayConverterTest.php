@@ -10,6 +10,7 @@ class GridXmlToArrayConverterTest extends TestCase
     /**
      * @dataProvider conversionXmlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('conversionXmlProvider')]
     public function testConversion(string $xml, array $expected): void
     {
         $dom = new \DOMDocument();
@@ -19,89 +20,89 @@ class GridXmlToArrayConverterTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
-    public function conversionXmlProvider(): array
+    public static function conversionXmlProvider(): array
     {
         return [
             'array-source-with-type'   => [
-                $this->getSourceWithTypeArrayXml(),
-                $this->getSourceWithTypeArrayExpected(),
+                self::getSourceWithTypeArrayXml(),
+                self::getSourceWithTypeArrayExpected(),
             ],
             'array-source-no-type'     => [
-                $this->getSourceNoTypeArrayProviderXml(),
-                $this->getSourceNoTypeArrayProviderExpected(),
+                self::getSourceNoTypeArrayProviderXml(),
+                self::getSourceNoTypeArrayProviderExpected(),
             ],
             'repository-source'        => [
-                $this->getRepositorySourceXml(),
-                $this->getRepositorySourceExpected(),
+                self::getRepositorySourceXml(),
+                self::getRepositorySourceExpected(),
             ],
             'collection-source'        => [
-                $this->getCollectionSourceXml(),
-                $this->getCollectionSourceExpected(),
+                self::getCollectionSourceXml(),
+                self::getCollectionSourceExpected(),
             ],
             'query-source'             => [
-                $this->getQuerySourceXml(),
-                $this->getQuerySourceExpected(),
+                self::getQuerySourceXml(),
+                self::getQuerySourceExpected(),
             ],
             'source-with-processors' => [
-                $this->getSourceProcessorsXml(),
-                $this->getSourceProcessorsExpected(),
+                self::getSourceProcessorsXml(),
+                self::getSourceProcessorsExpected(),
             ],
             'columns'                  => [
-                $this->getColumnsXml(),
-                $this->getColumnsExpected(),
+                self::getColumnsXml(),
+                self::getColumnsExpected(),
             ],
             'empty-columns'            => [
-                $this->getEmptyColumnsXml(),
-                $this->getEmptyColumnsExpected(),
+                self::getEmptyColumnsXml(),
+                self::getEmptyColumnsExpected(),
             ],
             'exclude'                  => [
-                $this->getOnlyColumnsExcludeXml(),
-                $this->getOnlyColumnsExcludeExpected(),
+                self::getOnlyColumnsExcludeXml(),
+                self::getOnlyColumnsExcludeExpected(),
             ],
             'include'                  => [
-                $this->getOnlyColumnsIncludeXml(),
-                $this->getOnlyColumnsIncludeExpected(),
+                self::getOnlyColumnsIncludeXml(),
+                self::getOnlyColumnsIncludeExpected(),
             ],
             'navigation'               => [
-                $this->getNavigationXml(),
-                $this->getNavigationExpected(),
+                self::getNavigationXml(),
+                self::getNavigationExpected(),
             ],
             'entity'                   => [
-                $this->getEntityConfigXml(),
-                $this->getEntityConfigExpected(),
+                self::getEntityConfigXml(),
+                self::getEntityConfigExpected(),
             ],
             'actions'                  => [
-                $this->getActionsXml(),
-                $this->getActionsExpected(),
+                self::getActionsXml(),
+                self::getActionsExpected(),
             ],
             'empty-actions'            => [
-                $this->getEmptyActionsXml(),
-                $this->getEmptyActionsExpected(),
+                self::getEmptyActionsXml(),
+                self::getEmptyActionsExpected(),
             ],
             'mass-actions'             => [
-                $this->getMassActionXml(),
-                $this->getMassActionExpected(),
+                self::getMassActionXml(),
+                self::getMassActionExpected(),
             ],
             'exports'                  => [
-                $this->getExportXml(),
-                $this->getExportExpected(),
+                self::getExportXml(),
+                self::getExportExpected(),
             ],
             'keep-columns-from-source' => [
-                $this->getIncludeWithKeepColumnsFromSourceXml(),
-                $this->getIncludeWithKeepColumnsFromSourceExpected(),
+                self::getIncludeWithKeepColumnsFromSourceXml(),
+                self::getIncludeWithKeepColumnsFromSourceExpected(),
             ],
             'filters'                  => [
-                $this->getFiltersXml(),
-                $this->getFiltersExpected(),
+                self::getFiltersXml(),
+                self::getFiltersExpected(),
             ],
             'bindparams'               => [
-                $this->getSearchCriteriaBindParamsXml(),
-                $this->getSearchCriteriaBindParamsExpected(),
+                self::getSearchCriteriaBindParamsXml(),
+                self::getSearchCriteriaBindParamsExpected(),
             ],
         ];
     }
 
-    private function getSourceWithTypeArrayXml(): string
+    private static function getSourceWithTypeArrayXml(): string
     {
         return <<<EOXML
     <source type="array">
@@ -110,7 +111,7 @@ class GridXmlToArrayConverterTest extends TestCase
 EOXML;
     }
 
-    private function getSourceWithTypeArrayExpected(): array
+    private static function getSourceWithTypeArrayExpected(): array
     {
         return [
             'source' => [
@@ -120,7 +121,7 @@ EOXML;
         ];
     }
 
-    private function getSourceNoTypeArrayProviderXml(): string
+    private static function getSourceNoTypeArrayProviderXml(): string
     {
         return <<<EOXML
     <source>
@@ -129,12 +130,12 @@ EOXML;
 EOXML;
     }
 
-    private function getSourceNoTypeArrayProviderExpected(): array
+    private static function getSourceNoTypeArrayProviderExpected(): array
     {
         return ['source' => ['arrayProvider' => 'ArrayProviderInterface']];
     }
 
-    private function getRepositorySourceXml(): string
+    private static function getRepositorySourceXml(): string
     {
         return <<<EOXML
     <source>
@@ -143,12 +144,12 @@ EOXML;
 EOXML;
     }
 
-    private function getRepositorySourceExpected(): array
+    private static function getRepositorySourceExpected(): array
     {
         return ['source' => ['repositoryListMethod' => 'Repository::getList']];
     }
 
-    private function getCollectionSourceXml(): string
+    private static function getCollectionSourceXml(): string
     {
         return <<<EOXML
     <source>
@@ -157,12 +158,12 @@ EOXML;
 EOXML;
     }
 
-    private function getCollectionSourceExpected(): array
+    private static function getCollectionSourceExpected(): array
     {
         return ['source' => ['collection' => 'SomeCollectionClass']];
     }
 
-    private function getQuerySourceXml(): string
+    private static function getQuerySourceXml(): string
     {
         return <<<EOXML
     <source>
@@ -193,7 +194,7 @@ EOXML;
 EOXML;
     }
 
-    private function getQuerySourceExpected(): array
+    private static function getQuerySourceExpected(): array
     {
         return [
             'source' => [
@@ -231,7 +232,7 @@ EOXML;
         ];
     }
 
-    private function getSourceProcessorsXml(): string
+    private static function getSourceProcessorsXml(): string
     {
         return <<<EOXML
     <source>
@@ -244,7 +245,7 @@ EOXML;
 EOXML;
     }
 
-    private function getSourceProcessorsExpected(): array
+    private static function getSourceProcessorsExpected(): array
     {
         return ['source' => [
             'processors' => [
@@ -255,7 +256,7 @@ EOXML;
         ]];
     }
 
-    private function getColumnsXml(): string
+    private static function getColumnsXml(): string
     {
         return <<<EOXML
     <columns rowAction="edit">
@@ -280,7 +281,7 @@ EOXML;
 EOXML;
     }
 
-    private function getColumnsExpected(): array
+    private static function getColumnsExpected(): array
     {
         $options = [
             ['value' => '1', 'label' => 'red'],
@@ -304,7 +305,7 @@ EOXML;
         ];
     }
 
-    private function getOnlyColumnsExcludeXml(): string
+    private static function getOnlyColumnsExcludeXml(): string
     {
         return <<<EOXML
         <columns>
@@ -315,7 +316,7 @@ EOXML;
 EOXML;
     }
 
-    private function getOnlyColumnsExcludeExpected(): array
+    private static function getOnlyColumnsExcludeExpected(): array
     {
         return [
             'columns' => [
@@ -324,7 +325,7 @@ EOXML;
         ];
     }
 
-    private function getOnlyColumnsIncludeXml(): string
+    private static function getOnlyColumnsIncludeXml(): string
     {
         return <<<EOXML
         <columns>
@@ -335,7 +336,7 @@ EOXML;
 EOXML;
     }
 
-    private function getOnlyColumnsIncludeExpected(): array
+    private static function getOnlyColumnsIncludeExpected(): array
     {
         return [
             'columns' => [
@@ -344,7 +345,7 @@ EOXML;
         ];
     }
 
-    private function getIncludeWithKeepColumnsFromSourceXml(): string
+    private static function getIncludeWithKeepColumnsFromSourceXml(): string
     {
         return <<<EOXML
         <columns>
@@ -355,7 +356,7 @@ EOXML;
 EOXML;
     }
 
-    private function getIncludeWithKeepColumnsFromSourceExpected()
+    private static function getIncludeWithKeepColumnsFromSourceExpected()
     {
         return [
             'columns' => [
@@ -365,7 +366,7 @@ EOXML;
         ];
     }
 
-    private function getEmptyColumnsXml(): string
+    private static function getEmptyColumnsXml(): string
     {
         return <<<EOXML
         <columns>
@@ -373,12 +374,12 @@ EOXML;
 EOXML;
     }
 
-    private function getEmptyColumnsExpected(): array
+    private static function getEmptyColumnsExpected(): array
     {
         return [];
     }
 
-    private function getNavigationXml(): string
+    private static function getNavigationXml(): string
     {
         return <<<EOXML
     <navigation useAjax="true">
@@ -402,7 +403,7 @@ EOXML;
 EOXML;
     }
 
-    private function getNavigationExpected(): array
+    private static function getNavigationExpected(): array
     {
         return [
             'navigation' => [
@@ -421,7 +422,7 @@ EOXML;
         ];
     }
 
-    private function getEntityConfigXml(): string
+    private static function getEntityConfigXml(): string
     {
         return <<<EOXML
     <entityConfig>
@@ -433,12 +434,12 @@ EOXML;
 EOXML;
     }
 
-    private function getEntityConfigExpected(): array
+    private static function getEntityConfigExpected(): array
     {
         return ['entity' => ['label' => ['singular' => 'Fossa', 'plural' => 'Fossas']]];
     }
 
-    private function getActionsXml(): string
+    private static function getActionsXml(): string
     {
         return <<<EOXML
     <actions idColumn="name">
@@ -451,7 +452,7 @@ EOXML;
 EOXML;
     }
 
-    private function getActionsExpected(): array
+    private static function getActionsExpected(): array
     {
         $actions = [
             ['id' => 'edit', 'label' => 'Edit', 'url' => '*/*/edit', 'idParam' => 'id'],
@@ -461,7 +462,7 @@ EOXML;
         return ['actions' => ['@idColumn' => 'name', 'actions' => $actions]];
     }
 
-    private function getEmptyActionsXml(): string
+    private static function getEmptyActionsXml(): string
     {
         return <<<EOXML
     <actions idColumn="name">
@@ -469,12 +470,12 @@ EOXML;
 EOXML;
     }
 
-    private function getEmptyActionsExpected(): array
+    private static function getEmptyActionsExpected(): array
     {
         return ['actions' => ['@idColumn' => 'name', 'actions' => []]];
     }
 
-    private function getMassActionXml(): string
+    private static function getMassActionXml(): string
     {
         return <<<EOXML
     <massActions idColumn="id" idsParam="ids">
@@ -485,7 +486,7 @@ EOXML;
 EOXML;
     }
 
-    private function getMassActionExpected(): array
+    private static function getMassActionExpected(): array
     {
         $actions = [
             ['id' => 'update', 'label' => 'Update', 'url' => '*/massActions/update'],
@@ -495,7 +496,7 @@ EOXML;
         return ['massActions' => ['@idColumn' => 'id', '@idsParam' => 'ids', 'actions' => $actions]];
     }
 
-    private function getExportXml(): string
+    private static function getExportXml(): string
     {
         return <<<EOXML
     <navigation>
@@ -508,7 +509,7 @@ EOXML;
 EOXML;
     }
 
-    private function getExportExpected(): array
+    private static function getExportExpected(): array
     {
         return [
             'navigation' => [
@@ -527,7 +528,7 @@ EOXML;
         ];
     }
 
-    private function getFiltersXml(): string
+    private static function getFiltersXml(): string
     {
         return <<<EOXML
     <navigation>
@@ -556,7 +557,7 @@ EOXML;
 EOXML;
     }
 
-    private function getFiltersExpected(): array
+    private static function getFiltersExpected(): array
     {
         return [
             'navigation' => [
@@ -578,7 +579,7 @@ EOXML;
         ];
     }
 
-    private function getSearchCriteriaBindParamsXml(): string
+    private static function getSearchCriteriaBindParamsXml(): string
     {
         return <<<EOXML
     <source type="array">
@@ -594,7 +595,7 @@ EOXML;
 EOXML;
     }
 
-    private function getSearchCriteriaBindParamsExpected(): array
+    private static function getSearchCriteriaBindParamsExpected(): array
     {
         return [
             'source' => [

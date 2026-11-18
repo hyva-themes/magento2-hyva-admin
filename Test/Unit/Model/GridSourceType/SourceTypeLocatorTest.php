@@ -27,12 +27,13 @@ class SourceTypeLocatorTest extends TestCase
     /**
      * @dataProvider sourceTypeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sourceTypeProvider')]
     public function testDeterminesTypeByPresentConfig(array $config, string $expected): void
     {
         $this->assertSame($expected, (new SourceTypeClassLocator())->getFor('test-grid', $config));
     }
 
-    public function sourceTypeProvider(): array
+    public static function sourceTypeProvider(): array
     {
         return [
             'repo'                  => [['repositoryListMethod' => 'FooRepositoryInterface'], RepositoryGridSourceType::class],
