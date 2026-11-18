@@ -57,7 +57,10 @@ jobs:
             matrix: ${{ needs.compute-matrix.outputs.matrix }}
             magento_repository: https://mirror.mage-os.org/
             fail-fast: false
+            # The workflow installs the module as a symlink to the checkout, which is outside the Magento root.
+            # Magento refuses to render templates from there, so reinstall the module as a copy first.
             # The unit tests depend on the Magento framework, so they run in the Magento installation, too.
             test_command: >-
-                ../../../vendor/bin/phpunit -c ../unit/phpunit.xml.dist ../../../vendor/hyva-themes/module-magento2-admin/Test/Unit
+                COMPOSER_MIRROR_PATH_REPOS=1 composer --working-dir=../../.. reinstall hyva-themes/module-magento2-admin
+                && ../../../vendor/bin/phpunit -c ../unit/phpunit.xml.dist ../../../vendor/hyva-themes/module-magento2-admin/Test/Unit
                 && ../../../vendor/bin/phpunit ../../../vendor/hyva-themes/module-magento2-admin/Test/Integration
