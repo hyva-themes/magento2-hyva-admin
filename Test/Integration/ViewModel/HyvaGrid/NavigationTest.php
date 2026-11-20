@@ -683,4 +683,33 @@ class NavigationTest extends TestCase
         $this->assertSame('csv', $exports['csv']->getType());
         $this->assertSame('xml', $exports['xml']->getType());
     }
+
+    public function testFiltersArrayGridRecordsAfterColumnExtraction(): void
+    {
+        $stubRequest = $this->createMock(RequestInterface::class);
+        $this->stubParams($stubRequest, ['_filter' => ['name' => 'bo']]);
+
+        $gridData = [
+            ['id' => 1, 'name' => 'alice'],
+            ['id' => 2, 'name' => 'bob'],
+            ['id' => 3, 'name' => 'carol'],
+            ['id' => 4, 'name' => 'bonnie'],
+        ];
+
+        $gridSource = $this->createArrayGridSource($gridData);
+        $navigation = ObjectManager::getInstance()->create(NavigationInterface::class, [
+            'gridName'          => self::TEST_GRID,
+            'gridSource'        => $gridSource,
+            'navigationConfig'  => ['filters' => [['key' => 'name', 'input' => 'text']]],
+            'columnDefinitions' => $gridSource->extractColumnDefinitions([], [], false),
+            'request'           => $stubRequest,
+        ]);
+
+        $records = $gridSource->getRecords($navigation->getSearchCriteria());
+
+        $this->assertSame(2, $navigation->getTotalRowsCount());
+        $this->assertSame(['bob', 'bonnie'], map(function (array $record): string {
+            return $record['name'];
+        }, $records));
+    }
 }

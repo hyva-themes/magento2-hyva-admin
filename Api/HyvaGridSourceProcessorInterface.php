@@ -15,6 +15,11 @@ use Magento\Framework\Api\SearchCriteriaInterface;
  *     </processors>
  *   </source>
  * </grid>
+ *
+ * Processors are called every time the grid source loads data, which can happen multiple times during a request:
+ * once for each search criteria the data is loaded with (for example for every batch of an export), and for
+ * array grid sources also once for the column detection, before the grid records are loaded.
+ * Processors should therefore be idempotent: calling them again must not change the result.
  */
 interface HyvaGridSourceProcessorInterface
 {
