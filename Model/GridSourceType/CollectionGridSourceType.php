@@ -18,9 +18,11 @@ use Hyva\Admin\Model\TypeReflection\DbSelectColumnExtractor;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterfaceFactory;
 use Magento\Eav\Model\Entity\Collection\AbstractCollection as AbstractEavCollection;
+use Magento\Framework\Api\Filter;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\DB\Select;
 
 class CollectionGridSourceType implements GridSourceTypeInterface
 {
@@ -173,10 +175,8 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         }
 
         if (is_subclass_of($collection, AbstractEavCollection::class)) {
-            /**
-             * Todo: fix filtering joined attributes
-             */
-            $this->eavCollectionProcessor->process($searchCriteria, $collection);
+            $eavSearchCriteria = $this->applyJoinedFieldFilters($collection, $searchCriteria);
+            $this->eavCollectionProcessor->process($eavSearchCriteria, $collection);
         } else {
             /**
              * Todo: map aliases to real field names in the filter conditions.
@@ -196,6 +196,63 @@ class CollectionGridSourceType implements GridSourceTypeInterface
         );
 
         return RawGridSourceContainer::forData($afterProcessdCollection);
+    }
+
+    /**
+     * EAV collections only accept attribute codes as filter fields, so filter groups on columns that are joined
+     * into the select with an alias are applied to the joined table column directly.
+     */
+    private function applyJoinedFieldFilters(
+        AbstractEavCollection $collection,
+        SearchCriteriaInterface $searchCriteria
+    ): SearchCriteriaInterface {
+        $joinedFields = $this->getJoinedFieldColumns($collection);
+        $select = $collection->getSelect();
+        $connection = $select->getConnection();
+        $remainingGroups = [];
+
+        foreach ($searchCriteria->getFilterGroups() ?? [] as $group) {
+            $filters = $group->getFilters() ?? [];
+            $fields = map(function (Filter $filter): string {
+                return (string) $filter->getField();
+            }, $filters);
+            if (!$filters || array_diff($fields, array_keys($joinedFields))) {
+                $remainingGroups[] = $group;
+                continue;
+            }
+            $conditions = map(function (Filter $filter) use ($connection, $joinedFields): string {
+                $column = $connection->quoteIdentifier($joinedFields[$filter->getField()]);
+                $condition = [$filter->getConditionType() ?: 'eq' => $filter->getValue()];
+                return $connection->prepareSqlCondition($column, $condition);
+            }, $filters);
+            $select->where(implode(' OR ', $conditions));
+        }
+
+        if (count($remainingGroups) === count($searchCriteria->getFilterGroups() ?? [])) {
+            return $searchCriteria;
+        }
+        $remainingSearchCriteria = clone $searchCriteria;
+        $remainingSearchCriteria->setFilterGroups($remainingGroups);
+
+        return $remainingSearchCriteria;
+    }
+
+    /**
+     * Aliases named like an attribute of the entity are left to the EAV collection.
+     *
+     * @return string[] Map of select column aliases to the joined table columns
+     */
+    private function getJoinedFieldColumns(AbstractEavCollection $collection): array
+    {
+        $entity = $collection->getEntity();
+        $columns = $collection->getSelect()->getPart(Select::COLUMNS);
+        return reduce($columns, function (array $joinedFields, array $columnEntry) use ($entity): array {
+            [$correlationName, $column, $alias] = $columnEntry;
+            if ($alias && $correlationName && is_string($column) && !$entity->getAttribute($alias)) {
+                $joinedFields[$alias] = $correlationName . '.' . $column;
+            }
+            return $joinedFields;
+        }, []);
     }
 
     public function extractRecords(RawGridSourceContainer $rawGridData): array
