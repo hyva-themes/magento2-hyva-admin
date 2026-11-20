@@ -12,6 +12,8 @@ This callback is triggered every time the collection grid source is instantiated
 
 These fields then will be available as grid columns.
 
+On EAV collections like the product collection, grid filters on a joined field are applied to the joined table column the field alias refers to, for example `catalog_category_product.entity_id` for `test_field` in the example below. This only works for fields selected from a table column under an alias, not for select expressions, and an alias with the same name as an attribute of the entity is filtered as that attribute. A filter group that combines a joined field and an attribute with OR (for example from search criteria bindings with `combineConditionsWith="or"`) is not supported.
+
 To use it, configure a grid source processor as usual and implement the interface in addition to extending the processor from `Hyva\Admin\Model\GridSource\AbstractGridSourceProcessor`.
 
 ### Example:

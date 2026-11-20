@@ -335,9 +335,55 @@ class CollectionGridSourceTypeTest extends TestCase
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
      * @magentoDataFixture Magento/Catalog/_files/products_list.php
      */
+    public function testFilterJoinedFieldOnEavCollection(): void
+    {
+        $processor = new class() extends AbstractGridSourceProcessor implements HyvaGridCollectionProcessorInterface {
+
+            /**
+             * @param ProductCollection $source
+             * @param string $gridName
+             */
+            public function afterInitSelect(AbstractDbCollection $source, string $gridName): void
+            {
+                $source->getSelect()->joinLeft(
+                    'catalog_product_website',
+                    'e.entity_id = catalog_product_website.product_id',
+                    ['test_field' => 'catalog_product_website.website_id']
+                );
+            }
+        };
+
+        $args = [
+            'gridName'            => 'test',
+            'processors'          => [$processor],
+            'sourceConfiguration' => ['collection' => ProductCollection::class],
+        ];
+
+        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
+        $searchCriteriaBuilder = ObjectManager::getInstance()->get(SearchCriteriaBuilder::class);
+
+        /** @var CollectionGridSourceType $sut */
+        $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
+        $searchCriteriaBuilder->addFilter('test_field', '1');
+        $searchCriteriaBuilder->addFilter('sku', 'simple');
+        $records = $sut->extractRecords($sut->fetchData($searchCriteriaBuilder->create()));
+        $this->assertCount(1, $records);
+        $this->assertSame('simple', reset($records)->getSku());
+
+        /** @var CollectionGridSourceType $sut */
+        $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
+        $searchCriteriaBuilder->addFilter('test_field', '0');
+        $rawGridData = $sut->fetchData($searchCriteriaBuilder->create());
+        $this->assertCount(0, $sut->extractRecords($rawGridData));
+        $this->assertSame(0, $sut->extractTotalRowCount($rawGridData));
+    }
+
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Catalog/_files/products_list.php
+     */
     public function testFilterJoinedAttributeOnEavCollection(): void
     {
-        $this->markTestIncomplete('UNRESOLVED: Join real columns to EAV collection select instance');
         $processor = new class() extends AbstractGridSourceProcessor implements HyvaGridCollectionProcessorInterface {
 
             /**
@@ -349,8 +395,55 @@ class CollectionGridSourceTypeTest extends TestCase
                 $source->joinField(
                     'test_field',
                     'catalog_category_product',
-                    'product_id',
-                    'e.entity_id = test_field'
+                    'category_id',
+                    'product_id=entity_id',
+                    null,
+                    'left'
+                );
+            }
+        };
+
+        $args = [
+            'gridName'            => 'test',
+            'processors'          => [$processor],
+            'sourceConfiguration' => ['collection' => ProductCollection::class],
+        ];
+
+        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
+        $searchCriteriaBuilder = ObjectManager::getInstance()->get(SearchCriteriaBuilder::class);
+
+        /** @var CollectionGridSourceType $sut */
+        $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
+        $searchCriteriaBuilder->addFilter('test_field', '2');
+        $records = $sut->extractRecords($sut->fetchData($searchCriteriaBuilder->create()));
+        $this->assertContains('simple', array_map(function (Product $product): string {
+            return $product->getSku();
+        }, $records));
+
+        /** @var CollectionGridSourceType $sut */
+        $sut = ObjectManager::getInstance()->create(CollectionGridSourceType::class, $args);
+        $searchCriteriaBuilder->addFilter('test_field', '-1');
+        $this->assertCount(0, $sut->extractRecords($sut->fetchData($searchCriteriaBuilder->create())));
+    }
+
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Catalog/_files/products_list.php
+     */
+    public function testFilterJoinedFieldNamedLikeAttributeUsesEavAttributeOnEavCollection(): void
+    {
+        $processor = new class() extends AbstractGridSourceProcessor implements HyvaGridCollectionProcessorInterface {
+
+            /**
+             * @param ProductCollection $source
+             * @param string $gridName
+             */
+            public function afterInitSelect(AbstractDbCollection $source, string $gridName): void
+            {
+                $source->getSelect()->joinLeft(
+                    'catalog_product_website',
+                    'e.entity_id = catalog_product_website.product_id',
+                    ['name' => 'catalog_product_website.website_id']
                 );
             }
         };
@@ -365,11 +458,11 @@ class CollectionGridSourceTypeTest extends TestCase
 
         /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
         $searchCriteriaBuilder = ObjectManager::getInstance()->get(SearchCriteriaBuilder::class);
-        $searchCriteriaBuilder->addFilter('test_field', '1');
+        $searchCriteriaBuilder->addFilter('name', 'Simple Product');
 
-        $rawGridData = $sut->fetchData($searchCriteriaBuilder->create());
-        $records = $sut->extractRecords($rawGridData);
-        $this->assertGreaterThan(0, count($records));
+        $records = $sut->extractRecords($sut->fetchData($searchCriteriaBuilder->create()));
+        $this->assertCount(1, $records);
+        $this->assertSame('simple', reset($records)->getSku());
     }
 
     /**
