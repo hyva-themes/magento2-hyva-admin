@@ -74,7 +74,9 @@ class GridSource implements HyvaGridSourceInterface
         $configuredColumns = $this->addMissingSortOrder($configuredColumns);
         $allColumnKeys     = $this->gridSourceType->getColumnKeys();
 
-        $this->validateConfiguredKeys(keys($configuredColumns), $allColumnKeys);
+        if ($configuredColumns && $allColumnKeys) {
+            $this->validateConfiguredKeys(keys($configuredColumns), $allColumnKeys);
+        }
 
         $invisible = $keepAll || empty($configuredColumns)
             ? $hiddenKeys
