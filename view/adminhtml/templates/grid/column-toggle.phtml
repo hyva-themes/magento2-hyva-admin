@@ -7,7 +7,7 @@ $escaper = $escaper ?? $block;
 
 ?>
 <div class="actions inline-flex mx-2">
-    <button @click.prevent="open = !open"
+    <button @click.prevent="toggleOpen"
             class="inline-flex items-center px-2 py-2 font-semibold text-gray-500 bg-white
                    rounded-lg hover:text-blue-500 focus:outline-none focus:shadow-outline md:px-4"
     >
@@ -35,18 +35,19 @@ $escaper = $escaper ?? $block;
     </button>
 
     <div x-show="open"
-         @click.away="open = false"
+         @click.outside="close"
          class="absolute top-0 right-0 z-40 block p-4 mt-16 -mr-1 overflow-y-auto bg-white
                             rounded-lg shadow-lg"
          style="max-height: 75vh;">
         <template x-for="column in columns">
             <label
-                class="flex items-center justify-start px-4 py-2 text-truncate hover:bg-gray-100">
+                    class="flex items-center justify-start px-4 py-2 text-truncate hover:bg-gray-100">
                 <div class="mr-3 text-teal-600">
                     <input type="checkbox"
                            class="form-checkbox focus:outline-none focus:shadow-outline"
-                           :checked="isColumnVisible(column.key)"
-                           @click="toggleColumn(column.key)"
+                           :checked="isColumnVisible"
+                           @click="toggleColumn"
+                           :data-col-key="column.key"
                     >
                 </div>
                 <div class="text-gray-700 select-none"

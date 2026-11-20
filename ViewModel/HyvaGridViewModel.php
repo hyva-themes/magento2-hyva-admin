@@ -151,6 +151,33 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
         return $this->memoizedColumnDefinitions;
     }
 
+    public function getInitiallyHiddenColumns(): array
+    {
+        $hiddenCols = [];
+
+        foreach ($this->getAllColumnDefinitions() as $column) {
+            if ($column->isInitiallyHidden()) {
+                $hiddenCols[] = $column->getKey();
+            }
+        }
+
+        return $hiddenCols;
+    }
+
+    public function getColumnData(): array
+    {
+        $cols = [];
+
+        foreach ($this->getAllColumnDefinitions() as $column) {
+            $cols[] = [
+                'key' => $column->getKey(),
+                'value' => __($column->getLabel()),
+            ];
+        }
+
+        return $cols;
+    }
+
     private function buildColumnDefinitions(): array
     {
         $columns          = $this->getGridDefinition()->getIncludedColumns();

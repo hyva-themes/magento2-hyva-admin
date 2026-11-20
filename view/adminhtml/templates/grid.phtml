@@ -9,11 +9,18 @@ $grid       = $block->getGrid();
 $navigation = $grid->getNavigation();
 $uniqueId   = '_' . md5($grid->getGridName());
 $rows       = $grid->getRows();
-
+$cols       = $grid->getColumnData();
+$hiddenCols = $grid->getInitiallyHiddenColumns();
 ?>
 <div class="hyva-admin-grid"
-     x-data="initDataTable<?= /** @noEscape */ $uniqueId ?>()"
-     x-init="refs=$refs; initState();">
+     x-data="initDataTable"
+     data-grid-name="<?= $escaper->escapeHtmlAttr($grid->getGridName()); ?>"
+     data-ajax-navigation-enabled="<?= (int)$navigation->isAjaxEnabled(); ?>"
+     data-cols='<?= $escaper->escapeHtmlAttr(json_encode($cols)); ?>'
+     data-filter-form-id="<?= $escaper->escapeHtmlAttr($navigation->getFilterFormId()); ?>"
+     data-has-filters="<?= /** @noEscape */ $navigation->hasFilters() ? 'true' : 'false'; ?>"
+     data-hidden-cols='<?= $escaper->escapeHtmlAttr(json_encode($hiddenCols)); ?>'
+>
     <div class="max-w-full px-0 py-6 mx-auto">
         <div class="flex items-center justify-between mb-4">
             <div style="display: none" x-show="loading">
@@ -48,13 +55,13 @@ $rows       = $grid->getRows();
                   x-ref="massaction-form"
                   method="post">
                 <?= $block->getBlockHtml('formkey'); ?>
-                <label for="massAction<?= /** @noEscape */
-                $uniqueId ?>"
+                <label for="massAction<?= $escaper->escapeHtmlAttr($uniqueId); ?>"
                        class="font-medium text-md mr-4">
                     <?= $escaper->escapeHtml(__('Mass Actions:')) ?>
                 </label>
-                <select @change="doMassAction($event.target.selectedOptions[0])"
-                        @keydown.enter="doMassAction($event.target.selectedOptions[0])"
+                <select @change="doMassAction"
+                        @keydown.enter="doMassAction"
+                        data-mass-actions-id="<?= $escaper->escapeHtmlAttr($grid->getMassActionIdsParam()); ?>"
                         name="massAction"
                         x-ref="massaction-select"
                         class="form-select"
@@ -65,7 +72,7 @@ $rows       = $grid->getRows();
                     <?php foreach ($massActions as $massAction): ?>
                         <?php $massActionUrl = $block->getUrl($massAction->getUrl()) ?>
                         <option data-require-confirm="<?= $massAction->requireConfirmation() ? 'true' : 'false' ?>"
-                                class="<?= $massAction->getId() /* refactor: don't use the mass action id as css class*/ ?>"
+                                class="<?= $escaper->escapeHtmlAttr($massAction->getId()) /* refactor: don't use the mass action id as css class*/ ?>"
                                 value="<?= $escaper->escapeUrl($massActionUrl) ?>">
                             <?= $escaper->escapeHtml(__($massAction->getLabel())) ?>
                         </option>
@@ -73,19 +80,19 @@ $rows       = $grid->getRows();
                 </select>
                 <?php if ($massActions) { ?></form><?php } ?>
             <?php endif; ?>
-            <div x-cloak x-show="selectedRows.length > 0">
+            <div x-cloak x-show="hasRows">
                 <span class="font-medium text-md">
                     <?= $escaper->escapeHtml(__('Total selected:')) ?>
-                </span> <span x-text="selectedRows.length">
+                </span> <span x-text="getRowCount">
                 </span>
-                <a href="#" @click.prevent="resetFormState()" class="ml-4 inline-flex btn btn-primary">
+                <a href="#" @click.prevent="resetFormState" class="ml-4 inline-flex btn btn-primary">
                     <?= $escaper->escapeHtml(__('reset selection')) ?></a>
             </div>
             <?php if ($navigation->hasFilters()): ?>
                 <form id="<?= $escaper->escapeHtmlAttr($navigation->getFilterFormId()) ?>"
                       method="get"
                       action="<?= $escaper->escapeUrl($navigation->getFilterFormUrl()) ?>"
-                      @submit.prevent="formGridUpdate($event.target)">
+                      @submit.prevent="formGridUpdate">
                     <input type="submit" hidden/>
                 </form>
             <?php endif; ?>
@@ -102,12 +109,12 @@ $rows       = $grid->getRows();
                             <?php if ($massActions): ?>
                                 <th class="select-all">
                                     <label
-                                        class="inline-flex items-center justify-between px-2 py-2 rounded-lg
+                                            class="inline-flex items-center justify-between px-2 py-2 rounded-lg
                                             cursor-pointer hover:bg-gray-200">
                                         <input type="checkbox"
                                                x-ref="select-all"
                                                class="form-checkbox focus:outline-none focus:shadow-outline"
-                                               @click="selectAllCheckbox($event);">
+                                               @click="selectAllCheckbox">
                                     </label>
                                 </th>
                             <?php endif; ?>
@@ -116,12 +123,14 @@ $rows       = $grid->getRows();
                                     $navigation->getSortByColumn() === $column->getKey() ?>
                                 <?php $newDirection = $isSortedByColumn &&
                                 $navigation->isSortOrderAscending() ? 'desc' : 'asc' ?>
-                                <th class="relative pr-12 col-<?= $escaper->escapeHtml($column->getKey()) ?>
+                                <th class="relative pr-12 col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>
                                         <?php if ($column->isSortable()): ?> sortable<?php endif; ?>"
                                     x-ref="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>"
-                                    x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>')"
+                                    x-show="isColumnVisible"
+                                    data-col-key="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>"
                                     <?php if ($column->isSortable()): ?>
-                                        @click="updateGrid('<?= $escaper->escapeUrl($navigation->getSortByUrl($column->getKey(), $newDirection)) ?>')"
+                                        @click="updateGrid"
+                                        data-grid-update-url="<?= $escaper->escapeUrl($navigation->getSortByUrl($column->getKey(), $newDirection)) ?>"
                                     <?php endif; ?>>
                                     <?= $escaper->escapeHtml(__($column->getLabel())) ?>
                                     <?php if ($isSortedByColumn && $navigation->isSortOrderAscending()): ?>
@@ -169,9 +178,10 @@ $rows       = $grid->getRows();
                                     <th class="sticky top-0 px-3 py-2 border border-gray-200"></th>
                                 <?php endif; ?>
                                 <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-                                    <th class="col-<?= $escaper->escapeHtml($column->getKey()) ?> sticky top-0 border
+                                    <th class="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?> sticky top-0 border
                                 border-gray-200 px-6 py-2 text-gray-600 tracking-wider text-xl table-cell align-left"
-                                        x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>')">
+                                        x-show="isColumnVisible"
+                                        data-col-key="col-<?= $escaper->escapeHtmlAttr($column->getKey()) ?>">
                                         <?php $filter = $navigation->getFilter($column->getKey()) ?>
                                         <?= $filter ? $filter->getHtml() : '' ?>
                                     </th>
@@ -195,7 +205,7 @@ $rows       = $grid->getRows();
                                 <?php if ($massActions): ?>
                                     <td class="px-3 border border-gray-100">
                                         <label
-                                            class="inline-flex items-center justify-between px-2 py-2 text-teal-500
+                                                class="inline-flex items-center justify-between px-2 py-2 text-teal-500
                                             rounded-lg cursor-pointer hover:bg-gray-200">
                                             <input form="<?= $escaper->escapeHtmlAttr($massActionFormId) ?>"
                                                    type="checkbox"
@@ -204,8 +214,8 @@ $rows       = $grid->getRows();
                                                    ) ?>"
                                                    name="<?= $escaper->escapeHtmlAttr($grid->getMassActionIdsParam()) ?>[]"
                                                    class="form-checkbox rowCheckbox focus:outline-none focus:shadow-outline"
-                                                   x-model="selectedRows"
-
+                                                   :checked="isRowSelected"
+                                                   @change="toggleRow"
                                             />
                                     </td>
                                 <?php endif; ?>
@@ -213,7 +223,8 @@ $rows       = $grid->getRows();
                                     <td class="col-<?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()); ?>"
                                         <?= /** @noEscape */
                                         $rowActionAttribute ?>
-                                        x-show="isColumnVisible('col-<?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()) ?>')"
+                                        x-show="isColumnVisible"
+                                        data-col-key="col-<?= $escaper->escapeHtmlAttr($cell->getColumnDefinition()->getKey()) ?>"
                                     >
                                         <?= $cell->getHtml() ?>
                                     </td>
@@ -227,11 +238,12 @@ $rows       = $grid->getRows();
                                                    $action->getUrl(),
                                                    $action->getParams($row)
                                                )) ?>"
-                                            <?php foreach ($action->getEvents() as $event): ?>
-                                            <?php $dataJson = $event->getParamsJson($action, $row); ?>
-                                            x-on:<?= $event->getOnTrigger() ?>='
-                                            dispatchRowEvent($event, "<?= $event->getEventName() ?>", <?= $dataJson ?>)'
-                                            <?php endforeach; ?>
+                                                <?php foreach ($action->getEvents() as $event): ?>
+                                                    <?php $dataJson = $event->getParamsJson($action, $row); ?>
+                                                    x-on:<?= $event->getOnTrigger() ?>="dispatchRowEvent"
+                                                    data-event-name="<?= $escaper->escapeHtmlAttr($event->getEventName()); ?>"
+                                                    data-event-json="<?= $escaper->escapeHtmlAttr($dataJson); ?>"
+                                                <?php endforeach; ?>
                                             >
                                                 <?= $escaper->escapeHtml(__($action->getLabel())) ?>
                                             </a>
@@ -247,206 +259,6 @@ $rows       = $grid->getRows();
         </div>
     </div>
 </div>
-<script>
-    function initDataTable<?= /** @noEscape */ $uniqueId ?>() {
-
-        const closest = function (selector, element, top)
-        {
-            if (! element || element === (top || document)) {
-                return null;
-            }
-            return element.matches(selector)
-                ? element
-                : closest(selector, element.parentElement, top);
-        }
-
-        return {
-            refs: false,
-            loading: false,
-            selectedRows: [],
-            hiddenCols: [
-                <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-                <?php if ($column->isInitiallyHidden()): ?>
-                'col-<?= $escaper->escapeHtml($column->getKey()) ?>',
-                <?php endif; ?>
-                <?php endforeach; ?>
-            ],
-            massActionStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-selectedRows' ?>',
-            hiddenColsStorageName: '<?= $escaper->escapeHtml($grid->getGridName()) . '-hiddenCols' ?>',
-
-            columns: [
-                <?php foreach ($grid->getColumnDefinitions() as $column): ?>
-                {
-                    'key': 'col-<?= $escaper->escapeJs($column->getKey()) ?>',
-                    'value': '<?= $escaper->escapeHtml(__($column->getLabel())) ?>'
-                },
-                <?php endforeach; ?>
-            ],
-
-            open: false,
-            openExport: false,
-            filterUri: window.location.href,
-
-            initState() {
-                this.$watch('selectedRows', this.storeSelectedRows.bind(this));
-                this.selectedRows = this.getSelectedRows();
-                this.hiddenCols = this.getHiddenCols();
-                <?php if ($navigation->hasFilters()): ?>
-                this.filterUri = this.getFormUriEncoded(document.getElementById('<?= $navigation->getFilterFormId() ?>'));
-                <?php endif; ?>
-            },
-
-            getSelectedRows() {
-                const selectedRowsJson = window.sessionStorage.getItem(this.massActionStorageName);
-                return selectedRowsJson ? JSON.parse(selectedRowsJson) : [];
-            },
-
-            getHiddenCols() {
-                const hiddenColsJson = window.sessionStorage.getItem(this.hiddenColsStorageName);
-                return hiddenColsJson ? JSON.parse(hiddenColsJson) : this.hiddenCols;
-            },
-
-            toggleColumn(key) {
-                const index = this.hiddenCols.indexOf(key);
-                if (index !== -1) {
-                    this.hiddenCols.splice(index, 1);
-                } else {
-                    this.hiddenCols.push(key);
-                }
-                this.storeHiddenColumns();
-            },
-
-            isColumnVisible(key) {
-                return !this.hiddenCols.includes(key);
-            },
-
-            storeHiddenColumns() {
-                this.storeValues(this.hiddenColsStorageName, this.hiddenCols);
-            },
-
-            storeSelectedRows() {
-                this.storeValues(this.massActionStorageName, this.selectedRows);
-            },
-
-            storeValues(key, values) {
-                window.sessionStorage.setItem(key, JSON.stringify(values.filter(value => null !== value)));
-            },
-
-            selectAllCheckbox($event) {
-                const checked = !!$event.target.checked;
-                document.querySelectorAll('.rowCheckbox').forEach(checkbox => {
-                    const index = this.selectedRows.indexOf(checkbox.value);
-                    if (checked && index === -1) {
-                        this.selectedRows.push(checkbox.value);
-                    } else if (!checked && index > -1) {
-                        this.selectedRows.splice(index, 1);
-                    }
-                });
-            },
-            doMassAction(option) {
-                const url = option.value;
-                const form = this.refs['massaction-form'];
-                const checked = this.getSelectedRows();
-                const select = this.refs['massaction-select'];
-
-                if (!url || !form || !select) {
-                    return;
-                }
-
-                if (checked.length === 0) {
-                    alert('<?= __("Please select the records to apply the mass action to.")?>');
-                    select.selectedIndex = 0;
-                    return;
-                }
-                if (option.dataset.requireConfirm === 'true' && !confirm('<?= __("Are you sure?")?>')) {
-                    select.selectedIndex = 0;
-                    return;
-                }
-                const rowCheckboxName = '<?= $escaper->escapeHtml($grid->getMassActionIdsParam()) ?>[]';
-
-                const alreadyPresent = Array.from(form.elements)
-                    .filter(element => element.name === rowCheckboxName)
-                    .filter(element => element.checked)
-                    .map(element => element.value);
-
-                const missing = checked.filter(value => !alreadyPresent.includes(value));
-
-                missing.forEach(value => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = rowCheckboxName;
-                    input.value = value;
-                    form.append(input);
-                });
-
-                form.action = url;
-
-                this.resetFormState();
-
-                this.loading = true;
-                form.submit();
-            },
-
-            resetFormState() {
-                this.selectedRows = [];
-
-                if (this.refs && this.refs['select-all']) {
-                    this.refs['select-all'].checked = false;
-                }
-
-                if (this.refs && this.refs['massaction-select']) {
-                    this.refs['massaction-select'].value = 0;
-                }
-            },
-
-            formGridUpdate(form) {
-                this.filterUri = this.getFormUriEncoded(form);
-                this.updateGrid(this.filterUri);
-            },
-
-            getFormUriEncoded(form) {
-                const url = new URL(form.action);
-                Array.from(form.elements).forEach(
-                    input => url.searchParams.set(input.name, input.value)
-                );
-                return url.toString();
-            },
-
-            updateGrid(url) {
-                if (<?= (int) $navigation->isAjaxEnabled() ?>) {
-                    this.ajaxGridUpdate(url);
-                } else {
-                    window.location.href = url;
-                }
-            },
-
-            ajaxGridUpdate(url) {
-                this.loading = true;
-                fetch(url, {
-                    method: 'get',
-                    headers: {'Content-Type': 'application/json'}
-                })
-                    .then(response => response.json())
-                    .then(responseBody => {
-                        this.loading = false;
-                        if (responseBody.message) alert(responseBody.message);
-                        if (responseBody.grid_html) {
-                            const tmpContainer = document.createElement('div');
-                            tmpContainer.innerHTML = responseBody.grid_html;
-                            this.$el.replaceWith(tmpContainer.querySelector('.hyva-admin-grid'));
-                        }
-                    })
-                    .catch(console.error);
-            },
-
-            dispatchRowEvent(event, name, params) {
-                const row = closest('TR', event.target, this.$el);
-                const eventData = {origEvent: event, row: row, viewModel: this};
-                window.dispatchEvent(new CustomEvent(name, {detail: Object.assign(params || {}, eventData)}));
-            }
-        }
-    }
-</script>
 <div class="container px-4 py-6 mx-auto">
     <?php if (!$rows) { ?>
         <div>
