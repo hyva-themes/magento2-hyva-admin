@@ -122,4 +122,42 @@ class MethodsMapTest extends TestCase
         $returnType = $sut->getMethodReturnType(StubReflectionTargetParent::class, 'getIdentities');
         $this->assertSame('string[]', $returnType);
     }
+
+    public function testReducesUnionReturnTypesToSingleType(): void
+    {
+        if (PHP_VERSION_ID < 80000) {
+            $this->markTestSkipped('Union types require PHP 8.0');
+        }
+        $sut   = new MethodsMap(new FieldNamer(), new NamespaceMapper());
+        $class = Stub\StubWithUnionTypes::class;
+
+        $this->assertContains($sut->getMethodReturnType($class, 'getIntOrString'), ['int', 'string']);
+        $this->assertSame(\ArrayObject::class, $sut->getMethodReturnType($class, 'getObjectOrFalse'));
+        $this->assertSame('mixed[]', $sut->getMethodReturnType($class, 'getArrayOrNull'));
+        $this->assertTrue($sut->isMethodValidGetter($class, 'getIntOrString'));
+    }
+
+    public function testReducesUnionParameterTypesToSingleType(): void
+    {
+        if (PHP_VERSION_ID < 80000) {
+            $this->markTestSkipped('Union types require PHP 8.0');
+        }
+        $sut = new MethodsMap(new FieldNamer(), new NamespaceMapper());
+
+        $this->assertContains(
+            $sut->getParameterType(Stub\StubWithUnionTypes::class, 'setIntOrString', 'arg'),
+            ['int', 'string']
+        );
+    }
+
+    public function testReducesIntersectionReturnTypesToSingleType(): void
+    {
+        if (PHP_VERSION_ID < 80100) {
+            $this->markTestSkipped('Intersection types require PHP 8.1');
+        }
+        $sut        = new MethodsMap(new FieldNamer(), new NamespaceMapper());
+        $returnType = $sut->getMethodReturnType(Stub\StubWithIntersectionTypes::class, 'getCountableIterator');
+
+        $this->assertContains($returnType, [\Countable::class, \Iterator::class]);
+    }
 }

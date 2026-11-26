@@ -139,7 +139,7 @@ class CollectionGridSourceTypeTest extends TestCase
         $rawGridData = $sut->fetchData((new SearchCriteria())->setPageSize(1));
         $records     = $sut->extractRecords($rawGridData);
         $this->assertCount(1, $records);
-        $this->assertContainsOnly(Product::class, $records);
+        $this->assertContainsOnlyInstancesOf(Product::class, $records);
     }
 
     /**

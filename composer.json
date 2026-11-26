@@ -9,9 +9,7 @@
         "magento/module-backend": ">=101.0.0"
     },
     "type": "magento2-module",
-    "license": [
-        "BSD-3-Clause"
-    ],
+    "license": "OSL-3.0",
     "autoload": {
         "files": [
             "registration.php"

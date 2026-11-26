@@ -16,6 +16,11 @@ Grid source processors are an advanced tool that is only rarely needed.
  *     </processors>
  *   </source>
  * </grid>
+ *
+ * Processors are called every time the grid source loads data, which can happen multiple times during a request:
+ * once for each search criteria the data is loaded with (for example for every batch of an export), and for
+ * array grid sources also once for the column detection, before the grid records are loaded.
+ * Processors should therefore be idempotent: calling them again must not change the result.
  */
 interface HyvaGridSourceProcessorInterface
 {
@@ -54,3 +59,6 @@ interface HyvaGridSourceProcessorInterface
 ```
 
 If you require only one of the two methods, consider extending your processor from the `AbstractGridSourceProcessor`, which provides a null-op implementation of the interface, and override only the method you need.
+
+Processors can be called multiple times during a single request, so they need to be idempotent.
+More information on when processors are called can be found in the [Grid Source Processors guide](../../guides/hyva-admin-grid-walkthrough/using-grid-source-processors.md#when-processors-are-called).

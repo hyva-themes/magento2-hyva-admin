@@ -197,7 +197,7 @@ class FormSourceTest extends TestCase
         ];
 
         $this->expectException(\RuntimeException::class);
-        $this->expectDeprecationMessage(sprintf('Load method "%s" for form "test" not found', $loadMethod));
+        $this->expectExceptionMessage(sprintf('Load method "%s" for form "test" not found', $loadMethod));
 
         $this->createFormSource($config)->getLoadMethodName();
     }
@@ -215,7 +215,7 @@ class FormSourceTest extends TestCase
         ];
 
         $this->expectException(\RuntimeException::class);
-        $this->expectDeprecationMessage(sprintf('Save method "%s" for form "test" not found', $saveMethod));
+        $this->expectExceptionMessage(sprintf('Save method "%s" for form "test" not found', $saveMethod));
 
         $this->createFormSource($config)->getSaveMethodName();
     }

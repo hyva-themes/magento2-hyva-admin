@@ -147,11 +147,39 @@ class MethodsMap
 
     private function getMethodSignatureReturnType(MethodReflection $method): ?string
     {
-        $type = $method->getReturnType();
+        $type = $this->reflectionTypeToString($method->getReturnType());
         if ($type) {
-            return $type->getName() === 'array' ? $this->getAnnotatedArrayType($method) : $type->getName();
+            return $type === 'array' ? $this->getAnnotatedArrayType($method) : $type;
         }
         return null;
+    }
+
+    /**
+     * Union and intersection types (PHP 8.0+) don't have a single type name.
+     * They are reduced to their first non-null member type, the same way union types in annotations are handled.
+     */
+    private function reflectionTypeToString(?\ReflectionType $type): ?string
+    {
+        if ($type instanceof \ReflectionNamedType) {
+            return $type->getName();
+        }
+        if ($type && method_exists($type, 'getTypes')) {
+            $typeNames = map(function (\ReflectionType $memberType): string {
+                return $this->reflectionTypeToString($memberType) ?? 'mixed';
+            }, $type->getTypes());
+            return $this->reduceToSingleType($typeNames, null);
+        }
+        return null;
+    }
+
+    private function detectParameterType(ParameterReflection $parameter): ?string
+    {
+        $type = $parameter->getType();
+
+        // ParameterReflection::detectType() only supports named types
+        return $type && !($type instanceof \ReflectionNamedType)
+            ? $this->reflectionTypeToString($type)
+            : $parameter->detectType();
     }
 
     private function getAnnotatedArrayType(MethodReflection $method): string
@@ -246,7 +274,7 @@ class MethodsMap
         $class      = new ClassReflection($type);
         $parameters = $class->getMethod($method)->getParameters();
         return reduce($parameters, function (array $map, ParameterReflection $p) use ($class, $method): array {
-            $paramType = $p->detectType()
+            $paramType = $this->detectParameterType($p)
                 ?? $this->reflectParamType($class->getParentClass() ?: null, $method, $p->getName());
 
             $map[$p->getName()] = [
@@ -271,7 +299,7 @@ class MethodsMap
         /** @var ParameterReflection $parameter */
         $parameter = values(filter($method->getParameters(), $isMatchingParameter))[0] ?? null;
         return $parameter
-            ? ($parameter->detectType() ?? $this->reflectParamType($parent ?: null, $methodName, $paramName))
+            ? ($this->detectParameterType($parameter) ?? $this->reflectParamType($parent ?: null, $methodName, $paramName))
             : null;
     }
 

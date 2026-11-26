@@ -71,6 +71,7 @@ class ArrayDataTypeTest extends TestCase
     /**
      * @dataProvider recursionDepthDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('recursionDepthDataProvider')]
     public function testArraytoStringWithLimitedRecursion(int $recursionDepth, string $expected): void
     {
         $sut   = $this->createArrayDataType();
@@ -89,7 +90,7 @@ class ArrayDataTypeTest extends TestCase
         $this->assertSame($expected, $sut->toHtmlRecursive($value, $recursionDepth));
     }
 
-    public function recursionDepthDataProvider(): array
+    public static function recursionDepthDataProvider(): array
     {
         // recursion depth => expected
         return [

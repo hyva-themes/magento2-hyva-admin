@@ -38,6 +38,7 @@ class HyvaConfigDirsTest extends TestCase
     /**
      * @dataProvider configDirProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('configDirProvider')]
     public function testReturnsAdminAndBaseFiles(string $configDirsClass, string $dir): void
     {
         $activeModules = ['Test_One', 'Test_Two', 'Test_Three'];
@@ -54,6 +55,7 @@ class HyvaConfigDirsTest extends TestCase
     /**
      * @dataProvider configDirProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('configDirProvider')]
     public function testReturnsFrontendAndBaseFiles(string $configDirsClass, string $dir): void
     {
         $activeModules = ['Test_One', 'Test_Two', 'Test_Three'];

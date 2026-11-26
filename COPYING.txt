@@ -1,0 +1,5 @@
+Copyright © 2020-present Hyvä Themes.
+
+Each source file included in this package is licensed under OSL 3.0.
+
+Please see http://opensource.org/licenses/osl-3.0.php or LICENSE.txt for the full text of the OSL 3.0 license.

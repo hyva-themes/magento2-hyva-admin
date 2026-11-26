@@ -8,8 +8,18 @@ use function array_map as map;
 use Hyva\Admin\Model\GridSource;
 use Hyva\Admin\Model\GridSourcePrefetchEventDispatcher;
 use Hyva\Admin\Model\GridSourceType\GridSourceTypeInterface;
+use Hyva\Admin\Model\MethodValueBindings;
+use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinition;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
+use Magento\Framework\Api\Filter;
+use Magento\Framework\Api\FilterBuilder;
+use Magento\Framework\Api\ObjectFactory;
+use Magento\Framework\Api\Search\FilterGroup;
+use Magento\Framework\Api\Search\FilterGroupBuilder;
+use Magento\Framework\Api\SearchCriteria;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -78,6 +88,97 @@ class GridSourceTest extends TestCase
         $gridSourceType->method('getColumnDefinition')->willReturnCallback([$this, 'createColumnDefinitionByKey']);
 
         return $gridSourceType;
+    }
+
+    public static function repeatedReadCriteriaProvider(): array
+    {
+        $bindings = [
+            ['field' => 'store_id', 'value' => 1],
+            ['field' => 'store_id', 'value' => 2],
+        ];
+        return [
+            'AND defaults' => ['and', $bindings, false],
+            'OR defaults' => ['or', $bindings, false],
+            'no defaults' => ['and', [], false],
+            'prefetch filter' => ['and', $bindings, true],
+        ];
+    }
+
+    /**
+     * @dataProvider repeatedReadCriteriaProvider
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('repeatedReadCriteriaProvider')]
+    public function testRepeatedReadsReuseDataWithoutChangingCallerCriteria(
+        string $combineConditionsWith,
+        array $bindingsConfig,
+        bool $addPrefetchFilter
+    ): void {
+        $objectFactory = $this->createMock(ObjectFactory::class);
+        $objectFactory->method('create')->willReturnCallback(function (string $type, array $arguments) {
+            return new $type($arguments['data']);
+        });
+        $filterBuilder = new FilterBuilder($objectFactory);
+        $bindings = new GridSource\SearchCriteriaBindings(
+            new MethodValueBindings($this->createMock(ObjectManagerInterface::class)),
+            $filterBuilder,
+            new FilterGroupBuilder($objectFactory, $filterBuilder),
+            $combineConditionsWith,
+            $bindingsConfig
+        );
+        $filter = new Filter(['field' => 'status', 'value' => 'pending', 'condition_type' => 'eq']);
+        $originalGroups = [new FilterGroup(['filters' => [$filter]])];
+        $criteria = new SearchCriteria(['filter_groups' => $originalGroups]);
+        $expectedCriteria = $bindings->apply(clone $criteria);
+        $prefetchGroup = new FilterGroup(['filters' => [
+            new Filter(['field' => 'is_active', 'value' => 1, 'condition_type' => 'eq']),
+        ]]);
+        if ($addPrefetchFilter) {
+            $expectedCriteria->setFilterGroups(array_merge($expectedCriteria->getFilterGroups(), [$prefetchGroup]));
+        }
+        $eventManager = $this->createMock(ManagerInterface::class);
+        $eventManager->method('dispatch')->willReturnCallback(function (string $event, array $data) use (
+            $addPrefetchFilter,
+            $prefetchGroup
+        ) {
+            if ($addPrefetchFilter && $event === 'hyva_grid_source_prefetch_test') {
+                $criteria = $data['search_criteria_container']->getSearchCriteria();
+                $criteria->setFilterGroups(array_merge($criteria->getFilterGroups(), [$prefetchGroup]));
+            }
+        });
+        $fetchCount = 0;
+        $sourceType = $this->createMock(GridSourceTypeInterface::class);
+        $sourceType->method('getRecordType')->willReturn('test_record');
+        $sourceType->method('fetchData')->willReturnCallback(function (SearchCriteriaInterface $effectiveCriteria) use (
+            &$fetchCount,
+            $expectedCriteria
+        ): RawGridSourceContainer {
+            $this->assertEquals($expectedCriteria, $effectiveCriteria);
+            $fetchCount++;
+            return RawGridSourceContainer::forData([]);
+        });
+        $sourceType->method('extractRecords')->willReturn([['entity_id' => 1]]);
+        $sourceType->method('extractTotalRowCount')->willReturn(1);
+        $sut = new GridSource(
+            'test',
+            $sourceType,
+            new GridSourcePrefetchEventDispatcher($eventManager),
+            $bindings,
+            new GridSource\SearchCriteriaIdentity()
+        );
+
+        for ($i = 0; $i < 3; $i++) {
+            $this->assertSame([['entity_id' => 1]], $sut->getRecords($criteria));
+            $this->assertSame(1, $sut->getTotalCount($criteria));
+        }
+        $this->assertSame(1, $fetchCount);
+        $this->assertSame($originalGroups, $criteria->getFilterGroups());
+        $this->assertSame('pending', $filter->getValue());
+
+        $filter->setValue('complete');
+        $sut->getRecords($criteria);
+        $sut->getTotalCount($criteria);
+        $this->assertSame(2, $fetchCount);
+        $this->assertSame($originalGroups, $criteria->getFilterGroups());
     }
 
     public function testAllColumnsEvenIfNotInIncludedColumns(): void

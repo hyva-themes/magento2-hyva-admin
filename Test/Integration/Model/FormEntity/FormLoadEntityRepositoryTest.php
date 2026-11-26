@@ -27,11 +27,6 @@ use function array_values as values;
  */
 class FormLoadEntityRepositoryTest extends TestCase
 {
-    public function aTestMethod()
-    {
-        return 0;
-    }
-
     private function getCmsBlockFixtureBlockId(): int
     {
         /** @var BlockRepositoryInterface $blockRepository */
@@ -53,8 +48,8 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsLoadedEntity(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut    = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
-        $result = $sut->fetchTypeAndMethod(__CLASS__ . '::aTestMethod', [], 'int');
+        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $result = $sut->fetchTypeAndMethod(__CLASS__ . 'Class::aTestMethod', [], 'int');
         $this->assertSame(0, $result->getValue());
         $this->assertSame([], $result->getFieldDefinitions());
     }
@@ -65,9 +60,9 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsCustomerAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut           = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = ['customerId' => ['value' => 1]];
-        $result        = $sut->fetchTypeAndMethod(
+        $result = $sut->fetchTypeAndMethod(
             CustomerRepositoryInterface::class . '::getById',
             $bindArguments,
             CustomerInterface::class
@@ -91,9 +86,9 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsCmsBlockAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut     = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = ['blockId' => ['value' => $this->getCmsBlockFixtureBlockId()]];
-        $result        = $sut->fetchTypeAndMethod(
+        $result = $sut->fetchTypeAndMethod(
             BlockRepositoryInterface::class . '::getById',
             $bindArguments,
             BlockInterface::class
@@ -111,9 +106,9 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsProductAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut     = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = ['sku' => ['value' => 'simple']];
-        $result        = $sut->fetchTypeAndMethod(
+        $result = $sut->fetchTypeAndMethod(
             ProductRepositoryInterface::class . '::get',
             $bindArguments,
             ProductInterface::class
@@ -138,12 +133,12 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsOrderAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut     = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = [
             'value' => ['value' => '100000001'],
-            'field' => ['value' => 'increment_id']
+            'field' => ['value' => 'increment_id'],
         ];
-        $result        = $sut->fetchTypeAndMethod(
+        $result = $sut->fetchTypeAndMethod(
             OrderResourceModel::class . '::load',
             $bindArguments,
             OrderModel::class
@@ -161,11 +156,11 @@ class FormLoadEntityRepositoryTest extends TestCase
     public function testReturnsStoreAttributes(): void
     {
         /** @var FormLoadEntityRepository $sut */
-        $sut     = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
+        $sut = ObjectManager::getInstance()->create(FormLoadEntityRepository::class);
         $bindArguments = [
             'code' => ['value' => 'test'],
         ];
-        $result        = $sut->fetchTypeAndMethod(
+        $result = $sut->fetchTypeAndMethod(
             StoreRepositoryInterface::class . '::get',
             $bindArguments,
             StoreInterface::class
@@ -176,5 +171,13 @@ class FormLoadEntityRepositoryTest extends TestCase
         $this->assertContainsField('id', $fields);
         $this->assertContainsField('name', $fields);
         $this->assertContainsField('store_group_id', $fields);
+    }
+}
+
+class FormLoadEntityRepositoryTestClass
+{
+    public function aTestMethod()
+    {
+        return 0;
     }
 }

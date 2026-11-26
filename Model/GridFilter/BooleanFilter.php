@@ -5,6 +5,7 @@ namespace Hyva\Admin\Model\GridFilter;
 use Hyva\Admin\Model\DataType\BooleanDataType;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
+use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
@@ -16,9 +17,17 @@ class BooleanFilter implements ColumnDefinitionMatchingFilterInterface
      */
     private $layout;
 
-    public function __construct(LayoutInterface $layout)
-    {
+    /**
+     * @var FilterBuilder
+     */
+    private $filterBuilder;
+
+    public function __construct(
+        LayoutInterface $layout,
+        FilterBuilder $filterBuilder
+    ) {
         $this->layout = $layout;
+        $this->filterBuilder = $filterBuilder;
     }
 
     public function isMatchingFilter(GridFilterInterface $filter): bool
@@ -42,7 +51,20 @@ class BooleanFilter implements ColumnDefinitionMatchingFilterInterface
     ): void {
         if ($this->isValue($filterValue)) {
             $key = $gridFilter->getColumnDefinition()->getKey();
-            $searchCriteriaBuilder->addFilter($key, (int) $filterValue, 'eq');
+            if (((int) $filterValue) > 0) {
+                $searchCriteriaBuilder->addFilter($key, (int) $filterValue, 'eq');
+            } else {
+                $integerFilter = $this->filterBuilder
+                    ->setField($key)
+                    ->setValue((int) $filterValue)
+                    ->create();
+                $nullFilter = $this->filterBuilder
+                    ->setField($key)
+                    ->setValue(true)
+                    ->setConditionType('null')
+                    ->create();
+                $searchCriteriaBuilder->addFilters([$integerFilter, $nullFilter]);
+            }
         }
     }
 

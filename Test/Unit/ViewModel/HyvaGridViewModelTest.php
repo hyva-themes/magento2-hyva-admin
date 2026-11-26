@@ -356,7 +356,7 @@ class HyvaGridViewModelTest extends TestCase
         $rows = $sut->getRows();
 
         $this->assertCount(3, $rows);
-        $this->assertContainsOnly(RowInterface::class, $rows);
+        $this->assertContainsOnlyInstancesOf(RowInterface::class, $rows);
     }
 
     public function testReturnsNavigation(): void

@@ -10,6 +10,7 @@ class FormXmlToArrayConverterTest extends TestCase
     /**
      * @dataProvider conversionXmlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('conversionXmlProvider')]
     public function testConversion(string $xml, array $expected): void
     {
         $dom = new \DOMDocument();
@@ -19,41 +20,41 @@ class FormXmlToArrayConverterTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
-    public function conversionXmlProvider(): array
+    public static function conversionXmlProvider(): array
     {
         return [
             'load-method'        => [
-                $this->getLoadXml(),
-                $this->getLoadExpected(),
+                self::getLoadXml(),
+                self::getLoadExpected(),
             ],
             'save-method'        => [
-                $this->getSaveXml(),
-                $this->getSaveExpected(),
+                self::getSaveXml(),
+                self::getSaveExpected(),
             ],
             'save-method-simple' => [
-                $this->getSaveSimpleXml(),
-                $this->getSaveSimpleExpected(),
+                self::getSaveSimpleXml(),
+                self::getSaveSimpleExpected(),
             ],
             'include-fields'     => [
-                $this->getIncludeFieldsXml(),
-                $this->getIncludeFieldsExpected(),
+                self::getIncludeFieldsXml(),
+                self::getIncludeFieldsExpected(),
             ],
             'exclude-fields'     => [
-                $this->getExcludeFieldsXml(),
-                $this->getExcludeFieldsExpected(),
+                self::getExcludeFieldsXml(),
+                self::getExcludeFieldsExpected(),
             ],
             'sections'           => [
-                $this->getSectionsXml(),
-                $this->getSectionsExpected(),
+                self::getSectionsXml(),
+                self::getSectionsExpected(),
             ],
             'navigation'         => [
-                $this->getNavigationXml(),
-                $this->getNavigationExpected(),
+                self::getNavigationXml(),
+                self::getNavigationExpected(),
             ],
         ];
     }
 
-    private function getLoadXml(): string
+    private static function getLoadXml(): string
     {
         return <<<EOXML
 <load method="\Magento\Customer\Api\CustomerRepositoryInterface::getById"
@@ -67,7 +68,7 @@ class FormXmlToArrayConverterTest extends TestCase
 EOXML;
     }
 
-    private function getLoadExpected(): array
+    private static function getLoadExpected(): array
     {
         return [
             'load' => [
@@ -86,7 +87,7 @@ EOXML;
         ];
     }
 
-    private function getSaveXml(): string
+    private static function getSaveXml(): string
     {
         return <<<EOXML
 <save method="\Magento\Customer\Api\CustomerRepositoryInterface::save">
@@ -98,7 +99,7 @@ EOXML;
 EOXML;
     }
 
-    private function getSaveExpected(): array
+    private static function getSaveExpected(): array
     {
         return [
             'save' => [
@@ -111,17 +112,17 @@ EOXML;
         ];
     }
 
-    private function getSaveSimpleXml(): string
+    private static function getSaveSimpleXml(): string
     {
         return '<save method="\Magento\Cms\Model\ResourceModel\Block::save"/>';
     }
 
-    private function getSaveSimpleExpected(): array
+    private static function getSaveSimpleExpected(): array
     {
         return ['save' => ['method' => '\Magento\Cms\Model\ResourceModel\Block::save']];
     }
 
-    private function getIncludeFieldsXml(): string
+    private static function getIncludeFieldsXml(): string
     {
         return <<<EOXML
 <fields>
@@ -139,7 +140,7 @@ EOXML;
 EOXML;
     }
 
-    private function getIncludeFieldsExpected(): array
+    private static function getIncludeFieldsExpected(): array
     {
         return [
             'fields' => [
@@ -162,7 +163,7 @@ EOXML;
         ];
     }
 
-    private function getExcludeFieldsXml(): string
+    private static function getExcludeFieldsXml(): string
     {
         return <<<EOXML
 <fields>
@@ -174,7 +175,7 @@ EOXML;
 EOXML;
     }
 
-    private function getExcludeFieldsExpected(): array
+    private static function getExcludeFieldsExpected(): array
     {
         return [
             'fields' => [
@@ -183,7 +184,7 @@ EOXML;
         ];
     }
 
-    private function getSectionsXml(): string
+    private static function getSectionsXml(): string
     {
         return <<<EOXML
 <sections>
@@ -199,7 +200,7 @@ EOXML;
 
     }
 
-    private function getSectionsExpected(): array
+    private static function getSectionsExpected(): array
     {
         return [
             'sections' => [
@@ -224,7 +225,7 @@ EOXML;
         ];
     }
 
-    private function getNavigationXml(): string
+    private static function getNavigationXml(): string
     {
         return <<<EOXML
 <navigation>
@@ -237,7 +238,7 @@ EOXML;
 EOXML;
     }
 
-    private function getNavigationExpected(): array
+    private static function getNavigationExpected(): array
     {
         return [
             'navigation' => [

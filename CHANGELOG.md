@@ -11,7 +11,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Nothing
 
 ### Changed
-- Nothing
+- PHP 8.5 compatibility: avoid using null as an array offset, which is deprecated in PHP 8.5 and made every grid
+  without a sortBy query parameter or row action throw an exception in developer mode.
+- Fixed: Type reflection of classes with union or intersection types (PHP 8.0+) failed with
+  "Call to undefined method ReflectionUnionType::getName()". These types are now reduced to their first non-null type.
+- Tests: Data providers are declared with PHPUnit attributes in addition to annotations and are static, so the test
+  suites run on PHPUnit 10 and newer.
+- Fixed: Filters are ignored on grids with an array provider source (issue #62).
+  Grid source processors for array provider grids are now called on every data fetch with the search criteria of that fetch,
+  and `afterLoad` receives the filtered records. The provider data itself is still loaded only once per request.
+- Docs: Grid source processors can be called multiple times per request (for every search criteria and, for array
+  grids, for the column detection) and need to be idempotent.
 
 ### Removed
 - No removals.
