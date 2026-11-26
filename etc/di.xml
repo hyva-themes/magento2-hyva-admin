@@ -122,5 +122,9 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Framework\Filter\Template">
+        <plugin name="hyva_admin_track_template_directive_processing"
+                type="Hyva\Admin\Plugin\TrackTemplateDirectiveProcessing"/>
+    </type>
 </config>
 

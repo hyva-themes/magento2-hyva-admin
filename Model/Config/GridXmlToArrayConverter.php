@@ -14,6 +14,7 @@ class GridXmlToArrayConverter
         $root = XmlToArray::getRootElement($dom);
 
         return filter([
+            'acl'         => $root->getAttribute('acl'),
             'source'      => $this->convertSourceConfig($root),
             'columns'     => $this->convertColumnsConfig($root),
             'navigation'  => $this->convertNavigationConfig($root),

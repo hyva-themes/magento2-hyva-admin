@@ -8,6 +8,8 @@ use Hyva\Admin\Test\Integration\TestingGridDefinition;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridViewModel;
+use Magento\Framework\App\Area;
+use Magento\Framework\App\State as AppState;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -109,6 +111,35 @@ class HyvaGridViewModelTest extends TestCase
         $this->expectException(\OutOfBoundsException::class);
         $this->expectExceptionMessage('Column(s) not found on source: admin_nme');
         $grid->getColumnDefinitions();
+    }
+
+    public function testRendersExportLinksOnlyInTheAdminArea(): void
+    {
+        $testGridDefinition = [
+            'source'     => [
+                'arrayProvider' => TestingGridDataProvider::withArray([['id' => 1]]),
+            ],
+            'navigation' => [
+                'exports' => [
+                    ['type' => 'csv', 'label' => 'Export as CSV'],
+                ],
+            ],
+        ];
+        $grid               = ObjectManager::getInstance()->create(HyvaGridViewModel::class, [
+            'gridName'              => 'test-name',
+            'gridDefinitionFactory' => $this->makeFactoryForGridDefinition($testGridDefinition),
+        ]);
+
+        $this->assertStringContainsString('Export as CSV', $grid->getExportsHtml());
+
+        $storefrontExportsHtml = ObjectManager::getInstance()->get(AppState::class)->emulateAreaCode(
+            Area::AREA_FRONTEND,
+            function () use ($grid): string {
+                return $grid->getExportsHtml();
+            }
+        );
+        $this->assertSame('', $storefrontExportsHtml);
+        $this->assertNotNull($grid->getExport('csv'));
     }
 
     private function createColumnDefinition(string $key): ColumnDefinitionInterface

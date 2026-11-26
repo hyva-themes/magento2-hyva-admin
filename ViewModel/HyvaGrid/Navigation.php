@@ -12,6 +12,10 @@ use function array_reduce as reduce;
 use function array_values as values;
 
 use Hyva\Admin\Model\HyvaGridSourceInterface;
+use Magento\Framework\App\Area;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\State as AppState;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SortOrder;
@@ -88,6 +92,11 @@ class Navigation implements NavigationInterface
     private $gridExportFactory;
 
     /**
+     * @var AppState
+     */
+    private $appState;
+
+    /**
      * @var LayoutInterface
      */
     private $layout;
@@ -104,7 +113,8 @@ class Navigation implements NavigationInterface
         RequestInterface $request,
         UrlBuilder $urlBuilder,
         GridButtonInterfaceFactory $gridButtonFactory,
-        GridExportInterfaceFactory $gridExportFactory
+        GridExportInterfaceFactory $gridExportFactory,
+        ?AppState $appState = null
     ) {
         $this->layout                = $layout;
         $this->gridSource            = $gridSource;
@@ -118,6 +128,19 @@ class Navigation implements NavigationInterface
         $this->gridFilterFactory     = $gridFilterFactory;
         $this->gridButtonFactory     = $gridButtonFactory;
         $this->gridExportFactory     = $gridExportFactory;
+        $this->appState              = $appState ?? ObjectManager::getInstance()->get(AppState::class);
+    }
+
+    /**
+     * The ajax paging endpoint only exists in the admin.
+     */
+    private function isAdminArea(): bool
+    {
+        try {
+            return $this->appState->getAreaCode() === Area::AREA_ADMINHTML;
+        } catch (LocalizedException $exception) {
+            return false;
+        }
     }
 
     public function getTotalRowsCount(): int
@@ -193,6 +216,10 @@ class Navigation implements NavigationInterface
 
     public function isAjaxEnabled(): bool
     {
+        if (!$this->isAdminArea()) {
+            return false;
+        }
+
         // When a column is rendered by a named block, ajax paging can't be used, because the layout that
         // initializes the renderer block will not be loaded during the processing of the ajax request.
         return reduce(
