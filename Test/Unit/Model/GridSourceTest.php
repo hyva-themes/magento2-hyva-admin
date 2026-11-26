@@ -259,4 +259,34 @@ class GridSourceTest extends TestCase
         }, $extractedColumns);
         $this->assertSame(zip($sourceColumnKeys, $sourceColumnKeys), $extractedKeys);
     }
+
+    public function testUsesIncludedColumnsIfSourceHasNoColumns(): void
+    {
+        $gridSourceType = $this->createStubGridSourceType([]);
+
+        $configuredIncludeColumns = [
+            'foo' => $this->createColumnDefinitionFromArray(['key' => 'foo', 'label' => 'Foo Label']),
+            'bar' => $this->createColumnDefinitionFromArray(['key' => 'bar', 'type' => 'int']),
+        ];
+
+        $sut                         = $this->createGridSource('test', $gridSourceType);
+        $extractedColumns            = $sut->extractColumnDefinitions($configuredIncludeColumns, [], false);
+        $expectedColumnDefinitionFoo = $this->createColumnDefinitionFromArray(
+            ['key' => 'foo', 'isVisible' => true, 'sortOrder' => '1', 'label' => 'Foo Label']
+        );
+        $expectedColumnDefinitionBar = $this->createColumnDefinitionFromArray(
+            ['key' => 'bar', 'isVisible' => true, 'sortOrder' => '2', 'type' => 'int']
+        );
+        $this->assertCount(2, $extractedColumns);
+        $this->assertContainsColumn($expectedColumnDefinitionFoo, $extractedColumns);
+        $this->assertContainsColumn($expectedColumnDefinitionBar, $extractedColumns);
+    }
+
+    public function testReturnsNoColumnsIfSourceHasNoColumnsAndNoneAreIncluded(): void
+    {
+        $gridSourceType = $this->createStubGridSourceType([]);
+
+        $sut = $this->createGridSource('test', $gridSourceType);
+        $this->assertSame([], $sut->extractColumnDefinitions([], [], false));
+    }
 }

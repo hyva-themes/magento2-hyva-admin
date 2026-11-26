@@ -72,7 +72,8 @@ class GridSource implements HyvaGridSourceInterface
         // 3. sort columns (maybe in grid view model...?)
 
         $configuredColumns = $this->addMissingSortOrder($configuredColumns);
-        $allColumnKeys     = $this->gridSourceType->getColumnKeys();
+        // Array providers without data have no columns to detect, so the configured include columns are used instead.
+        $allColumnKeys     = $this->gridSourceType->getColumnKeys() ?: keys($configuredColumns);
 
         $this->validateConfiguredKeys(keys($configuredColumns), $allColumnKeys);
 
