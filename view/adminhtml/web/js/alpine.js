@@ -1,10 +1,11 @@
 /**
  * Original file: /gh/alpinejs/alpine@2.8.0/dist/alpine.js
+ * The AMD branch of the UMD wrapper is removed: the file is loaded as a plain script after RequireJS, where an
+ * anonymous define() throws "Mismatched anonymous define()".
  */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-        typeof define === 'function' && define.amd ? define(factory) :
-            (global = global || self, global.Alpine = factory());
+        (global = global || self, global.Alpine = factory());
 }(this, (function () { 'use strict';
 
     function _defineProperty(obj, key, value) {
