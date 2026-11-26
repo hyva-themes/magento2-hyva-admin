@@ -20,6 +20,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed: Filters are ignored on grids with an array provider source (issue #62).
   Grid source processors for array provider grids are now called on every data fetch with the search criteria of that fetch,
   and `afterLoad` receives the filtered records. The provider data itself is still loaded only once per request.
+- Fixed: Grids with an array provider and included columns threw "Column(s) not found on source" when the provider
+  returned no data (issue #85). The included columns are now rendered without records.  
+  Thanks to [@pykettk](https://github.com/hyva-themes/magento2-hyva-admin/pull/89) for the PR!
 - Docs: Grid source processors can be called multiple times per request (for every search criteria and, for array
   grids, for the column detection) and need to be idempotent.
 

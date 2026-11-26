@@ -5,6 +5,7 @@ namespace Hyva\Admin\Test\Integration\ViewModel;
 use Hyva\Admin\Model\HyvaGridDefinitionInterfaceFactory;
 use Hyva\Admin\Test\Integration\TestingGridDataProvider;
 use Hyva\Admin\Test\Integration\TestingGridDefinition;
+use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGridInterface;
 use Hyva\Admin\ViewModel\HyvaGridViewModel;
 use Magento\TestFramework\ObjectManager;
@@ -58,5 +59,60 @@ class HyvaGridViewModelTest extends TestCase
             'gridDefinitionFactory' => $this->makeFactoryForGridDefinition($testGridDefinition),
         ]);
         $this->assertNull($grid->getMassActionIdColumn());
+    }
+
+    public function testRendersIncludedColumnsForEmptyArrayProvider(): void
+    {
+        $includedColumns    = [
+            'log_id'     => $this->createColumnDefinition('log_id'),
+            'admin_name' => $this->createColumnDefinition('admin_name'),
+        ];
+        $testGridDefinition = [
+            'source'  => [
+                'arrayProvider' => TestingGridDataProvider::withArray([]),
+            ],
+            'columns' => [
+                'include' => $includedColumns,
+            ],
+        ];
+
+        $grid = ObjectManager::getInstance()->create(HyvaGridViewModel::class, [
+            'gridName'              => 'test-name',
+            'gridDefinitionFactory' => $this->makeFactoryForGridDefinition($testGridDefinition),
+        ]);
+
+        $this->assertSame(['log_id', 'admin_name'], array_keys($grid->getColumnDefinitions()));
+        $this->assertSame([], $grid->getRows());
+    }
+
+    public function testThrowsForUnknownIncludedColumnIfArrayProviderHasData(): void
+    {
+        $testGridDefinition = [
+            'source'  => [
+                'arrayProvider' => TestingGridDataProvider::withArray([
+                    ['log_id' => 1, 'admin_name' => 'bob'],
+                ]),
+            ],
+            'columns' => [
+                'include' => [
+                    'log_id'    => $this->createColumnDefinition('log_id'),
+                    'admin_nme' => $this->createColumnDefinition('admin_nme'),
+                ],
+            ],
+        ];
+
+        $grid = ObjectManager::getInstance()->create(HyvaGridViewModel::class, [
+            'gridName'              => 'test-name',
+            'gridDefinitionFactory' => $this->makeFactoryForGridDefinition($testGridDefinition),
+        ]);
+
+        $this->expectException(\OutOfBoundsException::class);
+        $this->expectExceptionMessage('Column(s) not found on source: admin_nme');
+        $grid->getColumnDefinitions();
+    }
+
+    private function createColumnDefinition(string $key): ColumnDefinitionInterface
+    {
+        return ObjectManager::getInstance()->create(ColumnDefinitionInterface::class, ['key' => $key]);
     }
 }
