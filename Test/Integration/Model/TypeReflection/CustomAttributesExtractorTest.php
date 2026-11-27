@@ -17,6 +17,7 @@ class CustomAttributesExtractorTest extends TestCase
     /**
      * @dataProvider nonEavEntityClassProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('nonEavEntityClassProvider')]
     public function testIsFalseForNonEavEntity(string $class): void
     {
         $sut    = ObjectManager::getInstance()->create(CustomAttributesExtractor::class);
@@ -26,6 +27,7 @@ class CustomAttributesExtractorTest extends TestCase
     /**
      * @dataProvider eavEntityClassProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('eavEntityClassProvider')]
     public function testIsTrueForEavEntity(string $class): void
     {
         $sut    = ObjectManager::getInstance()->create(CustomAttributesExtractor::class);
@@ -33,7 +35,7 @@ class CustomAttributesExtractorTest extends TestCase
         $this->assertTrue($sut->isEavEntity($entity));
     }
 
-    public function nonEavEntityClassProvider(): array
+    public static function nonEavEntityClassProvider(): array
     {
         return [
             [Block::class],
@@ -42,7 +44,7 @@ class CustomAttributesExtractorTest extends TestCase
         ];
     }
 
-    public function eavEntityClassProvider(): array
+    public static function eavEntityClassProvider(): array
     {
         return [
             [Product::class],

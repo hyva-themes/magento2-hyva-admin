@@ -1,47 +1,66 @@
 name: Hyvä Admin Tests
-on: [ push, pull_request ]
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+concurrency:
+    group: tests-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-    unit-tests:
-        name: Unit Tests
+    compute-matrix:
+        name: Compute Matrix
         runs-on: ubuntu-latest
-        env:
-            MAGENTO_VERSION: '2.4.1'
-            MODULE_NAME: Hyva_Admin
-            COMPOSER_NAME: hyva-themes/module-magento2-admin
-            MAGENTO_MARKETPLACE_USERNAME: ${{ secrets.MAGENTO_MARKETPLACE_USERNAME }}
-            MAGENTO_MARKETPLACE_PASSWORD: ${{ secrets.MAGENTO_MARKETPLACE_PASSWORD }}
+        outputs:
+            matrix: ${{ steps.matrix.outputs.matrix }}
         steps:
-            -   uses: actions/checkout@v2
-            -   name: Run Unit Tests
-                uses: docker://yireo/github-actions-magento-unit-tests:7.4
+            # Kind "latest" is the newest Magento Open Source release (magento/project-community-edition without a
+            # version constraint), with the PHP version and services (MariaDB, OpenSearch, ...) it requires.
+            # Pinned to a commit of main, because the latest tag (v1.7.3) predates Magento 2.4.9.
+            -   uses: mage-os/github-actions/supported-version@81def9eba7703706b3f0aa99b3ce923857ba98e4
+                id: supported-version
                 with:
-                    entrypoint: ./build/unit-test-entrypoint.sh
-    integration-tests:
-        name: Integration Tests
-        runs-on: ubuntu-latest
-        services:
-            mysql:
-                image: mysql:5.7
+                    kind: latest
+                    project: magento-open-source
+
+            # Also test the same Magento version on PHP 8.5, which Magento 2.4.9 supports, too.
+            # Only the include list is kept: with the top level "magento" key of the computed matrix, the second
+            # include entry would replace the PHP version of the first one instead of adding a job.
+            #
+            # The jobs run on ubuntu-24.04 instead of ubuntu-latest (Ubuntu 26.04), which ships the MySQL 8.4 client.
+            # The Magento integration test framework only adds --column-statistics=0 to mysqldump for client
+            # version 8.0, so the setup DB dump fails against MariaDB with the 8.4 client.
+            -   name: Add PHP 8.5 and pin the runner image
+                id: matrix
                 env:
-                    MYSQL_ROOT_PASSWORD: root
-                ports:
-                    - 3306:3306
-                options: --tmpfs /tmp:rw --tmpfs /var/lib/mysql:rw --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-            es:
-                image: docker.io/wardenenv/elasticsearch:7.8
-                ports:
-                    - 9200:9200
-                env:
-                    'discovery.type': single-node
-                    'xpack.security.enabled': false
-                    ES_JAVA_OPTS: "-Xms64m -Xmx512m"
-                options: --health-cmd="curl localhost:9200/_cluster/health?wait_for_status=yellow&timeout=60s" --health-interval=10s --health-timeout=5s --health-retries=3
-        steps:
-            -   uses: actions/checkout@v2
-            -   name: Run Integration Tests
-                uses: extdn/github-actions-m2/magento-integration-tests/7.4@master
-                with:
-                    module_name: Hyva_Admin
-                    composer_name: hyva-themes/module-magento2-admin
-                    ce_version: '2.4.1'
+                    MATRIX: ${{ steps.supported-version.outputs.matrix }}
+                run: |
+                    matrix=$(jq -c '{include: ((.include + [.include[0] + {php: 8.5}]) | map(.os = "ubuntu-24.04"))}' <<< "$MATRIX")
+                    echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+                    jq '.include[] | {magento, php, composer, os}' <<< "$matrix"
+
+    tests:
+        name: Tests
+        needs: compute-matrix
+        # Creates the Magento project, requires this module from the checkout through a path repository, starts the
+        # services from the matrix and runs test_command in dev/tests/integration.
+        uses: mage-os/github-actions/.github/workflows/integration.yaml@81def9eba7703706b3f0aa99b3ce923857ba98e4
+        with:
+            package_name: hyva-themes/module-magento2-admin
+            matrix: ${{ needs.compute-matrix.outputs.matrix }}
+            magento_repository: https://mirror.mage-os.org/
+            fail-fast: false
+            # The workflow installs the module as a symlink to the checkout, which is outside the Magento root.
+            # Magento refuses to render templates from there, so reinstall the module as a copy first.
+            # The unit tests depend on the Magento framework, so they run in the Magento installation, too.
+            test_command: >-
+                COMPOSER_MIRROR_PATH_REPOS=1 composer --working-dir=../../.. reinstall hyva-themes/module-magento2-admin
+                && ../../../vendor/bin/phpunit -c ../unit/phpunit.xml.dist ../../../vendor/hyva-themes/module-magento2-admin/Test/Unit
+                && ../../../vendor/bin/phpunit ../../../vendor/hyva-themes/module-magento2-admin/Test/Integration

@@ -25,7 +25,7 @@ class CellTest extends TestCase
         return ObjectManager::getInstance()->create(ColumnDefinitionInterface::class, $arguments);
     }
 
-    private function createCellWithValue($value, string $type = null): Cell
+    private function createCellWithValue($value, ?string $type = null): Cell
     {
         $arguments = ['value' => $value, 'columnDefinition' => $this->createColumnDefinition($type)];
         return ObjectManager::getInstance()->create(CellInterface::class, $arguments);
@@ -136,7 +136,7 @@ class CellTest extends TestCase
         $this->assertSame($value, $cell->getRawValue());
     }
 
-    public function returnsRawValueIfOptionNotFound(): void
+    public function testReturnsRawValueIfOptionNotFound(): void
     {
         $value            = 12;
         $options          = [
@@ -176,6 +176,28 @@ class CellTest extends TestCase
         $this->assertSame('', $cell->getHtml());
         $this->assertSame('', $cell->getTextValue());
         $this->assertNull($cell->getRawValue());
+    }
+
+    public function testIgnoresNullElementsInArrayValuesWithOptions(): void
+    {
+        $options          = [['value' => 11, 'label' => 'eleven'], ['value' => 12, 'label' => 'twelve']];
+        $columnDefinition = $this->createColumnDefinition('array', ['options' => $options]);
+        $arguments        = ['value' => [11, null, 12], 'columnDefinition' => $columnDefinition];
+
+        /** @var Cell $cell */
+        $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
+        $this->assertSame('eleven, twelve', $cell->getTextValue());
+    }
+
+    public function testMatchesEmptyStringOptionForNullElementsInArrayValues(): void
+    {
+        $options          = [['value' => '', 'label' => 'none'], ['value' => 11, 'label' => 'eleven']];
+        $columnDefinition = $this->createColumnDefinition('array', ['options' => $options]);
+        $arguments        = ['value' => [null, 11], 'columnDefinition' => $columnDefinition];
+
+        /** @var Cell $cell */
+        $cell = ObjectManager::getInstance()->create(CellInterface::class, $arguments);
+        $this->assertSame('none, eleven', $cell->getTextValue());
     }
 
 }

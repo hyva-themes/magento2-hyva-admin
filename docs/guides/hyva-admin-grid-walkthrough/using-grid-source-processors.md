@@ -49,6 +49,20 @@ If only one of the methods is needed, a processor can also extend from
 
 The effect of processors could also be achieved using events or plugins, but processors are designed to require the least amount of boilerplate code.
 
+## When processors are called
+
+Processors are called every time the grid source loads data. This can happen multiple times during a single request:
+
+  * Once for every search criteria the grid data is loaded with. For example, an export loads the records in batches, and the processors are called for every batch.
+  * For array grid sources additionally once for the column detection, before the grid records are loaded. The search criteria of this call has a page size of 1 and no filters or sort orders.
+
+Because of this, **processors need to be idempotent**: calling `beforeLoad` or `afterLoad` again must not change the result.
+
+  * Don't accumulate changes across calls, for example by appending to a list on every call. Set values instead.
+  * Side effects that should only happen once per request, like sending a notification, need to be guarded.
+
+The data of array providers is loaded only once per request and then reused for every call, because loading it can be expensive. See the array grid source notes below for what this means for `beforeLoad`.
+
 ## Grid Processor method arguments
 
 ### $source and $rawResult
@@ -71,7 +85,7 @@ This is because they depends on the grid source type that is being used.
 
 *Array Grid source*
 
-  * `$source`: array provider instance
+  * `$source`: array provider instance. It's the same instance on every call during a request.
   * `$rawResult`: array result after filtering but before pagination or sorting has been applied
 
 *Query Grid source*
@@ -109,6 +123,7 @@ But what can be done in the beforeLoad method depends a lot on the grid source t
 *Array Grid source*
  
   * It really depends on what influence the array grid source provider class allows.
+  * The array provider `getHyvaGridData()` method is called only once per request, during the first data load (usually the column detection), right after the `beforeLoad` calls for that load. Changes `beforeLoad` makes to the provider in later calls don't change the grid data. This means changes to the provider can't depend on the filters or sort orders of the grid search criteria. To change the records depending on the grid search criteria, use `afterLoad`, which receives the records with the filters already applied.
 
 *Query Grid source*
 

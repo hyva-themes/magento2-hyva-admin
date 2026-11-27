@@ -3,6 +3,7 @@
 namespace Hyva\Admin\Model\GridSourceType;
 
 use Hyva\Admin\Api\DataTypeGuesserInterface;
+use Hyva\Admin\Api\HyvaGridArrayProviderInterface;
 use Hyva\Admin\Api\HyvaGridSourceProcessorInterface;
 use Hyva\Admin\Model\RawGridSourceContainer;
 use Hyva\Admin\ViewModel\HyvaGrid\ColumnDefinitionInterface;
@@ -48,9 +49,21 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
     private $searchCriteriaBuilder;
 
     /**
+     * @var HyvaGridArrayProviderInterface
+     */
+    private $memoizedProvider;
+
+    /**
+     * The unfiltered records as returned by the array provider.
+     *
      * @var array[]
      */
-    private $memoizedGridData;
+    private $memoizedProviderData;
+
+    /**
+     * @var array
+     */
+    private $memoizedFirstRow;
 
     /**
      * @var string
@@ -128,39 +141,56 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
     /**
      * Other source types should not keep a reference to the grid data.
      *
-     * The array grid source type is special and keeps a reference, because it needs to access
-     * the first record in order to do column type reflection.
+     * The array grid source type is special and keeps a reference to the data returned by the array provider,
+     * because it needs to access the first record in order to do column type reflection.
      * Other grid source types should use reflection on the data type classes or the query columns instead.
      * These should not keep a reference to the data so iterators can be used and GC can collect values that are
      * no longer needed.
+     *
+     * Only the unfiltered provider data is memoized. Processors, filters, sort orders and pagination are applied
+     * on every call, because the column reflection fetches the first row before the grid records are fetched with
+     * the actual search criteria.
      *
      * @return RawGridSourceContainer
      */
     public function fetchData(SearchCriteriaInterface $searchCriteria): RawGridSourceContainer
     {
-        if (!isset($this->memoizedGridData)) {
-            $provider = $this->arrayProviderFactory->create($this->arrayProviderClass);
+        $provider = $this->getProvider();
 
-            map(function (HyvaGridSourceProcessorInterface $processor) use ($provider, $searchCriteria): void {
-                $processor->beforeLoad($provider, $searchCriteria, $this->gridName);
-            }, $this->processors);
+        map(function (HyvaGridSourceProcessorInterface $processor) use ($provider, $searchCriteria): void {
+            $processor->beforeLoad($provider, $searchCriteria, $this->gridName);
+        }, $this->processors);
 
-            $filterGroups = $searchCriteria->getFilterGroups() ?? [];
+        $filterGroups = $searchCriteria->getFilterGroups() ?? [];
 
-            $result = reduce(
-                $this->processors,
-                function (array $result, HyvaGridSourceProcessorInterface $processor) use ($searchCriteria): array {
-                    return $processor->afterLoad($result, $searchCriteria, $this->gridName) ?? $result;
-                },
-                $this->applyFilterGroups($provider->getHyvaGridData(), $filterGroups)
-            );
+        $result = reduce(
+            $this->processors,
+            function (array $result, HyvaGridSourceProcessorInterface $processor) use ($searchCriteria): array {
+                return $processor->afterLoad($result, $searchCriteria, $this->gridName) ?? $result;
+            },
+            $this->applyFilterGroups($this->getProviderData($provider), $filterGroups)
+        );
 
-            $this->memoizedGridData = $result;
+        return RawGridSourceContainer::forData([
+            'records' => $this->applyPagination($result, $searchCriteria),
+            'count'   => count($result),
+        ]);
+    }
+
+    private function getProvider(): HyvaGridArrayProviderInterface
+    {
+        if (!isset($this->memoizedProvider)) {
+            $this->memoizedProvider = $this->arrayProviderFactory->create($this->arrayProviderClass);
         }
+        return $this->memoizedProvider;
+    }
 
-        $gridData = $this->applyPagination($this->memoizedGridData, $searchCriteria);
-
-        return RawGridSourceContainer::forData($gridData);
+    private function getProviderData(HyvaGridArrayProviderInterface $provider): array
+    {
+        if (!isset($this->memoizedProviderData)) {
+            $this->memoizedProviderData = $provider->getHyvaGridData();
+        }
+        return $this->memoizedProviderData;
     }
 
     private function applyPagination(array $gridData, SearchCriteriaInterface $searchCriteria): array
@@ -171,18 +201,21 @@ class ArrayProviderGridSourceType implements GridSourceTypeInterface
 
     public function extractRecords(RawGridSourceContainer $rawGridData): array
     {
-        return $this->gridSourceDataAccessor->unbox($rawGridData);
+        return $this->gridSourceDataAccessor->unbox($rawGridData)['records'];
     }
 
     private function getFirstRow(): array
     {
-        $searchCriteria = $this->searchCriteriaBuilder->setPageSize(1)->setCurrentPage(1)->create();
-        return values($this->gridSourceDataAccessor->unbox($this->fetchData($searchCriteria)))[0] ?? [];
+        if (!isset($this->memoizedFirstRow)) {
+            $searchCriteria         = $this->searchCriteriaBuilder->setPageSize(1)->setCurrentPage(1)->create();
+            $this->memoizedFirstRow = values($this->extractRecords($this->fetchData($searchCriteria)))[0] ?? [];
+        }
+        return $this->memoizedFirstRow;
     }
 
     public function extractTotalRowCount(RawGridSourceContainer $rawGridData): int
     {
-        return count($this->memoizedGridData);
+        return $this->gridSourceDataAccessor->unbox($rawGridData)['count'];
     }
 
     private function applySortOrders(array $gridData, array $sortOrders): array

@@ -1,6 +1,6 @@
 {
   "name": "hyva-admin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hyva-Admin tailwind",
   "main": "postcss.config.js",
   "dependencies": {
@@ -25,6 +25,6 @@
     "output-success": "echo \"\\033[0;32mDone!\\033[0m\""
   },
   "author": "",
-  "license": "ISC",
+  "license": "OSL-3.0",
   "private": true
 }
