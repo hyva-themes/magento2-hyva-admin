@@ -4,8 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+[Unreleased]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.29..main-1.x
 
-[Unreleased]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.29..main
+### Changed
+- Updated the npm dependencies of the Tailwind CSS build in `view/adminhtml/web/tailwind` to fix the vulnerabilities
+  reported by Dependabot (Tailwind CSS 2.2.19, PostCSS 8 plugins, `terser` removed because it wasn't used).
+  The packages are only used to build `styles.css` and are not installed with the module.
+  The rebuilt `styles.css` drops obsolete vendor prefixes and adds the Tailwind 2.2 utilities. The grids look the same.
 
 ## [1.1.29] - 2026-11-27
 [1.1.29]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.28..1.1.29
