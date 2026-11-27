@@ -7,8 +7,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 [Unreleased]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.23..main
 
+### Security
+- The admin ajax paging (`hyva-admin/ajax/paging`) and export (`hyva-admin/export/download`) endpoints served any
+  grid to any admin user, regardless of the ACL resource that protects the page the grid is rendered on.
+  They now only serve grids that were rendered for the admin user during their current admin session.
+  Only grids rendered with a Hyvä grid block (any block extending `Hyva\Admin\Block\BaseHyvaGrid`) are recorded.
+  Grids are no longer rendered through template directives like `{{block}}` or `{{layout}}`, in any area (this
+  includes storefront CMS content and emails).  
+  Thanks to Sansec and [Ief Falot](https://github.com/iefken) for the reports!
+- The storefront route `hyva-grid` was removed. Its export endpoint served grids declared in `view/base/hyva-grid`
+  to visitors without authentication.
+- The ajax paging endpoint no longer returns exception messages outside of developer mode. They are logged instead.
+- CSV exports prefix cells that start with `=`, `+`, `-`, `@`, a tab or a carriage return with a single quote, so
+  spreadsheet apps don't evaluate them as formulas (CSV injection). Numbers like `-5` are not prefixed.
+  Before, Magento only prefixed values starting with `=`, `+` or `-` with a space.
+  XLSX and XML exports store the values as text and are not affected.
+- Docs: `renderAsUnsecureHtml` must only be used for trusted values or data types that build safe HTML, and
+  `toHtmlRecursive()` implementations of custom data types have to escape the values they embed.
+
 ### Added
-- Nothing
+- Grids can declare the ACL resource an admin user needs to see the grid with the `acl` attribute:
+  `<grid acl="My_Module::my_grid">`. Grids the admin user isn't allowed to access are not rendered, and are not
+  served by the ajax paging and export endpoints.
 
 ### Changed
 - PHP 8.5 compatibility: avoid using null as an array offset, which is deprecated in PHP 8.5 and made every grid
@@ -27,7 +47,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   grids, for the column detection) and need to be idempotent.
 
 ### Removed
-- No removals.
+- The storefront route `hyva-grid` with the controllers `Hyva\Admin\Controller\Ajax\Paging` and
+  `Hyva\Admin\Controller\Export\Download`. Outside of the admin, grids are now rendered without ajax paging and
+  without export links. Custom storefront grid templates that build these URLs themselves need to be updated.
 
 ## [1.1.23] - 2025-02-06
 [1.1.23]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.22..1.1.23

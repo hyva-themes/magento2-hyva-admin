@@ -15,6 +15,7 @@ use Hyva\Admin\ViewModel\HyvaGrid\EntityDefinitionInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
 use Hyva\Admin\ViewModel\Shared\JsEventInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\App\Area;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 use function array_combine as zip;
@@ -356,6 +357,10 @@ class HyvaGridViewModel implements HyvaGridInterface, HyvaGridExportInterface
     public function getExportsHtml(): string
     {
         $renderer = $this->createRenderer();
+        // The export endpoint only exists in the admin
+        if ($renderer->getArea() !== Area::AREA_ADMINHTML) {
+            return '';
+        }
         $renderer->setTemplate('Hyva_Admin::grid/exports.phtml');
         $renderer->assign('navigation', $this->getNavigation());
         $renderer->assign('exports', $this->getNavigation()->getExports());
