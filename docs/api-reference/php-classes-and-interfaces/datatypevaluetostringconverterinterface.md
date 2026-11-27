@@ -49,6 +49,9 @@ A column type code might be automatically determined by a `DataTypeGuesser`, or 
 
 When a cell is rendered, the method `toString` is used by default. Only if the column property `renderAsUnsecureHtml="true"` is set for a column, the method `toHtmlRecursive` is used to stringify a value.
 
+!!! warning
+    The result of `toHtmlRecursive` is rendered without escaping. Escape every value you embed in the returned HTML, for example with `Magento\Framework\Escaper::escapeHtml()` and `escapeHtmlAttr()`.
+
 ## Interface Methods
 
 ### toString($value): ?string
@@ -85,8 +88,9 @@ public function toHtmlRecursive(
     $value,
     $maxRecursionDepth = self::UNLIMITED_RECURSION
 ): ?string {
+    // $this->escaper is an injected \Magento\Framework\Escaper instance
     return $this->canProcess($value)
-        ? sprintf('<img src="%s"/>', $this->getImageUrl($value))
+        ? sprintf('<img src="%s"/>', $this->escaper->escapeHtmlAttr($this->getImageUrl($value)))
         : null;
 }
 ```

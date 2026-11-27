@@ -20,6 +20,24 @@ class GridXmlToArrayConverterTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
+    public function testConvertsAclAttribute(): void
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML('<grid acl="Vendor_Module::grid"><source><arrayProvider>\Foo</arrayProvider></source></grid>');
+        $result = (new GridXmlToArrayConverter())->convert($dom);
+
+        $this->assertSame('Vendor_Module::grid', $result['acl']);
+    }
+
+    public function testOmitsAclIfNotSet(): void
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML('<grid><source><arrayProvider>\Foo</arrayProvider></source></grid>');
+        $result = (new GridXmlToArrayConverter())->convert($dom);
+
+        $this->assertArrayNotHasKey('acl', $result);
+    }
+
     public static function conversionXmlProvider(): array
     {
         return [

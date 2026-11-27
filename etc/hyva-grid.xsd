@@ -10,8 +10,20 @@
                 <xs:element name="navigation" type="navigation" minOccurs="0"/>
                 <xs:element name="entityConfig" type="entityConfig" minOccurs="0"/>
             </xs:all>
+            <xs:attribute name="acl" type="aclResourceId"/>
         </xs:complexType>
     </xs:element>
+
+    <xs:simpleType name="aclResourceId">
+        <xs:annotation>
+            <xs:documentation>
+                ACL resource the admin user needs to see the grid, for example Vendor_Module::resource
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z]+[a-zA-Z0-9]{1,}_[A-Z]+[A-Z0-9a-z]{1,}::[A-Za-z_0-9]{1,}"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:simpleType name="phpTypeAndMethod">
         <xs:annotation>

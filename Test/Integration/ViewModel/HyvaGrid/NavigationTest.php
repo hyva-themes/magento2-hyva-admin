@@ -14,7 +14,9 @@ use Hyva\Admin\ViewModel\HyvaGrid\GridExportInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\GridFilterInterface;
 use Hyva\Admin\ViewModel\HyvaGrid\Navigation;
 use Hyva\Admin\ViewModel\HyvaGrid\NavigationInterface;
+use Magento\Framework\App\Area;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\State as AppState;
 use Magento\Framework\UrlInterface as UrlBuilder;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -661,6 +663,31 @@ class NavigationTest extends TestCase
         $navigationConfig = ['@isAjaxEnabled' => 'false'];
         $sut              = $this->createNavigation($gridData, $navigationConfig);
         $this->assertFalse($sut->isAjaxEnabled());
+    }
+
+    public function testDisablesAjaxNavigationButKeepsExportsOutsideOfTheAdminArea(): void
+    {
+        $gridData         = [
+            ['col_a' => 'a', 'col_b' => 'b'],
+        ];
+        $navigationConfig = [
+            '@isAjaxEnabled' => 'true',
+            'exports'        => [
+                ['type' => 'csv', 'label' => 'Export to CSV'],
+            ],
+        ];
+        $sut              = $this->createNavigation($gridData, $navigationConfig);
+
+        [$isAjaxEnabled, $exports] = ObjectManager::getInstance()->get(AppState::class)->emulateAreaCode(
+            Area::AREA_FRONTEND,
+            function () use ($sut): array {
+                return [$sut->isAjaxEnabled(), $sut->getExports()];
+            }
+        );
+
+        $this->assertFalse($isAjaxEnabled);
+        // Exports can still be created programmatically, e.g. in cron jobs or CLI commands
+        $this->assertSame(['csv'], keys($exports));
     }
 
     public function testReturnsMapOfConfiguredExports(): void

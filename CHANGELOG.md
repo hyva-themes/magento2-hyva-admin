@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 This release is not backward compatible with templates and JavaScript written for Hyvä Admin 1.x.
 See the [upgrade guide](https://hyva-themes.github.io/magento2-hyva-admin/guides/upgrading-to-2.0/).
+Hyvä Admin 1.x is still maintained in the `main-1.x` branch, so you can stay on `^1.1` until you're ready to upgrade.
 
 ### Changed
 - Alpine.js 2.8 is replaced with the Alpine.js 3.17.5 CSP build. Grids no longer require `'unsafe-eval'` in the
@@ -32,14 +33,54 @@ See the [upgrade guide](https://hyva-themes.github.io/magento2-hyva-admin/guides
 
 Thanks to [@pykettk](https://github.com/hyva-themes/magento2-hyva-admin/pull/93) for the initial implementation!
 
-## [Unreleased]
+## [1.1.29] - 2026-11-27
+[1.1.29]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.28..1.1.29
 
-[Unreleased]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.23..main
+### Security
+- Stored XSS in grid row actions with a JS event (`<action><event on="click"/></action>`): the action parameters
+  contain the row value of the `idColumn` declared on `<actions>`, and were rendered unescaped into the `x-on:`
+  attribute of the action link. A value containing a single quote could add attributes (like event handlers) to the
+  link, and a value containing an HTML entity like `&quot;` could inject JavaScript into the event expression.
+  The parameters are now JSON encoded with quotes, ampersands and angle brackets as unicode escapes, and the template
+  escapes the parameters and the event name. Grids where the `idColumn` holds a numeric ID were not affected.
+  If you override the `Hyva_Admin::grid.phtml` template, apply the same change to the `x-on:` attribute of the
+  action links.  
+  Thanks to [Ief Falot](https://github.com/iefken) for the report!  
+  Advisory: [GHSA-h358-xv36-2j2f](https://github.com/hyva-themes/magento2-hyva-admin/security/advisories/GHSA-h358-xv36-2j2f)
+- Stored XSS in product image cells: the `magento_product_image` and `gallery` column types and media gallery entries
+  rendered the image URL unescaped into the `src` attribute of the `<img>` element when the column is configured with
+  `renderAsUnsecureHtml="true"`, as the docs recommend. The URL contains the image path from the product data, so a
+  path containing a double quote could add attributes (like event handlers) to the element.
+  `ProductMediaInBackend::getImageHtmlElement()` now escapes the image URL. The `toHtmlRecursive()` example in the
+  docs escapes the image URL, too.  
+  Advisory: [GHSA-mf9x-p67h-j4gv](https://github.com/hyva-themes/magento2-hyva-admin/security/advisories/GHSA-mf9x-p67h-j4gv)
+- The admin ajax paging (`hyva-admin/ajax/paging`) and export (`hyva-admin/export/download`) endpoints served any
+  grid to any admin user, regardless of the ACL resource that protects the page the grid is rendered on.
+  They now only serve grids that were rendered for the admin user during their current admin session.
+  Only grids rendered with a Hyvä grid block (any block extending `Hyva\Admin\Block\BaseHyvaGrid`) are recorded.
+  Grids are no longer rendered through template directives like `{{block}}` or `{{layout}}`, in any area (this
+  includes storefront CMS content and emails).  
+  Thanks to Sansec and [Ief Falot](https://github.com/iefken) for the reports!  
+  Advisory: [GHSA-98w6-75x7-mccj](https://github.com/hyva-themes/magento2-hyva-admin/security/advisories/GHSA-98w6-75x7-mccj)
+- The storefront route `hyva-grid` was removed. Its export endpoint served grids declared in `view/base/hyva-grid`
+  to visitors without authentication.
+- The ajax paging endpoint no longer returns exception messages outside of developer mode. They are logged instead.
+- CSV exports prefix cells that start with `=`, `+`, `-`, `@`, a tab or a carriage return with a single quote, so
+  spreadsheet apps don't evaluate them as formulas (CSV injection). Numbers like `-5` are not prefixed.
+  Before, Magento only prefixed values starting with `=`, `+` or `-` with a space.
+  XLSX and XML exports store the values as text and are not affected.
+- Docs: `renderAsUnsecureHtml` must only be used for trusted values or data types that build safe HTML, and
+  `toHtmlRecursive()` implementations of custom data types have to escape the values they embed.
 
 ### Added
-- Nothing
+- Grids can declare the ACL resource an admin user needs to see the grid with the `acl` attribute:
+  `<grid acl="My_Module::my_grid">`. Grids the admin user isn't allowed to access are not rendered, and are not
+  served by the ajax paging and export endpoints.
 
 ### Changed
+- Fixed: Grids were not interactive since 1.1.26 (no ajax paging, sorting, filtering, mass actions or column toggle).
+  The Alpine.js script was deferred, so it ran after RequireJS and registered itself as an anonymous AMD module
+  instead of initializing ("Mismatched anonymous define() module"). Alpine.js is loaded without `defer` again.
 - PHP 8.5 compatibility: avoid using null as an array offset, which is deprecated in PHP 8.5 and made every grid
   without a sortBy query parameter or row action throw an exception in developer mode.
 - Fixed: Type reflection of classes with union or intersection types (PHP 8.0+) failed with
@@ -56,7 +97,9 @@ Thanks to [@pykettk](https://github.com/hyva-themes/magento2-hyva-admin/pull/93)
   grids, for the column detection) and need to be idempotent.
 
 ### Removed
-- No removals.
+- The storefront route `hyva-grid` with the controllers `Hyva\Admin\Controller\Ajax\Paging` and
+  `Hyva\Admin\Controller\Export\Download`. Outside of the admin, grids are now rendered without ajax paging and
+  without export links. Custom storefront grid templates that build these URLs themselves need to be updated.
 
 ## [1.1.23] - 2025-02-06
 [1.1.23]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.22..1.1.23

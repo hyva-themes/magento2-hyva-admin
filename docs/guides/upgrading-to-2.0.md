@@ -6,6 +6,9 @@ Grids no longer need `'unsafe-eval'` in the Content Security Policy of the Magen
 Grids that only use the grid XML configuration need no changes.
 Customizations of the grid templates and custom Alpine.js code need to be updated.
 
+Hyvä Admin 1.x is still maintained with 1.1.x releases. Require `hyva-themes/module-magento2-admin:^1.1` in your
+`composer.json` to stay on 1.x until you're ready to upgrade.
+
 ## What changed
 
 - The bundled `Hyva_Admin::js/alpine.js` is the Alpine.js 3 CSP build.

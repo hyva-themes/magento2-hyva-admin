@@ -2,11 +2,13 @@
 
 namespace Hyva\Admin\Controller\Adminhtml\Export;
 
+use Hyva\Admin\Model\GridAuthorization;
 use Hyva\Admin\Model\GridExport\GridExportTypeLocator;
 use Hyva\Admin\Model\GridExport\HyvaGridExportInterfaceFactory;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\Http\FileFactory;
 
@@ -37,12 +39,18 @@ class Download extends Action implements HttpGetActionInterface
      */
     private $context;
 
+    /**
+     * @var GridAuthorization
+     */
+    private $gridAuthorization;
+
     public function __construct(
         Context $context,
         RequestInterface $request,
         FileFactory $fileFactory,
         GridExportTypeLocator $gridExportLocator,
-        HyvaGridExportInterfaceFactory $gridFactory
+        HyvaGridExportInterfaceFactory $gridFactory,
+        ?GridAuthorization $gridAuthorization = null
     ) {
         parent::__construct($context);
         $this->request           = $request;
@@ -50,6 +58,20 @@ class Download extends Action implements HttpGetActionInterface
         $this->gridExportLocator = $gridExportLocator;
         $this->gridFactory       = $gridFactory;
         $this->context           = $context;
+        // The new dependency is optional for backward compatibility with classes extending this controller
+        $this->gridAuthorization = $gridAuthorization ?? ObjectManager::getInstance()->get(GridAuthorization::class);
+    }
+
+    /**
+     * Only export grids the admin user is allowed to see and that were rendered during the admin session.
+     */
+    protected function _isAllowed()
+    {
+        $gridName = $this->getRequest()->getParam('gridName', '');
+
+        return parent::_isAllowed()
+            && is_string($gridName)
+            && $this->gridAuthorization->isAllowedForEndpoint($gridName);
     }
 
     public function execute()
