@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [2.0.0] - Unreleased
+## [2.0.0] - 2026-11-27
 [2.0.0]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.29..2.0.0
 
 This release is not backward compatible with templates and JavaScript written for Hyvä Admin 1.x.
@@ -30,6 +30,7 @@ Hyvä Admin 1.x is still maintained in the `main-1.x` branch, so you can stay on
   build: expressions can't access globals like `window` or `document`, change the DOM, or use `x-html`. Move such
   logic into a component registered with `Alpine.data()`.
 - A custom `alpinejs_path` has to point to an Alpine.js 3 build.
+- Clear the Magento cache after the upgrade, so the updated layout loads `Hyva_Admin::js/grid.js`.
 
 Thanks to [@pykettk](https://github.com/hyva-themes/magento2-hyva-admin/pull/93) for the initial implementation!
 
