@@ -230,7 +230,9 @@ $rows       = $grid->getRows();
                                             <?php foreach ($action->getEvents() as $event): ?>
                                             <?php $dataJson = $event->getParamsJson($action, $row); ?>
                                             x-on:<?= $event->getOnTrigger() ?>='
-                                            dispatchRowEvent($event, "<?= $event->getEventName() ?>", <?= $dataJson ?>)'
+                                            dispatchRowEvent($event, "<?= $escaper->escapeHtmlAttr(
+                                                $event->getEventName()
+                                            ) ?>", <?= $escaper->escapeHtmlAttr($dataJson) ?>)'
                                             <?php endforeach; ?>
                                             >
                                                 <?= $escaper->escapeHtml(__($action->getLabel())) ?>

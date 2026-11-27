@@ -24,6 +24,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   XLSX and XML exports store the values as text and are not affected.
 - Docs: `renderAsUnsecureHtml` must only be used for trusted values or data types that build safe HTML, and
   `toHtmlRecursive()` implementations of custom data types have to escape the values they embed.
+- Stored XSS in grid row actions with a JS event (`<action><event on="click"/></action>`): the action parameters
+  contain the row value of the `idColumn` declared on `<actions>`, and were rendered unescaped into the `x-on:`
+  attribute of the action link. A value containing a single quote could add attributes (like event handlers) to the
+  link, and a value containing an HTML entity like `&quot;` could inject JavaScript into the event expression.
+  The parameters are now JSON encoded with quotes, ampersands and angle brackets as unicode escapes, and the template
+  escapes the parameters and the event name. Grids where the `idColumn` holds a numeric ID were not affected.
+  If you override the `Hyva_Admin::grid.phtml` template, apply the same change to the `x-on:` attribute of the
+  action links.  
+  Thanks to [Ief Falot](https://github.com/iefken) for the report!
 
 ### Added
 - Grids can declare the ACL resource an admin user needs to see the grid with the `acl` attribute:
