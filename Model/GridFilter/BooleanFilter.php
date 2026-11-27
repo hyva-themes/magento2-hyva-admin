@@ -38,8 +38,9 @@ class BooleanFilter implements ColumnDefinitionMatchingFilterInterface
     public function getRenderer(ColumnDefinitionInterface $columnDefinition): Template
     {
         /** @var Template $templateBlock */
-        $templateBlock = $this->layout->createBlock(Template::class);
-        $templateBlock->setTemplate('Hyva_Admin::grid/filter/bool.phtml');
+        $templateBlock = $this->layout->createBlock(Template::class, '', [
+            'data' => ['template' => 'Hyva_Admin::grid/filter/bool.phtml'],
+        ]);
 
         return $templateBlock;
     }

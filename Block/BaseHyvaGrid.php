@@ -19,8 +19,7 @@ abstract class BaseHyvaGrid extends Template
         HyvaGridInterfaceFactory $gridFactory,
         array $data = []
     ) {
-        $this->setTemplate($gridTemplate);
-        parent::__construct($context, $data);
+        parent::__construct($context, array_merge(['template' => $gridTemplate], $data));
         $this->gridFactory = $gridFactory;
     }
 

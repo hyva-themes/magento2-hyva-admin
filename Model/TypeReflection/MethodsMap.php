@@ -133,7 +133,7 @@ class MethodsMap
     {
         $publicMethods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
 
-        return reduce($publicMethods, function (array $map, MethodReflection $method) use ($class): array {
+        return reduce($publicMethods, function (array $map, MethodReflection $method): array {
             $returnType = $this->determineReturnType($method);
             $methodInfo = ['return' => $returnType ?? 'mixed', 'parameterCount' => $method->getNumberOfParameters()];
             return merge($map, [$method->getName() => $methodInfo]);

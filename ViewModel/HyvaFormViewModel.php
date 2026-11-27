@@ -87,7 +87,7 @@ class HyvaFormViewModel implements HyvaFormInterface
 
     public function getSections(): array
     {
-        $this->getFormStructure()->getSections();
+        return $this->getFormStructure()->getSections();
     }
 
     private function getFormStructure(): FormStructure

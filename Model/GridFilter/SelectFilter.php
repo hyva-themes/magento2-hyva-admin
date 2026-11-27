@@ -34,8 +34,9 @@ class SelectFilter implements ColumnDefinitionMatchingFilterInterface
     public function getRenderer(ColumnDefinitionInterface $columnDefinition): Template
     {
         /** @var Template $templateBlock */
-        $templateBlock = $this->layout->createBlock(Template::class);
-        $templateBlock->setTemplate('Hyva_Admin::grid/filter/select.phtml');
+        $templateBlock = $this->layout->createBlock(Template::class, '', [
+            'data' => ['template' => 'Hyva_Admin::grid/filter/select.phtml'],
+        ]);
 
         return $templateBlock;
     }

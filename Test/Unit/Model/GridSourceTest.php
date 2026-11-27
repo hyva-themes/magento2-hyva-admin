@@ -59,9 +59,9 @@ class GridSourceTest extends TestCase
         return new GridSource(
             $gridName,
             $gridSourceType,
-            $this->createMock(GridSourcePrefetchEventDispatcher::class),
-            $this->createMock(GridSource\SearchCriteriaBindings::class),
-            $this->createMock(GridSource\SearchCriteriaIdentity::class)
+            $this->createStub(GridSourcePrefetchEventDispatcher::class),
+            $this->createStub(GridSource\SearchCriteriaBindings::class),
+            $this->createStub(GridSource\SearchCriteriaIdentity::class)
         );
     }
 
@@ -75,7 +75,7 @@ class GridSourceTest extends TestCase
 
     private function createStubColumnDefinitionObjectManager(): ObjectManagerInterface
     {
-        $stubObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $stubObjectManager = $this->createStub(ObjectManagerInterface::class);
         $stubObjectManager->method('create')->willReturnCallback([$this, 'createColumnDefinitionCallback']);
 
         return $stubObjectManager;
@@ -83,7 +83,7 @@ class GridSourceTest extends TestCase
 
     private function createStubGridSourceType(array $sourceColumnKeys)
     {
-        $gridSourceType = $this->createMock(GridSourceTypeInterface::class);
+        $gridSourceType = $this->createStub(GridSourceTypeInterface::class);
         $gridSourceType->method('getColumnKeys')->willReturn($sourceColumnKeys);
         $gridSourceType->method('getColumnDefinition')->willReturnCallback([$this, 'createColumnDefinitionByKey']);
 
@@ -113,13 +113,13 @@ class GridSourceTest extends TestCase
         array $bindingsConfig,
         bool $addPrefetchFilter
     ): void {
-        $objectFactory = $this->createMock(ObjectFactory::class);
+        $objectFactory = $this->createStub(ObjectFactory::class);
         $objectFactory->method('create')->willReturnCallback(function (string $type, array $arguments) {
             return new $type($arguments['data']);
         });
         $filterBuilder = new FilterBuilder($objectFactory);
         $bindings = new GridSource\SearchCriteriaBindings(
-            new MethodValueBindings($this->createMock(ObjectManagerInterface::class)),
+            new MethodValueBindings($this->createStub(ObjectManagerInterface::class)),
             $filterBuilder,
             new FilterGroupBuilder($objectFactory, $filterBuilder),
             $combineConditionsWith,
@@ -135,7 +135,7 @@ class GridSourceTest extends TestCase
         if ($addPrefetchFilter) {
             $expectedCriteria->setFilterGroups(array_merge($expectedCriteria->getFilterGroups(), [$prefetchGroup]));
         }
-        $eventManager = $this->createMock(ManagerInterface::class);
+        $eventManager = $this->createStub(ManagerInterface::class);
         $eventManager->method('dispatch')->willReturnCallback(function (string $event, array $data) use (
             $addPrefetchFilter,
             $prefetchGroup
@@ -146,7 +146,7 @@ class GridSourceTest extends TestCase
             }
         });
         $fetchCount = 0;
-        $sourceType = $this->createMock(GridSourceTypeInterface::class);
+        $sourceType = $this->createStub(GridSourceTypeInterface::class);
         $sourceType->method('getRecordType')->willReturn('test_record');
         $sourceType->method('fetchData')->willReturnCallback(function (SearchCriteriaInterface $effectiveCriteria) use (
             &$fetchCount,

@@ -19,13 +19,13 @@ class HyvaConfigDirsTest extends TestCase
 {
     private function createHyvaConfigDirsInstance(string $class, string $areaCode, array $activeModules): HyvaConfigDirs
     {
-        $stubAppState = $this->createMock(AppState::class);
+        $stubAppState = $this->createStub(AppState::class);
         $stubAppState->method('getAreaCode')->willReturn($areaCode);
 
-        $stubModuleList = $this->createMock(ModuleListInterface::class);
+        $stubModuleList = $this->createStub(ModuleListInterface::class);
         $stubModuleList->method('getNames')->willReturn($activeModules);
 
-        $stubComponentRegistrar = $this->createMock(ComponentRegistrarInterface::class);
+        $stubComponentRegistrar = $this->createStub(ComponentRegistrarInterface::class);
         $stubComponentRegistrar->method('getPath')->willReturnCallback(
             function (string $_, string $module): string {
                 return __DIR__ . '/test-dirs/' . $module;

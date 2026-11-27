@@ -35,7 +35,7 @@ class NamespaceMap
         } finally {
             fclose($f);
         }
-        return new self($fileName, $map ?? []);
+        return new self($fileName, $map);
     }
 
     private static function readUntilCassDefiniton($f): array

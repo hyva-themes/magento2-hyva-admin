@@ -19,8 +19,7 @@ class BaseHyvaForm extends Template
         HyvaFormInterfaceFactory $hyvaFormFactory,
         array $data = []
     ) {
-        parent::__construct($context, $data);
-        $this->setTemplate($formTemplate);
+        parent::__construct($context, array_merge($data, ['template' => $formTemplate]));
         $this->hyvaFormFactory = $hyvaFormFactory;
     }
 
