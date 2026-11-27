@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 [2.0.0]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.29..2.0.0
 
 This release is not backward compatible with templates and JavaScript written for Hyvä Admin 1.x.
-See the [upgrade guide](https://hyva-themes.github.io/magento2-hyva-admin/guides/upgrading-to-2.0/).
+See the [upgrade guide](https://hyva-themes.github.io/magento2-hyva-admin/guides/upgrading-to-2.0.html).
 Hyvä Admin 1.x is still maintained in the `main-1.x` branch, so you can stay on `^1.1` until you're ready to upgrade.
 
 ### Changed
