@@ -7,14 +7,15 @@
 $escaper = $escaper ?? $block;
 
 if ($button->getOnClick()) {
-    $onclickAction = $button->getOnClick();
+    // Custom JavaScript from the grid configuration. Inline event handlers require 'unsafe-inline' with a strict CSP.
+    $clickAttributes = sprintf('onclick="%s"', $button->getOnClick());
 } elseif ($button->getUrl()) {
-    $onclickAction = sprintf("window.location.href='%s'", $escaper->escapeJs($button->getUrl()));
+    $clickAttributes = sprintf('@click="openButtonUrl" data-url="%s"', $escaper->escapeHtmlAttr($button->getUrl()));
 } else {
-    $onclickAction = null;
+    $clickAttributes = '';
 }
 ?>
 <a class="btn btn-primary inline-flex mx-2 cursor-pointer"
-    <?= $onclickAction ? sprintf('onclick="%s"', $onclickAction) : '' ?>>
+    <?= /* @noEscape */ $clickAttributes ?>>
     <span><?= $escaper->escapeHtml(__($button->getLabel())) ?></span>
 </a>

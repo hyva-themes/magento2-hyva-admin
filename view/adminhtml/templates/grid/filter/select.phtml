@@ -8,15 +8,15 @@ $escaper = $escaper ?? $block;
 
 ?>
 <select name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
-        form="<?= $filter->getFormId() ?>"
+        form="<?= $escaper->escapeHtmlAttr($filter->getFormId()) ?>"
         class="form-select w-full"
-        @change="formGridUpdate($event.target.form)"
+        @change="formGridUpdate"
 >
     <option value=""> </option>
-<?php foreach ($filter->getOptions() as $option): ?>
-<?php $isSelected = $filter->getValue() === $option->getValueId() ?>
-<option value="<?= $escaper->escapeHtmlAttr($option->getValueId()) ?>"
-        <?= $isSelected ? 'selected' : '' ?>
-><?= $escaper->escapeHtml($option->getLabel()) ?></option>
-<?php endforeach; ?>
+    <?php foreach ($filter->getOptions() as $option): ?>
+        <?php $isSelected = $filter->getValue() === $option->getValueId() ?>
+        <option value="<?= $escaper->escapeHtmlAttr($option->getValueId()) ?>"
+            <?= $isSelected ? 'selected' : '' ?>
+        ><?= $escaper->escapeHtml($option->getLabel()) ?></option>
+    <?php endforeach; ?>
 </select>

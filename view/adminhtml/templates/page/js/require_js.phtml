@@ -5,9 +5,14 @@
 $escaper        = $escaper ?? $block;
 $secureRenderer = $secureRenderer ?? $block->getData('secure_html_renderer_polyfill');
 $alpineJsPath   = $block->getData('alpinejs_path');
+$gridJsPath     = $block->getData('grid_js_path');
 ?>
+<?php if ($gridJsPath): ?>
+    <?php /* The grid component has to be loaded before Alpine.js, so it is registered when Alpine.js initializes */ ?>
+    <script src="<?= $escaper->escapeUrl($block->getViewFileUrl($gridJsPath)) ?>" defer></script>
+<?php endif; ?>
 <?php if ($alpineJsPath): ?>
-    <script src="<?php echo $block->getViewFileUrl($alpineJsPath); ?>"></script>
+    <script src="<?= $escaper->escapeUrl($block->getViewFileUrl($alpineJsPath)) ?>" defer></script>
 <?php endif; ?>
 
 <?php

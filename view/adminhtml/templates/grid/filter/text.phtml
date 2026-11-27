@@ -7,7 +7,7 @@
 $escaper = $escaper ?? $block;
 
 ?>
-<input type="text" form="<?= $filter->getFormId() ?>" class=""
+<input type="text" form="<?= $escaper->escapeHtmlAttr($filter->getFormId()) ?>" class=""
        name="<?= $escaper->escapeHtmlAttr($filter->getInputName()) ?>"
        value="<?= $escaper->escapeHtmlAttr($filter->getValue()) ?>"
 />

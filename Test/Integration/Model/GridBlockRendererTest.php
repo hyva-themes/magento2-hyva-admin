@@ -86,7 +86,8 @@ class GridBlockRendererTest extends TestCase
     }
 
     /**
-     * Custom JS events might return params JSON that isn't encoded for HTML, so the template escapes it, too.
+     * Custom JS events might return params JSON that isn't encoded for HTML, so the template has to escape the
+     * data-row-events attribute, too.
      *
      * @magentoAppArea adminhtml
      * @dataProvider rowActionIdValueProvider
@@ -144,15 +145,14 @@ class GridBlockRendererTest extends TestCase
         foreach ($link->attributes as $attribute) {
             $attributeNames[] = $attribute->nodeName;
         }
-        $this->assertSame(['class', 'href', 'x-on:click'], $attributeNames);
+        $this->assertSame(['class', 'href', 'x-on:click', 'data-row-events'], $attributeNames);
         $this->assertSame(0, $link->getElementsByTagName('*')->length, 'The action link has unexpected children');
 
-        $expression = trim($link->getAttribute('x-on:click'));
-        $this->assertSame(1, preg_match('/^dispatchRowEvent\(\$event, "([a-z-]+)", (.*)\)$/s', $expression, $matches));
-        $this->assertSame(
-            ['action' => 'edit', 'params' => ['sku' => $idValue]],
-            json_decode($matches[2], true, 512, JSON_THROW_ON_ERROR)
-        );
+        $this->assertSame('dispatchRowEvent', $link->getAttribute('x-on:click'));
+        $rowEvents = json_decode($link->getAttribute('data-row-events'), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertSame(['click'], array_keys($rowEvents));
+        $this->assertSame(1, preg_match('/^[a-z-]+$/', $rowEvents['click']['name']));
+        $this->assertSame(['action' => 'edit', 'params' => ['sku' => $idValue]], $rowEvents['click']['detail']);
     }
 
     /**

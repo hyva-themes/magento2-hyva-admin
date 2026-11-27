@@ -32,9 +32,13 @@ For example, given a grid named products-query-grid, and an action with the id d
 
 `hyva-grid-products-query-grid-action-delete-click`
 
+An action can have several events with different triggers, for example `<event on="click"/>` and `<event on="mouseover"/>`.
+Only one event per event type is dispatched. The trigger can contain Alpine.js modifiers, like `click.prevent`.
+
 ## Event Subscribers
 
 Event subscribers can be declared in .phtml template files that are added to the grid page via layout XML.
+With a strict Content Security Policy, add them in a static JavaScript file instead of an inline script.
 
 Example:
 
@@ -66,7 +70,9 @@ It might be useful to retrieve the rendered cell values in a kind of hacky way.
 
 ### event.detail.viewModel
 
-This is the Alpine.js view model of the grid.
+This is the data of the Alpine.js component of the grid.
+
+Since Hyvä Admin 2.0 this is an Alpine.js 3 component. See [Upgrading to 2.0](../../../../guides/upgrading-to-2.0.md).
 
 ### event.detail.action
 
