@@ -126,6 +126,76 @@ class ExportTypesTest extends TestCase
         $this->testFilesToRemove[] = $file;
     }
 
+    private function readCsvRows(string $file): array
+    {
+        $rows   = [];
+        $handle = fopen($file, 'r');
+        while (($row = fgetcsv($handle, null, ',', '"', '')) !== false) {
+            $rows[] = $row;
+        }
+        fclose($handle);
+
+        return $rows;
+    }
+
+    public static function csvFormulaValueProvider(): array
+    {
+        return [
+            'equals'          => ['=1+1'],
+            'plus'            => ['+1+1'],
+            'minus'           => ["-2+3+cmd|' /C calc'!A0"],
+            'at'              => ["@SUM(1+1)*cmd|' /C calc'!A0"],
+            'tab'             => ["\t=1+1"],
+            'carriage return' => ["\r=1+1"],
+        ];
+    }
+
+    /**
+     * @dataProvider csvFormulaValueProvider
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('csvFormulaValueProvider')]
+    public function testPrefixesFormulasInCsvExportWithSingleQuote(string $value): void
+    {
+        $columns   = [
+            'foo' => ObjectManager::getInstance()->create(ColumnDefinitionInterface::class, [
+                'key'       => 'foo',
+                'label'     => $value,
+                'isVisible' => true,
+            ]),
+        ];
+        $grid      = $this->createStubGrid([['foo' => $value]], $columns);
+        $csvExport = ObjectManager::getInstance()->create(Csv::class, ['grid' => $grid]);
+
+        $csvExport->createFileToDownload();
+
+        $file                      = $this->getExportFilePath($csvExport);
+        $this->testFilesToRemove[] = $file;
+        $rows                      = $this->readCsvRows($file);
+
+        $this->assertSame([["'" . $value], ["'" . $value]], $rows);
+    }
+
+    public function testDoesNotPrefixNumbersAndTextInCsvExport(): void
+    {
+        $values    = ['a=b', 'plain', '-5', '+1.5', '-0.25'];
+        $gridData  = map(function (string $value): array {
+            return ['foo' => $value];
+        }, $values);
+        $csvExport = ObjectManager::getInstance()->create(Csv::class, ['grid' => $this->createStubGrid($gridData)]);
+
+        $csvExport->createFileToDownload();
+
+        $file                      = $this->getExportFilePath($csvExport);
+        $this->testFilesToRemove[] = $file;
+        $rows                      = $this->readCsvRows($file);
+
+        // Magento prefixes values starting with = + or - with a space, which leaves numbers numeric.
+        $exported = map(function (array $row): string {
+            return ltrim($row[0], ' ');
+        }, array_slice($rows, 1));
+        $this->assertSame($values, $exported);
+    }
+
     public function testExportsXml(): void
     {
         if (!function_exists('simplexml_load_string') || !function_exists('json_encode')) {

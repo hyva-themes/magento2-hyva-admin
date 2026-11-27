@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The storefront route `hyva-grid` was removed. Its export endpoint served grids declared in `view/base/hyva-grid`
   to visitors without authentication.
 - The ajax paging endpoint no longer returns exception messages outside of developer mode. They are logged instead.
+- CSV exports prefix cells that start with `=`, `+`, `-`, `@`, a tab or a carriage return with a single quote, so
+  spreadsheet apps don't evaluate them as formulas (CSV injection). Numbers like `-5` are not prefixed.
+  Before, Magento only prefixed values starting with `=`, `+` or `-` with a space.
+  XLSX and XML exports store the values as text and are not affected.
+- Docs: `renderAsUnsecureHtml` must only be used for trusted values or data types that build safe HTML, and
+  `toHtmlRecursive()` implementations of custom data types have to escape the values they embed.
 
 ### Added
 - Grids can declare the ACL resource an admin user needs to see the grid with the `acl` attribute:

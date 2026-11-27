@@ -81,6 +81,11 @@ If a cell content needs to be rendered as HTML (for example an image or a link),
 <column name="image" type="magento_product_image" renderAsUnsecureHtml="true"/>
 ```
 
+!!! warning
+    With `renderAsUnsecureHtml="true"` the cell content is rendered without escaping.  
+    Only use it for columns whose values are trusted, or whose data type builds safe HTML from the value, like `magento_product_image`.  
+    Never use it for columns with values that users can edit, like names, SKUs, descriptions or customer data. HTML or JavaScript in such a value runs in the admin session of everyone who views the grid.
+
 If `renderAsUnsecure` is set to `true`, the data type method `DataType\ValueToStringConverterInterface::toHtmlRecursive()`
 
 is used to fetch a cells content for rendering.
