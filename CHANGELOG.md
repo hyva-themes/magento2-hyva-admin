@@ -3,6 +3,35 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.0.0] - Unreleased
+[2.0.0]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.29..2.0.0
+
+This release is not backward compatible with templates and JavaScript written for Hyvä Admin 1.x.
+See the [upgrade guide](https://hyva-themes.github.io/magento2-hyva-admin/guides/upgrading-to-2.0/).
+
+### Changed
+- Alpine.js 2.8 is replaced with the Alpine.js 3.17.5 CSP build. Grids no longer require `'unsafe-eval'` in the
+  admin Content Security Policy.
+- The grid Alpine.js component is a static JavaScript file (`Hyva_Admin::js/grid.js`), registered as
+  `Alpine.data('initDataTable')` and configured with data attributes on the grid element. The grid templates no longer
+  render inline scripts.
+- Row actions and buttons with an `url` use Alpine.js event listeners instead of inline `onclick` attributes.
+  Buttons with an `onclick` attribute still need `'unsafe-inline'`.
+- Row action events: `event.detail.viewModel` is the Alpine.js 3 component. An action can declare events for several
+  event types.
+- Grid output is escaped in more places, for example the filter form ids and the filter option labels.
+- Fixed: "select all" only selects the rows of its own grid when there are several grids on a page.
+
+### Upgrade notes
+- Theme or module overrides of `Hyva_Admin::grid.phtml` and the `Hyva_Admin::grid/*` templates need to be redone
+  based on the new templates.
+- Custom cell, button and filter templates have to follow the Alpine.js 3 syntax and the restrictions of the CSP
+  build: expressions can't access globals like `window` or `document`, change the DOM, or use `x-html`. Move such
+  logic into a component registered with `Alpine.data()`.
+- A custom `alpinejs_path` has to point to an Alpine.js 3 build.
+
+Thanks to [@pykettk](https://github.com/hyva-themes/magento2-hyva-admin/pull/93) for the initial implementation!
+
 ## [Unreleased]
 
 [Unreleased]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.23..main

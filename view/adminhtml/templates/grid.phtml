@@ -9,17 +9,25 @@ $grid       = $block->getGrid();
 $navigation = $grid->getNavigation();
 $uniqueId   = '_' . md5($grid->getGridName());
 $rows       = $grid->getRows();
-$cols       = $grid->getColumnData();
-$hiddenCols = $grid->getInitiallyHiddenColumns();
+$cols       = [];
+$hiddenCols = [];
+foreach ($grid->getColumnDefinitions() as $column) {
+    $cols[] = ['key' => 'col-' . $column->getKey(), 'value' => (string) __($column->getLabel())];
+    if ($column->isInitiallyHidden()) {
+        $hiddenCols[] = 'col-' . $column->getKey();
+    }
+}
 ?>
 <div class="hyva-admin-grid"
      x-data="initDataTable"
-     data-grid-name="<?= $escaper->escapeHtmlAttr($grid->getGridName()); ?>"
-     data-ajax-navigation-enabled="<?= (int)$navigation->isAjaxEnabled(); ?>"
-     data-cols='<?= $escaper->escapeHtmlAttr(json_encode($cols)); ?>'
-     data-filter-form-id="<?= $escaper->escapeHtmlAttr($navigation->getFilterFormId()); ?>"
-     data-has-filters="<?= /** @noEscape */ $navigation->hasFilters() ? 'true' : 'false'; ?>"
-     data-hidden-cols='<?= $escaper->escapeHtmlAttr(json_encode($hiddenCols)); ?>'
+     data-grid-name="<?= $escaper->escapeHtmlAttr($grid->getGridName()) ?>"
+     data-ajax-navigation-enabled="<?= (int) $navigation->isAjaxEnabled() ?>"
+     data-cols="<?= $escaper->escapeHtmlAttr(json_encode($cols, JSON_INVALID_UTF8_SUBSTITUTE)) ?>"
+     data-filter-form-id="<?= $escaper->escapeHtmlAttr($navigation->getFilterFormId()) ?>"
+     data-has-filters="<?= $navigation->hasFilters() ? 'true' : 'false' ?>"
+     data-hidden-cols="<?= $escaper->escapeHtmlAttr(json_encode($hiddenCols, JSON_INVALID_UTF8_SUBSTITUTE)) ?>"
+     data-msg-no-selection="<?= $escaper->escapeHtmlAttr(__('Please select the records to apply the mass action to.')) ?>"
+     data-msg-confirm="<?= $escaper->escapeHtmlAttr(__('Are you sure?')) ?>"
 >
     <div class="max-w-full px-0 py-6 mx-auto">
         <div class="flex items-center justify-between mb-4">
@@ -196,8 +204,10 @@ $hiddenCols = $grid->getInitiallyHiddenColumns();
                         <?php foreach ($rows as $row): ?>
                             <?php if ($rowAction = $actions[(string) $grid->getRowActionId()] ?? false) {
                                 $rowActionUrl       = $block->getUrl($rowAction->getUrl(), $rowAction->getParams($row));
-                                $rowActionAttribute = sprintf("onclick=\"window.location.href='%s'\"",
-                                    $escaper->escapeJs($rowActionUrl));
+                                $rowActionAttribute = sprintf(
+                                    '@click="openRowAction" data-row-action-url="%s"',
+                                    $escaper->escapeHtmlAttr($rowActionUrl)
+                                );
                             } else {
                                 $rowActionAttribute = '';
                             } ?>
@@ -232,18 +242,34 @@ $hiddenCols = $grid->getInitiallyHiddenColumns();
                                 <?php if ($actions): ?>
                                     <td class="px-3 text-right border border-gray-100 actions">
                                         <?php foreach ($actions as $action): ?>
+                                            <?php
+                                            // One listener per event type; data-row-events maps the type to the event
+                                            $eventTriggers = [];
+                                            $rowEvents     = [];
+                                            foreach ($action->getEvents() as $event) {
+                                                $eventType = explode('.', $event->getOnTrigger())[0];
+                                                if (isset($rowEvents[$eventType])) {
+                                                    continue;
+                                                }
+                                                $eventTriggers[]       = $event->getOnTrigger();
+                                                $rowEvents[$eventType] = [
+                                                    'name'   => $event->getEventName(),
+                                                    'detail' => json_decode($event->getParamsJson($action, $row)),
+                                                ];
+                                            }
+                                            ?>
                                             <a class="px-3 font-medium text-blue-800 whitespace-no-wrap
                                                 hover:text-blue-600"
                                                href="<?= $escaper->escapeUrl($block->getUrl(
                                                    $action->getUrl(),
                                                    $action->getParams($row)
                                                )) ?>"
-                                                <?php foreach ($action->getEvents() as $event): ?>
-                                                    <?php $dataJson = $event->getParamsJson($action, $row); ?>
-                                                    x-on:<?= $event->getOnTrigger() ?>="dispatchRowEvent"
-                                                    data-event-name="<?= $escaper->escapeHtmlAttr($event->getEventName()); ?>"
-                                                    data-event-json="<?= $escaper->escapeHtmlAttr($dataJson); ?>"
+                                                <?php foreach ($eventTriggers as $eventTrigger): ?>
+                                                    x-on:<?= /* @noEscape */ $eventTrigger ?>="dispatchRowEvent"
                                                 <?php endforeach; ?>
+                                                <?php if ($rowEvents): ?>
+                                                    data-row-events="<?= $escaper->escapeHtmlAttr(json_encode($rowEvents, JSON_INVALID_UTF8_SUBSTITUTE)) ?>"
+                                                <?php endif; ?>
                                             >
                                                 <?= $escaper->escapeHtml(__($action->getLabel())) ?>
                                             </a>

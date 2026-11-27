@@ -8,12 +8,9 @@
         <referenceBlock name="require.js" template="Hyva_Admin::page/js/require_js.phtml">
             <arguments>
                 <argument name="alpinejs_path" xsi:type="string">Hyva_Admin::js/alpine.js</argument>
+                <argument name="grid_js_path" xsi:type="string">Hyva_Admin::js/grid.js</argument>
                 <argument name="secure_html_renderer_polyfill" xsi:type="object">\Hyva\Admin\Model\Polyfill\SecureHtmlRenderer</argument>
             </arguments>
         </referenceBlock>
-
-        <referenceContainer name="before.body.end">
-            <block name="hyva-admin-grid.js" template="Hyva_Admin::js/grid.phtml"/>
-        </referenceContainer>
     </body>
 </page>

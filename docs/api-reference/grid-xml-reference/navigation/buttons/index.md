@@ -32,6 +32,8 @@ The url attribute takes a route declaration in the standard Magento notation of 
 
 With `onclick` arbitrary JavaScript can be executed when a button is clicked.
 
+The JavaScript is rendered as an inline `onclick` attribute, which requires `'unsafe-inline'` in the `script-src` directive of the Content Security Policy. Buttons with an `url` work with a strict policy.
+
 ### sortOrder
 
 By default buttons are rendered in the order they are declared. Buttons that have a `sortOrder` attribute are rendered before buttons without this attribute.

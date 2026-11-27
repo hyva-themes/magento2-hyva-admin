@@ -45,9 +45,8 @@ $escaper = $escaper ?? $block;
                 <div class="mr-3 text-teal-600">
                     <input type="checkbox"
                            class="form-checkbox focus:outline-none focus:shadow-outline"
-                           :checked="isColumnVisible"
+                           :checked="isColumnToggleChecked"
                            @click="toggleColumn"
-                           :data-col-key="column.key"
                     >
                 </div>
                 <div class="text-gray-700 select-none"

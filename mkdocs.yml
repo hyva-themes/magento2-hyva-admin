@@ -37,6 +37,7 @@ nav:
     -   'Welcome': 'index.md'
     -   '1. Guides':
             - 'guides/installation.md'
+            - 'guides/upgrading-to-2.0.md'
             -   'Quickstart':
                     -   'Intro': 'guides/quickstart/index.md'
                     -   'Examples':

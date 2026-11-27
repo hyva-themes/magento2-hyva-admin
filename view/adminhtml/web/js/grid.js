@@ -1,47 +1,52 @@
-<?php
-declare(strict_types=1);
+/**
+ * Alpine.js component for Hyvä Admin grids.
+ *
+ * Compatible with the Alpine.js CSP build: templates only reference methods and properties,
+ * and all grid specific configuration is read from data attributes on the grid root element.
+ */
+(function () {
+    'use strict';
 
-use Magento\Backend\Block\Template;
-use Magento\Framework\Escaper;
-
-// phpcs:ignore Generic.Files.LineLength.TooLong
-
-/** @var Escaper $escaper */
-/** @var Template $block */
-?>
-<script>
-    function initDataTable()
-    {
-        const closest = function (selector, element, top)
-        {
-            if (! element || element === (top || document)) {
-                return null;
-            }
-
-            return element.matches(selector)
-                ? element
-                : closest(selector, element.parentElement, top);
+    const closest = function (selector, element, top) {
+        if (!element || element === (top || document)) {
+            return null;
         }
 
+        return element.matches(selector)
+            ? element
+            : closest(selector, element.parentElement, top);
+    };
+
+    const parseJson = function (json, fallback) {
+        try {
+            return json ? JSON.parse(json) : fallback;
+        } catch (e) {
+            return fallback;
+        }
+    };
+
+    function initDataTable() {
+        const dataset = this.$root.dataset;
+        const gridName = dataset.gridName;
+
         return {
-            ajaxNavigationEnabled: this.$root.dataset.ajaxNavigationEnabled,
-            gridName: this.$root.dataset.gridName,
+            gridName: gridName,
+            ajaxNavigationEnabled: dataset.ajaxNavigationEnabled === '1',
+            hasFilters: dataset.hasFilters === 'true',
+            filterFormId: dataset.filterFormId,
+            massActionStorageName: gridName + '-selectedRows',
+            hiddenColsStorageName: gridName + '-hiddenCols',
+            columns: parseJson(dataset.cols, []),
+            hiddenCols: parseJson(dataset.hiddenCols, []),
             refs: false,
             loading: false,
             selectedRows: [],
-            columns: JSON.parse(this.$root.dataset.cols || '[]'),
-            hiddenCols: JSON.parse(this.$root.dataset.hiddenCols || '[]'),
-            massActionStorageName: this.gridName + '-selectedRows',
-            hiddenColsStorageName: this.gridName + '-hiddenCols',
             open: false,
             openExport: false,
-            hasFilters: this.$root.dataset.hasFilters,
             filterUri: window.location.href,
 
             init() {
                 this.refs = this.$refs;
-                this.columns.forEach(column => column.key = 'col-' + column.key);
-                this.hiddenCols.forEach(column => column.key = 'col-' + column.key);
                 this.initState();
             },
 
@@ -50,23 +55,33 @@ use Magento\Framework\Escaper;
                 this.selectedRows = this.getSelectedRows();
                 this.hiddenCols = this.getHiddenCols();
 
-                if (this.hasFilters) {
-                    this.filterUri = this.getFormUriEncoded(document.getElementById(this.$root.dataset.filterFormId));
+                const filterForm = this.hasFilters && document.getElementById(this.filterFormId);
+                if (filterForm) {
+                    this.filterUri = this.getFormUriEncoded(filterForm);
                 }
             },
 
             getSelectedRows() {
-                const selectedRowsJson = window.sessionStorage.getItem(this.massActionStorageName);
-                return selectedRowsJson ? JSON.parse(selectedRowsJson) : [];
+                return parseJson(window.sessionStorage.getItem(this.massActionStorageName), []);
             },
 
             getHiddenCols() {
-                const hiddenColsJson = window.sessionStorage.getItem(this.hiddenColsStorageName);
-                return hiddenColsJson ? JSON.parse(hiddenColsJson) : this.hiddenCols;
+                return parseJson(window.sessionStorage.getItem(this.hiddenColsStorageName), this.hiddenCols);
             },
 
-            toggleColumn() {
-                const key = this.$el.dataset.colKey;
+            // Used by the column cells, which have the column key in a data attribute.
+            // The optional key argument keeps the 1.x signature working.
+            isColumnVisible(key) {
+                return !this.hiddenCols.includes(typeof key === 'string' ? key : this.$el.dataset.colKey);
+            },
+
+            // Used by the column toggle checkboxes, which are rendered in an x-for loop over the columns
+            isColumnToggleChecked() {
+                return !this.hiddenCols.includes(this.column.key);
+            },
+
+            toggleColumn(key) {
+                key = typeof key === 'string' ? key : this.column.key;
                 const index = this.hiddenCols.indexOf(key);
                 if (index !== -1) {
                     this.hiddenCols.splice(index, 1);
@@ -74,10 +89,6 @@ use Magento\Framework\Escaper;
                     this.hiddenCols.push(key);
                 }
                 this.storeHiddenColumns();
-            },
-
-            isColumnVisible() {
-                return !this.hiddenCols.includes(this.$el.dataset.colKey);
             },
 
             storeHiddenColumns() {
@@ -96,7 +107,7 @@ use Magento\Framework\Escaper;
                 return this.selectedRows.includes(this.$el.value);
             },
 
-            toggleRow () {
+            toggleRow() {
                 const index = this.selectedRows.indexOf(this.$el.value);
 
                 if (index === -1) {
@@ -108,7 +119,7 @@ use Magento\Framework\Escaper;
 
             selectAllCheckbox() {
                 const checked = !!this.$event.target.checked;
-                document.querySelectorAll('.rowCheckbox').forEach(checkbox => {
+                this.$root.querySelectorAll('.rowCheckbox').forEach(checkbox => {
                     const index = this.selectedRows.indexOf(checkbox.value);
                     if (checked && index === -1) {
                         this.selectedRows.push(checkbox.value);
@@ -117,8 +128,9 @@ use Magento\Framework\Escaper;
                     }
                 });
             },
-            doMassAction() {
-                const option = this.$event.target.selectedOptions[0];
+
+            doMassAction(option) {
+                option = option instanceof HTMLOptionElement ? option : this.$event.target.selectedOptions[0];
                 const url = option.value;
                 const form = this.refs['massaction-form'];
                 const checked = this.getSelectedRows();
@@ -129,17 +141,15 @@ use Magento\Framework\Escaper;
                 }
 
                 if (checked.length === 0) {
-                    alert('<?= $escaper->escapeJs(
-                        __('Please select the records to apply the mass action to.')
-                    ); ?>');
+                    alert(this.$root.dataset.msgNoSelection);
                     select.selectedIndex = 0;
                     return;
                 }
-                if (option.dataset.requireConfirm === 'true' && !confirm('<?= $escaper->escapeJs(__('Are you sure?')); ?>')) {
+                if (option.dataset.requireConfirm === 'true' && !confirm(this.$root.dataset.msgConfirm)) {
                     select.selectedIndex = 0;
                     return;
                 }
-                const rowCheckboxName = this.$el.dataset.massActionsId + '[]';
+                const rowCheckboxName = select.dataset.massActionsId + '[]';
 
                 const alreadyPresent = Array.from(form.elements)
                     .filter(element => element.name === rowCheckboxName)
@@ -176,8 +186,8 @@ use Magento\Framework\Escaper;
                 }
             },
 
-            formGridUpdate() {
-                const form = this.$event.target.form ?? this.$event.target;
+            formGridUpdate(form) {
+                form = form instanceof HTMLFormElement ? form : (this.$event.target.form || this.$event.target);
 
                 this.filterUri = this.getFormUriEncoded(form);
                 this.updateGrid(this.filterUri);
@@ -186,7 +196,7 @@ use Magento\Framework\Escaper;
             getFormUriEncoded(form) {
                 const url = new URL(form.action);
                 Array.from(form.elements).forEach(
-                    input => url.searchParams.set(input.name, input.value)
+                    input => input.name && url.searchParams.set(input.name, input.value)
                 );
                 return url.toString();
             },
@@ -223,17 +233,31 @@ use Magento\Framework\Escaper;
                             this.$root.replaceWith(tmpContainer.querySelector('.hyva-admin-grid'));
                         }
                     })
-                    .catch(console.error);
+                    .catch(error => {
+                        this.loading = false;
+                        console.error(error);
+                    });
             },
 
+            openRowAction() {
+                window.location.href = this.$el.dataset.rowActionUrl;
+            },
+
+            openButtonUrl() {
+                window.location.href = this.$el.dataset.url;
+            },
+
+            // The data-row-events attribute maps each event type to the event name and the event detail
             dispatchRowEvent() {
                 const event = this.$event;
-                const row = closest('TR', event.target, this.$el);
-                const eventData = {origEvent: event, row: row, viewModel: this};
-                const name = this.$el.dataset.eventName;
-                const params = this.$el.dataset.eventJson;
+                const rowEvent = parseJson(this.$el.dataset.rowEvents, {})[event.type];
+                if (!rowEvent) {
+                    return;
+                }
+                const eventData = {origEvent: event, row: closest('TR', event.target, this.$root), viewModel: this};
+                const detail = Object.assign({}, rowEvent.detail, eventData);
 
-                window.dispatchEvent(new CustomEvent(name, {detail: Object.assign(params || {}, eventData)}));
+                window.dispatchEvent(new CustomEvent(rowEvent.name, {detail: detail}));
             },
 
             getRowCount() {
@@ -259,8 +283,14 @@ use Magento\Framework\Escaper;
             closeExport() {
                 this.openExport = false;
             },
-        }
+        };
     }
 
-    window.addEventListener('alpine:init', () => Alpine.data('initDataTable', initDataTable), {once: true});
-</script>
+    window.hyvaAdminGrid = {initDataTable: initDataTable};
+
+    if (window.Alpine) {
+        window.Alpine.data('initDataTable', initDataTable);
+    } else {
+        document.addEventListener('alpine:init', () => Alpine.data('initDataTable', initDataTable));
+    }
+})();
