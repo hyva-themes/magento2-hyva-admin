@@ -85,8 +85,9 @@ public function toHtmlRecursive(
     $value,
     $maxRecursionDepth = self::UNLIMITED_RECURSION
 ): ?string {
+    // $this->escaper is an injected \Magento\Framework\Escaper instance
     return $this->canProcess($value)
-        ? sprintf('<img src="%s"/>', $this->getImageUrl($value))
+        ? sprintf('<img src="%s"/>', $this->escaper->escapeHtmlAttr($this->getImageUrl($value)))
         : null;
 }
 ```

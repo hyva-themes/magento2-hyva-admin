@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 [Unreleased]: https://github.com/hyva-themes/magento2-hyva-admin/compare/1.1.23..main
 
+### Security
+- Stored XSS in product image cells: the `magento_product_image` and `gallery` column types and media gallery entries
+  rendered the image URL unescaped into the `src` attribute of the `<img>` element when the column is configured with
+  `renderAsUnsecureHtml="true"`, as the docs recommend. The URL contains the image path from the product data, so a
+  path containing a double quote could add attributes (like event handlers) to the element.
+  `ProductMediaInBackend::getImageHtmlElement()` now escapes the image URL. The `toHtmlRecursive()` example in the
+  docs escapes the image URL, too.
+
 ### Added
 - Nothing
 

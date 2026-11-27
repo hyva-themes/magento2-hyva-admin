@@ -34,7 +34,7 @@ class ProductMediaInBackend
     ): string {
         return sprintf(
             '<img src="%s" alt="%s" loading="lazy" />',
-            $this->getImageUrl($file, $productImageType),
+            $this->escaper->escapeHtmlAttr($this->getImageUrl($file, $productImageType)),
             $this->escaper->escapeHtmlAttr($altText)
         );
     }
